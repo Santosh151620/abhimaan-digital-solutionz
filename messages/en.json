@@ -1,0 +1,46 @@
+{
+  "Navigation": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "industries": "Industries",
+    "testimonials": "Testimonials",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "Buttons": {
+    "consultation": "Free Consultation",
+    "submit": "Submit Consultation Request",
+    "sending": "Routing Message...",
+    "start": "Start Your Project",
+    "explore": "Explore Services",
+    "readMore": "Read More →",
+    "whatsapp": "Chat with us on WhatsApp"
+  },
+  "Form": {
+    "title": "Free Consultation",
+    "subtitle": "Fill out the form details below to instantly route your project brief to our development team.",
+    "labelName": "Your Name",
+    "labelEmail": "Email Address",
+    "labelMessage": "Message Description",
+    "placeholderName": "John Doe",
+    "placeholderEmail": "john@example.com",
+    "placeholderMessage": "Tell us about your digital project goals...",
+    "successTitle": "Thank you, {name}!",
+    "successText": "Your consultation request was submitted successfully. A strategy brief has been routed to our mailbox, and we will get back to you shortly.",
+    "errorMsg": "Oops! There was a network issue routing your request. Please check your connection and try again."
+  },
+  "Hero": {
+    "tagline": "DIGITAL TRANSFORMATION FOR GROWING BRANDS",
+    "title": "Build modern websites, CRM systems, and automation.",
+    "description": "We help startups and enterprises launch fast, scale with confidence, and convert more customers online."
+  },
+  "Footer": {
+    "copyright": "© 2026 Abhimaan Digital Solutionz. All rights reserved.",
+    "tagline": "Digital transformation for growing brands."
+  },
+  "Blog": {
+    "title": "Blog",
+    "readMore": "Read More →"
+  }
+}
