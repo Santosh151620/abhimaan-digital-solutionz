@@ -19,7 +19,7 @@ export default async function LeadsPage() {
 
   return (
     <main className="min-h-screen pt-12 px-8 max-w-7xl mx-auto bg-[#030712]">
-      
+
       {/* Header Section */}
       <div className="mb-10 flex justify-between items-center">
         <div>
@@ -38,15 +38,15 @@ export default async function LeadsPage() {
       {/* Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {leads?.map((lead) => (
-         // <div
-           // key={lead.id}
-            //className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-slate-700/80 transition-all duration-200"
+          // <div
+          // key={lead.id}
+          //className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-slate-700/80 transition-all duration-200"
           //>
           <div
-  key={lead.id}
-  className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-teal-500/40 hover:shadow-teal-950/30 transition-all duration-200"
->
-  
+            key={lead.id}
+            className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-teal-500/40 hover:shadow-teal-950/30 transition-all duration-200"
+          >
+
             <div>
               {/* Header */}
               <div className="flex justify-between items-center mb-6">
@@ -54,15 +54,18 @@ export default async function LeadsPage() {
                   <h3 className="text-xl font-bold text-white tracking-wide">
                     {lead.full_name || "Anonymous Lead"}
                   </h3>
+
+                  <div className="mt-2 text-[11px] text-slate-500 uppercase tracking-wider">
+                    Lead ID: {lead.id}
+                  </div>
                 </div>
-                
+
                 {/* Status Pill Badge */}
-                <span className={`text-[11px] font-bold tracking-wider uppercase px-3 py-1 rounded-full border ${
-                  lead.status === "Won" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
+                <span className={`text-[11px] font-bold tracking-wider uppercase px-3 py-1 rounded-full border ${lead.status === "Won" ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" :
                   lead.status === "Lost" ? "bg-rose-500/10 text-rose-400 border-rose-500/20" :
-                  lead.status === "Proposal Sent" ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
-                  "bg-sky-500/10 text-sky-400 border-sky-500/20"
-                }`}>
+                    lead.status === "Proposal Sent" ? "bg-purple-500/10 text-purple-400 border-purple-500/20" :
+                      "bg-sky-500/10 text-sky-400 border-sky-500/20"
+                  }`}>
                   {lead.status || "New"}
                 </span>
               </div>
@@ -70,25 +73,32 @@ export default async function LeadsPage() {
               {/* Information Rows */}
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Company</span> 
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Company</span>
                   <span className="text-slate-300 font-medium">{lead.company || "Independent Enterprise"}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Email</span> 
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Email</span>
                   <span className="text-slate-300 font-mono">{lead.email}</span>
                 </div>
-                
+
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Phone</span> 
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Phone</span>
                   <span className="text-slate-300">{lead.phone || "—"}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Service</span> 
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">Service</span>
                   <span className="text-teal-400 font-medium">{lead.service_interest}</span>
                 </div>
-                
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold">
+                    Created
+                  </span>
+                  <span className="text-slate-300">
+                    {new Date(lead.created_at).toLocaleDateString()}
+                  </span>
+                </div>
                 {/* Client Message Block */}
                 {lead.message && (
                   <div className="mt-4 pt-4 border-t border-slate-800/40">
@@ -116,8 +126,8 @@ export default async function LeadsPage() {
                   <label className="text-[10px] text-slate-500 font-bold tracking-wider uppercase whitespace-nowrap">
                     Stage
                   </label>
-                  <select 
-                    name="status" 
+                  <select
+                    name="status"
                     defaultValue={lead.status || "New"}
                     className="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-3 py-1.5 text-xs cursor-pointer outline-none focus:border-teal-500/50 transition-colors w-full max-w-[160px]"
                   >
