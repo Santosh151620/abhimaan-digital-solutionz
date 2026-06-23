@@ -38,10 +38,15 @@ export default async function LeadsPage() {
       {/* Grid Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {leads?.map((lead) => (
+         // <div
+           // key={lead.id}
+            //className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-slate-700/80 transition-all duration-200"
+          //>
           <div
-            key={lead.id}
-            className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-slate-700/80 transition-all duration-200"
-          >
+  key={lead.id}
+  className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between shadow-xl shadow-black/30 hover:border-teal-500/40 hover:shadow-teal-950/30 transition-all duration-200"
+>
+  
             <div>
               {/* Header */}
               <div className="flex justify-between items-center mb-6">
