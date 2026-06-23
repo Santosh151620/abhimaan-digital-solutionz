@@ -1,0 +1,1 @@
+{new Date(lead.created_at).toISOString().replace("T", " ").slice(0, 19)}
