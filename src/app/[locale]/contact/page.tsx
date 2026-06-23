@@ -1,134 +1,173 @@
 "use client";
 import "@/app/globals.css";
-import ContactForm from "@/components/forms/contact-form";
 import { useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
 
 export default function ContactPage() {
-  const locale = useLocale(); // Tracks if the user is on en, hi, kn, te, or mr
-  const [status, setStatus] = useState<"IDLE" | "SUBMITTING" | "SUCCESS" | "ERROR">("IDLE");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+    const [formData, setFormData] = useState({
+        full_name: "",
+        email: "",
+        phone: "",
+        company: "",
+        service_interest: "",
+        message: "",
+    });
 
-  // Hook into translation sections inside your master JSON dictionaries
-  const formT = useTranslations("Form");
-  const btnT = useTranslations("Buttons");
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus("SUBMITTING");
+        const response = await fetch("/api/contact", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
 
-    try {
-      const response = await fetch("/api/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // We include the locale string directly inside the payload data!
-        body: JSON.stringify({ name, email, message, locale }),
-      });
+        const result = await response.json();
 
-      const result = await response.json();
-      if (result.success) {
-        setStatus("SUCCESS");
-      } else {
-        setStatus("ERROR");
-      }
-    } catch (err) {
-      setStatus("ERROR");
-    }
-  };
+        if (result.success) {
+            alert("Thank you! Your message has been sent.");
 
-  if (status === "SUCCESS") {
+            setFormData({
+                full_name: "",
+                email: "",
+                phone: "",
+                company: "",
+                service_interest: "",
+                message: "",
+            });
+        } else {
+            alert("Failed to send message");
+        }
+
+    };
+
     return (
-      <main className="max-w-3xl mx-auto px-6 py-20 text-center text-white">
-        <div className="bg-slate-900 border border-teal-500 rounded-xl p-10 space-y-4 shadow-2xl">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-500/10 text-teal-400 mb-2">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-            </svg>
-          </div>
-          {/* Dynamic acknowledgment translation */}
-          <h2 className="text-3xl font-bold text-white">
-            {formT("successTitle", { name })}
-          </h2>
-          <p className="text-lg text-slate-300 max-w-md mx-auto leading-relaxed">
-            {formT("successText")}
-          </p>
-        </div>
-      </main>
+        <main className="min-h-screen pt-32 px-6 max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+                <h1 className="text-5xl font-extrabold text-teal-400">
+                    Contact Us
+                </h1>
+                <p className="text-slate-400 mt-3">
+                    Let's discuss your project and business goals.
+                </p>
+            </div>
+
+            <form
+                onSubmit={handleSubmit}
+                className="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6 shadow-xl"
+            >
+                <div className="grid md:grid-cols-2 gap-6">
+
+                    <div>
+                        <label className="block text-sm font-semibold text-teal-400 mb-2">
+                            Full Name *
+                        </label>
+                        <input
+                            type="text"
+                            required
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:border-teal-500 outline-none"
+                            value={formData.full_name}
+                            onChange={(e) =>
+                                setFormData({ ...formData, full_name: e.target.value })
+                            }
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-teal-400 mb-2">
+                            Email *
+                        </label>
+                        <input
+                            type="email"
+                            required
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:border-teal-500 outline-none"
+                            value={formData.email}
+                            onChange={(e) =>
+                                setFormData({ ...formData, email: e.target.value })
+                            }
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-teal-400 mb-2">
+                            Phone
+                        </label>
+                        <input
+                            type="text"
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:border-teal-500 outline-none"
+                            value={formData.phone}
+                            onChange={(e) =>
+                                setFormData({ ...formData, phone: e.target.value })
+                            }
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-semibold text-teal-400 mb-2">
+                            Company
+                        </label>
+                        <input
+                            type="text"
+                            className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:border-teal-500 outline-none"
+                            value={formData.company}
+                            onChange={(e) =>
+                                setFormData({ ...formData, company: e.target.value })
+                            }
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-teal-400 mb-2">
+                        Service Interest *
+                    </label>
+                    <select
+                        required
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:border-teal-500 outline-none"
+                        value={formData.service_interest}
+                        onChange={(e) =>
+                            setFormData({
+                                ...formData,
+                                service_interest: e.target.value,
+                            })
+                        }
+                    >
+                        <option value="">Select Service</option>
+                        <option value="Website Development">Website Development</option>
+                        <option value="E-Commerce Website">E-Commerce Website</option>
+                        <option value="CRM Development">CRM Development</option>
+                        <option value="SEO Services">SEO Services</option>
+                        <option value="Digital Marketing">Digital Marketing</option>
+                        <option value="AI Automation">AI Automation</option>
+                        <option value="WhatsApp Automation">WhatsApp Automation</option>
+                        <option value="Consultation">Consultation</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-teal-400 mb-2">
+                        Message *
+                    </label>
+                    <textarea
+                        required
+                        rows={6}
+                        className="w-full bg-slate-950 border border-slate-700 rounded-xl p-3 text-white focus:border-teal-500 outline-none"
+                        value={formData.message}
+                        onChange={(e) =>
+                            setFormData({ ...formData, message: e.target.value })
+                        }
+                    />
+                </div>
+
+                <button
+                    type="submit"
+                    className="w-full md:w-auto bg-gradient-to-r from-teal-500 to-emerald-500 text-slate-950 font-bold px-8 py-4 rounded-xl hover:scale-105 transition"
+                >
+                    Send Message
+                </button>
+            </form>
+        </main>
     );
-  }
-
-  return (
-    <main className="max-w-5xl mx-auto px-6 py-20 text-white">
-      <div className="mb-8">
-        <span className="text-teal-400 text-sm font-semibold uppercase tracking-wider">Connect</span>
-        <h1 className="text-4xl font-extrabold text-white mt-1 mb-2 sm:text-5xl">
-          {formT("title")}
-        </h1>
-        <p className="text-slate-400">
-          {formT("subtitle")}
-        </p>
-      </div>
-      
-      <form onSubmit={handleSubmit} className="space-y-6 bg-slate-900 p-8 rounded-xl border border-slate-800 shadow-xl">
-        {status === "ERROR" && (
-          <div className="p-4 bg-red-500/10 border border-red-500 rounded-lg text-red-400 text-sm">
-            {formT("errorMsg")}
-          </div>
-        )}
-
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            {formT("labelName")}
-          </label>
-          <input 
-            type="text" 
-            required 
-            value={name} 
-            onChange={(e) => setName(e.target.value)} 
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-teal-500 transition" 
-            placeholder={formT("placeholderName")} 
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            {formT("labelEmail")}
-          </label>
-          <input 
-            type="email" 
-            required 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-teal-500 transition" 
-            placeholder={formT("placeholderEmail")} 
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-slate-300 mb-2">
-            {formT("labelMessage")}
-          </label>
-          <textarea 
-            rows={4} 
-            required 
-            value={message} 
-            onChange={(e) => setMessage(e.target.value)} 
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-teal-500 transition" 
-            placeholder={formT("placeholderMessage")} 
-          />
-        </div>
-
-        <button 
-          type="submit" 
-          disabled={status === "SUBMITTING"} 
-          className="w-full bg-teal-500 hover:bg-teal-600 disabled:bg-teal-700 text-slate-950 font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
-        >
-          {status === "SUBMITTING" ? btnT("sending") : btnT("submit")}
-        </button>
-      </form>
-    </main>
-  );
 }
-<ContactForm />

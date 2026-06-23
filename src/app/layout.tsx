@@ -30,7 +30,7 @@ export default async function RootLayout({
   return (
   <html lang={locale}>
     <head />
-    <body className="bg-slate-950 text-white min-h-screen antialiased flex flex-col">
+    <body className="overflow-x-hidden">
       <NextIntlClientProvider locale={locale} messages={messages}>
         
         <div className="w-full relative z-50 block">
@@ -50,3 +50,4 @@ export default async function RootLayout({
 );
 
 }
+<body className="overflow-x-hidden"></body>

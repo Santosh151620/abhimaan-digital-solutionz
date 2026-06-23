@@ -1,10 +1,12 @@
 import { useTranslations } from "next-intl";
 import Link from "next/link";
+import { useLocale } from "next-intl";
 
 export default function HomePage() {
   // 1. Hook into the Hero and Buttons mapping blocks inside your JSON dictionaries
   const heroT = useTranslations("Hero");
   const btnT = useTranslations("Buttons");
+const locale = useLocale();
 
   return (
     <div className="min-h-screen bg-slate-950 text-white flex flex-col justify-center items-center px-6 py-20">
@@ -27,13 +29,13 @@ export default function HomePage() {
 
         {/* Dynamic Interactive Action Buttons mapped to the Buttons object */}
         <div className="flex flex-wrap justify-center gap-4 pt-4">
-          <Link href="/contact">
+          <Link href={`/${locale}/contact`}>
             <button className="bg-teal-500 hover:bg-teal-600 text-slate-950 font-bold px-8 py-4 rounded-xl transition duration-300 shadow-lg shadow-teal-500/20 cursor-pointer">
               {btnT("start")}
             </button>
           </Link>
           
-          <Link href="/services">
+          <Link href={`/${locale}/services`}>
             <button className="border border-slate-800 hover:border-slate-700 bg-slate-900/50 hover:bg-slate-900 text-white font-medium px-8 py-4 rounded-xl transition duration-300 cursor-pointer">
               {btnT("explore")}
             </button>

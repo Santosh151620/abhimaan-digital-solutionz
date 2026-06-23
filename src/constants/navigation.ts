@@ -5,5 +5,6 @@ export const navigationLinks = [
   { name: "Industries", href: "/industries" },
   { name: "Testimonials", href: "/testimonials" },
   { name: "Blog", href: "/blog" },
-  { name: "Contact", href: "/contact" }
+  { name: "Contact", href: "/contact" },
+  { name: "FAQ", href: "/faq" },
 ];

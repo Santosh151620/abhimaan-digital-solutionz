@@ -41,7 +41,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
 
         {/* 1. BRAND LOGO - Particle snow emitter enabled */}
-        <Link href={`/${locale}`} className="group relative flex-shrink-0 pr-12 sm:pr-9 ml-[-50px]">
+        <Link href={`/${locale}`} className="group relative flex-shrink-0 pr-12 sm:pr-9">
           <div className="absolute -inset-x-2 -inset-y-2 rounded-2xl bg-gradient-to-r from-teal-500/25 via-blue-500/40 to-teal-500/25 opacity-80 blur-md group-hover:opacity-100 group-hover:blur-xl transition-all duration-500 animate-stream-light" />
 
           <div className="relative px-4 py-2 bg-slate-950/50 rounded-x1 border border-slate-500/90 group-hover:border-teal-600/50 transition duration-800 overflow-hidden">

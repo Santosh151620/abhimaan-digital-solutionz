@@ -1,112 +1,54 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server'
+import { supabase } from '@/lib/supabaseClient'
+import { resend } from '@/lib/resend'
 
-import { contactSchema } from "@/lib/validations/contact";
-
-import { supabaseAdmin } from "@/lib/supabase-admin";
-
-import { resend } from "@/lib/resend";
-
-import { adminLeadTemplate } from "@/lib/email/admin-lead-template";
-
-import { customerConfirmationTemplate } from "@/lib/email/customer-confirmation-template";
-
-export async function POST(
-  req: Request
-) {
+export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const {full_name, email, phone, company, service_interest, message  } = await req.json()
 
-    const validation =
-      contactSchema.safeParse(body);
+await supabase.from("leads").insert([
+  {
+    full_name,
+    email,
+    phone,
+    company,
+    service_interest,
+    message,
+  },
+]);
 
-    if (!validation.success) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            validation.error.errors[0]
-              ?.message ||
-            "Invalid data",
-        },
-        { status: 400 }
-      );
-    }
+const { error } = await supabase.from("leads").insert([
+  {
+    full_name,
+    email,
+    phone,
+    company,
+    service_interest,
+    message,
+  },
+]);
 
-    const data = validation.data;
-
-    const { error } =
-      await supabaseAdmin
-        .from("contacts")
-        .insert([
-          {
-            name: data.name,
-            email: data.email,
-            phone: data.phone || "",
-            service:
-              data.service || "",
-            message: data.message,
-            source:
-              data.source ||
-              "website",
-            status: "new",
-          },
-        ]);
-
-    if (error) {
-      throw error;
-    }
+if (error) {
+  console.error(error);
+  throw error;
+}
 
     await resend.emails.send({
-      from:
-        process.env
-          .CONTACT_FROM_EMAIL!,
-      to: [
-        process.env
-          .CONTACT_ADMIN_EMAIL!,
-      ],
-      subject:
-        "New Website Lead",
-      html: adminLeadTemplate({
-        name: data.name,
-        email: data.email,
-        phone: data.phone,
-        service: data.service,
-        message: data.message,
-      }),
-    });
+      from: 'Abhimaan <onboarding@resend.dev>',
+      to: process.env.ADMIN_EMAIL!,
+      subject: 'New Lead',
+      html: `<p>${full_name} ${phone} </p><p>${email}</p><p>${company}</p><p>${service_interest}</p><p>${message}</p>`
+    })
 
     await resend.emails.send({
-      from:
-        process.env
-          .CONTACT_FROM_EMAIL!,
-      to: [data.email],
-      subject:
-        "We've Received Your Enquiry",
-      html:
-        customerConfirmationTemplate(
-          {
-            name: data.name,
-          }
-        ),
-    });
+      from: 'Abhimaan <onboarding@resend.dev>',
+      to: email,
+      subject: 'We received your message',
+      html: `<p>Thanks ${full_name}, we will contact you soon.</p>`
+    })
 
-    return NextResponse.json({
-      success: true,
-      message:
-        "Thank you. We will contact you soon.",
-    });
-  } catch (error) {
-    console.error(error);
-
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          "Something went wrong.",
-      },
-      {
-        status: 500,
-      }
-    );
+    return NextResponse.json({ success: true })
+  } catch (e) {
+    return NextResponse.json({ success: false }, { status: 500 })
   }
 }
