@@ -1,53 +1,30 @@
-import "@/app/globals.css"; 
-import WhatsAppButton from "../components/layout/WhatsAppButton";
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import "@/app/globals.css";
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
-
-// Provide the matching parameters for valid page routing boundaries
-export function generateStaticParams() {
-  return [  { locale: 'en' }, 
-    { locale: 'hi' }, 
-    { locale: 'kn' }, 
-    { locale: 'te' }, 
-    { locale: 'mr' }];
-}
+import WhatsAppButton from "../components/layout/WhatsAppButton";
+import { NextIntlClientProvider } from "next-intl";
 
 export default async function RootLayout({
   children,
-  params,
+  params
 }: {
   children: React.ReactNode;
-  params: Promise<{ locale: string }>;
+  params: { locale: string };
 }) {
-  // 1. Unwrap the dynamic route parameters safely for Next.js 16
-  const { locale } = await params;
+  const locale = params?.locale || "en";
 
-  // 2. Fetch the current language json dictionary from your messages folder
-  const messages = await getMessages();
+  const messages = (await import(`../../messages/${locale}.json`)).default;
 
   return (
-  <html lang={locale}>
-    <head />
-    <body className="overflow-x-hidden">
-      <NextIntlClientProvider locale={locale} messages={messages}>
-        
-        <div className="w-full relative z-50 block">
+    <html lang={locale}>
+      <body className="overflow-x-hidden">
+        <NextIntlClientProvider locale={locale} messages={messages}>
           <Header />
-        </div>
-        
-        <main className="flex-grow pt-24">{children}</main>
-        
-        <Footer />
-
-        {/* This displays the high-performance floating widget on ALL sub-pages! */}
-        <WhatsAppButton />
-
-      </NextIntlClientProvider>
-    </body>
-  </html>
-);
-
+          <main className="pt-24">{children}</main>
+          <Footer />
+          <WhatsAppButton />
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
 }
-<body className="overflow-x-hidden"></body>

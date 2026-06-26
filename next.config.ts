@@ -1,13 +1,12 @@
 import type { NextConfig } from "next";
 import createNextIntlPlugin from 'next-intl/plugin';
 
-const withNextIntl = createNextIntlPlugin();
+// Specify the custom path to your i18n configuration file here
+const withNextIntl = createNextIntlPlugin('./src/i18n/routing.ts');
 
 const nextConfig: NextConfig = {
-  // This activates Turbopack support for next-intl JSON asset mapping
-  turbopack: {},
   experimental: {
-    optimizePackageImports: ["@tailwindcss/postcss"],
+    optimizePackageImports: ['lucide-react', '@heroicons/react', 'recharts'],
   },
 };
 

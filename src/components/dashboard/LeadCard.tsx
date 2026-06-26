@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LeadNotes from "./LeadNotes";
+import LeadTimeline from "./LeadTimeline";
 
 const STATUS_OPTIONS = [
   "New",
@@ -179,7 +181,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden"
+            className="w-full max-w-5xl bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden"
           >
             <div className="flex items-center justify-between p-6 border-b border-slate-800">
               <h2 className="text-2xl font-bold text-white">
@@ -194,31 +196,72 @@ export default function LeadCard({ lead }: { lead: Lead }) {
               </button>
             </div>
 
-            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-              <Info label="Full Name" value={lead.full_name || "-"} />
-              <Info label="Email" value={lead.email || "-"} />
-              <Info label="Phone" value={lead.phone || "-"} />
-              <Info label="Company" value={lead.company || "-"} />
-              <Info
-                label="Service Interest"
-                value={lead.service_interest || "-"}
-              />
-              <Info
-                label="Current Status"
-                value={lead.status || "New"}
-              />
-              <Info label="Lead ID" value={lead.id} />
-              <Info label="Created Date" value={createdDateTime} />
+            <div className="p-6 space-y-8 max-h-[85vh] overflow-y-auto">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="space-y-5">
+                  <Info label="Full Name" value={lead.full_name || "-"} />
+                  <Info label="Email" value={lead.email || "-"} />
+                  <Info label="Phone" value={lead.phone || "-"} />
+                  <Info label="Company" value={lead.company || "-"} />
+                  <Info
+                    label="Service Interest"
+                    value={lead.service_interest || "-"}
+                  />
+                  <Info
+                    label="Current Status"
+                    value={lead.status || "New"}
+                  />
+                  <Info label="Lead ID" value={lead.id} />
+                  <Info label="Created Date" value={createdDateTime} />
+                </div>
 
-              <div>
-                <p className="text-xs uppercase tracking-wider text-slate-500 mb-2">
-                  Full Message
-                </p>
-
-                <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                  <p className="text-slate-300 whitespace-pre-wrap">
-                    {lead.message || "No message submitted."}
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-slate-500 mb-2">
+                    Full Message
                   </p>
+
+                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                    <p className="text-slate-300 whitespace-pre-wrap">
+                      {lead.message || "No message submitted."}
+                    </p>
+                  </div>
+                  {/* Lead Notes */}
+
+<div className="pt-4 border-t border-slate-800">
+  <h3 className="text-lg font-semibold text-white mb-3">
+    Internal Notes
+  </h3>
+
+  <LeadNotes leadId={lead.id} />
+</div>
+
+{/* Lead Timeline */}
+
+<div className="pt-4 border-t border-slate-800">
+  <h3 className="text-lg font-semibold text-white mb-3">
+    Activity Timeline
+  </h3>
+
+  <LeadTimeline leadId={lead.id} />
+</div>
+                </div>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    Internal Notes
+                  </h3>
+
+                  <LeadNotes leadId={lead.id} />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-white mb-4">
+                    Activity Timeline
+                  </h3>
+
+                  <LeadTimeline leadId={lead.id} />
                 </div>
               </div>
             </div>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 
-// Explicit data interface for your 6 required form fields
 interface ContactFormData {
   full_name: string;
   email: string;
@@ -10,18 +9,15 @@ interface ContactFormData {
   company: string;
   service_interest: string;
   message: string;
+  website?: string;
 }
 
 export default function ContactForm() {
-  //const [loading, setLoading] = useState<boolean>(false);
-const [loading, setLoading] =
-  useState(false);
+  const [loading, setLoading] = useState(false);
 
-const [success, setSuccess] =
-  useState("");
+  const [success, setSuccess] = useState("");
 
-const [error, setError] =
-  useState("");
+  const [error, setError] = useState("");
 
   const [form, setForm] = useState<ContactFormData>({
     full_name: "",
@@ -30,13 +26,13 @@ const [error, setError] =
     company: "",
     service_interest: "",
     message: "",
-    website: "", // Honeypot field for spam prevention
-
-    
+    website: "",
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     setForm({
       ...form,
@@ -44,8 +40,11 @@ const [error, setError] =
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
+
     setLoading(true);
 
     try {
@@ -60,39 +59,79 @@ const [error, setError] =
       const data = await response.json();
 
       if (data.success) {
-       // alert("Thank you. Your enquiry has been submitted.");
-       setSuccess(
-  "Thank you. We received your enquiry."
-);
+        setSuccess(
+          "Your enquiry has been submitted successfully."
+        );
 
-setError("");
+        setError("");
 
-       setForm({
+        setForm({
           full_name: "",
           email: "",
           phone: "",
           company: "",
           service_interest: "",
           message: "",
+          website: "",
         });
       } else {
-        //alert(data.error || "Submission failed.");
-        setError(
-  "Unable to submit form."
-);
-
-setSuccess("");
+        setError("Unable to submit form.");
+        setSuccess("");
       }
     } catch (error) {
       console.error("Submission error:", error);
-      //alert("Something went wrong processing your request.");
-setError("Something went wrong processing your request.");
-setSuccess("");
-    } 
-    finally {
+
+      setError(
+        "Something went wrong processing your request."
+      );
+
+      setSuccess("");
+    } finally {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="rounded-3xl border border-emerald-200 bg-white p-10 shadow-xl">
+        <div className="flex items-center justify-center w-20 h-20 mx-auto rounded-full bg-emerald-100 mb-6">
+          <svg
+            className="w-10 h-10 text-emerald-600"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+
+        <h3 className="text-3xl font-bold text-center text-slate-900 mb-4">
+          Thank You!
+        </h3>
+
+        <p className="text-center text-slate-600 max-w-xl mx-auto leading-7">
+          We have successfully received your enquiry.
+          Our team will review your requirements and
+          contact you shortly.
+        </p>
+
+        <div className="mt-8 text-center">
+          <button
+            type="button"
+            onClick={() => setSuccess("")}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-medium transition"
+          >
+            Submit Another Enquiry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -159,11 +198,21 @@ setSuccess("");
           <option value="" disabled hidden>
             Select Service Interested In...
           </option>
-          <option value="Web Development">Web Development</option>
-          <option value="Mobile App Development">Mobile App Development</option>
-          <option value="UI/UX Design">UI/UX Design</option>
-          <option value="Consulting / Strategy">Consulting &amp; Strategy</option>
-          <option value="Other">Other / General Enquiry</option>
+          <option value="Web Development">
+            Web Development
+          </option>
+          <option value="Mobile App Development">
+            Mobile App Development
+          </option>
+          <option value="UI/UX Design">
+            UI/UX Design
+          </option>
+          <option value="Consulting / Strategy">
+            Consulting &amp; Strategy
+          </option>
+          <option value="Other">
+            Other / General Enquiry
+          </option>
         </select>
       </div>
 
@@ -178,25 +227,21 @@ setSuccess("");
           className="w-full border border-slate-300 p-3 rounded text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
       </div>
-<div className="hidden">
-  <input
-    type="text"
-    name="website"
-    value={form.website}
-    onChange={handleChange}
-  />
-</div>
-{success && (
-  <p className="text-green-600">
-    {success}
-  </p>
-)}
 
-{error && (
-  <p className="text-red-600">
-    {error}
-  </p>
-)}
+      <div className="hidden">
+        <input
+          type="text"
+          name="website"
+          value={form.website}
+          onChange={handleChange}
+        />
+      </div>
+
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+          {error}
+        </div>
+      )}
 
       <button
         type="submit"

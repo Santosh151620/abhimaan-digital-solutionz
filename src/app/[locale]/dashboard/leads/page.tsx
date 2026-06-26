@@ -1,41 +1,116 @@
-import { supabase } from "@/lib/supabaseClient";
-import LeadsDashboard from "@/components/dashboard/LeadsDashboard";
+"use client";
 
-export const dynamic = "force-dynamic";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
-export default async function LeadsPage() {
-  const { data: leads, error } = await supabase
-    .from("leads")
-    .select("*")
-    .order("created_at", { ascending: false });
+import LeadTable, {
+  LeadTableItem,
+} from "@/components/dashboard/LeadTable";
 
-  if (error) {
-    console.error("Supabase leads fetch error:", error);
+import LeadModal from "@/components/dashboard/LeadModal";
+
+const supabase = createClient();
+
+export default function LeadsPage() {
+  const [leads, setLeads] = useState<LeadTableItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [selectedLead, setSelectedLead] =
+    useState<LeadTableItem | null>(null);
+
+  const [modalOpen, setModalOpen] =
+    useState(false);
+
+  /* ================= FETCH LEADS ================= */
+
+  async function fetchLeads() {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("leads")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      setLeads(data as LeadTableItem[]);
+    }
+
+    setLoading(false);
   }
 
+  useEffect(() => {
+    fetchLeads();
+  }, []);
+
+  /* ================= OPEN MODAL ================= */
+
+  function handleOpenLead(lead: LeadTableItem) {
+    setSelectedLead(lead);
+    setModalOpen(true);
+  }
+
+  function handleCloseModal() {
+    setSelectedLead(null);
+    setModalOpen(false);
+  }
+
+  /* ================= REFRESH ================= */
+
+  async function handleRefresh() {
+    await fetchLeads();
+  }
+
+  /* ================= STATUS UPDATE HANDLER ================= */
+
+  async function handleUpdateStatus(
+    leadId: string,
+    status: string
+  ) {
+    const { error } = await supabase
+      .from("leads")
+      .update({ status })
+      .eq("id", leadId);
+
+    if (!error) {
+      setLeads((prev) =>
+        prev.map((l) =>
+          l.id === leadId ? { ...l, status } : l
+        )
+      );
+    }
+  }
+
+  /* ================= RENDER ================= */
+
   return (
-    <main className="min-h-screen pt-12 px-8 max-w-7xl mx-auto bg-[#030712]">
-      <div className="mb-10 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white mb-1">
-            Leads Management{" "}
-            <span className="text-teal-400 font-medium">Console</span>
-          </h1>
+    <div className="p-6 space-y-6">
 
-          <p className="text-sm text-slate-400">
-            Monitor, track, and advance client acquisition pipelines.
-          </p>
-        </div>
+      {/* HEADER */}
+      <div>
+        <h1 className="text-2xl font-bold text-white">
+          Leads Management
+        </h1>
 
-        <div className="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl text-xs font-semibold tracking-wide text-slate-400">
-          TOTAL RECORDS:{" "}
-          <span className="text-teal-400 font-bold ml-1">
-            {leads?.length || 0}
-          </span>
-        </div>
+        <p className="text-sm text-slate-400 mt-1">
+          Clean CRM orchestration layer with modular components
+        </p>
       </div>
 
-      <LeadsDashboard leads={leads || []} />
-    </main>
+      {/* TABLE */}
+      <LeadTable
+        leads={leads}
+        loading={loading}
+        onOpenLead={handleOpenLead}
+        onConvertLead={() => {}}
+      />
+
+      {/* MODAL */}
+      <LeadModal
+        lead={selectedLead}
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        onUpdateStatus={handleUpdateStatus}
+      />
+    </div>
   );
 }

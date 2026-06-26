@@ -1,70 +1,146 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import LeadCard from "./LeadCard";
 
-type Note = {
+type Lead = {
   id: string;
-  note: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  company: string | null;
+  service_interest: string | null;
+  message: string | null;
+  status: string | null;
   created_at: string;
 };
 
-export default function LeadNotes({ leadId }: { leadId: string }) {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [text, setText] = useState("");
+const STATUS_OPTIONS = [
+  "All",
+  "New",
+  "Contacted",
+  "Qualified",
+  "Proposal Sent",
+  "Won",
+  "Lost",
+];
 
-  const fetchNotes = async () => {
-    const res = await fetch(`/api/leads/${leadId}/notes`);
-    const data = await res.json();
-    setNotes(data || []);
-  };
+export default function LeadsDashboard({
+  leads,
+}: {
+  leads: Lead[];
+}) {
+  const [statusFilter, setStatusFilter] = useState("All");
 
-  useEffect(() => {
-    fetchNotes();
-  }, [leadId]);
+  const filteredLeads = useMemo(() => {
+    if (statusFilter === "All") return leads;
 
-  const addNote = async () => {
-    if (!text.trim()) return;
+    return leads.filter(
+      (lead) => (lead.status || "New") === statusFilter
+    );
+  }, [leads, statusFilter]);
 
-    await fetch(`/api/leads/${leadId}/notes`, {
-      method: "POST",
-      body: JSON.stringify({ note: text }),
-    });
+  const totalLeads = leads.length;
 
-    setText("");
-    fetchNotes();
-  };
+  const newLeads = leads.filter(
+    (lead) => (lead.status || "New") === "New"
+  ).length;
+
+  const wonLeads = leads.filter(
+    (lead) => lead.status === "Won"
+  ).length;
+
+  const lostLeads = leads.filter(
+    (lead) => lead.status === "Lost"
+  ).length;
+
+  const groupedCompanies = filteredLeads.reduce(
+    (acc, lead) => {
+      const company = lead.company?.trim() || "Independent";
+
+      if (!acc[company]) {
+        acc[company] = [];
+      }
+
+      acc[company].push(lead);
+
+      return acc;
+    },
+    {} as Record<string, Lead[]>
+  );
+
+  const companyNames = Object.keys(groupedCompanies).sort();
 
   return (
-    <div className="space-y-4">
-      <div className="flex gap-2">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Add internal note..."
-          className="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-white"
-        />
+    <div className="space-y-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <MetricCard title="Total Leads" value={totalLeads} />
+        <MetricCard title="New Leads" value={newLeads} />
+        <MetricCard title="Won Leads" value={wonLeads} />
+        <MetricCard title="Lost Leads" value={lostLeads} />
+      </div>
 
-        <button
-          onClick={addNote}
-          className="bg-teal-600 hover:bg-teal-500 text-white px-4 py-2 rounded-xl"
+      <div className="flex items-center gap-4">
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-white"
         >
-          Add
-        </button>
+          {STATUS_OPTIONS.map((status) => (
+            <option key={status} value={status}>
+              {status}
+            </option>
+          ))}
+        </select>
+
+        <div className="text-slate-400 text-sm">
+          Showing {filteredLeads.length} lead(s)
+        </div>
       </div>
 
-      <div className="space-y-2 max-h-60 overflow-y-auto">
-        {notes.map((n) => (
-          <div
-            key={n.id}
-            className="bg-slate-900 border border-slate-800 rounded-xl p-3"
-          >
-            <p className="text-sm text-slate-300">{n.note}</p>
-            <p className="text-[10px] text-slate-500 mt-1">
-              {n.created_at.split("T")[0]}
-            </p>
+      {companyNames.length === 0 && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-400">
+          No leads found.
+        </div>
+      )}
+
+      {companyNames.map((company) => (
+        <section key={company} className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">
+              {company}
+            </h2>
+
+            <span className="text-sm text-slate-400">
+              {groupedCompanies[company].length} Lead(s)
+            </span>
           </div>
-        ))}
-      </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {groupedCompanies[company].map((lead) => (
+              <LeadCard key={lead.id} lead={lead} />
+            ))}
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function MetricCard({
+  title,
+  value,
+}: {
+  title: string;
+  value: number;
+}) {
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+      <p className="text-slate-400 text-sm">{title}</p>
+
+      <h3 className="text-3xl font-bold text-white mt-2">
+        {value}
+      </h3>
     </div>
   );
 }
