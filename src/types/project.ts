@@ -1,9 +1,9 @@
 export type ProjectStatus =
-  | "PLANNING"
-  | "IN_PROGRESS"
-  | "ON_HOLD"
-  | "COMPLETED"
-  | "CANCELLED";
+  | "planning"
+  | "active"
+  | "on_hold"
+  | "completed"
+  | "cancelled";
 
 export type ProjectPriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
@@ -26,56 +26,73 @@ export interface Project {
   name: string;
   description?: string;
 
-  // Status pipeline
+  // Service classification (existing DB field)
+  service_type: string;
+
+  // Status pipeline (strict)
   status: ProjectStatus;
+
+  // Priority (new CRM enhancement)
   priority: ProjectPriority;
 
-  // Timeline
-  start_date?: string;
-  end_date?: string;
-  due_date?: string;
+  // Financial
+  project_cost: number;
 
-  // Progress tracking
+  // Timeline
+  start_date: string | null;
+  end_date: string | null;
+
+  // Tracking
   progress_percentage: number;
 
-  // Financial (for future payment tracking module)
-  budget?: number;
-  currency?: string;
+  // Notes
+  notes: string | null;
 
   // Metadata
-  tags?: string[];
   created_at: string;
   updated_at: string;
 
-  // Nested (UI layer only, not stored directly in DB ideally)
+  // Future UI layer only
   milestones?: ProjectMilestone[];
+}
+
+export interface ProjectFilters {
+  search?: string;
+  status?: ProjectStatus | "All";
+  clientId?: string;
+  page?: number;
+  pageSize?: number;
+}
+
+export interface PaginatedProjects {
+  projects: Project[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
 
 export interface ProjectCreateInput {
   client_id: string;
   name: string;
-  description?: string;
+  service_type: string;
   status?: ProjectStatus;
   priority?: ProjectPriority;
-  start_date?: string;
-  end_date?: string;
-  due_date?: string;
+  project_cost?: number;
+  start_date?: string | null;
+  end_date?: string | null;
+  notes?: string | null;
   progress_percentage?: number;
-  budget?: number;
-  currency?: string;
-  tags?: string[];
 }
 
 export interface ProjectUpdateInput {
   name?: string;
-  description?: string;
+  service_type?: string;
   status?: ProjectStatus;
   priority?: ProjectPriority;
-  start_date?: string;
-  end_date?: string;
-  due_date?: string;
+  project_cost?: number;
+  start_date?: string | null;
+  end_date?: string | null;
+  notes?: string | null;
   progress_percentage?: number;
-  budget?: number;
-  currency?: string;
-  tags?: string[];
 }

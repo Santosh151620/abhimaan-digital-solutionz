@@ -38,7 +38,7 @@
     "src/app/robots.js",
     "src/app/sitemap.js",
     "src/app/layout.js"
-  ],
+, "next.config.js"  ],
   "exclude": [
     "node_modules"
   ]

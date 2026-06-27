@@ -1,13 +1,7 @@
-import { getRequestConfig } from "next-intl/server";
+import {defineRouting} from "next-intl/routing";
 
-export default getRequestConfig(async ({ requestLocale }) => {
-  const locale = (await requestLocale) || 'en';
+export const routing = defineRouting({
+  locales: ["en", "hi", "kn", "mr", "te"],
 
-  // This grabs your translation files safely
-  const messages = (await import(`../../messages/${locale}.json`)).default;
-
-  return {
-    locale,
-    messages
-  };
+  defaultLocale: "en",
 });

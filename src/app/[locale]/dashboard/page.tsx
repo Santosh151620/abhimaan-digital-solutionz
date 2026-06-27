@@ -1,25 +1,82 @@
-import { getCRMAnalytics } from "@/services/analytics";
 import AnalyticsCards from "@/components/dashboard/AnalyticsCards";
 
+import { getDashboardSnapshot } from "@/services/dashboard";
+
+import ExecutivePanel from "./components/crm/ExecutivePanel";
+import PipelineOverview from "./components/crm/PipelineOverview";
+import RevenueForecast from "./components/crm/RevenueForecast";
+import RevenueKPI from "./components/crm/RevenueKPI";
+import SalesCopilot from "./components/crm/SalesCopilot";
+import TodayWorkPanel from "./components/crm/TodayWorkPanel";
+
+import {
+  RevenueTrendChart,
+  PaymentDistributionChart,
+} from "./components/RevenueCharts";
+
 export default async function DashboardPage() {
-  const data = await getCRMAnalytics();
+  const dashboard = await getDashboardSnapshot();
 
   return (
-    <div className="p-6 space-y-6">
+    <main className="min-h-screen space-y-8 bg-slate-950 p-6 text-white">
 
-      {/* HEADER */}
-      <div>
-        <h1 className="text-2xl font-bold text-white">
-          CRM Dashboard
-        </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Overview of leads, clients, revenue and system performance
-        </p>
-      </div>
+      <ExecutivePanel executive={dashboard.executive} />
 
-      {/* ANALYTICS SYSTEM (REUSABLE LAYER) */}
-      <AnalyticsCards data={data} />
+      <AnalyticsCards data={dashboard.metrics} />
 
-    </div>
+      <section className="grid gap-6 lg:grid-cols-3">
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 lg:col-span-2">
+          <h2 className="text-sm text-slate-400">
+            Revenue Performance
+          </h2>
+
+          <p className="mb-4 text-lg font-semibold">
+            Monthly Growth
+          </p>
+
+          <RevenueTrendChart />
+        </div>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <h2 className="text-sm text-slate-400">
+            Payment Health
+          </h2>
+
+          <p className="mb-4 text-lg font-semibold">
+            Status Breakdown
+          </p>
+
+          <PaymentDistributionChart />
+        </div>
+
+      </section>
+
+      <RevenueKPI data={dashboard.revenue} />
+
+      <PipelineOverview data={dashboard.pipeline} />
+
+      <SalesCopilot data={dashboard.copilot} />
+
+      <TodayWorkPanel items={dashboard.today} />
+
+      <RevenueForecast {...dashboard.forecast} />
+
+      <section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-5">
+        <h3 className="mb-3 text-sm font-semibold text-emerald-400">
+          System Status
+        </h3>
+
+        <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
+          <p>✓ CRM Intelligence</p>
+          <p>✓ Executive Intelligence</p>
+          <p>✓ Revenue Forecast Engine</p>
+          <p>✓ Workflow Intelligence</p>
+          <p>✓ Dashboard Analytics</p>
+          <p>✓ Production Services</p>
+        </div>
+      </section>
+
+    </main>
   );
 }

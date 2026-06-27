@@ -1,56 +1,50 @@
-import type { LeadStatus } from "@/types/lead";
+import type { ProjectStatus } from "@/types/project";
 
-interface LeadStatusBadgeProps {
-  status: LeadStatus;
+interface ProjectStatusBadgeProps {
+  status: ProjectStatus;
 }
 
 const statusStyles: Record<
-  LeadStatus,
+  ProjectStatus,
   {
     label: string;
     className: string;
   }
 > = {
-  new: {
-    label: "New",
+  planning: {
+    label: "Planning",
+    className:
+      "bg-slate-500/20 text-slate-300 border border-slate-500/30",
+  },
+
+  active: {
+    label: "Active",
     className:
       "bg-sky-500/20 text-sky-300 border border-sky-500/30",
   },
 
-  contacted: {
-    label: "Contacted",
-    className:
-      "bg-indigo-500/20 text-indigo-300 border border-indigo-500/30",
-  },
-
-  qualified: {
-    label: "Qualified",
-    className:
-      "bg-purple-500/20 text-purple-300 border border-purple-500/30",
-  },
-
-  proposal: {
-    label: "Proposal",
+  on_hold: {
+    label: "On Hold",
     className:
       "bg-amber-500/20 text-amber-300 border border-amber-500/30",
   },
 
-  won: {
-    label: "Won",
+  completed: {
+    label: "Completed",
     className:
       "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
   },
 
-  lost: {
-    label: "Lost",
+  cancelled: {
+    label: "Cancelled",
     className:
       "bg-rose-500/20 text-rose-300 border border-rose-500/30",
   },
 };
 
-export default function LeadStatusBadge({
+export default function ProjectStatusBadge({
   status,
-}: LeadStatusBadgeProps) {
+}: ProjectStatusBadgeProps) {
   const config = statusStyles[status];
 
   return (
