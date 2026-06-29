@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabaseClient";
 import { resend } from "@/lib/resend";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(req: Request) {
   try {
@@ -41,7 +41,9 @@ export async function POST(req: Request) {
     // -----------------------------
     // 3. Store lead safely
     // -----------------------------
-    const { error } = await supabase.from("leads").insert([
+    const supabase = await createClient();
+
+const { error } = await supabase.from("leads").insert([
       {
         full_name,
         email,

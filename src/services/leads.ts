@@ -1,5 +1,8 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
+import { requireEmployee } from "@/lib/auth";
 import type { DashboardLead, LeadStatus } from "@/types/dashboard";
+
+// await requireEmployee();
 
 const TABLE = "leads";
 
@@ -18,7 +21,7 @@ export interface PaginatedLeads {
   pageSize: number;
   totalPages: number;
 }
-
+// await requireEmployee();
 export async function getLeads(
   filters: LeadFilters = {}
 ): Promise<PaginatedLeads> {
@@ -74,7 +77,7 @@ export async function getLeads(
     totalPages: Math.ceil((count ?? 0) / pageSize),
   };
 }
-
+// await requireEmployee();
 export async function getLeadById(
   id: string
 ): Promise<DashboardLead | null> {
@@ -92,7 +95,7 @@ export async function getLeadById(
 
   return data as DashboardLead;
 }
-
+// await requireEmployee();
 export async function getRecentLeads(
   limit = 10
 ): Promise<DashboardLead[]> {
@@ -112,7 +115,7 @@ export async function getRecentLeads(
 
   return (data ?? []) as DashboardLead[];
 }
-
+// await requireEmployee();
 export async function updateLeadStatus(
   id: string,
   status: LeadStatus
@@ -135,6 +138,7 @@ export async function updateLeadStatus(
   return data as DashboardLead;
 }
 
+// await requireEmployee();
 export async function convertLeadToClient(
   leadId: string,
   clientId: string
@@ -157,7 +161,7 @@ export async function convertLeadToClient(
 
   return data as DashboardLead;
 }
-
+// await requireEmployee();
 export async function deleteLead(
   id: string
 ): Promise<boolean> {
@@ -174,7 +178,7 @@ export async function deleteLead(
 
   return true;
 }
-
+// await requireEmployee();
 export async function getLeadCounts() {
   const supabase = await createSupabaseClient();
 

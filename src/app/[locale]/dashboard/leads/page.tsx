@@ -1,5 +1,5 @@
 "use client";
-
+import type { LeadStatus } from "@/types/lead";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -63,12 +63,13 @@ export default function LeadsPage() {
   /* ================= STATUS UPDATE HANDLER ================= */
 
   async function handleUpdateStatus(
-    leadId: string,
-    status: string
-  ) {
+  leadId: string,
+  status: LeadStatus
+)
+{
     const { error } = await supabase
       .from("leads")
-      .update({ status })
+      .update({ status: status as LeadStatus })
       .eq("id", leadId);
 
     if (!error) {

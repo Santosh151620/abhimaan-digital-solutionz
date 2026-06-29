@@ -71,6 +71,7 @@ export default function ProjectModal({
 
   async function loadTimeline() {
     setLoading(true);
+    if (!project) return;
 
     const { data } = await supabase
       .from("project_timeline")

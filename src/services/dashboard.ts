@@ -1,12 +1,9 @@
-import { getDashboardData } from "./dashboard-data";
-
 import { getCRMAnalytics } from "./analytics";
 import { getExecutiveIntelligence } from "./crm/executive-intelligence";
 import { getRevenueForecast } from "./crm/revenue-forecast";
 import { getWorkflowIntelligence } from "./crm/workflow-intelligence";
 
 export async function getDashboardSnapshot() {
-  const data = await getDashboardData();
 
   const [
     metrics,
@@ -14,10 +11,10 @@ export async function getDashboardSnapshot() {
     executive,
     forecast,
   ] = await Promise.all([
-    getCRMAnalytics(data),
-    getWorkflowIntelligence(data),
-    getExecutiveIntelligence(data),
-    getRevenueForecast(data),
+    getCRMAnalytics(),
+    getWorkflowIntelligence(),
+    getExecutiveIntelligence(),
+    getRevenueForecast(),
   ]);
 
   return {

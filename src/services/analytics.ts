@@ -104,7 +104,11 @@ export async function getCRMAnalytics(): Promise<CRMAnalytics> {
     getPaymentsCountByStatus(),
   ]);
 
-  const totalLeads = leadCounts.total ?? 0;
+  const totalLeads = Object.values(leadCounts).reduce(
+  (a: number, b: number) => a + b,
+  0
+);
+
   const wonLeads = leadCounts.won ?? 0;
 
   const conversionRate = calculateConversion(

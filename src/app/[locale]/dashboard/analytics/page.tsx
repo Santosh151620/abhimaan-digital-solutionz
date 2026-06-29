@@ -1,11 +1,13 @@
-import { supabase } from "@/lib/supabaseClient";
-
+import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 export default async function AnalyticsPage() {
-  const { data: leads } = await supabase
-    .from("leads")
-    .select("*");
+  const supabase = await createSupabaseClient();
+
+const { data: leads } = await supabase
+  .from("leads")
+  .select("*");
+  
 
   const totalLeads = leads?.length || 0;
 

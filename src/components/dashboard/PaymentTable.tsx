@@ -77,6 +77,7 @@ export default function PaymentModal({
   if (!isOpen || !payment) return null;
 
   async function handleSave() {
+    if (!payment) return;
     setLoading(true);
 
     try {
@@ -195,8 +196,7 @@ export default function PaymentModal({
             </div>
 
           </div>
-          </div>
-                    {/* RIGHT SIDE */}
+                          {/* RIGHT SIDE */}
           <div className="space-y-4">
 
             {/* REFERENCE */}

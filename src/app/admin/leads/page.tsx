@@ -1,7 +1,7 @@
-import { supabase } from "@/lib/supabase";
-
 export const dynamic = "force-dynamic";
+import { createClient } from "@/lib/supabase/client";
 
+const supabase = createClient();
 async function getLeads() {
   const { data } = await supabase
     .from("leads")

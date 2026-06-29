@@ -1,4 +1,4 @@
-import { BUSINESS_INFO } from "@/constants/business";
+import { BUSINESS_INFO } from "@/content/business";
 
 export default function GoogleMap() {
   return (

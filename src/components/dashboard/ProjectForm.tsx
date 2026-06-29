@@ -224,9 +224,7 @@ export default function ProjectForm({
               </select>
             </div>
 
-          </div>
-            {/* RIGHT SIDE */}  
-                      {/* RIGHT SIDE */}
+            {/* RIGHT SIDE */}
           <div className="space-y-4">
 
             {/* START DATE */}

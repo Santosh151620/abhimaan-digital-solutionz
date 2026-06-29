@@ -9,11 +9,6 @@ import RevenueKPI from "./components/crm/RevenueKPI";
 import SalesCopilot from "./components/crm/SalesCopilot";
 import TodayWorkPanel from "./components/crm/TodayWorkPanel";
 
-import {
-  RevenueTrendChart,
-  PaymentDistributionChart,
-} from "./components/RevenueCharts";
-
 export default async function DashboardPage() {
   const dashboard = await getDashboardSnapshot();
 
@@ -24,34 +19,7 @@ export default async function DashboardPage() {
 
       <AnalyticsCards data={dashboard.metrics} />
 
-      <section className="grid gap-6 lg:grid-cols-3">
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5 lg:col-span-2">
-          <h2 className="text-sm text-slate-400">
-            Revenue Performance
-          </h2>
-
-          <p className="mb-4 text-lg font-semibold">
-            Monthly Growth
-          </p>
-
-          <RevenueTrendChart />
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <h2 className="text-sm text-slate-400">
-            Payment Health
-          </h2>
-
-          <p className="mb-4 text-lg font-semibold">
-            Status Breakdown
-          </p>
-
-          <PaymentDistributionChart />
-        </div>
-
-      </section>
-
+      
       <RevenueKPI data={dashboard.revenue} />
 
       <PipelineOverview data={dashboard.pipeline} />

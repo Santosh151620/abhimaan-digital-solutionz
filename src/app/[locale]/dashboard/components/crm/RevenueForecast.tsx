@@ -63,9 +63,8 @@ export default function RevenueForecast(
             <p
               className={`mt-2 text-2xl font-bold ${card.value}`}
             >
-              {card.prefix ?? ""}
-              {Math.round(raw)}
-              {card.suffix ?? ""}
+              {(card as any).prefix ?? ""}
+              {(card as any).suffix ?? ""}
             </p>
           </div>
         );

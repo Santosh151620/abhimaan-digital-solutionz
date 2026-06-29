@@ -1,5 +1,4 @@
-import { Project } from "@/services/projects";
-
+import type { Project } from "@/types/project";
 /**
  * This layer extends core project service WITHOUT modifying existing production logic.
  * Safe for incremental CRM expansion.

@@ -5,15 +5,13 @@ import WhatsAppButton from "../components/layout/WhatsAppButton";
 import { NextIntlClientProvider } from "next-intl";
 
 export default async function RootLayout({
-  children,
-  params
+  children
 }: {
   children: React.ReactNode;
-  params: { locale: string };
 }) {
-  const locale = params?.locale || "en";
+  const locale = "en";
 
-  const messages = (await import(`../../messages/${locale}.json`)).default;
+  const messages = (await import("../../messages/en.json")).default;
 
   return (
     <html lang={locale}>

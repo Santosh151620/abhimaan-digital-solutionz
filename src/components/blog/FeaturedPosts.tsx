@@ -1,17 +1,19 @@
 import Link from "next/link";
 
-import { blogPosts }
-from "@/content/blog-posts";
+import { getLocalizedBlogPosts } from "@/content/blog-posts";
 
-export default function
-FeaturedPosts() {
+interface FeaturedPostsProps {
+  locale?: string;
+}
 
-  const featured =
-    blogPosts.slice(0, 3);
+export default function FeaturedPosts({
+  locale = "en",
+}: FeaturedPostsProps) {
+  const featured = getLocalizedBlogPosts(locale).slice(0, 3);
 
   return (
     <section className="py-16">
-      <h2 className="text-3xl font-bold mb-8">
+      <h2 className="mb-8 text-3xl font-bold">
         Latest Articles
       </h2>
 
@@ -19,8 +21,8 @@ FeaturedPosts() {
         {featured.map((post) => (
           <Link
             key={post.slug}
-            href={`/blog/${post.slug}`}
-            className="border p-6 rounded"
+            href={`/${locale}/blog/${post.slug}`}
+            className="rounded border p-6"
           >
             <h3 className="font-bold">
               {post.title}

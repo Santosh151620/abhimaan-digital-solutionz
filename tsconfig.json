@@ -33,12 +33,13 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts",
     "**/*.mts",
     "src/app/robots.js",
     "src/app/sitemap.js",
-    "src/app/layout.js"
-, "next.config.js"  ],
+    "src/app/layout.js",
+    "next.config.js",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules"
   ]

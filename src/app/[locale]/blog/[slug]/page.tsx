@@ -1,28 +1,22 @@
-//import { notFound }
-//from "next/navigation";
 import { notFound } from "next/navigation";
 
-import { blogPosts }
-from "@/content/blog-posts";
+import { getLocalizedBlogPosts } from "@/content/blog-posts";
 
 interface Props {
   params: Promise<{
+    locale: string;
     slug: string;
   }>;
 }
 
-export async function
-generateMetadata({
+export async function generateMetadata({
   params,
 }: Props) {
+  const { locale, slug } = await params;
 
-  const { slug } =
-    await params;
-
-  const post =
-    blogPosts.find(
-      (p) => p.slug === slug
-    );
+  const post = getLocalizedBlogPosts(locale).find(
+    (post) => post.slug === slug
+  );
 
   if (!post) {
     return {};
@@ -30,24 +24,18 @@ generateMetadata({
 
   return {
     title: post.title,
-
-    description:
-      post.description,
+    description: post.description,
   };
 }
 
-export default async function
-BlogDetailPage({
+export default async function BlogDetailPage({
   params,
 }: Props) {
+  const { locale, slug } = await params;
 
-  const { slug } =
-    await params;
-
-  const post =
-    blogPosts.find(
-      (p) => p.slug === slug
-    );
+  const post = getLocalizedBlogPosts(locale).find(
+    (post) => post.slug === slug
+  );
 
   if (!post) {
     notFound();
@@ -55,16 +43,12 @@ BlogDetailPage({
 
   return (
     <main className="container mx-auto py-16">
-      <h1 className="text-4xl font-bold mb-4">
+      <h1 className="mb-4 text-4xl font-bold">
         {post.title}
       </h1>
 
-      <p className="text-gray-500 mb-6">
-        {post.publishedAt}
-      </p>
-
       <article className="prose max-w-none">
-        {post.content}
+        <p>{post.description}</p>
       </article>
     </main>
   );

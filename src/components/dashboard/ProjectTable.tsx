@@ -28,31 +28,31 @@ const STATUS_OPTIONS: Array<{
   value: "all" | ProjectStatus;
   label: string;
 }> = [
-  {
-    value: "all",
-    label: "All Status",
-  },
-  {
-    value: "planning",
-    label: "Planning",
-  },
-  {
-    value: "active",
-    label: "Active",
-  },
-  {
-    value: "on_hold",
-    label: "On Hold",
-  },
-  {
-    value: "completed",
-    label: "Completed",
-  },
-  {
-    value: "cancelled",
-    label: "Cancelled",
-  },
-];
+    {
+      value: "all",
+      label: "All Status",
+    },
+    {
+      value: "planning",
+      label: "Planning",
+    },
+    {
+      value: "active",
+      label: "Active",
+    },
+    {
+      value: "on_hold",
+      label: "On Hold",
+    },
+    {
+      value: "completed",
+      label: "Completed",
+    },
+    {
+      value: "cancelled",
+      label: "Cancelled",
+    },
+  ];
 
 const PAGE_SIZE = 10;
 
@@ -191,8 +191,8 @@ function ProjectTable({
               onChange={(e) =>
                 handleStatusChange(
                   e.target.value as
-                    | "all"
-                    | ProjectStatus
+                  | "all"
+                  | ProjectStatus
                 )
               }
               className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white outline-none"
@@ -262,7 +262,7 @@ function ProjectTable({
           </thead>
 
           <tbody>
-                        {filteredProjects.length === 0 && (
+            {filteredProjects.length === 0 && (
               <tr>
                 <td
                   colSpan={8}
@@ -321,15 +321,14 @@ function ProjectTable({
                 <td className="px-5 py-4">
 
                   <span
-                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold border ${
-                      project.priority === "CRITICAL"
-                        ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
-                        : project.priority === "HIGH"
+                    className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold border ${project.priority === "CRITICAL"
+                      ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                      : project.priority === "HIGH"
                         ? "bg-orange-500/20 text-orange-300 border-orange-500/30"
                         : project.priority === "MEDIUM"
-                        ? "bg-amber-500/20 text-amber-300 border-amber-500/30"
-                        : "bg-slate-500/20 text-slate-300 border-slate-500/30"
-                    }`}
+                          ? "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                          : "bg-slate-500/20 text-slate-300 border-slate-500/30"
+                      }`}
                   >
                     {project.priority}
                   </span>
@@ -442,8 +441,8 @@ function ProjectTable({
 
           </tbody>
 
-          <tfoot> 
-                        <tr>
+          <tfoot>
+            <tr>
 
               <td
                 colSpan={8}
@@ -618,14 +617,14 @@ function ProjectTable({
               {projects.length === 0
                 ? 0
                 : Math.round(
-                    projects.reduce(
-                      (total, project) =>
-                        total +
-                        (project.progress_percentage ??
-                          0),
-                      0
-                    ) / projects.length
-                  )}
+                  projects.reduce(
+                    (total, project) =>
+                      total +
+                      (project.progress_percentage ??
+                        0),
+                    0
+                  ) / projects.length
+                )}
 
               %
 
@@ -636,209 +635,206 @@ function ProjectTable({
         </div>
 
       </div>
-      
-          </tfoot>
-          </tbody>
-                  <div className="mt-6 grid gap-4 xl:grid-cols-3">
 
-          {/* COST DISTRIBUTION */}
+      <div className="mt-6 grid gap-4 xl:grid-cols-3">
 
-          <div className="rounded-xl border border-white/10 bg-slate-900 p-5">
+        {/* COST DISTRIBUTION */}
 
-            <p className="text-xs uppercase tracking-wide text-slate-500">
-              Revenue Insight
-            </p>
+        <div className="rounded-xl border border-white/10 bg-slate-900 p-5">
 
-            <div className="mt-4 space-y-3 text-sm">
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            Revenue Insight
+          </p>
 
-              <div className="flex justify-between text-slate-400">
+          <div className="mt-4 space-y-3 text-sm">
 
-                <span>High Value Projects</span>
+            <div className="flex justify-between text-slate-400">
 
-                <span className="text-white font-medium">
-                  {
-                    projects.filter(
-                      (p) => p.project_cost >= 100000
-                    ).length
-                  }
-                </span>
+              <span>High Value Projects</span>
 
-              </div>
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Mid Value Projects</span>
-
-                <span className="text-white font-medium">
-                  {
-                    projects.filter(
-                      (p) =>
-                        p.project_cost >= 25000 &&
-                        p.project_cost < 100000
-                    ).length
-                  }
-                </span>
-
-              </div>
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Low Value Projects</span>
-
-                <span className="text-white font-medium">
-                  {
-                    projects.filter(
-                      (p) => p.project_cost < 25000
-                    ).length
-                  }
-                </span>
-
-              </div>
+              <span className="text-white font-medium">
+                {
+                  projects.filter(
+                    (p) => p.project_cost >= 100000
+                  ).length
+                }
+              </span>
 
             </div>
 
-          </div>
+            <div className="flex justify-between text-slate-400">
 
-          {/* TIMELINE HEALTH */}
+              <span>Mid Value Projects</span>
 
-          <div className="rounded-xl border border-white/10 bg-slate-900 p-5">
-
-            <p className="text-xs uppercase tracking-wide text-slate-500">
-              Timeline Health
-            </p>
-
-            <div className="mt-4 space-y-3 text-sm">
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Started Projects</span>
-
-                <span className="text-white font-medium">
-                  {
-                    projects.filter(
-                      (p) => p.start_date
-                    ).length
-                  }
-                </span>
-
-              </div>
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Completed Timeline</span>
-
-                <span className="text-white font-medium">
-                  {
-                    projects.filter(
-                      (p) =>
-                        p.end_date &&
-                        p.status === "completed"
-                    ).length
-                  }
-                </span>
-
-              </div>
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Ongoing</span>
-
-                <span className="text-white font-medium">
-                  {
-                    projects.filter(
-                      (p) =>
-                        p.status === "active"
-                    ).length
-                  }
-                </span>
-
-              </div>
+              <span className="text-white font-medium">
+                {
+                  projects.filter(
+                    (p) =>
+                      p.project_cost >= 25000 &&
+                      p.project_cost < 100000
+                  ).length
+                }
+              </span>
 
             </div>
 
-          </div>
+            <div className="flex justify-between text-slate-400">
 
-          {/* PERFORMANCE SNAPSHOT */}
+              <span>Low Value Projects</span>
 
-          <div className="rounded-xl border border-white/10 bg-slate-900 p-5">
-
-            <p className="text-xs uppercase tracking-wide text-slate-500">
-              Performance Snapshot
-            </p>
-
-            <div className="mt-4 space-y-3 text-sm">
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Avg Project Cost</span>
-
-                <span className="text-white font-medium">
-                  ₹
-                  {projects.length === 0
-                    ? 0
-                    : Math.round(
-                        projects.reduce(
-                          (sum, p) =>
-                            sum +
-                            Number(p.project_cost ?? 0),
-                          0
-                        ) / projects.length
-                      ).toLocaleString("en-IN")}
-                </span>
-
-              </div>
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Avg Progress</span>
-
-                <span className="text-white font-medium">
-                  {projects.length === 0
-                    ? 0
-                    : Math.round(
-                        projects.reduce(
-                          (sum, p) =>
-                            sum +
-                            (p.progress_percentage ?? 0),
-                          0
-                        ) / projects.length
-                      )}%
-                </span>
-
-              </div>
-
-              <div className="flex justify-between text-slate-400">
-
-                <span>Completion Rate</span>
-
-                <span className="text-white font-medium">
-                  {projects.length === 0
-                    ? 0
-                    : Math.round(
-                        (projects.filter(
-                          (p) =>
-                            p.status === "completed"
-                        ).length /
-                          projects.length) *
-                          100
-                      )}%
-                </span>
-
-              </div>
+              <span className="text-white font-medium">
+                {
+                  projects.filter(
+                    (p) => p.project_cost < 25000
+                  ).length
+                }
+              </span>
 
             </div>
 
           </div>
 
         </div>
-              </div>
+
+        {/* TIMELINE HEALTH */}
+
+        <div className="rounded-xl border border-white/10 bg-slate-900 p-5">
+
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            Timeline Health
+          </p>
+
+          <div className="mt-4 space-y-3 text-sm">
+
+            <div className="flex justify-between text-slate-400">
+
+              <span>Started Projects</span>
+
+              <span className="text-white font-medium">
+                {
+                  projects.filter(
+                    (p) => p.start_date
+                  ).length
+                }
+              </span>
+
+            </div>
+
+            <div className="flex justify-between text-slate-400">
+
+              <span>Completed Timeline</span>
+
+              <span className="text-white font-medium">
+                {
+                  projects.filter(
+                    (p) =>
+                      p.end_date &&
+                      p.status === "completed"
+                  ).length
+                }
+              </span>
+
+            </div>
+
+            <div className="flex justify-between text-slate-400">
+
+              <span>Ongoing</span>
+
+              <span className="text-white font-medium">
+                {
+                  projects.filter(
+                    (p) =>
+                      p.status === "active"
+                  ).length
+                }
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        {/* PERFORMANCE SNAPSHOT */}
+
+        <div className="rounded-xl border border-white/10 bg-slate-900 p-5">
+
+          <p className="text-xs uppercase tracking-wide text-slate-500">
+            Performance Snapshot
+          </p>
+
+          <div className="mt-4 space-y-3 text-sm">
+
+            <div className="flex justify-between text-slate-400">
+
+              <span>Avg Project Cost</span>
+
+              <span className="text-white font-medium">
+                ₹
+                {projects.length === 0
+                  ? 0
+                  : Math.round(
+                    projects.reduce(
+                      (sum, p) =>
+                        sum +
+                        Number(p.project_cost ?? 0),
+                      0
+                    ) / projects.length
+                  ).toLocaleString("en-IN")}
+              </span>
+
+            </div>
+
+            <div className="flex justify-between text-slate-400">
+
+              <span>Avg Progress</span>
+
+              <span className="text-white font-medium">
+                {projects.length === 0
+                  ? 0
+                  : Math.round(
+                    projects.reduce(
+                      (sum, p) =>
+                        sum +
+                        (p.progress_percentage ?? 0),
+                      0
+                    ) / projects.length
+                  )}%
+              </span>
+
+            </div>
+
+            <div className="flex justify-between text-slate-400">
+
+              <span>Completion Rate</span>
+
+              <span className="text-white font-medium">
+                {projects.length === 0
+                  ? 0
+                  : Math.round(
+                    (projects.filter(
+                      (p) =>
+                        p.status === "completed"
+                    ).length /
+                      projects.length) *
+                    100
+                  )}%
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
 
       {/* FOOTER SPACING / SAFE AREA */}
-
       <div className="h-6" />
-
     </div>
   );
+
+  
 }
 
-export default memo(ProjectTable);
+      export default memo(ProjectTable);

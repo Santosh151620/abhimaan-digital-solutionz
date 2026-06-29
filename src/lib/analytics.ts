@@ -68,7 +68,7 @@ export async function getRevenueMetrics(range?: DateRange): Promise<RevenueMetri
   if (!range) {
     const { start, end } = getCurrentMonthRange();
 
-    payments.forEach((p) => {
+    payments.forEach((p: any) => {
       if (p.status === "paid") {
         const created = new Date(p.created_at);
         if (created >= new Date(start) && created <= new Date(end)) {

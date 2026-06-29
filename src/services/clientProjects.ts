@@ -1,7 +1,6 @@
-import {
-  getProjects,
-  Project,
-} from "@/services/projects";
+import { getProjects } from "@/services/projects";
+
+import type { Project } from "@/types/project";
 
 import {
   enrichProject,

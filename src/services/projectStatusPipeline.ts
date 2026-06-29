@@ -1,4 +1,4 @@
-import { ProjectStatus } from "@/types/project";
+import type { ProjectStatus } from "@/types/project";
 
 export const PROJECT_STATUS_PIPELINE: {
   key: ProjectStatus;
@@ -7,31 +7,31 @@ export const PROJECT_STATUS_PIPELINE: {
   order: number;
 }[] = [
   {
-    key: "PLANNING",
+    key: "planning",
     label: "Planning",
     color: "gray",
     order: 1,
   },
   {
-    key: "IN_PROGRESS",
-    label: "In Progress",
+    key: "active",
+    label: "Active",
     color: "blue",
     order: 2,
   },
   {
-    key: "ON_HOLD",
+    key: "on_hold",
     label: "On Hold",
     color: "yellow",
     order: 3,
   },
   {
-    key: "COMPLETED",
+    key: "completed",
     label: "Completed",
     color: "green",
     order: 4,
   },
   {
-    key: "CANCELLED",
+    key: "cancelled",
     label: "Cancelled",
     color: "red",
     order: 5,
@@ -41,7 +41,6 @@ export const PROJECT_STATUS_PIPELINE: {
 export const getNextStatus = (current: ProjectStatus): ProjectStatus | null => {
   const sorted = [...PROJECT_STATUS_PIPELINE].sort((a, b) => a.order - b.order);
   const index = sorted.findIndex((s) => s.key === current);
-
   if (index === -1 || index === sorted.length - 1) return null;
   return sorted[index + 1].key;
 };
@@ -49,7 +48,6 @@ export const getNextStatus = (current: ProjectStatus): ProjectStatus | null => {
 export const getPreviousStatus = (current: ProjectStatus): ProjectStatus | null => {
   const sorted = [...PROJECT_STATUS_PIPELINE].sort((a, b) => a.order - b.order);
   const index = sorted.findIndex((s) => s.key === current);
-
   if (index <= 0) return null;
   return sorted[index - 1].key;
 };

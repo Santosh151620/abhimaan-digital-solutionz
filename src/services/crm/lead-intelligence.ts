@@ -137,18 +137,21 @@ export function getInactiveLeads(leads: Lead[] = []): LeadWithScore[] {
   if (!Array.isArray(leads)) {
     return [];
   }
-
   return leads
     .filter(Boolean)
     .map((lead) => {
       try {
         return calculateLeadScore(lead);
       } catch {
-        return {
-          ...lead,
-          score: 0,
-          risk: "unknown",
-        } as LeadWithScore;
+        
+  const fallback: LeadWithScore = {
+  ...lead,
+  score: 0,
+  priority: "cold",
+  ageInDays: getLeadAgeInDays(lead.created_at),
+};
+
+return fallback;
       }
     })
     .filter((lead) => lead.status !== "won");
@@ -175,10 +178,10 @@ export function summarizeLeadHealth(
       scored.length === 0
         ? 0
         : Math.round(
-            scored.reduce(
-              (total, lead) => total + lead.score,
-              0
-            ) / scored.length
-          ),
+          scored.reduce(
+            (total, lead) => total + lead.score,
+            0
+          ) / scored.length
+        ),
   };
 }
