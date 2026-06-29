@@ -115,7 +115,7 @@ export class WorkflowEngine {
   private calculateMetrics(tasks: WorkflowTask[]): WorkflowMetrics {
     const now = Date.now();
 
-    let totalTasks = tasks.length;
+    const totalTasks = tasks.length;
     let pendingTasks = 0;
     let overdueTasks = 0;
     let highPriorityTasks = 0;

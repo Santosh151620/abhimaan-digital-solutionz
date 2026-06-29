@@ -28,7 +28,7 @@ export default function Header() {
     const newLocale = e.target.value;
 
     // FIX: Declare segments with 'let' instead of 'const' to allow mutation
-    let segments = pathname.split("/");
+    const segments = pathname.split("/");
     segments[1] = newLocale;
 
     startTransition(() => {
