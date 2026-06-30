@@ -1,3 +1,10 @@
+import { redirect } from "next/navigation";
+
 export default function AdminLoginPage() {
-  return <div>Admin Login</div>;
+  redirect("/en/login");
+  redirect("/hi/login");
+  redirect("/km/login");
+  redirect("/mr/login");
+  redirect("/te/login");
+
 }
