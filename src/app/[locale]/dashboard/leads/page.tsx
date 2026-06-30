@@ -2,11 +2,8 @@
 import type { LeadStatus } from "@/types/lead";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-import LeadTable, {
-  LeadTableItem,
-} from "@/components/dashboard/LeadTable";
-
+import LeadTable from "@/components/dashboard/LeadTable";
+import type { Lead } from "@/types/lead";
 import LeadModal from "@/components/dashboard/LeadModal";
 
 const supabase = createClient();

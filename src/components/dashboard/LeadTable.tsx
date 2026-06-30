@@ -1,42 +1,15 @@
 "use client";
-
+import type { Lead, LeadStatus } from "../../../types/lead";
 import { memo, useMemo, useState } from "react";
 
-export type LeadStatus =
-  | "new"
-  | "contacted"
-  | "qualified"
-  | "proposal"
-  | "won"
-  | "lost";
-
-export interface LeadTableItem {
-  id: string;
-  created_at: string;
-
-  full_name: string | null;
-  email: string | null;
-  phone: string | null;
-
-  company: string | null;
-
-  service_interest: string | null;
-
-  source: string | null;
-
-  status: LeadStatus;
-
-  client_id: string | null;
-}
-
 interface LeadTableProps {
-  leads: LeadTableItem[];
+  leads: Lead[];
 
   loading?: boolean;
 
-  onOpenLead: (lead: LeadTableItem) => void;
+  onOpenLead: (lead: Lead) => void;
 
-  onConvertLead: (lead: LeadTableItem) => void;
+  onConvertLead: (lead: Lead) => void;
 }
 
 const STATUS_OPTIONS: Array<{

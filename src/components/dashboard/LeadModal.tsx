@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { LeadStatus} from "@/types/lead";
-import type { LeadTableItem } from "./LeadTable";
+import type { Lead } from "@/types/lead";
 
 const supabase = createClient();
 
 interface LeadModalProps {
   isOpen: boolean;
-  lead: LeadTableItem | null;
+  lead: Lead | null;
   onClose: () => void;
   onUpdateStatus: (
     leadId: string,
