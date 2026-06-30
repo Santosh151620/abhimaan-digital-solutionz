@@ -1,28 +1,7 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
+import type { Client } from "@/types/client";
 
 const TABLE = "clients";
-
-export interface CRMClient {
-  id: string;
-
-  created_at: string;
-
-  updated_at: string;
-
-  status: string;
-
-  full_name: string;
-
-  company_name: string | null;
-
-  email: string | null;
-
-  phone: string | null;
-
-  notes: string | null;
-
-  converted_from_lead_id: string | null;
-}
 
 export interface ClientFilters {
   search?: string;
@@ -35,7 +14,7 @@ export interface ClientFilters {
 }
 
 export interface PaginatedClients {
-  clients: CRMClient[];
+  clients: Client[];
 
   total: number;
 
@@ -91,7 +70,7 @@ export async function getClients(
   }
 
   return {
-    clients: (data ?? []) as CRMClient[],
+    clients: (data ?? []) as Client[],
     total: count ?? 0,
     page,
     pageSize,
@@ -101,7 +80,7 @@ export async function getClients(
 
 export async function getClientById(
   id: string
-): Promise<CRMClient | null> {
+): Promise<Client | null> {
   const supabase = await createSupabaseClient();
 
   const { data, error } = await supabase
@@ -114,15 +93,15 @@ export async function getClientById(
     throw new Error(error.message);
   }
 
-  return data as CRMClient;
+  return data as Client;
 }
 
 export async function createClientRecord(
   client: Omit<
-    CRMClient,
+    Client,
     "id" | "created_at" | "updated_at"
   >
-): Promise<CRMClient> {
+): Promise<Client> {
   const supabase = await createSupabaseClient();
 
   const { data, error } = await supabase
@@ -135,15 +114,15 @@ export async function createClientRecord(
     throw new Error(error.message);
   }
 
-  return data as CRMClient;
+  return data as Client;
 }
 
 export async function updateClient(
   id: string,
   updates: Partial<
-    Omit<CRMClient, "id" | "created_at">
+    Omit<Client, "id" | "created_at">
   >
-): Promise<CRMClient> {
+): Promise<Client> {
   const supabase = await createSupabaseClient();
 
   const { data, error } = await supabase
@@ -160,7 +139,7 @@ export async function updateClient(
     throw new Error(error.message);
   }
 
-  return data as CRMClient;
+  return data as Client;
 }
 
 export async function deleteClient(
@@ -201,10 +180,10 @@ export async function getActiveClientsCount(): Promise<number> {
 export async function convertLeadToClient(
   leadId: string,
   client: Omit<
-    CRMClient,
+    Client,
     "id" | "created_at" | "updated_at"
   >
-): Promise<CRMClient> {
+): Promise<Client> {
   const supabase = await createSupabaseClient();
 
   const { data, error } = await supabase
@@ -220,5 +199,5 @@ export async function convertLeadToClient(
     throw new Error(error.message);
   }
 
-  return data as CRMClient;
+  return data as Client;
 }

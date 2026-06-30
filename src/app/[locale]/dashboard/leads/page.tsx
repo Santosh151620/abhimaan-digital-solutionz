@@ -9,11 +9,11 @@ import LeadModal from "@/components/dashboard/LeadModal";
 const supabase = createClient();
 
 export default function LeadsPage() {
-  const [leads, setLeads] = useState<LeadTableItem[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [selectedLead, setSelectedLead] =
-    useState<LeadTableItem | null>(null);
+    useState<Lead | null>(null);
 
   const [modalOpen, setModalOpen] =
     useState(false);
@@ -29,7 +29,7 @@ export default function LeadsPage() {
       .order("created_at", { ascending: false });
 
     if (!error && data) {
-      setLeads(data as LeadTableItem[]);
+      setLeads(data as Lead[]);
     }
 
     setLoading(false);
@@ -41,7 +41,7 @@ export default function LeadsPage() {
 
   /* ================= OPEN MODAL ================= */
 
-  function handleOpenLead(lead: LeadTableItem) {
+  function handleOpenLead(lead: Lead) {
     setSelectedLead(lead);
     setModalOpen(true);
   }

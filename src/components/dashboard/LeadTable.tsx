@@ -1,5 +1,6 @@
 "use client";
-import type { Lead, LeadStatus } from "../../../types/lead";
+import type { Lead } from "@/types/lead";
+import type { LeadStatus } from "@/types/lead";
 import { memo, useMemo, useState } from "react";
 
 interface LeadTableProps {

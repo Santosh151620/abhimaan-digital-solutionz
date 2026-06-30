@@ -1,35 +1,46 @@
+export type ClientStatus =
+  | "active"
+  | "inactive"
+  | "paused";
+
 export interface Client {
   id: string;
 
-  full_name: string | null;
+  created_at: string;
+
+  updated_at: string;
+
+  full_name: string;
+
+  company_name: string | null;
+
   email: string | null;
+
   phone: string | null;
 
-  company: string | null;
-  website: string | null;
+  notes: string | null;
 
-  industry: string | null;
+  converted_from_lead_id: string | null;
 
-  status: "active" | "inactive" | "paused";
-
-  lead_id: string | null;
-
-  assigned_to: string | null;
-
-  created_at: string;
-  updated_at: string;
+  status: ClientStatus;
 }
 
 export interface ClientNote {
   id: string;
+
   client_id: string;
+
   note: string;
+
   created_at: string;
 }
 
 export interface ClientSummary {
   total_clients: number;
+
   active_clients: number;
+
   inactive_clients: number;
+
   paused_clients: number;
 }

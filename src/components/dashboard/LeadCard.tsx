@@ -3,27 +3,16 @@
 import { useEffect, useState } from "react";
 import LeadNotes from "./LeadNotes";
 import LeadTimeline from "./LeadTimeline";
+import type { Lead } from "@/types/lead";
 
 const STATUS_OPTIONS = [
-  "New",
-  "Contacted",
-  "Qualified",
-  "Proposal Sent",
-  "Won",
-  "Lost",
-];
-
-type Lead = {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-  phone: string | null;
-  company: string | null;
-  service_interest: string | null;
-  message: string | null;
-  status: string | null;
-  created_at: string;
-};
+  "new",
+  "contacted",
+  "qualified",
+  "proposal",
+  "won",
+  "lost",
+] as const;
 
 export default function LeadCard({ lead }: { lead: Lead }) {
   const [showModal, setShowModal] = useState(false);
@@ -56,13 +45,13 @@ export default function LeadCard({ lead }: { lead: Lead }) {
   }, [showModal]);
 
   const badgeClass =
-    lead.status === "Won"
+    lead.status === "won"
       ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-      : lead.status === "Lost"
-      ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
-      : lead.status === "Proposal Sent"
-      ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
-      : "bg-sky-500/10 text-sky-400 border-sky-500/20";
+      : lead.status === "lost"
+        ? "bg-rose-500/10 text-rose-400 border-rose-500/20"
+        : lead.status === "proposal"
+          ? "bg-purple-500/10 text-purple-400 border-purple-500/20"
+          : "bg-sky-500/10 text-sky-400 border-sky-500/20";
 
   return (
     <>
@@ -81,7 +70,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
           <span
             className={`text-[11px] font-bold uppercase tracking-wider px-3 py-1 rounded-full border ${badgeClass}`}
           >
-            {lead.status || "New"}
+            {lead.status}
           </span>
         </div>
 
@@ -154,7 +143,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
 
             <select
               name="status"
-              defaultValue={lead.status || "New"}
+              defaultValue={lead.status}
               className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-300"
             >
               {STATUS_OPTIONS.map((status) => (
@@ -209,7 +198,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
                   />
                   <Info
                     label="Current Status"
-                    value={lead.status || "New"}
+                    value={lead.status}
                   />
                   <Info label="Lead ID" value={lead.id} />
                   <Info label="Created Date" value={createdDateTime} />
@@ -225,25 +214,6 @@ export default function LeadCard({ lead }: { lead: Lead }) {
                       {lead.message || "No message submitted."}
                     </p>
                   </div>
-                  {/* Lead Notes */}
-
-<div className="pt-4 border-t border-slate-800">
-  <h3 className="text-lg font-semibold text-white mb-3">
-    Internal Notes
-  </h3>
-
-  <LeadNotes leadId={lead.id} />
-</div>
-
-{/* Lead Timeline */}
-
-<div className="pt-4 border-t border-slate-800">
-  <h3 className="text-lg font-semibold text-white mb-3">
-    Activity Timeline
-  </h3>
-
-  <LeadTimeline leadId={lead.id} />
-</div>
                 </div>
               </div>
 
