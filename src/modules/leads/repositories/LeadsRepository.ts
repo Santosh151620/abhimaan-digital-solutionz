@@ -1,5 +1,6 @@
-import { BaseRepository } from "@/repositories/base.repository";
-import { supabaseAdmin } from "@/lib/supabase/admin";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import { BaseRepository } from "@/lib/db/base-repository";
 
 import {
   LeadEntity,
@@ -27,29 +28,34 @@ export interface UpdateLeadInput {
 }
 
 export class LeadsRepository extends BaseRepository<LeadEntity> {
-  constructor() {
-    super(supabaseAdmin, "leads");
+  constructor(
+    supabase: SupabaseClient,
+  ) {
+    super(supabase, "leads");
   }
 
-  async getLead(id: string): Promise<LeadEntity | null> {
+  async getLead(
+    id: string,
+  ): Promise<LeadEntity | null> {
     return this.findById(id);
   }
 
- async listLeads(): Promise<LeadEntity[]> {
-  const { data, error } = await this.supabase
-    .from(this.table)
-    .select("*")
-    .order("createdAt", { ascending: false });
+  async listLeads(): Promise<LeadEntity[]> {
+    const { data, error } = await this.query()
+      .select("*")
+      .order("createdAt", {
+        ascending: false,
+      });
 
-  if (error) {
-    throw error;
+    if (error) {
+      throw error;
+    }
+
+    return (data ?? []) as LeadEntity[];
   }
 
-  return (data ?? []) as LeadEntity[];
-}
-
   async createLead(
-    input: CreateLeadInput
+    input: CreateLeadInput,
   ): Promise<LeadEntity> {
     const now = new Date().toISOString();
 
@@ -75,7 +81,7 @@ export class LeadsRepository extends BaseRepository<LeadEntity> {
   }
 
   async updateLead(
-    input: UpdateLeadInput
+    input: UpdateLeadInput,
   ): Promise<LeadEntity> {
     const updates: Partial<LeadEntity> = {
       title: input.title?.trim(),
@@ -87,10 +93,25 @@ export class LeadsRepository extends BaseRepository<LeadEntity> {
       updatedAt: new Date().toISOString(),
     };
 
-    return this.update(input.id, updates);
+    return this.update(
+      input.id,
+      updates,
+    );
   }
 
-  async deleteLead(id: string): Promise<void> {
+  async updateStatus(
+    leadId: string,
+    status: LeadEntity["status"],
+  ): Promise<LeadEntity> {
+    return this.update(leadId, {
+      status,
+      updatedAt: new Date().toISOString(),
+    });
+  }
+
+  async deleteLead(
+    id: string,
+  ): Promise<void> {
     await this.delete(id);
   }
 }

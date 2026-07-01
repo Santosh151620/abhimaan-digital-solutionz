@@ -1,28 +1,32 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { TenantContextManager } from "@/lib/tenant/tenantContext";
 
-export abstract class BaseRepository<TEntity extends Record<string, unknown>> {
+export abstract class BaseRepository<
+  TEntity extends Record<string, unknown>,
+> {
+  protected readonly supabase: SupabaseClient;
   protected readonly table: string;
 
-  protected constructor(table: string) {
+  protected constructor(
+    supabase: SupabaseClient,
+    table: string,
+  ) {
+    this.supabase = supabase;
     this.table = table;
   }
 
-  protected async db() {
-    return createSupabaseServerClient();
-  }
-
-  protected organizationId(): string {
+  protected get organizationId(): string {
     return TenantContextManager.require().organizationId;
   }
 
-  async findAll(): Promise<TEntity[]> {
-    const db = await this.db();
-
-    const { data, error } = await db
+  protected query() {
+    return this.supabase
       .from(this.table)
-      .select("*")
-      .eq("organization_id", this.organizationId());
+      .eq("organization_id", this.organizationId);
+  }
+
+  async findAll(): Promise<TEntity[]> {
+    const { data, error } = await this.query().select("*");
 
     if (error) throw error;
 
@@ -30,12 +34,8 @@ export abstract class BaseRepository<TEntity extends Record<string, unknown>> {
   }
 
   async findById(id: string): Promise<TEntity | null> {
-    const db = await this.db();
-
-    const { data, error } = await db
-      .from(this.table)
+    const { data, error } = await this.query()
       .select("*")
-      .eq("organization_id", this.organizationId())
       .eq("id", id)
       .maybeSingle();
 
@@ -44,17 +44,13 @@ export abstract class BaseRepository<TEntity extends Record<string, unknown>> {
     return (data as TEntity | null) ?? null;
   }
 
-  async insert(
-    payload: Partial<TEntity>
-  ): Promise<TEntity> {
-    const db = await this.db();
-
-    const { data, error } = await db
+  async create(payload: Partial<TEntity>): Promise<TEntity> {
+    const { data, error } = await this.supabase
       .from(this.table)
       .insert({
         ...payload,
-        organization_id: this.organizationId(),
-      })
+        organization_id: this.organizationId,
+      } as Record<string, unknown>)
       .select()
       .single();
 
@@ -65,14 +61,10 @@ export abstract class BaseRepository<TEntity extends Record<string, unknown>> {
 
   async update(
     id: string,
-    payload: Partial<TEntity>
+    payload: Partial<TEntity>,
   ): Promise<TEntity> {
-    const db = await this.db();
-
-    const { data, error } = await db
-      .from(this.table)
-      .update(payload as never)
-      .eq("organization_id", this.organizationId())
+    const { data, error } = await this.query()
+      .update(payload as Record<string, unknown>)
       .eq("id", id)
       .select()
       .single();
@@ -83,24 +75,16 @@ export abstract class BaseRepository<TEntity extends Record<string, unknown>> {
   }
 
   async delete(id: string): Promise<void> {
-    const db = await this.db();
-
-    const { error } = await db
-      .from(this.table)
+    const { error } = await this.query()
       .delete()
-      .eq("organization_id", this.organizationId())
       .eq("id", id);
 
     if (error) throw error;
   }
 
   async exists(id: string): Promise<boolean> {
-    const db = await this.db();
-
-    const { data, error } = await db
-      .from(this.table)
+    const { data, error } = await this.query()
       .select("id")
-      .eq("organization_id", this.organizationId())
       .eq("id", id)
       .maybeSingle();
 
@@ -110,15 +94,10 @@ export abstract class BaseRepository<TEntity extends Record<string, unknown>> {
   }
 
   async count(): Promise<number> {
-    const db = await this.db();
-
-    const { count, error } = await db
-      .from(this.table)
-      .select("*", {
-        count: "exact",
-        head: true,
-      })
-      .eq("organization_id", this.organizationId());
+    const { count, error } = await this.query().select("*", {
+      count: "exact",
+      head: true,
+    });
 
     if (error) throw error;
 
