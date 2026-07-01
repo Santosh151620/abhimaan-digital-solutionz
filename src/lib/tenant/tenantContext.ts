@@ -1,69 +1,130 @@
+import { AsyncLocalStorage } from "node:async_hooks";
+
 export interface TenantContext {
+  /**
+   * Primary tenant / organization identifier.
+   * This is the only tenant identifier repositories should use.
+   */
   organizationId: string;
+
+  /**
+   * Authenticated user.
+   */
   userId?: string;
+
+  /**
+   * User email (optional).
+   */
   userEmail?: string;
+
+  /**
+   * Application role.
+   */
   role?: string;
+
+  /**
+   * Optional future expansion.
+   */
+  permissions?: readonly string[];
+  locale?: string;
+  timezone?: string;
 }
 
+const storage = new AsyncLocalStorage<TenantContext>();
+
+const isProduction = process.env.NODE_ENV === "production";
+
 /**
- * TenantContextManager
+ * Central request-scoped tenant manager.
  *
- * Central tenant context used by repositories and services.
+ * Public API is intentionally stable.
  *
- * Current:
- * - Manual injection
+ * Future authentication providers can populate the context without
+ * requiring repository/service changes.
  *
- * Future:
+ * Supported future providers:
  * - Supabase Auth
+ * - JWT
+ * - Clerk
  * - NextAuth
- * - Middleware
- * - JWT Claims
- *
- * The public API intentionally remains stable so the rest of
- * the CRM never needs to change.
+ * - Organization Switching
+ * - Background Workers
  */
-
-const DEFAULT_TENANT: TenantContext = {
-  organizationId: "demo-org",
-};
-
-let currentTenant: TenantContext | null = null;
-
 export const TenantContextManager = {
   /**
-   * Set current tenant context.
+   * Starts a new request scope.
+   *
+   * Must be called once per request by the API guard.
    */
-  set(context: TenantContext): void {
-    currentTenant = {
-      ...DEFAULT_TENANT,
+  run<T>(context: TenantContext, callback: () => T): T {
+    if (!context.organizationId?.trim()) {
+      throw new Error("Tenant organizationId is required.");
+    }
+
+    const frozenContext = Object.freeze({
       ...context,
-    };
+    });
+
+    return storage.run(frozenContext, callback);
   },
 
   /**
-   * Returns current tenant.
+   * Backward compatibility.
    *
-   * During development, automatically falls back to
-   * the demo tenant instead of crashing the application.
+   * Existing code using set() will continue to compile,
+   * but production code should use run().
+   */
+  set(): never {
+    throw new Error(
+      "TenantContextManager.set() is no longer supported. Use TenantContextManager.run() from the API guard."
+    );
+  },
+
+  /**
+   * Returns current request tenant.
+   */
+  get(): Readonly<TenantContext> {
+    const context = storage.getStore();
+
+    if (context) {
+      return context;
+    }
+
+    if (!isProduction) {
+      return Object.freeze({
+        organizationId: "development",
+      });
+    }
+
+    throw new Error(
+      "Tenant context unavailable. Ensure API Guard initializes TenantContextManager.run()."
+    );
+  },
+
+  /**
+   * Repository-safe accessor.
    *
-   * In production this can later be replaced with
-   * authentication-based resolution.
+   * Alias kept for readability.
    */
-  get(): TenantContext {
-    return currentTenant ?? DEFAULT_TENANT;
+  require(): Readonly<TenantContext> {
+    return this.get();
   },
 
   /**
-   * Clears the current request context.
-   */
-  clear(): void {
-    currentTenant = null;
-  },
-
-  /**
-   * Indicates whether a tenant has been explicitly set.
+   * Indicates whether current request has tenant context.
    */
   hasTenant(): boolean {
-    return currentTenant !== null;
+    return storage.getStore() !== undefined;
+  },
+
+  /**
+   * AsyncLocalStorage automatically cleans itself after request completion.
+   *
+   * Retained only for backward compatibility.
+   */
+  clear(): void {
+    // Intentionally empty.
   },
 };
+
+export type ReadonlyTenantContext = Readonly<TenantContext>;
