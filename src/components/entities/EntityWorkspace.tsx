@@ -12,7 +12,10 @@ import NotesPanel from "./NotesPanel";
 import NotificationPanel from "./NotificationPanel";
 import TaskPanel from "./TaskPanel";
 
-interface EntityWorkspaceProps {
+export interface EntityWorkspaceProps {
+  entityType?: string;
+  entityId?: string;
+
   activities?: Activity[];
   notes?: Note[];
   tasks?: Task[];
@@ -21,6 +24,8 @@ interface EntityWorkspaceProps {
 }
 
 export default function EntityWorkspace({
+  entityType,
+  entityId,
   activities = [],
   notes = [],
   tasks = [],
@@ -28,31 +33,72 @@ export default function EntityWorkspace({
   notifications = [],
 }: EntityWorkspaceProps) {
   return (
-    <div className="grid gap-6">
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Activity</h2>
+    <div className="space-y-6">
+
+      {(entityType || entityId) && (
+        <div className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
+          <div className="flex flex-wrap gap-6 text-sm">
+
+            <div>
+              <span className="text-slate-500">Entity Type</span>
+
+              <div className="font-medium text-white">
+                {entityType ?? "-"}
+              </div>
+            </div>
+
+            <div>
+              <span className="text-slate-500">Entity Id</span>
+
+              <div className="break-all font-medium text-white">
+                {entityId ?? "-"}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <h2 className="text-lg font-semibold text-white">
+          Activity
+        </h2>
+
         <ActivityPanel activities={activities} />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Notes</h2>
+      <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <h2 className="text-lg font-semibold text-white">
+          Notes
+        </h2>
+
         <NotesPanel notes={notes} />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Tasks</h2>
+      <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <h2 className="text-lg font-semibold text-white">
+          Tasks
+        </h2>
+
         <TaskPanel tasks={tasks} />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Attachments</h2>
+      <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <h2 className="text-lg font-semibold text-white">
+          Attachments
+        </h2>
+
         <AttachmentPanel attachments={attachments} />
       </section>
 
-      <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Notifications</h2>
+      <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-950 p-5">
+        <h2 className="text-lg font-semibold text-white">
+          Notifications
+        </h2>
+
         <NotificationPanel notifications={notifications} />
       </section>
+
     </div>
   );
 }

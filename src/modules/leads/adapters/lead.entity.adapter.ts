@@ -1,4 +1,7 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 /**
  * Entity adapter ensures strict entity-first compliance
@@ -12,7 +15,7 @@ export function assertLeadEntity(entity: unknown): asserts entity is LeadEntity 
 
   const e = entity as Partial<LeadEntity>;
 
-  if (e.entityType !== 'lead') {
+  if (e.entityType !== LEAD_ENTITY_TYPE) {
     throw new Error('Invalid entityType for LeadEntity');
   }
 
@@ -25,7 +28,7 @@ export function normalizeLeadEntity(entity: any): LeadEntity {
   assertLeadEntity(entity);
 
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,
     entityId: entity.entityId,
     title: entity.title ?? '',
     email: entity.email,

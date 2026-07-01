@@ -1,4 +1,7 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 /**
  * ENTITY BRIDGE LAYER
@@ -6,20 +9,20 @@ import { LeadEntity } from '../types/lead.entity';
  */
 
 export type LeadEntityRef = {
-  entityType: 'lead';
+  entityType: typeof LEAD_ENTITY_TYPE;
   entityId: string;
 };
 
 export function toEntityRef(lead: LeadEntity): LeadEntityRef {
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,
     entityId: lead.entityId,
   };
 }
 
 export function fromEntityRef(ref: LeadEntityRef): LeadEntity {
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,
     entityId: ref.entityId,
     title: '',
     email: '',

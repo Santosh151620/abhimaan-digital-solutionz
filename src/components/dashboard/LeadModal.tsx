@@ -1,9 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { createClient } from "@/lib/supabase/client";
-import type { LeadStatus} from "@/types/lead";
+
+import EntityWorkspace from "@/components/entities/EntityWorkspace";
+
 import type { Lead } from "@/types/lead";
+import type { LeadStatus } from "@/types/lead";
 
 const supabase = createClient();
 
@@ -32,70 +36,147 @@ export default function LeadModal({
     }
   }, [lead]);
 
-  if (!isOpen || !lead) return null;
-
-  async function handleSave() {
-    setLoading(true);
-    if (!lead) return;
-    const { error } = await supabase
-      .from("leads")
-      .update({ status })
-      .eq("id", lead.id);
-
-    if (!error) {
-      await onUpdateStatus(lead.id, status);
-      onClose();
-    }
-
-    setLoading(false);
+  if (!isOpen || !lead) {
+    return null;
   }
 
+  async function handleSave() {
+  if (!lead) {
+    return;
+  }
+
+  setLoading(true);
+
+  const leadId = lead.id;
+
+  const { error } = await supabase
+    .from("leads")
+    .update({
+      status,
+    })
+    .eq("id", leadId);
+
+  if (!error) {
+    await onUpdateStatus(leadId, status);
+    onClose();
+  }
+
+  setLoading(false);
+}
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="w-[420px] rounded-xl bg-slate-900 p-6">
-        <h2 className="mb-4 text-xl text-white">
-          Lead Details
-        </h2>
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
+      <div className="mx-auto my-10 w-full max-w-6xl rounded-xl bg-slate-900 shadow-2xl">
 
-        <p className="mb-2 text-slate-300">
-          {lead.full_name ?? "-"}
-        </p>
+        <div className="border-b border-slate-800 p-6">
 
-        <p className="mb-4 text-slate-400">
-          {lead.email ?? "-"}
-        </p>
+          <div className="flex items-start justify-between">
 
-        <select
-          value={status}
-          onChange={(e) =>
-            setStatus(e.target.value as LeadStatus)
-          }
-          className="w-full rounded bg-slate-800 p-2 text-white"
-        >
-          <option value="new">New</option>
-          <option value="contacted">Contacted</option>
-          <option value="qualified">Qualified</option>
-          <option value="proposal">Proposal</option>
-          <option value="won">Won</option>
-          <option value="lost">Lost</option>
-        </select>
+            <div>
 
-        <div className="mt-4 flex justify-end gap-2">
-          <button
-            onClick={onClose}
-            className="rounded bg-gray-600 px-3 py-2 text-white"
-          >
-            Cancel
-          </button>
+              <h2 className="text-2xl font-semibold text-white">
+                {lead.full_name ?? "Lead"}
+              </h2>
 
-          <button
-            onClick={handleSave}
-            disabled={loading}
-            className="rounded bg-cyan-600 px-3 py-2 text-white disabled:opacity-50"
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+              <p className="mt-1 text-sm text-slate-400">
+                {lead.email ?? "-"}
+              </p>
+
+            </div>
+
+            <button
+              onClick={onClose}
+              className="rounded-lg bg-slate-800 px-3 py-2 text-sm text-white hover:bg-slate-700"
+            >
+              Close
+            </button>
+
+          </div>
+
         </div>
+
+        <div className="grid gap-6 p-6 lg:grid-cols-[360px_1fr]">
+
+          <div className="space-y-6">
+
+            <div className="rounded-xl border border-slate-800 bg-slate-950 p-5">
+
+              <h3 className="mb-4 text-lg font-semibold text-white">
+                Lead Details
+              </h3>
+
+              <div className="space-y-3">
+
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-slate-500">
+                    Name
+                  </p>
+
+                  <p className="text-white">
+                    {lead.full_name ?? "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-slate-500">
+                    Email
+                  </p>
+
+                  <p className="text-white">
+                    {lead.email ?? "-"}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-wide text-slate-500">
+                    Status
+                  </p>
+
+                  <select
+                    value={status}
+                    onChange={(e) =>
+                      setStatus(e.target.value as LeadStatus)
+                    }
+                    className="mt-2 w-full rounded-lg bg-slate-800 p-2 text-white"
+                  >
+                    <option value="new">New</option>
+                    <option value="contacted">Contacted</option>
+                    <option value="qualified">Qualified</option>
+                    <option value="proposal">Proposal</option>
+                    <option value="won">Won</option>
+                    <option value="lost">Lost</option>
+                  </select>
+
+                </div>
+
+              </div>
+
+              <button
+                onClick={handleSave}
+                disabled={loading}
+                className="mt-6 w-full rounded-lg bg-cyan-600 px-4 py-3 font-medium text-white disabled:opacity-50"
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+
+            </div>
+
+          </div>
+
+          <div>
+
+            <EntityWorkspace
+              activities={[]}
+              notes={[]}
+              tasks={[]}
+              attachments={[]}
+              notifications={[]}
+            />
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   );

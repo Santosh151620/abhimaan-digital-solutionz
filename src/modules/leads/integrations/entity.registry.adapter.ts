@@ -1,4 +1,7 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 /**
  * Adapter for global entity registry system
@@ -6,7 +9,7 @@ import { LeadEntity } from '../types/lead.entity';
  */
 
 export function getLeadEntityKey(entityId: string): string {
-  return `lead:${entityId}`;
+  return `${LEAD_ENTITY_TYPE}:${entityId}`;
 }
 
 export function mapLeadToRegistry(lead: LeadEntity) {
