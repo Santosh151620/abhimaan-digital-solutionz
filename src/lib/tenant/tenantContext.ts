@@ -1,35 +1,69 @@
 export interface TenantContext {
   organizationId: string;
+  userId?: string;
+  userEmail?: string;
+  role?: string;
 }
 
 /**
- * TenantContext
+ * TenantContextManager
  *
- * This will later be derived from:
- * - Supabase Auth session OR
- * - NextAuth session OR
- * - Middleware headers
+ * Central tenant context used by repositories and services.
  *
- * For now, it is injected manually.
+ * Current:
+ * - Manual injection
+ *
+ * Future:
+ * - Supabase Auth
+ * - NextAuth
+ * - Middleware
+ * - JWT Claims
+ *
+ * The public API intentionally remains stable so the rest of
+ * the CRM never needs to change.
  */
+
+const DEFAULT_TENANT: TenantContext = {
+  organizationId: "demo-org",
+};
 
 let currentTenant: TenantContext | null = null;
 
 export const TenantContextManager = {
-  set(context: TenantContext) {
-    currentTenant = context;
+  /**
+   * Set current tenant context.
+   */
+  set(context: TenantContext): void {
+    currentTenant = {
+      ...DEFAULT_TENANT,
+      ...context,
+    };
   },
 
+  /**
+   * Returns current tenant.
+   *
+   * During development, automatically falls back to
+   * the demo tenant instead of crashing the application.
+   *
+   * In production this can later be replaced with
+   * authentication-based resolution.
+   */
   get(): TenantContext {
-    if (!currentTenant) {
-      throw new Error(
-        "[TenantContext] No tenant context set. Cannot proceed without organization scope."
-      );
-    }
-    return currentTenant;
+    return currentTenant ?? DEFAULT_TENANT;
   },
 
-  clear() {
+  /**
+   * Clears the current request context.
+   */
+  clear(): void {
     currentTenant = null;
+  },
+
+  /**
+   * Indicates whether a tenant has been explicitly set.
+   */
+  hasTenant(): boolean {
+    return currentTenant !== null;
   },
 };

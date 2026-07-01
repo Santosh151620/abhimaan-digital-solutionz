@@ -2,16 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
-/**
- * GET
- * Returns all notes for a lead
- */
+type RouteParams = {
+  id: string;
+};
+
+type CreateNoteRequest = {
+  note?: string;
+};
+
 export async function GET(
   req: NextRequest,
   {
     params,
   }: {
-    params: Promise<{ id: string }>;
+    params: Promise<RouteParams>;
   }
 ) {
   try {
@@ -43,11 +47,14 @@ export async function GET(
       success: true,
       notes: data ?? [],
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
       {
         success: false,
-        error: err?.message ?? "Unauthorized",
+        error:
+          err instanceof Error
+            ? err.message
+            : "Unauthorized",
       },
       {
         status: 401,
@@ -56,16 +63,12 @@ export async function GET(
   }
 }
 
-/**
- * POST
- * Add an internal CRM note
- */
 export async function POST(
   req: NextRequest,
   {
     params,
   }: {
-    params: Promise<{ id: string }>;
+    params: Promise<RouteParams>;
   }
 ) {
   try {
@@ -73,10 +76,9 @@ export async function POST(
 
     const { id } = await params;
 
-    const body = await req.json();
+    const body: CreateNoteRequest = await req.json();
 
-    const note =
-      body.note?.trim() ?? "";
+    const note = body.note?.trim() ?? "";
 
     if (!note) {
       return NextResponse.json(
@@ -90,16 +92,15 @@ export async function POST(
       );
     }
 
-    const { data, error } =
-      await supabaseAdmin
-        .from("lead_notes")
-        .insert({
-          lead_id: id,
-          note,
-          created_by: user.email,
-        })
-        .select()
-        .single();
+    const { data, error } = await supabaseAdmin
+      .from("lead_notes")
+      .insert({
+        lead_id: id,
+        note,
+        created_by: user.email,
+      })
+      .select()
+      .single();
 
     if (error) {
       return NextResponse.json(
@@ -113,7 +114,6 @@ export async function POST(
       );
     }
 
-    // Timeline entry
     await supabaseAdmin
       .from("lead_activity_timeline")
       .insert({
@@ -126,11 +126,14 @@ export async function POST(
       success: true,
       note: data,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
       {
         success: false,
-        error: err?.message ?? "Unauthorized",
+        error:
+          err instanceof Error
+            ? err.message
+            : "Unauthorized",
       },
       {
         status: 401,

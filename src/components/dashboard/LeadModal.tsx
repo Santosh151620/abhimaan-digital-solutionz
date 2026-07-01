@@ -2,14 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-import { createClient } from "@/lib/supabase/client";
-
 import EntityWorkspace from "@/components/entities/EntityWorkspace";
 
-import type { Lead } from "@/types/lead";
-import type { LeadStatus } from "@/types/lead";
-
-const supabase = createClient();
+import type { Lead, LeadStatus } from "@/types/lead";
 
 interface LeadModalProps {
   isOpen: boolean;
@@ -40,28 +35,19 @@ export default function LeadModal({
     return null;
   }
 
-  async function handleSave() {
-  if (!lead) {
-    return;
-  }
-
-  setLoading(true);
+ async function handleSave() {
+  if (!lead) return;
 
   const leadId = lead.id;
 
-  const { error } = await supabase
-    .from("leads")
-    .update({
-      status,
-    })
-    .eq("id", leadId);
+  setLoading(true);
 
-  if (!error) {
+  try {
     await onUpdateStatus(leadId, status);
     onClose();
+  } finally {
+    setLoading(false);
   }
-
-  setLoading(false);
 }
 
   return (
@@ -69,11 +55,9 @@ export default function LeadModal({
       <div className="mx-auto my-10 w-full max-w-6xl rounded-xl bg-slate-900 shadow-2xl">
 
         <div className="border-b border-slate-800 p-6">
-
           <div className="flex items-start justify-between">
 
             <div>
-
               <h2 className="text-2xl font-semibold text-white">
                 {lead.full_name ?? "Lead"}
               </h2>
@@ -81,7 +65,6 @@ export default function LeadModal({
               <p className="mt-1 text-sm text-slate-400">
                 {lead.email ?? "-"}
               </p>
-
             </div>
 
             <button
@@ -92,7 +75,6 @@ export default function LeadModal({
             </button>
 
           </div>
-
         </div>
 
         <div className="grid gap-6 p-6 lg:grid-cols-[360px_1fr]">

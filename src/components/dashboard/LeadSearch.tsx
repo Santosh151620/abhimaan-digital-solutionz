@@ -1,45 +1,22 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
-type LeadSearchProps = {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  debounceMs?: number;
-};
-
-export default function LeadSearch({
-  value,
-  onChange,
-  placeholder = "Search leads...",
-  debounceMs = 400,
-}: LeadSearchProps) {
+export default function LeadSearch({ value }: { value: string }) {
   const [localValue, setLocalValue] = useState(value);
 
+  // safe sync when external value changes
   useEffect(() => {
-    const handler = setTimeout(() => {
-      onChange(localValue);
-    }, debounceMs);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [localValue, debounceMs, onChange]);
-
-  useEffect(() => {
-    setLocalValue(value);
-  }, [value]);
+    if (value !== localValue) {
+      setLocalValue(value);
+    }
+  }, [value, localValue]);
 
   return (
-    <div className="w-full">
-      <input
-        type="text"
-        value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-4 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-black"
-      />
-    </div>
+    <input
+      className="border p-2"
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+    />
   );
 }

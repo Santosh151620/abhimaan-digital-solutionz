@@ -1,8 +1,7 @@
 "use client";
-
+import EntityWorkspaceContainer from "@/components/entities/EntityWorkspaceContainer";
 import { useEffect, useState } from "react";
-import LeadNotes from "./LeadNotes";
-import LeadTimeline from "./LeadTimeline";
+import EntityWorkspace from "@/components/entities/EntityWorkspace";
 import type { Lead } from "@/types/lead";
 
 const STATUS_OPTIONS = [
@@ -217,23 +216,10 @@ export default function LeadCard({ lead }: { lead: Lead }) {
                 </div>
               </div>
 
-              <div className="grid lg:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    Internal Notes
-                  </h3>
-
-                  <LeadNotes leadId={lead.id} />
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-4">
-                    Activity Timeline
-                  </h3>
-
-                  <LeadTimeline leadId={lead.id} />
-                </div>
-              </div>
+              <EntityWorkspaceContainer
+  entityType="lead"
+  entityId={lead.id}
+/>
             </div>
           </div>
         </div>

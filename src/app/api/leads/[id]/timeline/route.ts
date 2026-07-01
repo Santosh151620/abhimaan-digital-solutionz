@@ -2,12 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
+type RouteParams = {
+  id: string;
+};
+
 export async function GET(
   req: NextRequest,
   {
     params,
   }: {
-    params: Promise<{ id: string }>;
+    params: Promise<RouteParams>;
   }
 ) {
   try {
@@ -39,13 +43,14 @@ export async function GET(
       success: true,
       timeline: data ?? [],
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
       {
         success: false,
         error:
-          err?.message ??
-          "Unauthorized",
+          err instanceof Error
+            ? err.message
+            : "Unauthorized",
       },
       {
         status: 401,

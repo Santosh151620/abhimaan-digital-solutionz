@@ -1,12 +1,36 @@
-import { WorkflowEngine } from "@/lib/workflow/workflowEngine";
-import { WorkflowTask } from "@/types/workflow";
-
-import { WorkflowRepository } from "@/lib/workflow/workflowRepository";
 import { memoryCache } from "@/lib/cache/memoryCache";
+import { TenantContextManager } from "@/lib/tenant/tenantContext";
+import { WorkflowEngine } from "@/lib/workflow/workflowEngine";
+import { WorkflowRepository } from "@/lib/workflow/workflowRepository";
 
+import type {
+  WorkflowMetrics,
+  WorkflowSummary,
+  WorkflowTask,
+} from "@/types/workflow";
+
+interface TodayWorkResult {
+  tasks: WorkflowTask[];
+  metrics: WorkflowMetrics;
+}
+
+/**
+ * TodayWorkService
+ *
+ * Builds today's prioritized work queue.
+ *
+ * Flow:
+ * Repository
+ *     ↓
+ * WorkflowEngine
+ *     ↓
+ * Memory Cache
+ *     ↓
+ * Dashboard / CRM
+ */
 export class TodayWorkService {
-  private engine: WorkflowEngine;
-  private repository: WorkflowRepository;
+  private readonly engine: WorkflowEngine;
+  private readonly repository: WorkflowRepository;
 
   constructor() {
     this.engine = new WorkflowEngine();
@@ -14,34 +38,53 @@ export class TodayWorkService {
   }
 
   /**
-   * MAIN ENTRY POINT (NOW CACHED)
+   * Returns today's prioritized work.
    */
-  public async getTodayWork(): Promise<{
-    tasks: WorkflowTask[];
-    metrics: any;
-  }> {
+  public async getTodayWork(): Promise<TodayWorkResult> {
     const cacheKey = this.getCacheKey();
 
-    const cached = memoryCache.get<any>(cacheKey);
+    const cached =
+      memoryCache.get<TodayWorkResult>(cacheKey);
+
     if (cached) {
       return cached;
     }
 
-    const storedTasks = await this.repository.getTasks();
+    const storedTasks =
+      await this.repository.getTasks();
 
-    const result = this.engine.buildTodayWork(storedTasks);
+    const summary: WorkflowSummary =
+      this.engine.buildTodayWork(storedTasks);
 
-    // Cache for 30 seconds (safe for CRM dashboards)
-    memoryCache.set(cacheKey, result, 30 * 1000);
+    const result: TodayWorkResult = {
+      tasks: summary.tasks,
+      metrics: summary.metrics,
+    };
+
+    memoryCache.set(
+      cacheKey,
+      result,
+      30_000
+    );
 
     return result;
   }
 
   /**
-   * CACHE KEY (tenant-safe)
+   * Tenant-aware cache key.
    */
   private getCacheKey(): string {
-    // Later will include organization_id via TenantContext
-    return `today_work:demo-org`;
+    const tenant =
+      TenantContextManager.get();
+
+    return `today_work:${tenant.organizationId}`;
+  }
+
+  /**
+   * Clears today's cache.
+   * Call after task mutations.
+   */
+  public invalidateCache(): void {
+    memoryCache.delete(this.getCacheKey());
   }
 }

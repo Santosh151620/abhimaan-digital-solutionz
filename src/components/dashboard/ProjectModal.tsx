@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 import type {
   Project,
-  ProjectStatus,
   ProjectPriority,
+  ProjectStatus,
 } from "@/types/project";
 
 const supabase = createClient();
@@ -15,7 +15,10 @@ interface ProjectModalProps {
   project: Project | null;
   isOpen: boolean;
   onClose: () => void;
-  onUpdate: (projectId: string, updates: Partial<Project>) => Promise<void>;
+  onUpdate: (
+    projectId: string,
+    updates: Partial<Project>
+  ) => Promise<void>;
 }
 
 interface ProjectTimelineItem {
@@ -47,72 +50,91 @@ export default function ProjectModal({
   onClose,
   onUpdate,
 }: ProjectModalProps) {
-  const [status, setStatus] = useState<ProjectStatus>("planning");
-  const [priority, setPriority] = useState<ProjectPriority>("LOW");
+  const [status, setStatus] =
+    useState<ProjectStatus>("planning");
 
-  const [progress, setProgress] = useState(0);
+  const [priority, setPriority] =
+    useState<ProjectPriority>("LOW");
 
-  const [timeline, setTimeline] = useState<ProjectTimelineItem[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] =
+    useState(0);
 
-  const [saving, setSaving] = useState(false);
+  const [timeline, setTimeline] =
+    useState<ProjectTimelineItem[]>([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const loadTimeline = useCallback(async () => {
+    if (!project) return;
+
+    setLoading(true);
+
+    const { data } = await supabase
+      .from("project_timeline")
+      .select("*")
+      .eq("project_id", project.id)
+      .order("created_at", {
+        ascending: false,
+      });
+
+    setTimeline(
+      (data as ProjectTimelineItem[]) ?? []
+    );
+
+    setLoading(false);
+  }, [project]);
 
   useEffect(() => {
     if (!project) return;
 
     setStatus(project.status);
     setPriority(project.priority);
-    setProgress(project.progress_percentage ?? 0);
+    setProgress(
+      project.progress_percentage ?? 0
+    );
 
-    loadTimeline();
-  }, [project?.id]);
+    void loadTimeline();
+  }, [project, loadTimeline]);
 
   if (!isOpen || !project) return null;
 
-  async function loadTimeline() {
-    setLoading(true);
-    if (!project) return;
+ async function saveChanges() {
+  if (!project) return;
 
-    const { data } = await supabase
+  setSaving(true);
+
+  const projectId = project.id;
+
+  try {
+    await onUpdate(projectId, {
+      status,
+      priority,
+      progress_percentage: progress,
+    });
+
+    await supabase
       .from("project_timeline")
-      .select("*")
-      .eq("project_id", project.id)
-      .order("created_at", { ascending: false });
-
-    setTimeline((data as ProjectTimelineItem[]) || []);
-    setLoading(false);
-  }
-
-  async function saveChanges() {
-    if (!project) return;
-
-    setSaving(true);
-
-    try {
-      await onUpdate(project.id, {
-        status,
-        priority,
-        progress_percentage: progress,
-      });
-
-      await supabase.from("project_timeline").insert({
-        project_id: project.id,
+      .insert({
+        project_id: projectId,
         message: `Updated project (${status}, ${priority}, ${progress}%)`,
         event_type: "update",
       });
 
       await loadTimeline();
-    } finally {
-      setSaving(false);
-    }
+  } finally {
+    setSaving(false);
   }
+}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
       <div className="w-full max-w-5xl rounded-2xl border border-white/10 bg-slate-950 shadow-2xl">
-              {/* HEADER */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
 
+        <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
           <div>
             <h2 className="text-2xl font-bold text-white">
               Project Details
@@ -129,68 +151,90 @@ export default function ProjectModal({
           >
             Close
           </button>
-
         </div>
 
-        {/* BODY */}
         <div className="grid gap-8 p-6 lg:grid-cols-2">
 
-          {/* LEFT SIDE */}
           <div className="space-y-5">
 
             <div>
-              <p className="text-xs text-slate-500">Project Name</p>
-              <p className="text-white font-medium">
+              <p className="text-xs text-slate-500">
+                Project Name
+              </p>
+
+              <p className="font-medium text-white">
                 {project.name}
               </p>
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">Service Type</p>
+              <p className="text-xs text-slate-500">
+                Service Type
+              </p>
+
               <p className="text-slate-300">
                 {project.service_type}
               </p>
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">Client ID</p>
-              <p className="text-slate-400 break-all">
+              <p className="text-xs text-slate-500">
+                Client ID
+              </p>
+
+              <p className="break-all text-slate-400">
                 {project.client_id}
               </p>
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">Project Cost</p>
+              <p className="text-xs text-slate-500">
+                Project Cost
+              </p>
+
               <p className="text-white">
-                ₹{Number(project.project_cost ?? 0).toLocaleString("en-IN")}
+                ₹
+                {Number(
+                  project.project_cost ?? 0
+                ).toLocaleString("en-IN")}
               </p>
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">Start Date</p>
+              <p className="text-xs text-slate-500">
+                Start Date
+              </p>
+
               <p className="text-slate-300">
-                {project.start_date ? project.start_date.split("T")[0] : "-"}
+                {project.start_date
+                  ? project.start_date.split("T")[0]
+                  : "-"}
               </p>
             </div>
 
             <div>
-              <p className="text-xs text-slate-500">End Date</p>
+              <p className="text-xs text-slate-500">
+                End Date
+              </p>
+
               <p className="text-slate-300">
-                {project.end_date ? project.end_date.split("T")[0] : "-"}
+                {project.end_date
+                  ? project.end_date.split("T")[0]
+                  : "-"}
               </p>
             </div>
 
-            {/* STATUS */}
-            <div className="pt-4 border-t border-white/10">
-
-              <p className="text-sm text-slate-400 mb-2">
+            <div className="border-t border-white/10 pt-4">
+              <p className="mb-2 text-sm text-slate-400">
                 Status
               </p>
 
               <select
                 value={status}
                 onChange={(e) =>
-                  setStatus(e.target.value as ProjectStatus)
+                  setStatus(
+                    e.target.value as ProjectStatus
+                  )
                 }
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               >
@@ -200,20 +244,19 @@ export default function ProjectModal({
                   </option>
                 ))}
               </select>
-
             </div>
 
-            {/* PRIORITY */}
             <div>
-
-              <p className="text-sm text-slate-400 mb-2">
+              <p className="mb-2 text-sm text-slate-400">
                 Priority
               </p>
 
               <select
                 value={priority}
                 onChange={(e) =>
-                  setPriority(e.target.value as ProjectPriority)
+                  setPriority(
+                    e.target.value as ProjectPriority
+                  )
                 }
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               >
@@ -223,13 +266,10 @@ export default function ProjectModal({
                   </option>
                 ))}
               </select>
-
             </div>
 
-            {/* PROGRESS */}
             <div>
-
-              <p className="text-sm text-slate-400 mb-2">
+              <p className="mb-2 text-sm text-slate-400">
                 Progress ({progress}%)
               </p>
 
@@ -243,7 +283,6 @@ export default function ProjectModal({
                 }
                 className="w-full"
               />
-
             </div>
 
             <button
@@ -251,30 +290,33 @@ export default function ProjectModal({
               disabled={saving}
               className="w-full rounded-lg bg-cyan-600 py-2 text-white hover:bg-cyan-700"
             >
-              {saving ? "Saving..." : "Save Changes"}
+              {saving
+                ? "Saving..."
+                : "Save Changes"}
             </button>
 
           </div>
-                    {/* RIGHT SIDE */}
+
           <div className="space-y-6">
 
-            {/* TIMELINE */}
             <div>
-              <h3 className="text-sm text-slate-400 mb-3">
+
+              <h3 className="mb-3 text-sm text-slate-400">
                 Project Timeline
               </h3>
 
               {loading && (
-                <p className="text-slate-500 text-sm">
+                <p className="text-sm text-slate-500">
                   Loading timeline...
                 </p>
               )}
 
-              {!loading && timeline.length === 0 && (
-                <p className="text-slate-500 text-sm">
-                  No activity yet.
-                </p>
-              )}
+              {!loading &&
+                timeline.length === 0 && (
+                  <p className="text-sm text-slate-500">
+                    No activity yet.
+                  </p>
+                )}
 
               <div className="space-y-3">
                 {timeline.map((item) => (
@@ -286,7 +328,7 @@ export default function ProjectModal({
                       {item.message}
                     </div>
 
-                    <div className="text-xs text-slate-500 mt-1">
+                    <div className="mt-1 text-xs text-slate-500">
                       {item.event_type}
                     </div>
 
@@ -296,9 +338,9 @@ export default function ProjectModal({
                   </div>
                 ))}
               </div>
+
             </div>
 
-            {/* SUMMARY BOX */}
             <div className="rounded-xl border border-white/10 bg-slate-900 p-4">
 
               <p className="text-xs uppercase tracking-wide text-slate-500">
@@ -309,17 +351,23 @@ export default function ProjectModal({
 
                 <div className="flex justify-between text-slate-400">
                   <span>Status</span>
-                  <span className="text-white">{status}</span>
+                  <span className="text-white">
+                    {status}
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-slate-400">
                   <span>Priority</span>
-                  <span className="text-white">{priority}</span>
+                  <span className="text-white">
+                    {priority}
+                  </span>
                 </div>
 
                 <div className="flex justify-between text-slate-400">
                   <span>Progress</span>
-                  <span className="text-white">{progress}%</span>
+                  <span className="text-white">
+                    {progress}%
+                  </span>
                 </div>
 
               </div>
@@ -327,10 +375,10 @@ export default function ProjectModal({
             </div>
 
           </div>
+
         </div>
 
-        {/* FOOTER */}
-        <div className="border-t border-white/10 px-6 py-4 flex justify-end">
+        <div className="flex justify-end border-t border-white/10 px-6 py-4">
           <button
             onClick={onClose}
             className="rounded-lg bg-slate-900 px-5 py-2 text-sm text-white hover:bg-slate-800"

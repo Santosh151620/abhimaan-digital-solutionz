@@ -21,7 +21,7 @@ export interface LeadDTO {
 
 export function toLeadEntity(dto: LeadDTO): LeadEntity {
   return {
-    entityType: LEAD_ENTITY_TYPE,,
+    entityType: LEAD_ENTITY_TYPE,
     entityId: dto.entityId,
     title: dto.title,
     email: dto.email,

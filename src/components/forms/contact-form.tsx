@@ -2,27 +2,28 @@
 
 import { useState } from "react";
 
+type ContactResponse = {
+  message?: string;
+  error?: string;
+};
+
 export default function ContactForm() {
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [success, setSuccess] =
-    useState("");
+  const [success, setSuccess] = useState("");
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
-  const [formData, setFormData] =
-    useState({
-      name: "",
-      email: "",
-      phone: "",
-      service: "",
-      message: "",
-    });
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    service: "",
+    message: "",
+  });
 
   async function handleSubmit(
-    e: React.FormEvent
+    e: React.FormEvent<HTMLFormElement>
   ) {
     e.preventDefault();
 
@@ -31,32 +32,29 @@ export default function ContactForm() {
     setSuccess("");
 
     try {
-      const response = await fetch(
-        "/api/contact",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            ...formData,
-            source: "website",
-          }),
-        }
-      );
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...formData,
+          source: "website",
+        }),
+      });
 
-      const result =
+      const result: ContactResponse =
         await response.json();
 
       if (!response.ok) {
         throw new Error(
-          result.error ||
-            "Submission failed"
+          result.error ?? "Submission failed"
         );
       }
 
-      setSuccess(result.message);
+      setSuccess(
+        result.message ?? "Message sent successfully."
+      );
 
       setFormData({
         name: "",
@@ -65,11 +63,15 @@ export default function ContactForm() {
         service: "",
         message: "",
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Submission failed"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
@@ -148,11 +150,9 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={loading}
-        className="rounded-lg bg-black px-6 py-3 text-white"
+        className="rounded-lg bg-black px-6 py-3 text-white disabled:opacity-50"
       >
-        {loading
-          ? "Submitting..."
-          : "Submit"}
+        {loading ? "Submitting..." : "Submit"}
       </button>
 
       {success && (

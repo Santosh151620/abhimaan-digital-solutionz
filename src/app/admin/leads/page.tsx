@@ -1,14 +1,25 @@
-export const dynamic = "force-dynamic";
 import { createClient } from "@/lib/supabase/client";
 
+export const dynamic = "force-dynamic";
+
 const supabase = createClient();
-async function getLeads() {
+
+type LeadRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  company: string;
+  status: string;
+};
+
+async function getLeads(): Promise<LeadRow[]> {
   const { data } = await supabase
     .from("leads")
     .select("*")
     .order("created_at", { ascending: false });
 
-  return data ?? [];
+  return (data ?? []) as LeadRow[];
 }
 
 export default async function LeadsPage() {
@@ -17,7 +28,10 @@ export default async function LeadsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Leads Management</h1>
+        <h1 className="text-3xl font-bold">
+          Leads Management
+        </h1>
+
         <p className="text-gray-600">
           Total Leads: {leads.length}
         </p>
@@ -36,8 +50,11 @@ export default async function LeadsPage() {
           </thead>
 
           <tbody>
-            {leads.map((lead: any) => (
-              <tr key={lead.id} className="border-b">
+            {leads.map((lead) => (
+              <tr
+                key={lead.id}
+                className="border-b"
+              >
                 <td className="p-3">{lead.full_name}</td>
                 <td className="p-3">{lead.email}</td>
                 <td className="p-3">{lead.phone}</td>

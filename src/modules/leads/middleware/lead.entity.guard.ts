@@ -1,17 +1,51 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
+
+import {
+  LEAD_ENTITY_TYPE,
+  type LeadEntity,
+} from "../types/lead.entity";
 
 /**
- * ENTITY GUARD
- * Enforces entityType + entityId integrity at API boundary
+ * Lead Entity Guard
+ *
+ * Validates every Lead payload entering the API layer.
  */
 
-export function validateLeadEntityPayload(body: any) {
+export function validateLeadEntityPayload(
+  body: Partial<LeadEntity> | null | undefined
+): NextResponse | null {
   if (!body) {
-    return NextResponse.json({ error: 'Missing payload' }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing request body." },
+      { status: 400 }
+    );
   }
 
-  if (!body.entityId) {
-    return NextResponse.json({ error: 'Missing entityId' }, { status: 400 });
+  if (body.entityType !== LEAD_ENTITY_TYPE) {
+    return NextResponse.json(
+      { error: "Invalid entityType." },
+      { status: 400 }
+    );
+  }
+
+  if (
+    typeof body.entityId !== "string" ||
+    body.entityId.trim().length === 0
+  ) {
+    return NextResponse.json(
+      { error: "Missing entityId." },
+      { status: 400 }
+    );
+  }
+
+  if (
+    typeof body.title !== "string" ||
+    body.title.trim().length === 0
+  ) {
+    return NextResponse.json(
+      { error: "Missing title." },
+      { status: 400 }
+    );
   }
 
   return null;

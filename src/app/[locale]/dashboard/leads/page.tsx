@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-
 import LeadModal from "@/components/dashboard/LeadModal";
 import LeadTable from "@/components/dashboard/LeadTable";
-
 import { useLeads } from "@/modules/leads/hooks/useLeads";
 import { updateLead } from "@/modules/leads/api/lead.api";
-
+import { toLead } from "@/modules/leads/mappers/lead.ui.mapper";
 import type { LeadEntity, LeadStatus } from "@/modules/leads/types/lead.entity";
+
+
 
 export default function LeadsPage() {
   const {
@@ -17,11 +17,17 @@ export default function LeadsPage() {
     refetch,
   } = useLeads();
 
+
   const [selectedLead, setSelectedLead] =
     useState<LeadEntity | null>(null);
 
   const [modalOpen, setModalOpen] =
     useState(false);
+
+  const uiLeads = leads.map(toLead);
+
+  const selectedUiLead =
+    selectedLead ? toLead(selectedLead) : null;
 
   function handleOpenLead(
     lead: LeadEntity
@@ -60,17 +66,30 @@ export default function LeadsPage() {
       </div>
 
       <LeadTable
-        leads={leads}
+        leads={uiLeads}
         loading={loading}
-        onOpenLead={handleOpenLead}
-        onConvertLead={() => {}}
+        onOpenLead={(lead) => {
+          const entity = leads.find(
+            (l) => l.entityId === lead.id
+          );
+
+          if (entity) {
+            handleOpenLead(entity);
+          }
+        }}
+        onConvertLead={() => { }}
       />
 
       <LeadModal
-        lead={selectedLead}
+        lead={selectedUiLead}
         isOpen={modalOpen}
         onClose={handleCloseModal}
-        onUpdateStatus={handleUpdateStatus}
+        onUpdateStatus={async (leadId, status) => {
+          await handleUpdateStatus(
+            leadId,
+            status as LeadStatus
+          );
+        }}
       />
     </div>
   );

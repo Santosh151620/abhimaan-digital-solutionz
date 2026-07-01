@@ -6,7 +6,16 @@ type RevenueForecastProps = {
   velocityScore: number;
 };
 
-const cards = [
+type Card = {
+  key: keyof RevenueForecastProps;
+  title: string;
+  border: string;
+  value: string;
+  prefix?: string;
+  suffix?: string;
+};
+
+const cards: readonly Card[] = [
   {
     key: "estimatedMonthlyRevenue",
     title: "Monthly Revenue",
@@ -41,7 +50,7 @@ const cards = [
     border: "border-rose-500/30",
     value: "text-rose-400",
   },
-] as const;
+];
 
 export default function RevenueForecast(
   props: RevenueForecastProps
@@ -49,7 +58,7 @@ export default function RevenueForecast(
   return (
     <section className="grid grid-cols-1 gap-4 md:grid-cols-5">
       {cards.map((card) => {
-        const raw = props[card.key];
+        const value = props[card.key];
 
         return (
           <div
@@ -63,8 +72,9 @@ export default function RevenueForecast(
             <p
               className={`mt-2 text-2xl font-bold ${card.value}`}
             >
-              {(card as any).prefix ?? ""}
-              {(card as any).suffix ?? ""}
+              {card.prefix}
+              {value}
+              {card.suffix}
             </p>
           </div>
         );

@@ -1,44 +1,61 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 
 import type { Lead } from "@/types/lead";
+import type { Client } from "@/types/client";
+import type { Payment } from "@/types/payment";
+import type { Project } from "@/types/project";
 
 export interface DashboardData {
   leads: Lead[];
-  payments: any[];
-  projects: any[];
-  clients: any[];
+  clients: Client[];
+  projects: Project[];
+  payments: Payment[];
 }
 
-export async function getDashboardData(): Promise<DashboardData> {
+async function fetchTable<T>(
+  table: string
+): Promise<T[]> {
   const supabase = await createSupabaseClient();
 
+  const { data, error } = await supabase
+    .from(table)
+    .select("*");
+
+  if (error) {
+    console.error(
+      `[DashboardData] ${table}:`,
+      error.message
+    );
+    return [];
+  }
+
+  return (data ?? []) as T[];
+}
+
+/**
+ * Dashboard Aggregator
+ *
+ * Single entry point used by the CRM dashboard.
+ * All modules are loaded in parallel and failures
+ * are isolated to their own dataset.
+ */
+export async function getDashboardData(): Promise<DashboardData> {
   const [
-    leadsResult,
-    paymentsResult,
-    projectsResult,
-    clientsResult,
+    leads,
+    clients,
+    projects,
+    payments,
   ] = await Promise.all([
-    supabase
-      .from("leads")
-      .select("*"),
-
-    supabase
-      .from("payments")
-      .select("*"),
-
-    supabase
-      .from("projects")
-      .select("*"),
-
-    supabase
-      .from("clients")
-      .select("*"),
+    fetchTable<Lead>("leads"),
+    fetchTable<Client>("clients"),
+    fetchTable<Project>("projects"),
+    fetchTable<Payment>("payments"),
   ]);
 
   return {
-    leads: leadsResult.data ?? [],
-    payments: paymentsResult.data ?? [],
-    projects: projectsResult.data ?? [],
-    clients: clientsResult.data ?? [],
+    leads,
+    clients,
+    projects,
+    payments,
   };
 }

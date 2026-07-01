@@ -36,7 +36,7 @@ export class CRMExecutionService {
     const tasks = this.routeEvent(event);
 
     this.audit.log({
-      organizationId: "demo-org", // will be injected later via tenant context
+      organizationId: "demo-org",
       type: "crm_event_processed",
       entityId: event.entityId,
       payload: {
@@ -73,10 +73,12 @@ export class CRMExecutionService {
     }
   }
 
-  private handleLeadCreated(event: CRMEvent): WorkflowTask[] {
+  private handleLeadCreated(
+    event: CRMEvent
+  ): WorkflowTask[] {
     return [
       this.createTask({
-        title: `Follow up new lead`,
+        title: "Follow up new lead",
         type: "follow_up",
         priority: "high",
         source: "lead",
@@ -85,10 +87,12 @@ export class CRMExecutionService {
     ];
   }
 
-  private handleLeadFollowUp(event: CRMEvent): WorkflowTask[] {
+  private handleLeadFollowUp(
+    event: CRMEvent
+  ): WorkflowTask[] {
     return [
       this.createTask({
-        title: `Follow up lead`,
+        title: "Follow up lead",
         type: "call",
         priority: "urgent",
         source: "lead",
@@ -97,13 +101,18 @@ export class CRMExecutionService {
     ];
   }
 
-  private handleDealStageChange(event: CRMEvent): WorkflowTask[] {
-    const stage = (event.metadata as any)?.stage;
+  private handleDealStageChange(
+    event: CRMEvent
+  ): WorkflowTask[] {
+    const stage =
+      typeof event.metadata?.stage === "string"
+        ? event.metadata.stage
+        : undefined;
 
     if (stage === "proposal") {
       return [
         this.createTask({
-          title: `Send proposal follow-up`,
+          title: "Send proposal follow-up",
           type: "proposal",
           priority: "high",
           source: "client",
@@ -115,7 +124,7 @@ export class CRMExecutionService {
     if (stage === "negotiation") {
       return [
         this.createTask({
-          title: `Negotiate deal terms`,
+          title: "Negotiate deal terms",
           type: "meeting",
           priority: "urgent",
           source: "client",
@@ -127,10 +136,12 @@ export class CRMExecutionService {
     return [];
   }
 
-  private handleClientOnboarded(event: CRMEvent): WorkflowTask[] {
+  private handleClientOnboarded(
+    event: CRMEvent
+  ): WorkflowTask[] {
     return [
       this.createTask({
-        title: `Onboarding checklist`,
+        title: "Onboarding checklist",
         type: "task",
         priority: "medium",
         source: "client",
@@ -139,10 +150,12 @@ export class CRMExecutionService {
     ];
   }
 
-  private handleProposalSent(event: CRMEvent): WorkflowTask[] {
+  private handleProposalSent(
+    event: CRMEvent
+  ): WorkflowTask[] {
     return [
       this.createTask({
-        title: `Follow up proposal response`,
+        title: "Follow up proposal response",
         type: "follow_up",
         priority: "high",
         source: "client",
@@ -151,10 +164,12 @@ export class CRMExecutionService {
     ];
   }
 
-  private handlePaymentPending(event: CRMEvent): WorkflowTask[] {
+  private handlePaymentPending(
+    event: CRMEvent
+  ): WorkflowTask[] {
     return [
       this.createTask({
-        title: `Payment follow-up required`,
+        title: "Payment follow-up required",
         type: "reminder",
         priority: "urgent",
         source: "system",
@@ -173,19 +188,24 @@ export class CRMExecutionService {
     const now = new Date().toISOString();
 
     return {
-      id: `${input.contextId}-${Math.random().toString(36).slice(2, 10)}`,
-
+      id: `${input.contextId}-${Math.random()
+        .toString(36)
+        .slice(2, 10)}`,
       title: input.title,
       type: input.type,
       status: "pending",
       priority: input.priority,
       source: input.source,
-
       context: {
-        leadId: input.source === "lead" ? input.contextId : undefined,
-        clientId: input.source === "client" ? input.contextId : undefined,
+        leadId:
+          input.source === "lead"
+            ? input.contextId
+            : undefined,
+        clientId:
+          input.source === "client"
+            ? input.contextId
+            : undefined,
       },
-
       createdAt: now,
       updatedAt: now,
     };

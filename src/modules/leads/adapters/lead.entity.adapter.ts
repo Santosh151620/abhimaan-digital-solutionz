@@ -1,42 +1,59 @@
 import {
   LeadEntity,
   LEAD_ENTITY_TYPE,
-} from '../types/lead.entity';
+} from "../types/lead.entity";
 
 /**
- * Entity adapter ensures strict entity-first compliance
- * for future migration into unified CRM entity registry
+ * Lead Entity Adapter
+ *
+ * Canonical adapter between raw database objects and
+ * LeadEntity domain objects.
  */
 
-export function assertLeadEntity(entity: unknown): asserts entity is LeadEntity {
-  if (!entity || typeof entity !== 'object') {
-    throw new Error('Invalid LeadEntity');
+export function isLeadEntity(value: unknown): value is LeadEntity {
+  if (!value || typeof value !== "object") {
+    return false;
   }
 
-  const e = entity as Partial<LeadEntity>;
+  const entity = value as Partial<LeadEntity>;
 
-  if (e.entityType !== LEAD_ENTITY_TYPE) {
-    throw new Error('Invalid entityType for LeadEntity');
-  }
+  return (
+    entity.entityType === LEAD_ENTITY_TYPE &&
+    typeof entity.entityId === "string" &&
+    entity.entityId.length > 0 &&
+    typeof entity.title === "string" &&
+    typeof entity.createdAt === "string" &&
+    typeof entity.updatedAt === "string"
+  );
+}
 
-  if (!e.entityId) {
-    throw new Error('Missing entityId');
+export function assertLeadEntity(
+  value: unknown
+): asserts value is LeadEntity {
+  if (!isLeadEntity(value)) {
+    throw new Error("Invalid LeadEntity");
   }
 }
 
-export function normalizeLeadEntity(entity: any): LeadEntity {
-  assertLeadEntity(entity);
+export function normalizeLeadEntity(
+  value: unknown
+): LeadEntity {
+  assertLeadEntity(value);
 
   return {
     entityType: LEAD_ENTITY_TYPE,
-    entityId: entity.entityId,
-    title: entity.title ?? '',
-    email: entity.email,
-    phone: entity.phone,
-    status: entity.status ?? 'new',
-    source: entity.source,
-    score: entity.score,
-    createdAt: entity.createdAt ?? new Date().toISOString(),
-    updatedAt: entity.updatedAt ?? new Date().toISOString(),
+    entityId: value.entityId,
+    title: value.title.trim(),
+
+    email: value.email ?? undefined,
+    phone: value.phone ?? undefined,
+
+    status: value.status ?? "new",
+
+    source: value.source ?? undefined,
+    score: value.score ?? 0,
+
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
   };
 }

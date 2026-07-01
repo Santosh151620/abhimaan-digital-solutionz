@@ -1,6 +1,5 @@
-import { NextResponse } from 'next/server';
-import { LeadsService } from '@/modules/leads/services/LeadsService';
-
+import { NextResponse } from "next/server";
+import { LeadsService } from "@/modules/leads/services/LeadsService";
 
 const service = new LeadsService();
 

@@ -1,15 +1,25 @@
 import { createClient } from "@/lib/supabase/client";
 
-const supabase = createClient();
 export const dynamic = "force-dynamic";
 
-async function getClients() {
+const supabase = createClient();
+
+type ClientRow = {
+  id: string;
+  full_name: string;
+  company_name: string;
+  email: string;
+  phone: string;
+  status: string;
+};
+
+async function getClients(): Promise<ClientRow[]> {
   const { data } = await supabase
     .from("clients")
     .select("*")
     .order("created_at", { ascending: false });
 
-  return data ?? [];
+  return (data ?? []) as ClientRow[];
 }
 
 export default async function ClientsPage() {
@@ -19,6 +29,7 @@ export default async function ClientsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Clients</h1>
+
         <p className="text-gray-400">
           Total Clients: {clients.length}
         </p>
@@ -37,7 +48,7 @@ export default async function ClientsPage() {
           </thead>
 
           <tbody>
-            {clients.map((client: any) => (
+            {clients.map((client) => (
               <tr
                 key={client.id}
                 className="border-b border-slate-800"

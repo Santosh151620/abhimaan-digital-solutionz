@@ -2,12 +2,16 @@ import { NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/requireAdmin";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
+type UpdateStatusRequest = {
+  leadId: string;
+  status: string;
+};
+
 export async function POST(req: Request) {
   try {
-    // Verify logged-in admin
     await requireAdmin();
 
-    const body = await req.json();
+    const body: UpdateStatusRequest = await req.json();
 
     const { leadId, status } = body;
 
@@ -23,7 +27,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Fetch current status
     const { data: existingLead, error: fetchError } =
       await supabaseAdmin
         .from("leads")
@@ -43,10 +46,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const oldStatus =
-      existingLead?.status ?? "new";
+    const oldStatus = existingLead?.status ?? "new";
 
-    // Update lead
     const { error: updateError } =
       await supabaseAdmin
         .from("leads")
@@ -67,7 +68,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Timeline (optional)
     const { error: timelineError } =
       await supabaseAdmin
         .from("lead_activity_timeline")
@@ -79,7 +79,6 @@ export async function POST(req: Request) {
           created_at: new Date().toISOString(),
         });
 
-    // Don't fail if timeline table doesn't exist
     if (timelineError) {
       console.warn(
         "Timeline insert failed:",
@@ -91,13 +90,16 @@ export async function POST(req: Request) {
       success: true,
       message: "Lead updated successfully",
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : "Unauthorized";
+
     return NextResponse.json(
       {
         success: false,
-        error:
-          err?.message ??
-          "Unauthorized",
+        error: message,
       },
       {
         status: 401,
