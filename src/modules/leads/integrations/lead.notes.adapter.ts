@@ -1,4 +1,7 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 /**
  * Bridges Leads → Unified Notes System
@@ -6,7 +9,7 @@ import { LeadEntity } from '../types/lead.entity';
 
 export function mapLeadToNotesContext(lead: LeadEntity) {
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,
     entityId: lead.entityId,
     contextTitle: `Lead: ${lead.title}`,
   };

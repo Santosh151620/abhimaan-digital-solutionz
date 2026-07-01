@@ -1,8 +1,11 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 export function createEmptyLead(entityId: string): LeadEntity {
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,
     entityId,
     title: '',
     email: '',

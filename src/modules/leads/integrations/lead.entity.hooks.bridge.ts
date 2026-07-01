@@ -1,4 +1,7 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 /**
  * Bridge layer for future unified entity hooks system
@@ -20,7 +23,7 @@ export function useLeadEntitySnapshot(lead: LeadEntity) {
 
 export function useLeadEntityIdentity(entityId: string) {
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,
     entityId,
     key: `lead:${entityId}`,
   };

@@ -1,4 +1,7 @@
-import { LeadEntity } from '../types/lead.entity';
+import {
+  LeadEntity,
+  LEAD_ENTITY_TYPE,
+} from '../types/lead.entity';
 
 export interface LeadDTO {
   entityType: string;
@@ -18,7 +21,7 @@ export interface LeadDTO {
 
 export function toLeadEntity(dto: LeadDTO): LeadEntity {
   return {
-    entityType: 'lead',
+    entityType: LEAD_ENTITY_TYPE,,
     entityId: dto.entityId,
     title: dto.title,
     email: dto.email,
