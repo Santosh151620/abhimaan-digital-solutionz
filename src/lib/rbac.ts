@@ -40,4 +40,4 @@ export function hasPermission(
   permission: Permission
 ): boolean {
   return ROLE_MATRIX[role]?.includes(permission);
-}
+}   
