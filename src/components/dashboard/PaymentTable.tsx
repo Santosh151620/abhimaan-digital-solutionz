@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback, memo } from "react";
 import PaymentModal, { type Payment } from "@/components/dashboard/PaymentModal";
 
 export type { Payment };
@@ -9,40 +9,55 @@ interface PaymentTableProps {
   payments: Payment[];
 }
 
-export default function PaymentTable({
-  payments,
-}: PaymentTableProps) {
-  const [rows, setRows] = useState(payments);
-
-  const [selectedPayment, setSelectedPayment] =
-    useState<Payment | null>(null);
+function PaymentTable({ payments }: PaymentTableProps) {
+  const [rows, setRows] = useState<Payment[]>(payments);
+  const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null);
 
   const totalRevenue = useMemo(() => {
-    return rows
-      .filter((p) => p.status === "paid")
-      .reduce((sum, p) => sum + Number(p.amount), 0);
+    return rows.reduce((sum, p) => {
+      if (p.status !== "paid") return sum;
+      return sum + Number(p.amount);
+    }, 0);
   }, [rows]);
 
-  function handleUpdated(updated: Payment) {
-    setRows((prev) =>
-      prev.map((p) => (p.id === updated.id ? updated : p))
-    );
+  const handleUpdated = useCallback((updated: Payment) => {
+    setRows((prev) => {
+      const idx = prev.findIndex((p) => p.id === updated.id);
+      if (idx === -1) return prev;
+
+      const next = [...prev];
+      next[idx] = updated;
+      return next;
+    });
 
     setSelectedPayment(updated);
-  }
+  }, []);
+
+  const openModal = useCallback((payment: Payment) => {
+    setSelectedPayment(payment);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setSelectedPayment(null);
+  }, []);
+
+  const formatCurrency = useCallback((value: number) => {
+    return value.toLocaleString("en-IN");
+  }, []);
+
+  const formatDate = useCallback((dateStr: string) => {
+    return dateStr ? dateStr.split("T")[0] : "-";
+  }, []);
 
   return (
     <>
       <div className="overflow-hidden rounded-2xl border border-white/10 bg-slate-950">
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">
-              Payments
-            </h2>
+            <h2 className="text-lg font-semibold text-white">Payments</h2>
 
             <p className="text-sm text-slate-400">
-              Total Paid Revenue: ₹
-              {totalRevenue.toLocaleString("en-IN")}
+              Total Paid Revenue: ₹{formatCurrency(totalRevenue)}
             </p>
           </div>
         </div>
@@ -56,13 +71,19 @@ export default function PaymentTable({
                 <th className="px-5 py-3">Method</th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3">Date</th>
-                <th className="px-5 py-3 text-right">
-                  Action
-                </th>
+                <th className="px-5 py-3 text-right">Action</th>
               </tr>
             </thead>
 
             <tbody>
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-slate-500">
+                    No payments found.
+                  </td>
+                </tr>
+              )}
+
               {rows.map((payment) => (
                 <tr
                   key={payment.id}
@@ -73,8 +94,7 @@ export default function PaymentTable({
                   </td>
 
                   <td className="px-5 py-4 font-medium text-white">
-                    ₹
-                    {Number(payment.amount).toLocaleString("en-IN")}
+                    ₹{formatCurrency(Number(payment.amount))}
                   </td>
 
                   <td className="px-5 py-4 text-slate-300">
@@ -88,12 +108,12 @@ export default function PaymentTable({
                   </td>
 
                   <td className="px-5 py-4 text-slate-400">
-                    {payment.created_at.split("T")[0]}
+                    {formatDate(payment.created_at)}
                   </td>
 
                   <td className="px-5 py-4 text-right">
                     <button
-                      onClick={() => setSelectedPayment(payment)}
+                      onClick={() => openModal(payment)}
                       className="rounded-lg bg-cyan-600 px-3 py-2 text-white hover:bg-cyan-700"
                     >
                       Edit
@@ -101,17 +121,6 @@ export default function PaymentTable({
                   </td>
                 </tr>
               ))}
-
-              {rows.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="py-8 text-center text-slate-500"
-                  >
-                    No payments found.
-                  </td>
-                </tr>
-              )}
             </tbody>
           </table>
         </div>
@@ -120,9 +129,11 @@ export default function PaymentTable({
       <PaymentModal
         payment={selectedPayment}
         isOpen={selectedPayment !== null}
-        onClose={() => setSelectedPayment(null)}
+        onClose={closeModal}
         onUpdated={handleUpdated}
       />
     </>
   );
 }
+
+export default memo(PaymentTable);

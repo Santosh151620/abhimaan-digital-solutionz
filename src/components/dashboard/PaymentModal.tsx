@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, memo } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 export interface Payment {
@@ -30,65 +30,33 @@ interface PaymentModalProps {
 
 const supabase = createClient();
 
-const STATUS_OPTIONS: Payment["status"][] = [
-  "pending",
-  "paid",
-  "failed",
-  "refunded",
-];
-
-const METHOD_OPTIONS: Payment["method"][] = [
-  "cash",
-  "card",
-  "bank_transfer",
-  "upi",
-];
-
-export default function PaymentModal({
+function PaymentModal({
   payment,
   isOpen,
   onClose,
   onUpdated,
 }: PaymentModalProps) {
-  const [status, setStatus] =
-    useState<Payment["status"]>("pending");
+  const [status, setStatus] = useState<Payment["status"]>("pending");
+  const [method, setMethod] = useState<Payment["method"]>("cash");
+  const [amount, setAmount] = useState<number>(0);
+  const [reference, setReference] = useState<string>("");
+  const [notes, setNotes] = useState<string>("");
+  const [saving, setSaving] = useState(false);
 
-  const [method, setMethod] =
-    useState<Payment["method"]>("cash");
-
-  const [amount, setAmount] = useState(0);
-
-  const [reference, setReference] =
-    useState("");
-
-  const [notes, setNotes] =
-    useState("");
-
-  const [saving, setSaving] =
-    useState(false);
-
-useEffect(() => {
-  if (!payment) return;
-
-  setForm((prev) => ({
-    ...prev,
-    status: payment.status,
-    method: payment.method,
-    amount: payment.amount,
-    reference: payment.reference ?? "",
-    notes: payment.notes ?? "",
-  }));
-}, [payment]);
-
-
-  if (!isOpen || !payment) {
-    return null;
-  }
-
-  async function handleSave() {
+  useEffect(() => {
     if (!payment) return;
 
-    const currentPayment = payment; // FIX: snapshot non-null value
+    setStatus(payment.status);
+    setMethod(payment.method);
+    setAmount(payment.amount ?? 0);
+    setReference(payment.reference ?? "");
+    setNotes(payment.notes ?? "");
+  }, [payment]);
+
+  const handleSave = useCallback(async () => {
+    if (!payment) return;
+
+    const current = payment;
 
     setSaving(true);
 
@@ -105,7 +73,7 @@ useEffect(() => {
       const { error } = await supabase
         .from("payments")
         .update(updates)
-        .eq("id", currentPayment.id);
+        .eq("id", current.id);
 
       if (error) {
         console.error(error);
@@ -113,7 +81,7 @@ useEffect(() => {
       }
 
       onUpdated({
-        ...currentPayment,
+        ...current,
         status,
         method,
         amount,
@@ -125,18 +93,22 @@ useEffect(() => {
     } finally {
       setSaving(false);
     }
-  }
+  }, [payment, status, method, amount, reference, notes, onUpdated, onClose]);
+
+  const handleClose = useCallback(() => {
+    onClose();
+  }, [onClose]);
+
+  if (!isOpen || !payment) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
       <div className="w-full max-w-3xl rounded-2xl border border-white/10 bg-slate-950 shadow-2xl">
         <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
-          <h2 className="text-2xl font-bold text-white">
-            Edit Payment
-          </h2>
+          <h2 className="text-2xl font-bold text-white">Edit Payment</h2>
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="rounded-lg bg-slate-900 px-4 py-2 text-white hover:bg-slate-800"
           >
             Close
@@ -153,9 +125,7 @@ useEffect(() => {
               <input
                 type="number"
                 value={amount}
-                onChange={(e) =>
-                  setAmount(Number(e.target.value))
-                }
+                onChange={(e) => setAmount(Number(e.target.value))}
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               />
             </div>
@@ -168,13 +138,11 @@ useEffect(() => {
               <select
                 value={status}
                 onChange={(e) =>
-                  setStatus(
-                    e.target.value as Payment["status"]
-                  )
+                  setStatus(e.target.value as Payment["status"])
                 }
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               >
-                {STATUS_OPTIONS.map((item) => (
+                {["pending", "paid", "failed", "refunded"].map((item) => (
                   <option key={item} value={item}>
                     {item.toUpperCase()}
                   </option>
@@ -190,13 +158,11 @@ useEffect(() => {
               <select
                 value={method}
                 onChange={(e) =>
-                  setMethod(
-                    e.target.value as Payment["method"]
-                  )
+                  setMethod(e.target.value as Payment["method"])
                 }
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               >
-                {METHOD_OPTIONS.map((item) => (
+                {["cash", "card", "bank_transfer", "upi"].map((item) => (
                   <option key={item} value={item}>
                     {item.toUpperCase()}
                   </option>
@@ -213,9 +179,7 @@ useEffect(() => {
 
               <input
                 value={reference}
-                onChange={(e) =>
-                  setReference(e.target.value)
-                }
+                onChange={(e) => setReference(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               />
             </div>
@@ -228,9 +192,7 @@ useEffect(() => {
               <textarea
                 rows={6}
                 value={notes}
-                onChange={(e) =>
-                  setNotes(e.target.value)
-                }
+                onChange={(e) => setNotes(e.target.value)}
                 className="w-full rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
               />
             </div>
@@ -239,7 +201,7 @@ useEffect(() => {
 
         <div className="flex justify-end gap-3 border-t border-white/10 px-6 py-4">
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="rounded-lg bg-slate-800 px-5 py-2 text-white"
           >
             Cancel
@@ -257,3 +219,5 @@ useEffect(() => {
     </div>
   );
 }
+
+export default memo(PaymentModal);
