@@ -67,15 +67,19 @@ export default function PaymentModal({
   const [saving, setSaving] =
     useState(false);
 
-  useEffect(() => {
-    if (!payment) return;
+useEffect(() => {
+  if (!payment) return;
 
-    setStatus(payment.status);
-    setMethod(payment.method);
-    setAmount(payment.amount);
-    setReference(payment.reference ?? "");
-    setNotes(payment.notes ?? "");
-  }, [payment]);
+  setForm((prev) => ({
+    ...prev,
+    status: payment.status,
+    method: payment.method,
+    amount: payment.amount,
+    reference: payment.reference ?? "",
+    notes: payment.notes ?? "",
+  }));
+}, [payment]);
+
 
   if (!isOpen || !payment) {
     return null;
