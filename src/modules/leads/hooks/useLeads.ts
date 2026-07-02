@@ -29,9 +29,13 @@ export function useLeads() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
+ useEffect(() => {
+  const timer = setTimeout(() => {
+    void fetchLeads();
+  }, 0);
+
+  return () => clearTimeout(timer);
+}, [fetchLeads]);
 
   return {
     leads,

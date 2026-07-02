@@ -56,21 +56,21 @@ export default function ProjectForm({
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (project) {
-      setForm({
-        client_id: project.client_id,
-        name: project.name,
-        service_type: project.service_type,
-        status: project.status,
-        priority: project.priority,
-        project_cost: project.project_cost,
-        start_date: project.start_date,
-        end_date: project.end_date,
-        notes: project.notes,
-        progress_percentage: project.progress_percentage,
-      });
-    }
-  }, [project]);
+  if (!project) return;
+
+  setForm({
+    client_id: project.client_id,
+    name: project.name,
+    service_type: project.service_type,
+    status: project.status,
+    priority: project.priority,
+    project_cost: project.project_cost,
+    start_date: project.start_date,
+    end_date: project.end_date,
+    notes: project.notes,
+    progress_percentage: project.progress_percentage,
+  });
+}, [project]);
 
   function updateField<K extends keyof ProjectCreateInput>(
     key: K,

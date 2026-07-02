@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import EntityWorkspace from "@/components/entities/EntityWorkspace";
 
@@ -22,14 +22,12 @@ export default function LeadModal({
   onClose,
   onUpdateStatus,
 }: LeadModalProps) {
-  const [status, setStatus] = useState<LeadStatus>("new");
+  
+  const [status, setStatus] = useState<LeadStatus>(
+  lead?.status ?? "new"
+);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (lead) {
-      setStatus(lead.status);
-    }
-  }, [lead]);
 
   if (!isOpen || !lead) {
     return null;
@@ -52,8 +50,10 @@ export default function LeadModal({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60">
-      <div className="mx-auto my-10 w-full max-w-6xl rounded-xl bg-slate-900 shadow-2xl">
-
+     <div
+  key={lead.id}
+  className="mx-auto my-10 w-full max-w-6xl rounded-xl bg-slate-900 shadow-2xl"
+>
         <div className="border-b border-slate-800 p-6">
           <div className="flex items-start justify-between">
 

@@ -19,22 +19,14 @@ export default function EntityWorkspaceContainer({
   entityType,
   entityId,
 }: Props) {
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [activities] = useState<Activity[]>([]);
+  const [notes] = useState<Note[]>([]);
+  const [tasks] = useState<Task[]>([]);
+  const [attachments] = useState<Attachment[]>([]);
+  const [notifications] = useState<Notification[]>([]);
 
   useEffect(() => {
-    // TODO:
-    // Load entity-specific data here.
-    // Example:
-    // activityService.getByEntity(entityType, entityId).then(setActivities);
-    // notesService.getByEntity(entityType, entityId).then(setNotes);
-    // tasksService.getByEntity(entityType, entityId).then(setTasks);
-    // attachmentsService.getByEntity(entityType, entityId).then(setAttachments);
-    // notificationsService.getByEntity(entityType, entityId).then(setNotifications);
-  }, [entityType, entityId]);
+     }, [entityType, entityId]);
 
   return (
     <EntityWorkspace

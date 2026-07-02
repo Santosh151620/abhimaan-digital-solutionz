@@ -19,13 +19,13 @@ export default function LeadNotes({ leadId }: { leadId: string }) {
     setNotes(data);
   }, [leadId]);
 
-  const addNote = async () => {
-    // placeholder safe implementation (no lint warnings)
-  };
-
-  useEffect(() => {
+useEffect(() => {
+  const timer = setTimeout(() => {
     void fetchNotes();
-  }, [fetchNotes]);
+  }, 0);
+
+  return () => clearTimeout(timer);
+}, [fetchNotes]);
 
   return (
     <div className="space-y-2">

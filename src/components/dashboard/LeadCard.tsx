@@ -1,7 +1,6 @@
 "use client";
 import EntityWorkspaceContainer from "@/components/entities/EntityWorkspaceContainer";
 import { useEffect, useState } from "react";
-import EntityWorkspace from "@/components/entities/EntityWorkspace";
 import type { Lead } from "@/types/lead";
 
 const STATUS_OPTIONS = [
@@ -116,7 +115,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
               </p>
 
               <p className="text-slate-400 text-xs italic line-clamp-3">
-                "{lead.message}"
+                &ldquo;{lead.message}&rdquo;
               </p>
             </div>
           )}
@@ -217,9 +216,9 @@ export default function LeadCard({ lead }: { lead: Lead }) {
               </div>
 
               <EntityWorkspaceContainer
-  entityType="lead"
-  entityId={lead.id}
-/>
+                entityType="lead"
+                entityId={lead.id}
+              />
             </div>
           </div>
         </div>

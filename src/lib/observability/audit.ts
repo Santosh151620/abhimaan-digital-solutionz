@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/observability/logger";
 
 const supabase = await createClient();
+
 export type AuditEventType =
   | "workflow_created"
   | "workflow_updated"
@@ -29,7 +30,7 @@ export interface AuditEvent {
  * - AI training signals (future)
  */
 export class AuditService {
-  private table = "workflow_task_events";
+  private readonly table = "workflow_task_events";
 
   async log(event: AuditEvent): Promise<void> {
     try {
@@ -45,7 +46,7 @@ export class AuditService {
         organizationId: event.organizationId,
         meta: event as unknown as Record<string, unknown>,
       });
-    } catch (err) {
+    } catch {
       logger.error("Audit logging failed", {
         module: "audit",
         meta: event as unknown as Record<string, unknown>,

@@ -1,5 +1,4 @@
 import { createClient } from "@/lib/supabase/client";
-import { calculateLeadScore } from "./lead-intelligence";
 
 const supabase = createClient();
 
@@ -35,11 +34,7 @@ export async function getRevenueForecast(): Promise<RevenueForecast> {
   let wonCount = 0;
   let activeLeads = 0;
 
-  const now = Date.now();
-
   for (const lead of data) {
-    const enriched = calculateLeadScore(lead);
-
     const amount = lead.amount || 0;
 
     totalValue += amount;

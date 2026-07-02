@@ -13,7 +13,6 @@ export default function DashboardError({
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-950 px-6">
       <div className="max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center shadow-xl">
-
         <div className="mb-6 text-6xl">
           ⚠️
         </div>
@@ -23,7 +22,7 @@ export default function DashboardError({
         </h1>
 
         <p className="mb-8 text-slate-400">
-          We couldn't load your CRM dashboard right now.
+          We couldn&apos;t load your CRM dashboard right now.
           This is usually temporary.
           Please try again.
         </p>

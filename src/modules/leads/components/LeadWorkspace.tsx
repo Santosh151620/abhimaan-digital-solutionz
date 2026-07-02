@@ -6,9 +6,7 @@ export interface LeadWorkspaceProps {
   entityId: string;
 }
 
-export default function LeadWorkspace(
-  _props: LeadWorkspaceProps,
-): React.JSX.Element {
+export default function LeadWorkspace(): React.JSX.Element {
   return (
     <EntityWorkspace
       activities={[]}

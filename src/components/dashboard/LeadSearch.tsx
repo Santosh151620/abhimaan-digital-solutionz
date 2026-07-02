@@ -7,10 +7,14 @@ export default function LeadSearch({ value }: { value: string }) {
 
   // safe sync when external value changes
   useEffect(() => {
+  const timer = setTimeout(() => {
     if (value !== localValue) {
       setLocalValue(value);
     }
-  }, [value, localValue]);
+  }, 0);
+
+  return () => clearTimeout(timer);
+}, [value, localValue]);
 
   return (
     <input

@@ -22,7 +22,7 @@ export default function TodayWorkPanel({
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
       <div className="mb-4">
         <h2 className="text-lg font-semibold">
-          Today's Work
+          Today&apos;s Work
         </h2>
 
         <p className="text-sm text-slate-400">

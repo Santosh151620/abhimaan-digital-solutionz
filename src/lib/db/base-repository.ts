@@ -1,9 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TenantContextManager } from "@/lib/tenant/tenantContext";
 
-export abstract class BaseRepository<
-  TEntity extends Record<string, unknown>
-> {
+export abstract class BaseRepository<TEntity extends object> {
   protected readonly supabase: SupabaseClient;
   protected readonly table: string;
 
@@ -52,20 +50,21 @@ export abstract class BaseRepository<
       .single();
 
     if (error) throw error;
-
     return data as TEntity;
   }
 
   async update(id: string, payload: Partial<TEntity>): Promise<TEntity> {
+    // FIX: Supabase strict typing compatibility
+    const safePayload = payload as unknown as Record<string, unknown>;
+
     const { data, error } = await this.tableRef()
-      .update(payload as Partial<TEntity> & { organization_id: string })
+      .update(safePayload)
       .eq("organization_id", this.organizationId)
       .eq("id", id)
       .select()
       .single();
 
     if (error) throw error;
-
     return data as TEntity;
   }
 

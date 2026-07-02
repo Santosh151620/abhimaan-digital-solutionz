@@ -20,7 +20,9 @@ export default function LeadTimeline({ leadId }: { leadId: string }) {
   }, [leadId]);
 
   useEffect(() => {
-    void fetchTimeline();
+    queueMicrotask(() => {
+      void fetchTimeline();
+    });
   }, [fetchTimeline]);
 
   return (

@@ -1,5 +1,4 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
-import { requireEmployee } from "@/lib/auth";
 import type { DashboardLead, LeadStatus } from "@/types/dashboard";
 
 // await requireEmployee();

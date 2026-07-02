@@ -4,10 +4,10 @@ export const dynamic = "force-dynamic";
 export default async function AnalyticsPage() {
   const supabase = await createSupabaseClient();
 
-const { data: leads } = await supabase
-  .from("leads")
-  .select("*");
-  
+  const { data: leads } = await supabase
+    .from("leads")
+    .select("*");
+
 
   const totalLeads = leads?.length || 0;
 
@@ -60,11 +60,12 @@ const { data: leads } = await supabase
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
         <Metric title="Total" value={totalLeads} />
         <Metric title="New" value={newLeads} />
         <Metric title="Contacted" value={contacted} />
         <Metric title="Qualified" value={qualified} />
+        <Metric title="Proposal" value={proposal} />
         <Metric title="Won" value={won} />
         <Metric title="Lost" value={lost} />
       </div>

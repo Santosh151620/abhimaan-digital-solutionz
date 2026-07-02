@@ -87,48 +87,45 @@ export default function ProjectModal({
 
     setLoading(false);
   }, [project]);
-
   useEffect(() => {
     if (!project) return;
 
-    setStatus(project.status);
-    setPriority(project.priority);
-    setProgress(
-      project.progress_percentage ?? 0
-    );
-
-    void loadTimeline();
-  }, [project, loadTimeline]);
+    queueMicrotask(() => {
+      setStatus(project.status);
+      setPriority(project.priority);
+      setProgress(project.progress_percentage ?? 0);
+    });
+  }, [project]);
 
   if (!isOpen || !project) return null;
 
- async function saveChanges() {
-  if (!project) return;
+  async function saveChanges() {
+    if (!project) return;
 
-  setSaving(true);
+    setSaving(true);
 
-  const projectId = project.id;
+    const projectId = project.id;
 
-  try {
-    await onUpdate(projectId, {
-      status,
-      priority,
-      progress_percentage: progress,
-    });
-
-    await supabase
-      .from("project_timeline")
-      .insert({
-        project_id: projectId,
-        message: `Updated project (${status}, ${priority}, ${progress}%)`,
-        event_type: "update",
+    try {
+      await onUpdate(projectId, {
+        status,
+        priority,
+        progress_percentage: progress,
       });
 
+      await supabase
+        .from("project_timeline")
+        .insert({
+          project_id: projectId,
+          message: `Updated project (${status}, ${priority}, ${progress}%)`,
+          event_type: "update",
+        });
+
       await loadTimeline();
-  } finally {
-    setSaving(false);
+    } finally {
+      setSaving(false);
+    }
   }
-}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6">
