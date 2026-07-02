@@ -1,34 +1,54 @@
-import { NextResponse } from 'next/server';
-import { LeadsService } from '@/modules/leads/services/LeadsService';
-
-const service = new LeadsService();
+import { createClient } from "@/lib/supabase/server";
+import { LeadsService } from "@/modules/leads/services/LeadsService";
 
 export async function GET(
-  _req: Request,
-  { params }: { params: Promise<{ entityId: string }> }
-) {
-  const { entityId } = await params;
-
-  const lead = await service.getLead(entityId);
-
-  if (!lead) {
-    return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  req: Request,
+  context: {
+    params: Promise<{
+      entityId: string;
+    }>;
   }
+) {
+  const supabase = await createClient();
+  const service = new LeadsService(supabase);
 
-  return NextResponse.json(lead);
+  const { entityId } = await context.params;
+
+  return Response.json(await service.getLead(entityId));
 }
 
 export async function PUT(
   req: Request,
-  { params }: { params: Promise<{ entityId: string }> }
+  context: {
+    params: Promise<{
+      entityId: string;
+    }>;
+  }
 ) {
-  const { entityId } = await params;
+  const supabase = await createClient();
+  const service = new LeadsService(supabase);
+
   const body = await req.json();
 
-  const updated = await service.updateLead({
-    entityId,
-    ...body,
-  });
+  const { entityId } = await context.params;
+  const updated = await service.updateLead(entityId, body);
 
-  return NextResponse.json(updated);
+  return Response.json(updated);
+}
+
+export async function DELETE(
+  req: Request,
+  context: {
+    params: Promise<{
+      entityId: string;
+    }>;
+  }
+) {
+  const supabase = await createClient();
+  const service = new LeadsService(supabase);
+
+  const { entityId } = await context.params;
+  await service.deleteLead(entityId);
+
+  return Response.json({ success: true });
 }

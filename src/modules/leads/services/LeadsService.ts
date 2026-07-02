@@ -1,103 +1,64 @@
-import { createSupabaseServerClient } from "@/lib/supabase/server-client";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type {
+  Lead,
+  LeadStatus,
+  LeadTimeline,
+} from "../types/lead";
+
+import {
+  CreateLeadInput,
+  UpdateLeadInput,
+} from "../repositories/LeadsRepository";
 
 import { LeadsRepository } from "../repositories/LeadsRepository";
-import { LeadEntity } from "../types/lead.entity";
 
 export class LeadsService {
-  /**
-   * Repository factory.
-   *
-   * One Supabase client per request.
-   * Reused across all repository operations.
-   */
-  private async repository(): Promise<LeadsRepository> {
-    const supabase = await createSupabaseServerClient();
+  private readonly repo: LeadsRepository;
 
-    return new LeadsRepository(supabase);
+  constructor(supabase: SupabaseClient) {
+    this.repo = new LeadsRepository(supabase);
   }
 
-  async getLead(
-    id: string,
-  ): Promise<LeadEntity | null> {
-    const repo = await this.repository();
-
-    return repo.getLead(id);
+  async listLeads(): Promise<Lead[]> {
+    return this.repo.listLeads();
+  }
+async createLead(input: CreateLeadInput) {
+  return this.repo.createLead(input);
+}
+  async getLead(id: string): Promise<Lead | null> {
+    return this.repo.getLead(id);
   }
 
-  async listLeads(): Promise<LeadEntity[]> {
-    const repo = await this.repository();
+  async upsertLead(input: CreateLeadInput & { id?: string }): Promise<Lead> {
+    if (input.id) {
+      return this.repo.updateLead(input.id, input as UpdateLeadInput);
+    }
 
-    return repo.listLeads();
+    return this.repo.createLead(input);
   }
 
-  async upsertLead(input: {
-    entityId: string;
-    title: string;
-    email?: string;
-    phone?: string;
-    status?: LeadEntity["status"];
-    source?: string;
-    score?: number;
-  }): Promise<LeadEntity> {
-    const repo = await this.repository();
-
-    return repo.createLead({
-      id: input.entityId,
-      title: input.title,
-      email: input.email,
-      phone: input.phone,
-      status: input.status,
-      source: input.source,
-      score: input.score,
-    });
+  async updateLead(id: string, input: UpdateLeadInput): Promise<Lead> {
+    return this.repo.updateLead(id, input);
   }
 
-  async updateLead(input: {
-    entityId: string;
-    title?: string;
-    email?: string;
-    phone?: string;
-    status?: LeadEntity["status"];
-    source?: string;
-    score?: number;
-  }): Promise<LeadEntity> {
-    const repo = await this.repository();
-
-    return repo.updateLead({
-      id: input.entityId,
-      title: input.title,
-      email: input.email,
-      phone: input.phone,
-      status: input.status,
-      source: input.source,
-      score: input.score,
-    });
+  async updateStatus(id: string, status: LeadStatus): Promise<Lead> {
+    return this.repo.updateStatus(id, status);
   }
 
-  /**
-   * Centralized status update.
-   *
-   * Every status change in the CRM should eventually
-   * route through this method.
-   *
-   * Future additions (without changing callers):
-   * - Timeline
-   * - Activity Log
-   * - Workflow Engine
-   * - Notifications
-   * - Automations
-   * - Webhooks
-   * - Analytics
-   */
-  async updateStatus(
+  async deleteLead(id: string): Promise<void> {
+    return this.repo.deleteLead(id);
+  }
+
+  async listTimeline(leadId: string): Promise<LeadTimeline[]> {
+    return this.repo.listTimeline(leadId);
+  }
+
+  async addTimelineEntry(
     leadId: string,
-    status: LeadEntity["status"],
-  ): Promise<LeadEntity> {
-    const repo = await this.repository();
-
-    return repo.updateStatus(
-      leadId,
-      status,
-    );
+    message: string,
+    eventType: LeadTimeline["event_type"]
+  ): Promise<void> {
+    return this.repo.addTimelineEntry(leadId, message, eventType);
   }
 }

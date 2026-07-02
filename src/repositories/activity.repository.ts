@@ -1,6 +1,6 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 
-import { BaseRepository } from "./base.repository";
+import { BaseRepository } from "@/lib/db/base-repository";
 import type { Activity } from "@/types/activity";
 
 export class ActivityRepository extends BaseRepository<Activity> {
@@ -12,7 +12,7 @@ export class ActivityRepository extends BaseRepository<Activity> {
     entityType: string,
     entityId: string,
   ): Promise<Activity[]> {
-    const { data, error } = await this.query()
+    const { data, error } = await this.tableRef()
       .select("*")
       .eq("entityType", entityType)
       .eq("entityId", entityId)

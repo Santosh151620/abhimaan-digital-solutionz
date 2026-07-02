@@ -1,6 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-
-import { BaseRepository } from "./base.repository";
+import { BaseRepository } from "@/lib/db/base-repository";
 import type { Attachment } from "@/types/attachments";
 
 export class AttachmentsRepository extends BaseRepository<Attachment> {
@@ -12,15 +11,13 @@ export class AttachmentsRepository extends BaseRepository<Attachment> {
     entityType: string,
     entityId: string,
   ): Promise<Attachment[]> {
-    const { data, error } = await this.query()
+    const { data, error } = await this.tableRef()
       .select("*")
       .eq("entityType", entityType)
       .eq("entityId", entityId)
       .order("uploadedAt", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     return (data ?? []) as Attachment[];
   }

@@ -1,6 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-
-import { BaseRepository } from "./base.repository";
+import { BaseRepository } from "@/lib/db/base-repository";
 import type { Notification } from "@/types/notifications";
 
 export class NotificationsRepository extends BaseRepository<Notification> {
@@ -12,15 +11,13 @@ export class NotificationsRepository extends BaseRepository<Notification> {
     entityType: string,
     entityId: string,
   ): Promise<Notification[]> {
-    const { data, error } = await this.query()
+    const { data, error } = await this.tableRef()
       .select("*")
       .eq("entityType", entityType)
       .eq("entityId", entityId)
       .order("createdAt", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     return (data ?? []) as Notification[];
   }

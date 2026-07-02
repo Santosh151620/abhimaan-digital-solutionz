@@ -2,116 +2,115 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { BaseRepository } from "@/lib/db/base-repository";
 
-import {
-  LeadEntity,
-  LEAD_ENTITY_TYPE,
-} from "../types/lead.entity";
+import type {
+  Lead,
+  LeadStatus,
+  LeadTimeline,
+} from "../types/lead";
 
 export interface CreateLeadInput {
-  id: string;
-  title: string;
-  email?: string;
-  phone?: string;
-  status?: LeadEntity["status"];
-  source?: string;
-  score?: number;
+  full_name: string;
+  email: string;
+
+  phone?: string | null;
+  company?: string | null;
+  service_interest?: string | null;
+  message?: string | null;
+  source?: string | null;
+
+  status?: LeadStatus;
+
+  client_id?: string | null;
 }
 
 export interface UpdateLeadInput {
-  id: string;
-  title?: string;
+  full_name?: string;
   email?: string;
-  phone?: string;
-  status?: LeadEntity["status"];
-  source?: string;
-  score?: number;
+
+  phone?: string | null;
+  company?: string | null;
+  service_interest?: string | null;
+  message?: string | null;
+  source?: string | null;
+
+  status?: LeadStatus;
+
+  client_id?: string | null;
 }
 
-export class LeadsRepository extends BaseRepository<LeadEntity> {
-  constructor(
-    supabase: SupabaseClient,
-  ) {
+export class LeadsRepository extends BaseRepository<Lead> {
+  constructor(supabase: SupabaseClient) {
     super(supabase, "leads");
   }
 
-  async getLead(
-    id: string,
-  ): Promise<LeadEntity | null> {
+  async getLead(id: string): Promise<Lead | null> {
     return this.findById(id);
   }
 
-  async listLeads(): Promise<LeadEntity[]> {
-    const { data, error } = await this.query()
+  async listLeads(): Promise<Lead[]> {
+    const { data, error } = await this.tableRef()
       .select("*")
-      .order("createdAt", {
-        ascending: false,
-      });
+      .eq("organization_id", this.organizationId)
+      .order("created_at", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
-    return (data ?? []) as LeadEntity[];
+    return (data ?? []) as Lead[];
   }
 
-  async createLead(
-    input: CreateLeadInput,
-  ): Promise<LeadEntity> {
-    const now = new Date().toISOString();
-
-    const lead: LeadEntity = {
-      entityType: LEAD_ENTITY_TYPE,
-      entityId: input.id,
-
-      title: input.title.trim(),
-
-      email: input.email,
-      phone: input.phone,
-
+  async createLead(input: CreateLeadInput): Promise<Lead> {
+    return this.create({
+      ...input,
+      full_name: input.full_name.trim(),
       status: input.status ?? "new",
-
-      source: input.source,
-      score: input.score ?? 0,
-
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    return this.create(lead);
-  }
-
-  async updateLead(
-    input: UpdateLeadInput,
-  ): Promise<LeadEntity> {
-    const updates: Partial<LeadEntity> = {
-      title: input.title?.trim(),
-      email: input.email,
-      phone: input.phone,
-      status: input.status,
-      source: input.source,
-      score: input.score,
-      updatedAt: new Date().toISOString(),
-    };
-
-    return this.update(
-      input.id,
-      updates,
-    );
-  }
-
-  async updateStatus(
-    leadId: string,
-    status: LeadEntity["status"],
-  ): Promise<LeadEntity> {
-    return this.update(leadId, {
-      status,
-      updatedAt: new Date().toISOString(),
+      phone: input.phone ?? null,
+      company: input.company ?? null,
+      service_interest: input.service_interest ?? null,
+      message: input.message ?? null,
+      source: input.source ?? null,
+      client_id: input.client_id ?? null,
     });
   }
 
-  async deleteLead(
-    id: string,
+  async updateLead(id: string, input: UpdateLeadInput): Promise<Lead> {
+    return this.update(id, input);
+  }
+
+  async updateStatus(id: string, status: LeadStatus): Promise<Lead> {
+    return this.update(id, { status });
+  }
+
+  async listTimeline(leadId: string): Promise<LeadTimeline[]> {
+    const { data, error } = await this.supabase
+      .from("lead_activity_timeline")
+      .select("*")
+      .eq("organization_id", this.organizationId)
+      .eq("lead_id", leadId)
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    return (data ?? []) as LeadTimeline[];
+  }
+
+  async addTimelineEntry(
+    leadId: string,
+    message: string,
+    eventType: LeadTimeline["event_type"]
   ): Promise<void> {
-    await this.delete(id);
+    const { error } = await this.supabase
+      .from("lead_activity_timeline")
+      .insert({
+        organization_id: this.organizationId,
+        lead_id: leadId,
+        message,
+        event_type: eventType,
+      });
+
+    if (error) throw error;
+  }
+
+  async deleteLead(id: string): Promise<void> {
+    return this.delete(id);
   }
 }

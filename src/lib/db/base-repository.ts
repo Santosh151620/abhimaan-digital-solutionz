@@ -2,15 +2,12 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { TenantContextManager } from "@/lib/tenant/tenantContext";
 
 export abstract class BaseRepository<
-  TEntity extends Record<string, unknown>,
+  TEntity extends Record<string, unknown>
 > {
   protected readonly supabase: SupabaseClient;
   protected readonly table: string;
 
-  protected constructor(
-    supabase: SupabaseClient,
-    table: string,
-  ) {
+  constructor(supabase: SupabaseClient, table: string) {
     this.supabase = supabase;
     this.table = table;
   }
@@ -19,38 +16,38 @@ export abstract class BaseRepository<
     return TenantContextManager.require().organizationId;
   }
 
-  protected query() {
-    return this.supabase
-      .from(this.table)
-      .eq("organization_id", this.organizationId);
+  protected tableRef() {
+    return this.supabase.from(this.table);
+  }
+
+  async findById(id: string): Promise<TEntity | null> {
+    const { data, error } = await this.tableRef()
+      .select("*")
+      .eq("organization_id", this.organizationId)
+      .eq("id", id)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    return (data as TEntity) ?? null;
   }
 
   async findAll(): Promise<TEntity[]> {
-    const { data, error } = await this.query().select("*");
+    const { data, error } = await this.tableRef()
+      .select("*")
+      .eq("organization_id", this.organizationId);
 
     if (error) throw error;
 
     return (data ?? []) as TEntity[];
   }
 
-  async findById(id: string): Promise<TEntity | null> {
-    const { data, error } = await this.query()
-      .select("*")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    return (data as TEntity | null) ?? null;
-  }
-
   async create(payload: Partial<TEntity>): Promise<TEntity> {
-    const { data, error } = await this.supabase
-      .from(this.table)
+    const { data, error } = await this.tableRef()
       .insert({
         ...payload,
         organization_id: this.organizationId,
-      } as Record<string, unknown>)
+      } as Partial<TEntity> & { organization_id: string })
       .select()
       .single();
 
@@ -59,12 +56,10 @@ export abstract class BaseRepository<
     return data as TEntity;
   }
 
-  async update(
-    id: string,
-    payload: Partial<TEntity>,
-  ): Promise<TEntity> {
-    const { data, error } = await this.query()
-      .update(payload as Record<string, unknown>)
+  async update(id: string, payload: Partial<TEntity>): Promise<TEntity> {
+    const { data, error } = await this.tableRef()
+      .update(payload as Partial<TEntity> & { organization_id: string })
+      .eq("organization_id", this.organizationId)
       .eq("id", id)
       .select()
       .single();
@@ -75,32 +70,11 @@ export abstract class BaseRepository<
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await this.query()
+    const { error } = await this.tableRef()
       .delete()
+      .eq("organization_id", this.organizationId)
       .eq("id", id);
 
     if (error) throw error;
-  }
-
-  async exists(id: string): Promise<boolean> {
-    const { data, error } = await this.query()
-      .select("id")
-      .eq("id", id)
-      .maybeSingle();
-
-    if (error) throw error;
-
-    return data !== null;
-  }
-
-  async count(): Promise<number> {
-    const { count, error } = await this.query().select("*", {
-      count: "exact",
-      head: true,
-    });
-
-    if (error) throw error;
-
-    return count ?? 0;
   }
 }

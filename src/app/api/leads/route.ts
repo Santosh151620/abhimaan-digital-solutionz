@@ -1,25 +1,22 @@
-import { NextResponse } from "next/server";
+import { createClient } from "@/lib/supabase/server";
 import { LeadsService } from "@/modules/leads/services/LeadsService";
 
-const service = new LeadsService();
+export async function GET() {
+  const supabase = await createClient();
+  const service = new LeadsService(supabase);
 
-export async function GET(): Promise<NextResponse> {
   const data = await service.listLeads();
-  return NextResponse.json(data);
+
+  return Response.json(data);
 }
 
-export async function POST(req: Request): Promise<NextResponse> {
+export async function POST(req: Request) {
+  const supabase = await createClient();
+  const service = new LeadsService(supabase);
+
   const body = await req.json();
 
-  const created = await service.upsertLead({
-    entityId: body.entityId,
-    title: body.title,
-    email: body.email,
-    phone: body.phone,
-    status: body.status,
-    source: body.source,
-    score: body.score,
-  });
+  const created = await service.createLead(body);
 
-  return NextResponse.json(created);
+  return Response.json(created);
 }

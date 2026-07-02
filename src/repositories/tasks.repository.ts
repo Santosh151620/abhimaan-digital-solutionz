@@ -1,6 +1,5 @@
 import { SupabaseClient } from "@supabase/supabase-js";
-
-import { BaseRepository } from "./base.repository";
+import { BaseRepository } from "@/lib/db/base-repository";
 import type { Task } from "@/types/tasks";
 
 export class TasksRepository extends BaseRepository<Task> {
@@ -12,15 +11,13 @@ export class TasksRepository extends BaseRepository<Task> {
     entityType: string,
     entityId: string,
   ): Promise<Task[]> {
-    const { data, error } = await this.query()
+    const { data, error } = await this.tableRef()
       .select("*")
       .eq("entityType", entityType)
       .eq("entityId", entityId)
       .order("createdAt", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     return (data ?? []) as Task[];
   }
