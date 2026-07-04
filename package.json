@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "lint:dead": "knip",
+    "lint:exports": "ts-prune",
+    "lint:circular": "madge src --circular",
+    "lint:all": "npm run lint && npm run lint:dead && npm run lint:exports && npm run lint:circular && npx tsc --noEmit"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -32,9 +36,12 @@
     "eslint": "^9.28.0",
     "eslint-config-next": "^16.2.9",
     "eslint-config-prettier": "^10.1.8",
+    "knip": "^6.24.0",
+    "madge": "^8.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.9.3",
     "prettier-plugin-tailwindcss": "^0.8.0",
+    "ts-prune": "^0.10.3",
     "typescript": "^5.8.3"
   }
 }

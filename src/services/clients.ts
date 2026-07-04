@@ -1,5 +1,6 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 import type { Client } from "@/types/client";
+import { } from "resend";
 
 const TABLE = "clients";
 
@@ -100,7 +101,7 @@ export async function createClientRecord(
   client: Omit<
     Client,
     "id" | "created_at" | "updated_at"
-  >
+      >
 ): Promise<Client> {
   const supabase = await createSupabaseClient();
 
