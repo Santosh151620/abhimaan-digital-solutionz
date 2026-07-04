@@ -1,19 +1,14 @@
 "use client";
 
-import { memo, useMemo, useState } from "react";
+import { memo } from "react";
 
 import type { Project, ProjectStatus } from "@/types/project";
 
 import ProjectStatusBadge from "./ProjectStatusBadge";
+import Pagination from "./Pagination";
 
-/**
- * v5 ENTERPRISE HOOK PLACEHOLDERS
- */
-function useRBAC() {
-  return {
-    canView: true,
-  };
-}
+import { useProjectAnalytics } from "@/hooks/useProjectAnalytics";
+import { useProjectFilters } from "@/hooks/useProjectFilters";
 
 interface ProjectTableProps {
   projects: Project[];
@@ -22,175 +17,132 @@ interface ProjectTableProps {
   onEditProject?: (project: Project) => void;
 }
 
-const STATUS_OPTIONS: Array<{
-  value: "all" | ProjectStatus;
-  label: string;
-}> = [
-  { value: "all", label: "All Status" },
-  { value: "planning", label: "Planning" },
-  { value: "active", label: "Active" },
-  { value: "on_hold", label: "On Hold" },
-  { value: "completed", label: "Completed" },
-  { value: "cancelled", label: "Cancelled" },
-];
-
-const PAGE_SIZE = 10;
-
-const formatINR = (value?: number) =>
-  `₹${Number(value ?? 0).toLocaleString("en-IN")}`;
-
 function ProjectTable({
   projects,
   totalProjects,
   onOpenProject,
   onEditProject,
 }: ProjectTableProps) {
-  const { canView } = useRBAC();
+  const {
+    search,
+    statusFilter,
+    handleSearch,
+    handleStatusChange,
+    paginatedProjects,
+    currentPage,
+    totalPages,
+    setPage,
+  } = useProjectFilters(projects);
 
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<"all" | ProjectStatus>("all");
-  const [page, setPage] = useState(1);
-
-  const filteredProjects = useMemo(() => {
-    const keyword = search.trim().toLowerCase();
-
-    return projects.filter((project) => {
-      const matchesSearch =
-        keyword.length === 0 ||
-        project.name.toLowerCase().includes(keyword) ||
-        project.service_type.toLowerCase().includes(keyword) ||
-        project.notes?.toLowerCase().includes(keyword) ||
-        project.client_id.toLowerCase().includes(keyword);
-
-      const matchesStatus =
-        statusFilter === "all" ||
-        project.status === statusFilter;
-
-      return matchesSearch && matchesStatus;
-    });
-  }, [projects, search, statusFilter]);
-
-  const totalPagesLocal = Math.max(
-    1,
-    Math.ceil(filteredProjects.length / PAGE_SIZE)
-  );
-
-  const currentPage = Math.min(page, totalPagesLocal);
-
-  const paginatedProjects = useMemo(() => {
-    const start = (currentPage - 1) * PAGE_SIZE;
-
-    return filteredProjects.slice(start, start + PAGE_SIZE);
-  }, [filteredProjects, currentPage]);
-
-  const analytics = useMemo(() => {
-    const totalCost = projects.reduce(
-      (sum: number, p: Project) =>
-        sum + Number(p.project_cost ?? 0),
-      0
-    );
-
-    const active = projects.filter(
-      (p) => p.status === "active"
-    ).length;
-
-    const completed = projects.filter(
-      (p) => p.status === "completed"
-    ).length;
-
-    const onHold = projects.filter(
-      (p) => p.status === "on_hold"
-    ).length;
-
-    return {
-      totalCost,
-      active,
-      completed,
-      onHold,
-    };
-  }, [projects]);
-
-  function handleSearch(value: string) {
-    setSearch(value);
-    setPage(1);
-  }
-
-  function handleStatusChange(value: "all" | ProjectStatus) {
-    setStatusFilter(value);
-    setPage(1);
-  }
-
-  if (!canView) {
-    return (
-      <div className="p-6 text-slate-400">
-        Access denied.
-      </div>
-    );
-  }
+  const stats = useProjectAnalytics(projects);
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
-
-      {/* HEADER */}
+      {/* Header */}
       <div className="border-b border-white/10 p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-semibold text-white">
-              Projects
-            </h2>
+            <h2 className="text-xl font-semibold text-white">Projects</h2>
+
+            <p className="mt-1 text-sm text-slate-400">
+              Search, filter and manage client projects.
+            </p>
           </div>
 
           <div className="flex flex-col gap-3 md:flex-row">
             <input
+              type="text"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search projects..."
-              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white"
+              className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white outline-none transition focus:border-cyan-500 md:w-72"
             />
 
             <select
               value={statusFilter}
               onChange={(e) =>
                 handleStatusChange(
-                  e.target.value as "all" | ProjectStatus
+                  e.target.value as ProjectStatus | "all"
                 )
               }
-              className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white"
+              className="rounded-xl border border-white/10 bg-slate-900 px-4 py-2 text-sm text-white outline-none"
             >
-              {STATUS_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              <option value="all">All Status</option>
+              <option value="planning">Planning</option>
+              <option value="active">Active</option>
+              <option value="on_hold">On Hold</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
         </div>
       </div>
 
-      {/* TABLE */}
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full">
+          <thead className="border-b border-white/10 bg-slate-900/70">
+            <tr className="text-left text-xs uppercase tracking-wider text-slate-400">
+              <th className="px-5 py-4 font-medium">Project</th>
+              <th className="px-5 py-4 font-medium">Status</th>
+              <th className="px-5 py-4 font-medium">Cost</th>
+              <th className="px-5 py-4 font-medium">Progress</th>
+              <th className="px-5 py-4 text-right font-medium">Actions</th>
+            </tr>
+          </thead>
+
           <tbody>
+            {paginatedProjects.length === 0 && (
+              <tr>
+                <td
+                  colSpan={5}
+                  className="px-6 py-16 text-center text-slate-400"
+                >
+                  No projects found.
+                </td>
+              </tr>
+            )}
+
             {paginatedProjects.map((project) => (
-              <tr key={project.id}>
-                <td>{project.name}</td>
-                <td>
+              <tr
+                key={project.id}
+                className="border-b border-white/5 transition hover:bg-white/5"
+              >
+                <td className="px-5 py-4 font-medium text-white">
+                  {project.name}
+                </td>
+
+                <td className="px-5 py-4">
                   <ProjectStatusBadge status={project.status} />
                 </td>
 
-                <td>{formatINR(project.project_cost)}</td>
+                <td className="px-5 py-4 text-slate-300">
+                  ₹
+                  {Number(project.project_cost ?? 0).toLocaleString("en-IN")}
+                </td>
 
-                <td>{project.progress_percentage ?? 0}%</td>
+                <td className="px-5 py-4 text-slate-300">
+                  {project.progress_percentage ?? 0}%
+                </td>
 
-                <td>
-                  <button onClick={() => onOpenProject?.(project)}>
-                    Open
-                  </button>
+                <td className="px-5 py-4">
+                  <div className="flex justify-end gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onOpenProject?.(project)}
+                      className="rounded-lg bg-cyan-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-cyan-700"
+                    >
+                      Open
+                    </button>
 
-                  <button onClick={() => onEditProject?.(project)}>
-                    Edit
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => onEditProject?.(project)}
+                      className="rounded-lg bg-slate-700 px-3 py-2 text-sm font-medium text-white transition hover:bg-slate-600"
+                    >
+                      Edit
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -198,12 +150,27 @@ function ProjectTable({
         </table>
       </div>
 
-      {/* SUMMARY */}
-      <div>
-        Total: {totalProjects}
-        Active: {analytics.active}
-        Completed: {analytics.completed}
-        On Hold: {analytics.onHold}
+      {/* Pagination */}
+      <div className="border-t border-white/10 px-5 py-4">
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setPage}
+        />
+      </div>
+
+      {/* Footer Stats */}
+      <div className="border-t border-white/10 px-5 py-4 text-sm text-slate-400">
+        Total{" "}
+        <span className="font-medium text-white">{totalProjects}</span>
+        {" • "}Active{" "}
+        <span className="font-medium text-white">{stats.active}</span>
+        {" • "}Completed{" "}
+        <span className="font-medium text-white">{stats.completed}</span>
+        {" • "}Completion Rate{" "}
+        <span className="font-medium text-white">
+          {stats.completionRate}%
+        </span>
       </div>
     </div>
   );
