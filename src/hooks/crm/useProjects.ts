@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { ProjectRepository } from "@/repositories/project.repository";
+
 import { normalizeProjects } from "@/lib/crm/normalizeProjects";
 
 import type { GetProjectsParams } from "@/api/projects.api";

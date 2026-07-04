@@ -2,29 +2,11 @@ import { AsyncLocalStorage } from "node:async_hooks";
 
 export interface TenantContext {
   /**
-   * Primary tenant / organization identifier.
-   * This is the only tenant identifier repositories should use.
-   */
+   * Primary tenant / organization identifier.* This is the only tenant identifier repositories should use.   */
   organizationId: string;
-
-  /**
-   * Authenticated user.
-   */
   userId?: string;
-
-  /**
-   * User email (optional).
-   */
   userEmail?: string;
-
-  /**
-   * Application role.
-   */
   role?: string;
-
-  /**
-   * Optional future expansion.
-   */
   permissions?: readonly string[];
   locale?: string;
   timezone?: string;

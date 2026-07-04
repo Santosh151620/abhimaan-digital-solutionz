@@ -1,3 +1,5 @@
+import type { BaseEntity } from "./base";
+
 export type ProjectStatus =
   | "planning"
   | "active"
@@ -14,9 +16,11 @@ export interface ProjectMilestone {
   due_date: string;
   is_completed: boolean;
   completed_at?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface Project {
+export interface Project extends BaseEntity {
   id: string;
 
   // Relationship
@@ -47,10 +51,6 @@ export interface Project {
 
   // Notes
   notes: string | null;
-
-  // Metadata
-  created_at: string;
-  updated_at: string;
 
   // Future UI layer only
   milestones?: ProjectMilestone[];

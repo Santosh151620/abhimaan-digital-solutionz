@@ -43,15 +43,19 @@ function PaymentModal({
   const [notes, setNotes] = useState<string>("");
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    if (!payment) return;
+ useEffect(() => {
+  if (!payment) return;
 
-    setStatus(payment.status);
-    setMethod(payment.method);
-    setAmount(payment.amount ?? 0);
-    setReference(payment.reference ?? "");
-    setNotes(payment.notes ?? "");
-  }, [payment]);
+  const { status, method, amount, reference, notes } = payment;
+
+  queueMicrotask(() => {
+    setStatus(status);
+    setMethod(method);
+    setAmount(amount ?? 0);
+    setReference(reference ?? "");
+    setNotes(notes ?? "");
+  });
+}, [payment]);
 
   const handleSave = useCallback(async () => {
     if (!payment) return;

@@ -2,20 +2,28 @@
 
 import { memo } from "react";
 
-import type { Project } from "@/types/project";
+import type { Project, ProjectStatus } from "@/types/project";
 
-import ProjectStatusBadge from "./ProjectStatusBadge";
-import Pagination from "./Pagination";
+import ProjectStatusBadge from "./dashboard/ProjectStatusBadge";
+import Pagination from "./dashboard/Pagination";
+//import Pagination from "./Pagination";
 
 import { useProjectFilters } from "@/hooks/useProjectFilters";
 import { useProjectAnalytics } from "@/hooks/useProjectAnalytics";
+
+interface ProjectTableProps {
+  projects: Project[];
+  totalProjects: number;
+  onOpenProject?: (project: Project) => void;
+  onEditProject?: (project: Project) => void;
+}
 
 function ProjectTable({
   projects,
   totalProjects,
   onOpenProject,
   onEditProject,
-}: any) {
+}: ProjectTableProps) {
   const {
     search,
     statusFilter,
@@ -24,9 +32,6 @@ function ProjectTable({
     paginatedProjects,
     currentPage,
     totalPages,
-    startItem,
-    endItem,
-    totalCount,
     setPage,
   } = useProjectFilters(projects);
 
@@ -34,7 +39,6 @@ function ProjectTable({
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl">
-
       {/* HEADER */}
       <div className="border-b border-white/10 p-6">
         <div className="flex justify-between">
@@ -46,7 +50,9 @@ function ProjectTable({
 
           <select
             value={statusFilter}
-            onChange={(e) => handleStatusChange(e.target.value as any)}
+            onChange={(e) =>
+              handleStatusChange(e.target.value as ProjectStatus | "all")
+            }
           >
             <option value="all">All</option>
             <option value="active">Active</option>
@@ -61,6 +67,7 @@ function ProjectTable({
           {paginatedProjects.map((project: Project) => (
             <tr key={project.id}>
               <td>{project.name}</td>
+
               <td>
                 <ProjectStatusBadge status={project.status} />
               </td>
@@ -94,12 +101,9 @@ function ProjectTable({
 
       {/* STATS */}
       <div>
-        Total: {stats.totalCost}
-        Active: {stats.active}
-        Completed: {stats.completed}
-        Completion Rate: {stats.completionRate}%
+        Total: {totalProjects} | Active: {stats.active} | Completed:{" "}
+        {stats.completed} | Completion Rate: {stats.completionRate}%
       </div>
-
     </div>
   );
 }

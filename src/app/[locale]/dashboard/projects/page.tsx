@@ -22,8 +22,8 @@ export default async function ProjectsPage() {
       <ProjectTable
         projects={data.projects}
         totalProjects={data.total}
-        currentPage={data.page}
-        totalPages={data.totalPages}
+      //  currentPage={data.page}
+       // totalPages={data.totalPages}
       />
     </div>
   );

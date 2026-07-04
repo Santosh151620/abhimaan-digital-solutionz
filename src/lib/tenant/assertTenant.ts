@@ -1,7 +1,7 @@
 import { TenantContextManager } from "./tenantContext";
 
 /**
- * Throws if tenant context is unavailable.
+ * Throws if organization context is unavailable.
  *
  * Intended for:
  * - Services
@@ -9,27 +9,36 @@ import { TenantContextManager } from "./tenantContext";
  * - API handlers
  * - Background jobs
  */
-export function assertTenant(): string {
+export function assertOrganization(): string {
   const tenant = TenantContextManager.require();
 
   if (!tenant.organizationId?.trim()) {
-    throw new Error("Tenant context is missing.");
+    throw new Error("Organization context is missing.");
   }
 
   return tenant.organizationId;
 }
 
 /**
- * Returns the current tenant id.
- *
- * Alias kept for readability in repositories.
+ * Preferred accessor.
  */
-export function getTenantId(): string {
-  return assertTenant();
+export function getOrganizationId(): string {
+  return assertOrganization();
 }
 
 /**
- * Convenience helper when code needs the full immutable context.
+ * Backward compatibility.
+ * Remove after all callers migrate.
+ */
+export const assertTenant = assertOrganization;
+
+/**
+ * @deprecated Use getOrganizationId()
+ */
+export const getTenantId = getOrganizationId;
+
+/**
+ * Returns the full immutable organization context.
  */
 export function getTenant() {
   return TenantContextManager.require();

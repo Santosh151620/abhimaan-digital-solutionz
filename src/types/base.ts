@@ -4,6 +4,16 @@ export interface EntityReference {
   entityType: EntityType;
   entityId: string;
 }
+export interface BaseEntity extends AuditFields {
+  id: string;
+  entityType: EntityType;
+  isDeleted?: boolean;
+
+  /**
+   * 🧠 v5 SaaS MULTI-TENANT FIELD
+   */
+  organizationId?: string;
+}
 
 export interface AuditFields {
   createdAt: string;

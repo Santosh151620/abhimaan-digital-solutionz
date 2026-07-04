@@ -1,4 +1,4 @@
-import { TenantContext } from "@/lib/tenant";
+import type { TenantContext } from "@/lib/tenant/tenantContext";
 
 /**
  * v6 ENTERPRISE API CLIENT
@@ -24,8 +24,11 @@ export async function apiRequest<T>(
     ...rest,
     headers: {
       "Content-Type": "application/json",
-      ...(tenant?.tenantId
-        ? { "x-tenant-id": tenant.tenantId }
+      ...(tenant?.organizationId
+        ? {
+          "x-organization-id":
+          tenant.organizationId,
+        }
         : {}),
       ...headers,
     },

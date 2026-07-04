@@ -32,22 +32,34 @@ interface Props {
   data: AnalyticsData;
 }
 
-function Card({
-  title,
-  value,
-  color = "text-white",
-}: {
+interface CardProps {
   title: string;
   value: React.ReactNode;
+  subtitle?: string;
   color?: string;
-}) {
-  return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
-      <p className="text-sm text-slate-400">{title}</p>
+}
 
-      <p className={`mt-2 text-2xl font-bold ${color}`}>
-        {value}
+function KPICard({
+  title,
+  value,
+  subtitle,
+  color = "text-white",
+}: CardProps) {
+  return (
+    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-all duration-200 hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-950/30">
+      <p className="text-sm font-medium text-slate-400">
+        {title}
       </p>
+
+      <h3 className={`mt-2 text-3xl font-bold ${color}`}>
+        {value}
+      </h3>
+
+      {subtitle && (
+        <p className="mt-2 text-xs text-slate-500">
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }
@@ -55,72 +67,80 @@ function Card({
 export default function AnalyticsCards({
   data,
 }: Props) {
-  const overview = [
+  const overviewCards: CardProps[] = [
     {
       title: "Total Leads",
       value: data.overview.totalLeads,
-      color: "text-white",
-    },
-    {
-      title: "Won Leads",
-      value: data.overview.wonLeads,
-      color: "text-emerald-400",
-    },
-    {
-      title: "Conversion",
-      value: `${data.overview.conversionRate}%`,
-      color: "text-cyan-400",
-    },
-    {
-      title: "Active Clients",
-      value: data.overview.activeClients,
-      color: "text-white",
-    },
-    {
-      title: "Projects",
-      value: data.overview.activeProjects,
-      color: "text-white",
+      subtitle: "Overall pipeline",
     },
     {
       title: "New Leads",
       value: data.overview.newLeads,
+      subtitle: "Awaiting qualification",
       color: "text-sky-400",
     },
     {
       title: "Qualified",
       value: data.overview.qualifiedLeads,
-      color: "text-purple-400",
+      subtitle: "Sales ready",
+      color: "text-violet-400",
+    },
+    {
+      title: "Won Leads",
+      value: data.overview.wonLeads,
+      subtitle: "Successfully converted",
+      color: "text-emerald-400",
     },
     {
       title: "Lost Leads",
       value: data.overview.lostLeads,
+      subtitle: "Need follow-up analysis",
       color: "text-rose-400",
+    },
+    {
+      title: "Conversion Rate",
+      value: `${data.overview.conversionRate}%`,
+      subtitle: "Lead → Client",
+      color: "text-cyan-400",
+    },
+    {
+      title: "Active Clients",
+      value: data.overview.activeClients,
+      subtitle: "Current engagements",
+    },
+    {
+      title: "Running Projects",
+      value: data.overview.activeProjects,
+      subtitle: "Currently active",
     },
   ];
 
-  const revenue = [
+  const revenueCards: CardProps[] = [
     {
-      title: "Revenue",
+      title: "Revenue Collected",
       value: `₹${data.revenue.totalRevenue.toLocaleString()}`,
-      color: "text-white",
+      subtitle: "Total collections",
+      color: "text-emerald-400",
     },
     {
       title: "Outstanding",
       value: `₹${data.revenue.outstandingRevenue.toLocaleString()}`,
+      subtitle: "Pending collection",
       color: "text-amber-400",
     },
     {
-      title: "Projected",
+      title: "Forecast",
       value: `₹${data.revenue.projectedRevenue.toLocaleString()}`,
-      color: "text-purple-400",
+      subtitle: "Projected revenue",
+      color: "text-violet-400",
     },
   ];
 
-  const payments = [
+  const paymentCards: CardProps[] = [
     {
       title: "Pending",
       value: data.payments.pending,
-      color: "text-white",
+      color: "text-amber-400",
     },
     {
       title: "Paid",
@@ -140,40 +160,69 @@ export default function AnalyticsCards({
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-white">
-          CRM Overview
-        </h2>
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-white">
+              Business Overview
+            </h2>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {overview.map((card) => (
-            <Card key={card.title} {...card} />
+            <p className="text-sm text-slate-400">
+              Live operational KPIs
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {overviewCards.map((card) => (
+            <KPICard
+              key={card.title}
+              {...card}
+            />
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-white">
-          Revenue
-        </h2>
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-white">
+            Revenue Snapshot
+          </h2>
+
+          <p className="text-sm text-slate-400">
+            Collections & forecast
+          </p>
+        </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          {revenue.map((card) => (
-            <Card key={card.title} {...card} />
+          {revenueCards.map((card) => (
+            <KPICard
+              key={card.title}
+              {...card}
+            />
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-white">
-          Payments
-        </h2>
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-white">
+            Payment Health
+          </h2>
 
-        <div className="grid gap-4 md:grid-cols-4">
-          {payments.map((card) => (
-            <Card key={card.title} {...card} />
+          <p className="text-sm text-slate-400">
+            Invoice payment status
+          </p>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {paymentCards.map((card) => (
+            <KPICard
+              key={card.title}
+              {...card}
+            />
           ))}
         </div>
       </section>

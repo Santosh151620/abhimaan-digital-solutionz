@@ -1,6 +1,7 @@
 import type { Project } from "@/types/project";
 
-export function normalizeProjects(projects: any[]): Project[] {
+export function normalizeProjects(projects: Project[]): Project[]
+{
   return projects.map((p) => ({
     ...p,
 
