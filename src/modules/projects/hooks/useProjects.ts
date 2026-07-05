@@ -2,12 +2,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { ProjectRepository } from "@/repositories/project.repository";
-import { normalizeProjects } from "@/lib/crm/normalizeProjects";
+import { ProjectRepository } from "@/modules/projects/repositories/project.repository";
 
-import type { GetProjectsParams } from "@/api/projects.api";
+import { normalizeProjects } from "@/modules/projects/services/normalizeProjects";
 
-export function useProjects(
+import type { GetProjectsParams } from "@/modules/projects/api/projects.api";
+
+export function useProjectsApi(
   params: GetProjectsParams = {}
 ) {
   return useQuery({

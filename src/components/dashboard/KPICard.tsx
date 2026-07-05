@@ -95,7 +95,7 @@ export default function KPICard({
                   : "text-rose-400"
               }`}
             >
-              {trend.positive ? "▲" : "▼"} {trend.value}
+              {trend.positive ? "â–²" : "â–¼"} {trend.value}
             </span>
           ) : (
             <span />

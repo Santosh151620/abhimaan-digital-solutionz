@@ -11,7 +11,7 @@ export interface RevenueForecast {
 }
 
 /**
- * 🔮 Lightweight Revenue Forecast Engine
+ * ðŸ”® Lightweight Revenue Forecast Engine
  * (No AI, just smart business math)
  */
 export async function getRevenueForecast(): Promise<RevenueForecast> {

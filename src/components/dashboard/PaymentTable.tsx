@@ -57,7 +57,7 @@ function PaymentTable({ payments }: PaymentTableProps) {
             <h2 className="text-lg font-semibold text-white">Payments</h2>
 
             <p className="text-sm text-slate-400">
-              Total Paid Revenue: ₹{formatCurrency(totalRevenue)}
+              Total Paid Revenue: â‚¹{formatCurrency(totalRevenue)}
             </p>
           </div>
         </div>
@@ -94,7 +94,7 @@ function PaymentTable({ payments }: PaymentTableProps) {
                   </td>
 
                   <td className="px-5 py-4 font-medium text-white">
-                    ₹{formatCurrency(Number(payment.amount))}
+                    â‚¹{formatCurrency(Number(payment.amount))}
                   </td>
 
                   <td className="px-5 py-4 text-slate-300">

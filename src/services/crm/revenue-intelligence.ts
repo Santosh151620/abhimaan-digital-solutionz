@@ -3,7 +3,7 @@ import {
   getPaymentsCountByStatus,
   getTotalRevenue,
 } from "@/services/payments";
-import { getProjectRevenue } from "@/services/projects";
+import { getProjectRevenue } from "@/modules/projects/services/projects";
 
 export type RevenueHealth =
   | "excellent"
@@ -63,10 +63,10 @@ function buildSummary(
       return `Revenue collection is healthy (${collectionRate}%).`;
 
     case "warning":
-      return `Outstanding revenue of ₹${outstandingRevenue.toLocaleString()} requires attention.`;
+      return `Outstanding revenue of â‚¹${outstandingRevenue.toLocaleString()} requires attention.`;
 
     case "critical":
-      return `Cash flow is at risk. Outstanding revenue is ₹${outstandingRevenue.toLocaleString()}.`;
+      return `Cash flow is at risk. Outstanding revenue is â‚¹${outstandingRevenue.toLocaleString()}.`;
 
     default:
       return "Revenue performance unavailable.";

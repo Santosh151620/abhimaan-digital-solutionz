@@ -7,7 +7,7 @@ import type {
   Project,
   ProjectPriority,
   ProjectStatus,
-} from "@/types/project";
+} from "@/modules/projects/types/project";
 
 const supabase = createClient();
 

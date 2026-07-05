@@ -5,9 +5,9 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
-import { ProjectRepository } from "@/repositories/project.repository";
+import { ProjectRepository } from "@/modules/projects/repositories/project.repository";
 
-import type { Project } from "@/types/project";
+import type { Project } from "@/modules/projects/types/project";
 
 const QUERY_KEY = ["crm-projects"];
 

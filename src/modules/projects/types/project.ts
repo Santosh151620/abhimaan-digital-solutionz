@@ -1,4 +1,4 @@
-import type { BaseEntity } from "./base";
+import type { BaseEntity } from "@/types/base";
 
 export type ProjectStatus =
   | "planning"

@@ -26,7 +26,7 @@ export default function TodayWorkPanel({
         </h2>
 
         <p className="text-sm text-slate-400">
-          {metrics.pendingTasks} pending ·{" "}
+          {metrics.pendingTasks} pending Â·{" "}
           {metrics.overdueTasks} overdue
         </p>
       </div>

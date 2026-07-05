@@ -1,7 +1,7 @@
 import { LeadEntity } from '../types/lead.entity';
 
 /**
- * Bridges Leads → Unified Activity System
+ * Bridges Leads â†’ Unified Activity System
  * (Entity-driven timeline integration)
  */
 

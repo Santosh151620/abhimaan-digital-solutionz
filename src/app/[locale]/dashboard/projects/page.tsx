@@ -1,6 +1,5 @@
-import ProjectTable from "@/components/dashboard/ProjectTable";
-import { getProjects } from "@/services/projects";
-
+import ProjectTable from "@/modules/projects/components/ProjectTable";
+import { getProjects } from "@/modules/projects/services/projects";
 export default async function ProjectsPage() {
   const data = await getProjects({
     page: 1,

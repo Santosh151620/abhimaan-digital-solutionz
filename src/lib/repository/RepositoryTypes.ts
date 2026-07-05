@@ -7,11 +7,11 @@
  *
  * Goals
  * -----
- * ✓ Strong typing
- * ✓ ORM independent
- * ✓ Future Prisma/Supabase compatibility
- * ✓ Generic CRUD interfaces
- * ✓ Enterprise repository standards
+ * âœ“ Strong typing
+ * âœ“ ORM independent
+ * âœ“ Future Prisma/Supabase compatibility
+ * âœ“ Generic CRUD interfaces
+ * âœ“ Enterprise repository standards
  */
 
 export interface PaginationOptions {

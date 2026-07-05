@@ -18,10 +18,10 @@ export default function Header() {
 
   const languages = [
     { code: "en", name: "English" },
-    { code: "hi", name: "हिन्दी (Hindi)" },
-    { code: "kn", name: "ಕನ್ನಡ (Kannada)" },
-    { code: "te", name: "తెలుగు (Telugu)" },
-    { code: "mr", name: "मराठी (Marathi)" }
+    { code: "hi", name: "à¤¹à¤¿à¤¨à¥à¤¦à¥€ (Hindi)" },
+    { code: "kn", name: "à²•à²¨à³à²¨à²¡ (Kannada)" },
+    { code: "te", name: "à°¤à±†à°²à±à°—à± (Telugu)" },
+    { code: "mr", name: "à¤®à¤°à¤¾à¤ à¥€ (Marathi)" }
   ];
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -139,3 +139,4 @@ export default function Header() {
     </header>
   );
 }
+

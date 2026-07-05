@@ -1,21 +1,7 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
-import type { Project, ProjectStatus } from "@/types/project";
-
-export interface ProjectFilters {
-  search?: string;
-  status?: ProjectStatus | "All";
-  clientId?: string;
-  page?: number;
-  pageSize?: number;
-}
-
-export interface PaginatedProjects {
-  projects: Project[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
+import type { Project} from "@/modules/projects/types/project";
+import type { ProjectFilters } from "../types/project";
+import type { PaginatedProjects } from "../types/project";
 
 const TABLE = "projects";
 

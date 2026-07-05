@@ -8,3 +8,4 @@ export const navigationLinks = [
   { name: "Contact", href: "/contact" },
   { name: "FAQ", href: "/faq" },
 ];
+

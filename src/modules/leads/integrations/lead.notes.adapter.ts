@@ -4,7 +4,7 @@ import {
 } from '../types/lead.entity';
 
 /**
- * Bridges Leads → Unified Notes System
+ * Bridges Leads â†’ Unified Notes System
  */
 
 export function mapLeadToNotesContext(lead: LeadEntity) {

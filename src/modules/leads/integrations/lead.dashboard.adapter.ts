@@ -1,7 +1,7 @@
 import { LeadEntity } from '../types/lead.entity';
 
 /**
- * Converts Leads → Dashboard Aggregation Layer
+ * Converts Leads â†’ Dashboard Aggregation Layer
  */
 
 export function mapLeadToDashboardItem(lead: LeadEntity) {

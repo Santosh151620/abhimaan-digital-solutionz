@@ -2,13 +2,17 @@
 
 import { memo } from "react";
 
-import type { Project, ProjectStatus } from "@/types/project";
+import type { Project, ProjectStatus } from "@/modules/projects/types/project";
 
-import ProjectStatusBadge from "./ProjectStatusBadge";
+// import ProjectStatusBadge from "./ProjectStatusBadge";
+import ProjectStatusBadge from "@/modules/projects/components/ProjectStatusBadge";
 import Pagination from "./Pagination";
 
-import { useProjectAnalytics } from "@/hooks/useProjectAnalytics";
-import { useProjectFilters } from "@/hooks/useProjectFilters";
+//import { useProjectAnalytics } from "@/hooks/useProjectAnalytics";
+import { useProjectAnalytics } from "@/modules/projects/hooks/useProjectAnalytics";
+
+// import { useProjectFilters } from "@/hooks/useProjectFilters";
+import { useProjectFilters } from "@/modules/projects/hooks/useProjectFilters";
 
 interface ProjectTableProps {
   projects: Project[];

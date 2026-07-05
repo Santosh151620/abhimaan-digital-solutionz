@@ -1,6 +1,7 @@
-import { apiRequest } from "./client";
-import type { Project } from "@/types/project";
-import type { ProjectStatus } from "@/types/project";
+import { apiRequest } from "@/api/client";
+
+import type { Project } from "@/modules/projects/types/project";
+import type { ProjectStatus } from "@/modules/projects/types/project";
 
 /**
  * v6 PROJECT API LAYER

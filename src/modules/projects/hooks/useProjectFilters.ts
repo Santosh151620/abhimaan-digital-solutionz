@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Project, ProjectStatus } from "@/types/project";
+import type { Project, ProjectStatus } from "@/modules/projects/types/project";
 
 const PAGE_SIZE = 10;
 

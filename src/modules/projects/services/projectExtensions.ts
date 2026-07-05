@@ -1,18 +1,12 @@
-import type { Project } from "@/types/project";
+//import type { Project } from "@/modules/projects/types/project";
 /**
  * This layer extends core project service WITHOUT modifying existing production logic.
  * Safe for incremental CRM expansion.
  */
-
-export type ProjectStatus =
-  | "active"
-  | "planning"
-  | "on_hold"
-  | "completed"
-  | "cancelled";
-
-export type ProjectPriority = "low" | "medium" | "high" | "critical";
-
+import type {
+  Project,
+  ProjectStatus,
+} from "@/modules/projects/types/project";
 /**
  * Normalizes status values coming from legacy DB (string-based)
  */

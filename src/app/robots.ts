@@ -15,3 +15,4 @@ MetadataRoute.Robots {
     sitemap: `${siteConfig.url}/sitemap.xml`,
   };
 }
+

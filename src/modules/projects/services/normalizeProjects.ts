@@ -1,4 +1,4 @@
-import type { Project } from "@/types/project";
+import type { Project } from "@/modules/projects/types/project";
 
 export function normalizeProjects(projects: Project[]): Project[] {
   return projects.map((p) => ({

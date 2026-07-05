@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Project, ProjectStatus } from "@/types/project";
+import type { Project, ProjectStatus } from "@/modules/projects/types/project";
 
 interface CRMQuery {
   search: string;

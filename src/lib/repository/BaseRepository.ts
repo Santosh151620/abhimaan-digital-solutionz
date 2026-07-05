@@ -9,12 +9,12 @@ import { assertTenant } from "@/lib/tenant/assertTenant";
  *
  * Responsibilities:
  *
- * ✓ Multi-tenant enforcement
- * ✓ Shared CRUD helpers
- * ✓ Future RBAC integration
- * ✓ Future Audit logging
- * ✓ Future Soft Delete
- * ✓ Future Event publishing
+ * âœ“ Multi-tenant enforcement
+ * âœ“ Shared CRUD helpers
+ * âœ“ Future RBAC integration
+ * âœ“ Future Audit logging
+ * âœ“ Future Soft Delete
+ * âœ“ Future Event publishing
  *
  * Business repositories should NEVER access tenant context directly.
  * They should always extend BaseRepository.

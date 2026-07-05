@@ -29,7 +29,7 @@ export default function TaskPanel({
           </div>
 
           <div className="mt-1 text-sm">
-            {task.status} • {task.priority}
+            {task.status} â€¢ {task.priority}
           </div>
         </div>
       ))}

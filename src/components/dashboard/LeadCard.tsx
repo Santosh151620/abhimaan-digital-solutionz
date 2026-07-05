@@ -179,7 +179,7 @@ export default function LeadCard({ lead }: { lead: Lead }) {
                 onClick={() => setShowModal(false)}
                 className="text-slate-400 hover:text-white text-xl"
               >
-                ✕
+                âœ•
               </button>
             </div>
 

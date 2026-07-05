@@ -1,9 +1,9 @@
-import { ProjectsAPI } from "@/api/projects.api";
+import { ProjectsAPI } from "@/modules/projects/api/projects.api";
 
 import type {
   Project,
   ProjectStatus,
-} from "@/types/project";
+} from "@/modules/projects/types/project";
 
 /**
  * Project Repository

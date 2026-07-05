@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import type { Project } from "@/types/project";
+import type { Project } from "@/modules/projects/types/project";
 
 export function useProjectAnalytics(projects: Project[]) {
   return useMemo(() => {

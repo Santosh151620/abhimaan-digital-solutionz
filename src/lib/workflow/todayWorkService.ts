@@ -21,11 +21,11 @@ interface TodayWorkResult {
  *
  * Flow:
  * Repository
- *     ↓
+ *     â†“
  * WorkflowEngine
- *     ↓
+ *     â†“
  * Memory Cache
- *     ↓
+ *     â†“
  * Dashboard / CRM
  */
 export class TodayWorkService {

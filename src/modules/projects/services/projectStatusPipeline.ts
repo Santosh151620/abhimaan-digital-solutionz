@@ -1,4 +1,4 @@
-import type { ProjectStatus } from "@/types/project";
+import type { ProjectStatus } from "@/modules/projects/types/project";
 
 export const PROJECT_STATUS_PIPELINE: {
   key: ProjectStatus;

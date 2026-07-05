@@ -11,7 +11,7 @@ export interface RegistryLeadItem {
 }
 
 /**
- * Lead ↔ Entity Registry Adapter
+ * Lead â†” Entity Registry Adapter
  *
  * Canonical mapping between the Leads module and the
  * global Entity Registry.

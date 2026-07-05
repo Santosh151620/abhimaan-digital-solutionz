@@ -8,7 +8,7 @@ import type {
   ProjectStatus,
   ProjectPriority,
   ProjectCreateInput,
-} from "@/types/project";
+} from "@/modules/projects/types/project";
 
 const supabase = createClient();
 

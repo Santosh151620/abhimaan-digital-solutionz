@@ -1,11 +1,11 @@
-import { getProjects } from "@/services/projects";
+import { getProjects } from "@/modules/projects/services/projects";
 
-import type { Project } from "@/types/project";
+import type { Project } from "@/modules/projects/types/project";
 
 import {
   enrichProject,
   calculateProjectKPIs,
-} from "@/services/projectExtensions";
+} from "@/modules/projects/services/projectExtensions";
 
 export interface ClientProjectSummary {
   clientId: string;

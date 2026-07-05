@@ -12,7 +12,7 @@ export interface UserSession {
 }
 
 /**
- * Role → Permissions mapping (CRM core access rules)
+ * Role â†’ Permissions mapping (CRM core access rules)
  */
 export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
   SUPER_ADMIN: [

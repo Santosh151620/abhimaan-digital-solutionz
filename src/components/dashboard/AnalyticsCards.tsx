@@ -100,7 +100,7 @@ export default function AnalyticsCards({
     {
       title: "Conversion Rate",
       value: `${data.overview.conversionRate}%`,
-      subtitle: "Lead → Client",
+      subtitle: "Lead â†’ Client",
       color: "text-cyan-400",
     },
     {
@@ -118,19 +118,19 @@ export default function AnalyticsCards({
   const revenueCards: CardProps[] = [
     {
       title: "Revenue Collected",
-      value: `₹${data.revenue.totalRevenue.toLocaleString()}`,
+      value: `â‚¹${data.revenue.totalRevenue.toLocaleString()}`,
       subtitle: "Total collections",
       color: "text-emerald-400",
     },
     {
       title: "Outstanding",
-      value: `₹${data.revenue.outstandingRevenue.toLocaleString()}`,
+      value: `â‚¹${data.revenue.outstandingRevenue.toLocaleString()}`,
       subtitle: "Pending collection",
       color: "text-amber-400",
     },
     {
       title: "Forecast",
-      value: `₹${data.revenue.projectedRevenue.toLocaleString()}`,
+      value: `â‚¹${data.revenue.projectedRevenue.toLocaleString()}`,
       subtitle: "Projected revenue",
       color: "text-violet-400",
     },

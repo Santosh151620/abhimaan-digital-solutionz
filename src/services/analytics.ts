@@ -3,7 +3,7 @@ import { getActiveClientsCount } from "./clients";
 import {
   getActiveProjectsCount,
   getProjectRevenue,
-} from "./projects";
+} from "@/modules/projects/services/projects";
 import {
   getOutstandingRevenue,
   getPaymentsCountByStatus,

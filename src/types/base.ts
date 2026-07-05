@@ -10,7 +10,7 @@ export interface BaseEntity extends AuditFields {
   isDeleted?: boolean;
 
   /**
-   * 🧠 v5 SaaS MULTI-TENANT FIELD
+   * ðŸ§  v5 SaaS MULTI-TENANT FIELD
    */
   organizationId?: string;
 }

@@ -69,7 +69,7 @@ const { error } = await supabase.from("leads").insert([
     await resend.emails.send({
       from: "Abhimaan Digital Solutionz <onboarding@resend.dev>",
       to: process.env.ADMIN_EMAIL!,
-      subject: `New Lead • ${full_name}`,
+      subject: `New Lead â€¢ ${full_name}`,
       html: `
       <h2>New Lead Received</h2>
       <p><b>Name:</b> ${full_name}</p>

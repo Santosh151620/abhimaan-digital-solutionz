@@ -1,4 +1,4 @@
-import type { ProjectStatus } from "@/types/project";
+import type { ProjectStatus } from "@/modules/projects/types/project";
 
 interface ProjectStatusBadgeProps {
   status: ProjectStatus;

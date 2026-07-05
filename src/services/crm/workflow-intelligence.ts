@@ -1,7 +1,7 @@
 import { getInactiveLeads } from "./lead-intelligence";
 import { getPipelineData } from "./pipeline";
 import { getRevenueIntelligence } from "./revenue-intelligence";
-import { getProjects } from "@/services/projects";
+import { getProjects } from "@/modules/projects/services/projects";
 
 export interface WorkflowLead {
   id: string;
