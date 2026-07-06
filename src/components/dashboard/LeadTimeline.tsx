@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useEffect, useState } from "react";
+import { memo, useMemo } from "react";
 
 type TimelineEvent = {
   id: string;
@@ -13,32 +13,21 @@ interface LeadTimelineProps {
 }
 
 function LeadTimeline({ leadId }: LeadTimelineProps) {
-  const [events, setEvents] = useState<TimelineEvent[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const loadTimeline = useCallback(async () => {
+  const events = useMemo<TimelineEvent[]>(() => {
     if (!leadId) {
-      setEvents([]);
-      return;
+      return [];
     }
 
-    setLoading(true);
-
-    try {
-      /**
-       * Phase 6
-       * Timeline service not implemented yet.
-       * Keep component stable without fake async data.
-       */
-      setEvents([]);
-    } finally {
-      setLoading(false);
-    }
+    /**
+     * Phase 6
+     * Timeline service not implemented yet.
+     * Return stable placeholder state until the
+     * timeline module is migrated.
+     */
+    return [];
   }, [leadId]);
 
-  useEffect(() => {
-    void loadTimeline();
-  }, [loadTimeline]);
+  const loading = false;
 
   return (
     <div className="space-y-3">

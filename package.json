@@ -36,6 +36,7 @@
     "eslint": "^9.28.0",
     "eslint-config-next": "^16.2.9",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
     "knip": "^6.24.0",
     "madge": "^8.0.0",
     "postcss": "^8.5.6",

@@ -1,9 +1,12 @@
 "use client";
 
 import { useMemo, useState, useCallback, memo } from "react";
-import PaymentModal, { type Payment } from "@/components/dashboard/PaymentModal";
+//import PaymentModal, { type Payment } from "@/components/dashboard/PaymentModal";
+import PaymentModal from "./PaymentModal";
+import type { Payment } from "../types/payment";
 
-export type { Payment };
+
+export type { Payment } from "../types/payment";
 
 interface PaymentTableProps {
   payments: Payment[];

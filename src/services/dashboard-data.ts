@@ -1,7 +1,7 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 
 import type { Lead } from "@/types/lead";
-import type { Client } from "@/types/client";
+import type { Client } from "@/modules/clients/types/client";
 import type { Payment } from "@/types/payment";
 import type { Project } from "@/modules/projects/types/project";
 

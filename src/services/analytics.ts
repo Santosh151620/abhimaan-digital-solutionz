@@ -1,5 +1,5 @@
 import { getLeadCounts } from "./leads";
-import { getActiveClientsCount } from "./clients";
+import { getActiveClientsCount } from "@/modules/clients/services/clients";
 import {
   getActiveProjectsCount,
   getProjectRevenue,

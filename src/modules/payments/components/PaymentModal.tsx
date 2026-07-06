@@ -2,24 +2,7 @@
 
 import { useEffect, useState, useCallback, memo } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-export interface Payment {
-  id: string;
-  created_at: string;
-
-  client_id: string;
-  project_id: string | null;
-
-  amount: number;
-
-  status: "pending" | "paid" | "failed" | "refunded";
-
-  method: "cash" | "card" | "bank_transfer" | "upi";
-
-  reference: string | null;
-
-  notes: string | null;
-}
+import type { Payment } from "../types/payment";
 
 interface PaymentModalProps {
   payment: Payment | null;

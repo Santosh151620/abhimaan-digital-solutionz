@@ -1,6 +1,6 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
-import type { Client } from "@/types/client";
-import { } from "resend";
+import type { Client } from "@/modules/clients/types/client";
+
 
 const TABLE = "clients";
 

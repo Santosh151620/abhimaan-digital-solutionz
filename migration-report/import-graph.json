@@ -1,0 +1,2819 @@
+[
+  {
+    "file": "src\\api\\client.ts",
+    "imports": [
+      "src\\lib\\tenant\\tenantContext.ts"
+    ],
+    "importedBy": [
+      "src\\api\\index.ts",
+      "src\\modules\\projects\\api\\projects.api.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\api\\index.ts",
+    "imports": [
+      "src\\api\\client.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\admin\\dashboard\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\admin\\layout.tsx",
+    "imports": [
+      "src\\lib\\auth"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\admin\\leads\\page.tsx",
+    "imports": [
+      "src\\lib\\supabase\\client.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\admin\\login\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\admin\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\admin\\settings\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\contact\\route.ts",
+    "imports": [
+      "src\\lib\\resend.ts",
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\email\\send\\route.ts",
+    "imports": [
+      "src\\lib\\requireAdmin.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\activity\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\attachments\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\health\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\notes\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\notifications\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\entities\\tasks\\route.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\export\\route.ts",
+    "imports": [
+      "src\\lib\\requireAdmin.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\route.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\update-status\\route.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\[entityId]\\route.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\[id]\\convert\\route.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\[id]\\notes\\route.ts",
+    "imports": [
+      "src\\lib\\requireAdmin.ts",
+      "src\\lib\\supabase-admin.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\api\\leads\\[id]\\timeline\\route.ts",
+    "imports": [
+      "src\\lib\\requireAdmin.ts",
+      "src\\lib\\supabase-admin.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\layout.tsx",
+    "imports": [
+      "src\\components\\layout\\Header.tsx",
+      "src\\components\\layout\\Footer.tsx",
+      "src\\components\\layout\\WhatsAppButton.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\logout\\route.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\robots.ts",
+    "imports": [
+      "src\\config\\site.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\sitemap.ts",
+    "imports": [
+      "src\\config\\site.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\about\\case-studies\\page.tsx",
+    "imports": [
+      "src\\lib\\seo.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\about\\page.tsx",
+    "imports": [
+      "src\\lib\\seo.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\blog\\page.tsx",
+    "imports": [
+      "src\\content\\blog-posts.ts",
+      "src\\lib\\seo.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\blog\\[slug]\\page.tsx",
+    "imports": [
+      "src\\content\\blog-posts.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\contact\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\analytics\\page.tsx",
+    "imports": [
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\clients\\page.tsx",
+    "imports": [
+      "src\\lib\\supabase\\client.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\components\\crm\\ExecutivePanel.tsx",
+    "imports": [
+      "src\\components\\dashboard\\KPICard.tsx",
+      "src\\services\\crm\\executive-intelligence.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\components\\crm\\PipelineOverview.tsx",
+    "imports": [
+      "src\\services\\crm\\pipeline.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\components\\crm\\RevenueForecast.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\components\\crm\\RevenueKPI.tsx",
+    "imports": [
+      "src\\components\\dashboard\\KPICard.tsx",
+      "src\\services\\crm\\revenue-intelligence.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\components\\crm\\SalesCopilot.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\components\\crm\\TodayWorkPanel.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\email\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\error.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\layout.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\leads\\page.tsx",
+    "imports": [
+      "src\\components\\dashboard\\LeadModal.tsx",
+      "src\\components\\dashboard\\LeadTable.tsx",
+      "src\\modules\\leads\\hooks\\useLeads.ts",
+      "src\\modules\\leads\\api\\lead.api.ts",
+      "src\\modules\\leads\\mappers\\lead.ui.mapper.ts",
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\loading.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\page.tsx",
+    "imports": [
+      "src\\components\\dashboard\\AnalyticsCards.tsx",
+      "src\\services\\dashboard.ts",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\ExecutivePanel.tsx",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\PipelineOverview.tsx",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\RevenueForecast.tsx",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\RevenueKPI.tsx",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\SalesCopilot.tsx",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\TodayWorkPanel.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\payments\\page.tsx",
+    "imports": [
+      "src\\modules\\payments\\components",
+      "src\\lib\\supabase\\server.ts",
+      "src\\modules\\payments\\components"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\projects\\page.tsx",
+    "imports": [
+      "src\\modules\\projects\\components\\ProjectTable.tsx",
+      "src\\modules\\projects\\services\\projects.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\dashboard\\RevenueKpiCards.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\faq\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\industries\\page.tsx",
+    "imports": [
+      "src\\lib\\seo.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\layout.tsx",
+    "imports": [
+      "src\\components\\layout\\Header.tsx",
+      "src\\components\\layout\\Footer.tsx",
+      "src\\components\\layout\\WhatsAppButton.tsx",
+      "src\\i18n\\routing.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\login\\page.tsx",
+    "imports": [
+      "src\\lib\\supabase\\client.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\page.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\services\\page.tsx",
+    "imports": [
+      "src\\components\\seo\\ServiceSchema.tsx",
+      "src\\lib\\seo.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\app\\[locale]\\testimonials\\page.tsx",
+    "imports": [
+      "src\\lib\\seo.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\auth\\RequirePermission.tsx",
+    "imports": [
+      "src\\lib\\auth\\auth-context.ts",
+      "src\\lib\\auth\\rbac.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\blog\\FeaturedPosts.tsx",
+    "imports": [
+      "src\\content\\blog-posts.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\contact\\CalendlyEmbed.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\contact\\ContactForm.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\crm\\TodayWorkPanel.tsx",
+    "imports": [
+      "src\\types\\workflow.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\AnalyticsCards.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\KPICard.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\components\\crm\\ExecutivePanel.tsx",
+      "src\\app\\[locale]\\dashboard\\components\\crm\\RevenueKPI.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadCard.tsx",
+    "imports": [
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\types\\lead.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadFilters.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadModal.tsx",
+    "imports": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\types\\lead.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadNotes.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadSearch.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadStatusBadge.tsx",
+    "imports": [
+      "src\\types\\lead.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadTable.tsx",
+    "imports": [
+      "src\\types\\lead.ts",
+      "src\\types\\lead.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\LeadTimeline.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\dashboard\\Pagination.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\modules\\projects\\components\\ProjectTable.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\ActivityPanel.tsx",
+    "imports": [
+      "src\\types\\activity.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\AttachmentPanel.tsx",
+    "imports": [
+      "src\\types\\attachments.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntityCard.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntityHeader.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntityLayout.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntitySummaryCard.tsx",
+    "imports": [
+      "src\\types\\entity.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntityTabs.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntityWorkspace.tsx",
+    "imports": [
+      "src\\types\\activity.ts",
+      "src\\types\\attachments.ts",
+      "src\\types\\notes.ts",
+      "src\\types\\notifications.ts",
+      "src\\types\\tasks.ts",
+      "src\\components\\entities\\ActivityPanel.tsx",
+      "src\\components\\entities\\AttachmentPanel.tsx",
+      "src\\components\\entities\\NotesPanel.tsx",
+      "src\\components\\entities\\NotificationPanel.tsx",
+      "src\\components\\entities\\TaskPanel.tsx"
+    ],
+    "importedBy": [
+      "src\\components\\dashboard\\LeadModal.tsx",
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\components\\entities\\index.ts",
+      "src\\modules\\leads\\components\\LeadEntityPanel.tsx",
+      "src\\modules\\leads\\components\\LeadWorkspace.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+    "imports": [
+      "src\\types\\activity.ts",
+      "src\\types\\attachments.ts",
+      "src\\types\\notes.ts",
+      "src\\types\\notifications.ts",
+      "src\\types\\tasks.ts",
+      "src\\components\\entities\\EntityWorkspace.tsx"
+    ],
+    "importedBy": [
+      "src\\components\\dashboard\\LeadCard.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\index.ts",
+    "imports": [
+      "src\\components\\entities\\ActivityPanel.tsx",
+      "src\\components\\entities\\AttachmentPanel.tsx",
+      "src\\components\\entities\\EntityCard.tsx",
+      "src\\components\\entities\\EntityHeader.tsx",
+      "src\\components\\entities\\EntityLayout.tsx",
+      "src\\components\\entities\\EntitySummaryCard.tsx",
+      "src\\components\\entities\\EntityTabs.tsx",
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\NotesPanel.tsx",
+      "src\\components\\entities\\NotificationPanel.tsx",
+      "src\\components\\entities\\TaskPanel.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\NotesPanel.tsx",
+    "imports": [
+      "src\\types\\notes.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\NotificationPanel.tsx",
+    "imports": [
+      "src\\types\\notifications.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\entities\\TaskPanel.tsx",
+    "imports": [
+      "src\\types\\tasks.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\forms\\contact-form.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\layout\\Footer.tsx",
+    "imports": [
+      "src\\constants\\site.ts"
+    ],
+    "importedBy": [
+      "src\\app\\layout.tsx",
+      "src\\app\\[locale]\\layout.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\layout\\Header.tsx",
+    "imports": [
+      "src\\constants\\navigation.ts"
+    ],
+    "importedBy": [
+      "src\\app\\layout.tsx",
+      "src\\app\\[locale]\\layout.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\layout\\WhatsAppButton.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\layout.tsx",
+      "src\\app\\[locale]\\layout.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\calendly-booking.tsx",
+    "imports": [
+      "src\\constants\\business.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\CTASection.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\google-map.tsx",
+    "imports": [
+      "src\\content\\business.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\HeroSection.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\IndustriesSection.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\ProcessSection.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\ServicesOverview.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\sections\\TrustBar.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\seo\\BreadcrumbSchema.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\seo\\FAQSchema.tsx",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\seo\\LocalBusinessSchema.tsx",
+    "imports": [
+      "src\\config\\site.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\seo\\OrganizationSchema.tsx",
+    "imports": [
+      "src\\config\\site.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\components\\seo\\ServiceSchema.tsx",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\services\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\config\\seo.ts",
+    "imports": [
+      "src\\config\\site.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\config\\site.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\robots.ts",
+      "src\\app\\sitemap.ts",
+      "src\\components\\seo\\LocalBusinessSchema.tsx",
+      "src\\components\\seo\\OrganizationSchema.tsx",
+      "src\\config\\seo.ts",
+      "src\\lib\\seo.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\constants\\business.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\sections\\calendly-booking.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\constants\\navigation.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\layout\\Header.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\constants\\site.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\layout\\Footer.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\content\\blog-posts.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\blog\\page.tsx",
+      "src\\app\\[locale]\\blog\\[slug]\\page.tsx",
+      "src\\components\\blog\\FeaturedPosts.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\content\\business.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\sections\\google-map.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\hooks\\crm\\useProjectsCRM.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\hooks\\index.ts",
+    "imports": [
+      "src\\hooks\\useEntityReference.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\hooks\\useEntityReference.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\hooks\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\i18n\\request.ts",
+    "imports": [
+      "src\\i18n\\routing.ts",
+      "messages\\en.json",
+      "messages\\hi.json",
+      "messages\\kn.json",
+      "messages\\mr.json",
+      "messages\\te.json"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\i18n\\routing.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\layout.tsx",
+      "src\\i18n\\request.ts",
+      "src\\proxy.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\analytics.ts",
+    "imports": [
+      "src\\lib\\supabase\\client.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\api-guard.ts",
+    "imports": [
+      "src\\lib\\tenant\\tenantContext.ts",
+      "src\\lib\\tenant\\tenant-resolver.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\auth-context.ts",
+    "imports": [
+      "src\\lib\\auth\\rbac.ts"
+    ],
+    "importedBy": [
+      "src\\components\\auth\\RequirePermission.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\get-session.ts",
+    "imports": [
+      "src\\lib\\auth\\rbac.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\guards.ts",
+    "imports": [
+      "src\\lib\\auth\\user.ts",
+      "src\\lib\\auth\\user.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\auth\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\index.ts",
+    "imports": [
+      "src\\lib\\auth\\session.ts",
+      "src\\lib\\auth\\user.ts",
+      "src\\lib\\auth\\guards.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\rbac.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\auth\\RequirePermission.tsx",
+      "src\\lib\\auth\\auth-context.ts",
+      "src\\lib\\auth\\get-session.ts",
+      "src\\lib\\auth\\tenant.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\session.ts",
+    "imports": [
+      "src\\lib\\supabase"
+    ],
+    "importedBy": [
+      "src\\lib\\auth\\index.ts",
+      "src\\lib\\auth\\user.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\tenant.ts",
+    "imports": [
+      "src\\lib\\auth\\rbac.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\auth\\user.ts",
+    "imports": [
+      "src\\lib\\supabase",
+      "src\\lib\\auth\\session.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\auth\\guards.ts",
+      "src\\lib\\auth\\guards.ts",
+      "src\\lib\\auth\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\cache\\memoryCache.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\lib\\workflow\\todayWorkService.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\db\\base-repository.ts",
+    "imports": [
+      "src\\lib\\tenant\\tenantContext.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\repositories\\LeadsRepository.ts",
+      "src\\repositories\\activity.repository.ts",
+      "src\\repositories\\attachments.repository.ts",
+      "src\\repositories\\notes.repository.ts",
+      "src\\repositories\\notifications.repository.ts",
+      "src\\repositories\\tasks.repository.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\email\\admin-lead-template.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\email\\customer-confirmation-template.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\entities\\constants.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\lib\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\entities\\entity-utils.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\entities\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\entities\\index.ts",
+    "imports": [
+      "src\\lib\\entities\\constants.ts",
+      "src\\lib\\entities\\entity-utils.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\env.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\lib\\supabase\\admin.ts",
+      "src\\lib\\supabase\\client.ts",
+      "src\\lib\\supabase\\index.ts",
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\index.ts",
+    "imports": [
+      "src\\lib\\entities"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\observability\\audit.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\lib\\observability\\logger.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\workflow\\crmExecutionService.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\observability\\logger.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\lib\\observability\\audit.ts",
+      "src\\lib\\workflow\\crmExecutionService.ts",
+      "src\\lib\\workflow\\workflowEngine.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\rate-limit.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\rbac.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\repository\\BaseRepository.ts",
+    "imports": [
+      "src\\lib\\tenant\\assertTenant.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\repository\\RepositoryTypes.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\requireAdmin.ts",
+    "imports": [
+      "src\\lib\\supabase",
+      "src\\lib\\auth"
+    ],
+    "importedBy": [
+      "src\\app\\api\\email\\send\\route.ts",
+      "src\\app\\api\\leads\\export\\route.ts",
+      "src\\app\\api\\leads\\[id]\\notes\\route.ts",
+      "src\\app\\api\\leads\\[id]\\timeline\\route.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\resend.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\api\\contact\\route.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\seo.ts",
+    "imports": [
+      "src\\config\\site.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\about\\case-studies\\page.tsx",
+      "src\\app\\[locale]\\about\\page.tsx",
+      "src\\app\\[locale]\\blog\\page.tsx",
+      "src\\app\\[locale]\\industries\\page.tsx",
+      "src\\app\\[locale]\\services\\page.tsx",
+      "src\\app\\[locale]\\testimonials\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase\\admin.ts",
+    "imports": [
+      "src\\lib\\env.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\supabase\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase\\client.ts",
+    "imports": [
+      "src\\lib\\env.ts"
+    ],
+    "importedBy": [
+      "src\\app\\admin\\leads\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\clients\\page.tsx",
+      "src\\app\\[locale]\\login\\page.tsx",
+      "src\\lib\\analytics.ts",
+      "src\\lib\\supabase\\index.ts",
+      "src\\modules\\payments\\components\\PaymentModal.tsx",
+      "src\\modules\\projects\\components\\ProjectForm.tsx",
+      "src\\modules\\projects\\components\\ProjectModal.tsx",
+      "src\\services\\crm\\revenue-forecast.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase\\index.ts",
+    "imports": [
+      "src\\lib\\supabase\\client.ts",
+      "src\\lib\\supabase\\server.ts",
+      "src\\lib\\supabase\\admin.ts",
+      "src\\lib\\env.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase\\server-client.ts",
+    "imports": [
+      "src\\lib\\tenant\\tenantContext.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase\\server.ts",
+    "imports": [
+      "src\\lib\\env.ts"
+    ],
+    "importedBy": [
+      "src\\app\\api\\contact\\route.ts",
+      "src\\app\\api\\leads\\route.ts",
+      "src\\app\\api\\leads\\update-status\\route.ts",
+      "src\\app\\api\\leads\\[entityId]\\route.ts",
+      "src\\app\\api\\leads\\[id]\\convert\\route.ts",
+      "src\\app\\logout\\route.ts",
+      "src\\app\\[locale]\\dashboard\\analytics\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\payments\\page.tsx",
+      "src\\lib\\observability\\audit.ts",
+      "src\\lib\\supabase\\index.ts",
+      "src\\lib\\workflow\\workflowRepository.ts",
+      "src\\modules\\clients\\services\\clients.ts",
+      "src\\modules\\payments\\types\\payment.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\services\\crm\\pipeline.ts",
+      "src\\services\\dashboard-data.ts",
+      "src\\services\\leads.ts",
+      "src\\services\\payments.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase\\types.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\supabase-admin.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\api\\leads\\[id]\\notes\\route.ts",
+      "src\\app\\api\\leads\\[id]\\timeline\\route.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\tenant\\assertTenant.ts",
+    "imports": [
+      "src\\lib\\tenant\\tenantContext.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\repository\\BaseRepository.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\tenant\\tenant-resolver.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\lib\\auth\\api-guard.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\tenant\\tenantContext.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\api\\client.ts",
+      "src\\lib\\auth\\api-guard.ts",
+      "src\\lib\\db\\base-repository.ts",
+      "src\\lib\\supabase\\server-client.ts",
+      "src\\lib\\tenant\\assertTenant.ts",
+      "src\\lib\\tenant\\withTenantFilter.ts",
+      "src\\lib\\workflow\\todayWorkService.ts",
+      "src\\lib\\workflow\\workflowRepository.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\tenant\\withTenantFilter.ts",
+    "imports": [
+      "src\\lib\\tenant\\tenantContext.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\tenant.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\validation\\contact.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\validation\\lead-schema.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\workflow\\crmExecutionService.ts",
+    "imports": [
+      "src\\types\\workflow.ts",
+      "src\\lib\\observability\\logger.ts",
+      "src\\lib\\observability\\audit.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\workflow\\todayWorkService.ts",
+    "imports": [
+      "src\\lib\\cache\\memoryCache.ts",
+      "src\\lib\\tenant\\tenantContext.ts",
+      "src\\lib\\workflow\\workflowEngine.ts",
+      "src\\lib\\workflow\\workflowRepository.ts",
+      "src\\types\\workflow.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\workflow\\workflowEngine.ts",
+    "imports": [
+      "src\\types\\workflow.ts",
+      "src\\lib\\observability\\logger.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\workflow\\todayWorkService.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\lib\\workflow\\workflowRepository.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\lib\\tenant\\tenantContext.ts",
+      "src\\types\\workflow.ts"
+    ],
+    "importedBy": [
+      "src\\lib\\workflow\\todayWorkService.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\api\\clients.api.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\api\\index.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\components\\index.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\hooks\\index.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\hooks\\useClients.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\index.ts",
+    "imports": [
+      "src\\modules\\clients\\types\\client.ts",
+      "src\\modules\\clients\\services",
+      "src\\modules\\clients\\services\\clients.ts",
+      "src\\modules\\clients\\components",
+      "src\\modules\\clients\\hooks",
+      "src\\modules\\clients\\repositories",
+      "src\\modules\\clients\\mappers",
+      "src\\modules\\clients\\api"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\mappers\\client.mapper.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\mappers\\index.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\repositories\\client.repository.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\repositories\\index.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\services\\clients.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\modules\\clients\\types\\client.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\clients\\index.ts",
+      "src\\modules\\clients\\services\\index.ts",
+      "src\\services\\analytics.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\services\\index.ts",
+    "imports": [
+      "src\\modules\\clients\\services\\clients.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\clients\\types\\client.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\modules\\clients\\index.ts",
+      "src\\modules\\clients\\services\\clients.ts",
+      "src\\services\\dashboard-data.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\adapters\\lead.entity.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\api\\lead.api.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx",
+      "src\\modules\\leads\\components\\LeadCreateForm.tsx",
+      "src\\modules\\leads\\hooks\\useLeadById.ts",
+      "src\\modules\\leads\\mutations\\useCreateLead.ts",
+      "src\\modules\\leads\\mutations\\useUpdateLead.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\index.ts",
+    "imports": [
+      "src\\modules\\leads\\components\\LeadCard.tsx",
+      "src\\modules\\leads\\components\\LeadCreateForm.tsx",
+      "src\\modules\\leads\\components\\LeadDashboardWidget.tsx",
+      "src\\modules\\leads\\components\\LeadEntityPanel.tsx",
+      "src\\modules\\leads\\components\\LeadList.tsx",
+      "src\\modules\\leads\\components\\LeadStatusBadge.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadCard.tsx",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadCreateForm.tsx",
+    "imports": [
+      "src\\modules\\leads\\api\\lead.api.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadDashboardWidget.tsx",
+    "imports": [
+      "src\\modules\\leads\\hooks\\useLeads.ts",
+      "src\\modules\\leads\\selectors\\lead.selectors.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadEntityPanel.tsx",
+    "imports": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadList.tsx",
+    "imports": [
+      "src\\modules\\leads\\hooks\\useLeads.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadStatusBadge.tsx",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts",
+      "src\\modules\\leads\\utils\\lead.status.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\components\\LeadWorkspace.tsx",
+    "imports": [
+      "src\\components\\entities\\EntityWorkspace.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\contracts\\lead.contract.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\hooks\\useLeadById.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts",
+      "src\\modules\\leads\\api\\lead.api.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\hooks\\useLeads.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx",
+      "src\\modules\\leads\\components\\LeadDashboardWidget.tsx",
+      "src\\modules\\leads\\components\\LeadList.tsx",
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\index.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts",
+      "src\\modules\\leads\\repositories\\LeadsRepository.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts",
+      "src\\modules\\leads\\hooks\\useLeads.ts",
+      "src\\modules\\leads\\hooks\\useLeadById.ts",
+      "src\\modules\\leads\\components",
+      "src\\modules\\leads\\selectors\\lead.selectors.ts",
+      "src\\modules\\leads\\utils\\lead.status.ts",
+      "src\\modules\\leads\\utils\\lead.factory.ts",
+      "src\\modules\\leads\\integrations\\lead.entity.bridge.ts",
+      "src\\modules\\leads\\integrations\\entity.registry.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.activity.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.notes.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.dashboard.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.sync.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.search.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.validation.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.permissions.adapter.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\entity.registry.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.activity.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.dashboard.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.entity.bridge.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.entity.hooks.bridge.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.notes.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.permissions.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.search.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.sync.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\integrations\\lead.validation.adapter.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\lead.entity.config.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\mappers\\lead.mapper.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\mappers\\lead.ui.mapper.ts",
+    "imports": [
+      "src\\types\\lead.ts",
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\middleware\\lead.entity.guard.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\mutations\\useCreateLead.ts",
+    "imports": [
+      "src\\modules\\leads\\api\\lead.api.ts",
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\mutations\\useUpdateLead.ts",
+    "imports": [
+      "src\\modules\\leads\\api\\lead.api.ts",
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\repositories\\LeadsRepository.ts",
+    "imports": [
+      "src\\lib\\db\\base-repository.ts",
+      "src\\modules\\leads\\types\\lead.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\selectors\\lead.selectors.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\LeadDashboardWidget.tsx",
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\services\\LeadsService.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.ts",
+      "src\\modules\\leads\\repositories\\LeadsRepository.ts",
+      "src\\modules\\leads\\repositories\\LeadsRepository.ts"
+    ],
+    "importedBy": [
+      "src\\app\\api\\leads\\route.ts",
+      "src\\app\\api\\leads\\update-status\\route.ts",
+      "src\\app\\api\\leads\\[entityId]\\route.ts",
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\types\\lead.entity.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx",
+      "src\\modules\\leads\\adapters\\lead.entity.adapter.ts",
+      "src\\modules\\leads\\api\\lead.api.ts",
+      "src\\modules\\leads\\components\\LeadCard.tsx",
+      "src\\modules\\leads\\components\\LeadEntityPanel.tsx",
+      "src\\modules\\leads\\components\\LeadStatusBadge.tsx",
+      "src\\modules\\leads\\contracts\\lead.contract.ts",
+      "src\\modules\\leads\\hooks\\useLeadById.ts",
+      "src\\modules\\leads\\hooks\\useLeads.ts",
+      "src\\modules\\leads\\index.ts",
+      "src\\modules\\leads\\integrations\\entity.registry.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.activity.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.dashboard.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.entity.bridge.ts",
+      "src\\modules\\leads\\integrations\\lead.entity.hooks.bridge.ts",
+      "src\\modules\\leads\\integrations\\lead.notes.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.permissions.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.search.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.sync.adapter.ts",
+      "src\\modules\\leads\\integrations\\lead.validation.adapter.ts",
+      "src\\modules\\leads\\lead.entity.config.ts",
+      "src\\modules\\leads\\mappers\\lead.mapper.ts",
+      "src\\modules\\leads\\mappers\\lead.ui.mapper.ts",
+      "src\\modules\\leads\\middleware\\lead.entity.guard.ts",
+      "src\\modules\\leads\\mutations\\useCreateLead.ts",
+      "src\\modules\\leads\\mutations\\useUpdateLead.ts",
+      "src\\modules\\leads\\selectors\\lead.selectors.ts",
+      "src\\modules\\leads\\utils\\lead.factory.ts",
+      "src\\modules\\leads\\utils\\lead.status.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\types\\lead.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\modules\\leads\\repositories\\LeadsRepository.ts",
+      "src\\modules\\leads\\services\\LeadsService.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\utils\\lead.factory.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\leads\\utils\\lead.status.ts",
+    "imports": [
+      "src\\modules\\leads\\types\\lead.entity.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\leads\\components\\LeadStatusBadge.tsx",
+      "src\\modules\\leads\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\payments\\api\\payments.api.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\modules\\payments\\components\\index.ts",
+    "imports": [
+      "src\\modules\\payments\\components\\PaymentTable.tsx",
+      "src\\modules\\payments\\components\\PaymentModal.tsx",
+      "src\\modules\\payments\\components\\PaymentTable.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\payments\\components\\PaymentModal.tsx",
+    "imports": [
+      "src\\lib\\supabase\\client.ts",
+      "src\\modules\\payments\\types\\payment.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\payments\\components\\index.ts",
+      "src\\modules\\payments\\components\\PaymentTable.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\payments\\components\\PaymentTable.tsx",
+    "imports": [
+      "src\\modules\\payments\\components\\PaymentModal.tsx",
+      "src\\modules\\payments\\types\\payment.ts",
+      "src\\modules\\payments\\types\\payment.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\payments\\components\\index.ts",
+      "src\\modules\\payments\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\payments\\hooks\\usePayments.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\modules\\payments\\index.ts",
+    "imports": [
+      "src\\modules\\payments\\types\\payment.ts",
+      "src\\modules\\payments\\components"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\payments\\mappers\\payment.mapper.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\modules\\payments\\repositories\\payment.repository.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\modules\\payments\\services\\index.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\modules\\payments\\services\\payments.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\modules\\payments\\types\\payment.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\payments\\components\\PaymentModal.tsx",
+      "src\\modules\\payments\\components\\PaymentTable.tsx",
+      "src\\modules\\payments\\components\\PaymentTable.tsx",
+      "src\\modules\\payments\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\api\\projects.api.ts",
+    "imports": [
+      "src\\api\\client.ts",
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\hooks\\useProjects.ts",
+      "src\\modules\\projects\\hooks\\useProjectsApi.ts",
+      "src\\modules\\projects\\index.ts",
+      "src\\modules\\projects\\repositories\\project.repository.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\components\\index.ts",
+    "imports": [
+      "src\\modules\\projects\\components\\ProjectForm.tsx",
+      "src\\modules\\projects\\components\\ProjectModal.tsx",
+      "src\\modules\\projects\\components\\ProjectStatusBadge.tsx",
+      "src\\modules\\projects\\components\\ProjectTable.tsx"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\components\\ProjectForm.tsx",
+    "imports": [
+      "src\\lib\\supabase\\client.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\components\\ProjectModal.tsx",
+    "imports": [
+      "src\\lib\\supabase\\client.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\components\\ProjectStatusBadge.tsx",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\components\\index.ts",
+      "src\\modules\\projects\\components\\ProjectTable.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\components\\ProjectTable.tsx",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\components\\ProjectStatusBadge.tsx",
+      "src\\components\\dashboard\\Pagination.tsx",
+      "src\\modules\\projects\\hooks\\useProjectAnalytics.ts",
+      "src\\modules\\projects\\hooks\\useProjectFilters.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\projects\\page.tsx",
+      "src\\modules\\projects\\components\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\hooks\\index.ts",
+    "imports": [
+      "src\\modules\\projects\\hooks\\useProjectAnalytics.ts",
+      "src\\modules\\projects\\hooks\\useProjectFilters.ts",
+      "src\\modules\\projects\\hooks\\useProjectMutations.ts",
+      "src\\modules\\projects\\hooks\\useProjects.ts",
+      "src\\modules\\projects\\hooks\\useProjectsApi.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\hooks\\useProjectAnalytics.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\components\\ProjectTable.tsx",
+      "src\\modules\\projects\\hooks\\index.ts",
+      "src\\modules\\projects\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\hooks\\useProjectFilters.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\components\\ProjectTable.tsx",
+      "src\\modules\\projects\\hooks\\index.ts",
+      "src\\modules\\projects\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\hooks\\useProjectMutations.ts",
+    "imports": [
+      "src\\modules\\projects\\repositories\\project.repository.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\hooks\\index.ts",
+      "src\\modules\\projects\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\hooks\\useProjects.ts",
+    "imports": [
+      "src\\modules\\projects\\repositories\\project.repository.ts",
+      "src\\modules\\projects\\services\\normalizeProjects.ts",
+      "src\\modules\\projects\\api\\projects.api.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\hooks\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\hooks\\useProjectsApi.ts",
+    "imports": [
+      "src\\modules\\projects\\repositories\\project.repository.ts",
+      "src\\modules\\projects\\services\\normalizeProjects.ts",
+      "src\\modules\\projects\\api\\projects.api.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\hooks\\index.ts",
+      "src\\modules\\projects\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\index.ts",
+    "imports": [
+      "src\\modules\\projects\\api\\projects.api.ts",
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\mappers\\project.mapper.ts",
+      "src\\modules\\projects\\repositories\\project.repository.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\modules\\projects\\services\\normalizeProjects.ts",
+      "src\\modules\\projects\\hooks\\useProjectsApi.ts",
+      "src\\modules\\projects\\hooks\\useProjectAnalytics.ts",
+      "src\\modules\\projects\\hooks\\useProjectFilters.ts",
+      "src\\modules\\projects\\hooks\\useProjectMutations.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\mappers\\project.mapper.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\repositories\\project.repository.ts",
+    "imports": [
+      "src\\modules\\projects\\api\\projects.api.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\hooks\\useProjectMutations.ts",
+      "src\\modules\\projects\\hooks\\useProjects.ts",
+      "src\\modules\\projects\\hooks\\useProjectsApi.ts",
+      "src\\modules\\projects\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\services\\clientProjects.ts",
+    "imports": [
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\services\\projectExtensions.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\services\\index.ts",
+    "imports": [
+      "src\\modules\\projects\\services\\clientProjects.ts",
+      "src\\modules\\projects\\services\\normalizeProjects.ts",
+      "src\\modules\\projects\\services\\projectExtensions.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\modules\\projects\\services\\projectStatusPipeline.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\services\\normalizeProjects.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\hooks\\useProjects.ts",
+      "src\\modules\\projects\\hooks\\useProjectsApi.ts",
+      "src\\modules\\projects\\index.ts",
+      "src\\modules\\projects\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\services\\projectExtensions.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\services\\clientProjects.ts",
+      "src\\modules\\projects\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\services\\projects.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\projects\\page.tsx",
+      "src\\modules\\projects\\index.ts",
+      "src\\modules\\projects\\services\\clientProjects.ts",
+      "src\\modules\\projects\\services\\index.ts",
+      "src\\services\\analytics.ts",
+      "src\\services\\crm\\revenue-intelligence.ts",
+      "src\\services\\crm\\workflow-intelligence.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\services\\projectStatusPipeline.ts",
+    "imports": [
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [
+      "src\\modules\\projects\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\modules\\projects\\types\\project.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\hooks\\crm\\useProjectsCRM.ts",
+      "src\\modules\\projects\\api\\projects.api.ts",
+      "src\\modules\\projects\\api\\projects.api.ts",
+      "src\\modules\\projects\\components\\ProjectForm.tsx",
+      "src\\modules\\projects\\components\\ProjectModal.tsx",
+      "src\\modules\\projects\\components\\ProjectStatusBadge.tsx",
+      "src\\modules\\projects\\components\\ProjectTable.tsx",
+      "src\\modules\\projects\\hooks\\useProjectAnalytics.ts",
+      "src\\modules\\projects\\hooks\\useProjectFilters.ts",
+      "src\\modules\\projects\\hooks\\useProjectMutations.ts",
+      "src\\modules\\projects\\index.ts",
+      "src\\modules\\projects\\mappers\\project.mapper.ts",
+      "src\\modules\\projects\\repositories\\project.repository.ts",
+      "src\\modules\\projects\\services\\clientProjects.ts",
+      "src\\modules\\projects\\services\\normalizeProjects.ts",
+      "src\\modules\\projects\\services\\projectExtensions.ts",
+      "src\\modules\\projects\\services\\projectExtensions.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\modules\\projects\\services\\projectStatusPipeline.ts",
+      "src\\services\\dashboard-data.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\proxy.ts",
+    "imports": [
+      "src\\i18n\\routing.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\repositories\\activity.repository.ts",
+    "imports": [
+      "src\\lib\\db\\base-repository.ts",
+      "src\\types\\activity.ts"
+    ],
+    "importedBy": [
+      "src\\repositories\\index.ts",
+      "src\\services\\activity.service.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\repositories\\attachments.repository.ts",
+    "imports": [
+      "src\\lib\\db\\base-repository.ts",
+      "src\\types\\attachments.ts"
+    ],
+    "importedBy": [
+      "src\\repositories\\index.ts",
+      "src\\services\\attachments.service.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\repositories\\index.ts",
+    "imports": [
+      "src\\repositories\\activity.repository.ts",
+      "src\\repositories\\notes.repository.ts",
+      "src\\repositories\\tasks.repository.ts",
+      "src\\repositories\\attachments.repository.ts",
+      "src\\repositories\\notifications.repository.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\repositories\\notes.repository.ts",
+    "imports": [
+      "src\\lib\\db\\base-repository.ts",
+      "src\\types\\notes.ts"
+    ],
+    "importedBy": [
+      "src\\repositories\\index.ts",
+      "src\\services\\notes.service.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\repositories\\notifications.repository.ts",
+    "imports": [
+      "src\\lib\\db\\base-repository.ts",
+      "src\\types\\notifications.ts"
+    ],
+    "importedBy": [
+      "src\\repositories\\index.ts",
+      "src\\services\\notifications.service.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\repositories\\tasks.repository.ts",
+    "imports": [
+      "src\\lib\\db\\base-repository.ts",
+      "src\\types\\tasks.ts"
+    ],
+    "importedBy": [
+      "src\\repositories\\index.ts",
+      "src\\services\\tasks.service.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\activity.service.ts",
+    "imports": [
+      "src\\types\\activity.ts",
+      "src\\repositories\\activity.repository.ts"
+    ],
+    "importedBy": [
+      "src\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\analytics.ts",
+    "imports": [
+      "src\\services\\leads.ts",
+      "src\\modules\\clients\\services\\clients.ts",
+      "src\\modules\\projects\\services\\projects.ts",
+      "src\\services\\payments.ts"
+    ],
+    "importedBy": [
+      "src\\services\\crm\\executive-intelligence.ts",
+      "src\\services\\dashboard.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\attachments.service.ts",
+    "imports": [
+      "src\\types\\attachments.ts",
+      "src\\repositories\\attachments.repository.ts"
+    ],
+    "importedBy": [
+      "src\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\crm\\executive-intelligence.ts",
+    "imports": [
+      "src\\services\\analytics.ts",
+      "src\\services\\crm\\pipeline.ts",
+      "src\\services\\crm\\revenue-intelligence.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\components\\crm\\ExecutivePanel.tsx",
+      "src\\services\\dashboard.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\crm\\lead-intelligence.ts",
+    "imports": [
+      "src\\types\\lead.ts"
+    ],
+    "importedBy": [
+      "src\\services\\crm\\pipeline.ts",
+      "src\\services\\crm\\workflow-intelligence.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\crm\\pipeline.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\types\\lead.ts",
+      "src\\services\\crm\\lead-intelligence.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\components\\crm\\PipelineOverview.tsx",
+      "src\\services\\crm\\executive-intelligence.ts",
+      "src\\services\\crm\\workflow-intelligence.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\crm\\revenue-forecast.ts",
+    "imports": [
+      "src\\lib\\supabase\\client.ts"
+    ],
+    "importedBy": [
+      "src\\services\\dashboard.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\crm\\revenue-intelligence.ts",
+    "imports": [
+      "src\\services\\payments.ts",
+      "src\\modules\\projects\\services\\projects.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\components\\crm\\RevenueKPI.tsx",
+      "src\\services\\crm\\executive-intelligence.ts",
+      "src\\services\\crm\\workflow-intelligence.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\crm\\workflow-intelligence.ts",
+    "imports": [
+      "src\\services\\crm\\lead-intelligence.ts",
+      "src\\services\\crm\\pipeline.ts",
+      "src\\services\\crm\\revenue-intelligence.ts",
+      "src\\modules\\projects\\services\\projects.ts"
+    ],
+    "importedBy": [
+      "src\\services\\dashboard.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\dashboard-data.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\types\\lead.ts",
+      "src\\modules\\clients\\types\\client.ts",
+      "src\\types\\payment.ts",
+      "src\\modules\\projects\\types\\project.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\dashboard.ts",
+    "imports": [
+      "src\\services\\analytics.ts",
+      "src\\services\\crm\\executive-intelligence.ts",
+      "src\\services\\crm\\revenue-forecast.ts",
+      "src\\services\\crm\\workflow-intelligence.ts"
+    ],
+    "importedBy": [
+      "src\\app\\[locale]\\dashboard\\page.tsx"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\entity-summary.service.ts",
+    "imports": [
+      "src\\types\\entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\entity.service.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\index.ts",
+    "imports": [
+      "src\\services\\entity.service.ts",
+      "src\\services\\activity.service.ts",
+      "src\\services\\notes.service.ts",
+      "src\\services\\tasks.service.ts",
+      "src\\services\\attachments.service.ts",
+      "src\\services\\notifications.service.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\leads.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts",
+      "src\\types\\dashboard.ts"
+    ],
+    "importedBy": [
+      "src\\services\\analytics.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\notes.service.ts",
+    "imports": [
+      "src\\types\\notes.ts",
+      "src\\repositories\\notes.repository.ts"
+    ],
+    "importedBy": [
+      "src\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\notifications.service.ts",
+    "imports": [
+      "src\\types\\notifications.ts",
+      "src\\repositories\\notifications.repository.ts"
+    ],
+    "importedBy": [
+      "src\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\payments.ts",
+    "imports": [
+      "src\\lib\\supabase\\server.ts"
+    ],
+    "importedBy": [
+      "src\\services\\analytics.ts",
+      "src\\services\\crm\\revenue-intelligence.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\services\\tasks.service.ts",
+    "imports": [
+      "src\\types\\tasks.ts",
+      "src\\repositories\\tasks.repository.ts"
+    ],
+    "importedBy": [
+      "src\\services\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\activity.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\ActivityPanel.tsx",
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\repositories\\activity.repository.ts",
+      "src\\services\\activity.service.ts",
+      "src\\types\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\attachments.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\AttachmentPanel.tsx",
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\repositories\\attachments.repository.ts",
+      "src\\services\\attachments.service.ts",
+      "src\\types\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\base.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\hooks\\useEntityReference.ts",
+      "src\\lib\\entities\\entity-utils.ts",
+      "src\\modules\\projects\\types\\project.ts",
+      "src\\types\\activity.ts",
+      "src\\types\\attachments.ts",
+      "src\\types\\entity.ts",
+      "src\\types\\index.ts",
+      "src\\types\\notes.ts",
+      "src\\types\\notifications.ts",
+      "src\\types\\tasks.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\blog.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\contact.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\dashboard.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\services\\leads.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\entity.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntitySummaryCard.tsx",
+      "src\\services\\entity-summary.service.ts",
+      "src\\types\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\index.ts",
+    "imports": [
+      "src\\types\\base.ts",
+      "src\\types\\activity.ts",
+      "src\\types\\notes.ts",
+      "src\\types\\tasks.ts",
+      "src\\types\\attachments.ts",
+      "src\\types\\notifications.ts",
+      "src\\types\\entity.ts"
+    ],
+    "importedBy": [],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\lead.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\dashboard\\LeadCard.tsx",
+      "src\\components\\dashboard\\LeadModal.tsx",
+      "src\\components\\dashboard\\LeadStatusBadge.tsx",
+      "src\\components\\dashboard\\LeadTable.tsx",
+      "src\\components\\dashboard\\LeadTable.tsx",
+      "src\\modules\\leads\\mappers\\lead.ui.mapper.ts",
+      "src\\services\\crm\\lead-intelligence.ts",
+      "src\\services\\crm\\pipeline.ts",
+      "src\\services\\dashboard-data.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\notes.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\components\\entities\\NotesPanel.tsx",
+      "src\\repositories\\notes.repository.ts",
+      "src\\services\\notes.service.ts",
+      "src\\types\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\notifications.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\components\\entities\\NotificationPanel.tsx",
+      "src\\repositories\\notifications.repository.ts",
+      "src\\services\\notifications.service.ts",
+      "src\\types\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\payment.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\services\\dashboard-data.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\rbac.ts",
+    "imports": [],
+    "importedBy": [],
+    "isZeroByte": true
+  },
+  {
+    "file": "src\\types\\tasks.ts",
+    "imports": [
+      "src\\types\\base.ts"
+    ],
+    "importedBy": [
+      "src\\components\\entities\\EntityWorkspace.tsx",
+      "src\\components\\entities\\EntityWorkspaceContainer.tsx",
+      "src\\components\\entities\\TaskPanel.tsx",
+      "src\\repositories\\tasks.repository.ts",
+      "src\\services\\tasks.service.ts",
+      "src\\types\\index.ts"
+    ],
+    "isZeroByte": false
+  },
+  {
+    "file": "src\\types\\workflow.ts",
+    "imports": [],
+    "importedBy": [
+      "src\\components\\crm\\TodayWorkPanel.tsx",
+      "src\\lib\\workflow\\crmExecutionService.ts",
+      "src\\lib\\workflow\\todayWorkService.ts",
+      "src\\lib\\workflow\\workflowEngine.ts",
+      "src\\lib\\workflow\\workflowRepository.ts"
+    ],
+    "isZeroByte": false
+  }
+]

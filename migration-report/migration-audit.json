@@ -1,0 +1,243 @@
+{
+  "generatedAt": "2026-07-06T11:53:24.011Z",
+  "zeroByteFiles": [
+    "src\\modules\\payments\\api\\payments.api.ts",
+    "src\\modules\\payments\\hooks\\usePayments.ts",
+    "src\\modules\\payments\\mappers\\payment.mapper.ts",
+    "src\\modules\\payments\\repositories\\payment.repository.ts",
+    "src\\modules\\payments\\services\\index.ts",
+    "src\\modules\\payments\\services\\payments.ts",
+    "src\\types\\rbac.ts"
+  ],
+  "tinyFiles": [
+    "src\\api\\index.ts",
+    "src\\app\\admin\\dashboard\\page.tsx",
+    "src\\app\\admin\\settings\\page.tsx",
+    "src\\hooks\\index.ts",
+    "src\\lib\\auth\\index.ts",
+    "src\\lib\\entities\\index.ts",
+    "src\\lib\\index.ts",
+    "src\\modules\\clients\\api\\clients.api.ts",
+    "src\\modules\\clients\\api\\index.ts",
+    "src\\modules\\clients\\components\\index.ts",
+    "src\\modules\\clients\\hooks\\index.ts",
+    "src\\modules\\clients\\hooks\\useClients.ts",
+    "src\\modules\\clients\\mappers\\client.mapper.ts",
+    "src\\modules\\clients\\mappers\\index.ts",
+    "src\\modules\\clients\\repositories\\client.repository.ts",
+    "src\\modules\\clients\\repositories\\index.ts",
+    "src\\modules\\clients\\services\\index.ts",
+    "src\\modules\\payments\\api\\payments.api.ts",
+    "src\\modules\\payments\\components\\index.ts",
+    "src\\modules\\payments\\hooks\\usePayments.ts",
+    "src\\modules\\payments\\index.ts",
+    "src\\modules\\payments\\mappers\\payment.mapper.ts",
+    "src\\modules\\payments\\repositories\\payment.repository.ts",
+    "src\\modules\\payments\\services\\index.ts",
+    "src\\modules\\payments\\services\\payments.ts",
+    "src\\modules\\projects\\components\\index.ts",
+    "src\\modules\\projects\\hooks\\index.ts",
+    "src\\types\\rbac.ts"
+  ],
+  "duplicateNames": {
+    "client.ts": [
+      "src\\api\\client.ts",
+      "src\\lib\\supabase\\client.ts",
+      "src\\modules\\clients\\types\\client.ts"
+    ],
+    "index.ts": [
+      "src\\api\\index.ts",
+      "src\\components\\entities\\index.ts",
+      "src\\hooks\\index.ts",
+      "src\\lib\\auth\\index.ts",
+      "src\\lib\\entities\\index.ts",
+      "src\\lib\\index.ts",
+      "src\\lib\\supabase\\index.ts",
+      "src\\modules\\clients\\api\\index.ts",
+      "src\\modules\\clients\\components\\index.ts",
+      "src\\modules\\clients\\hooks\\index.ts",
+      "src\\modules\\clients\\index.ts",
+      "src\\modules\\clients\\mappers\\index.ts",
+      "src\\modules\\clients\\repositories\\index.ts",
+      "src\\modules\\clients\\services\\index.ts",
+      "src\\modules\\leads\\components\\index.ts",
+      "src\\modules\\leads\\index.ts",
+      "src\\modules\\payments\\components\\index.ts",
+      "src\\modules\\payments\\index.ts",
+      "src\\modules\\payments\\services\\index.ts",
+      "src\\modules\\projects\\components\\index.ts",
+      "src\\modules\\projects\\hooks\\index.ts",
+      "src\\modules\\projects\\index.ts",
+      "src\\modules\\projects\\services\\index.ts",
+      "src\\repositories\\index.ts",
+      "src\\services\\index.ts",
+      "src\\types\\index.ts"
+    ],
+    "page.tsx": [
+      "src\\app\\admin\\dashboard\\page.tsx",
+      "src\\app\\admin\\leads\\page.tsx",
+      "src\\app\\admin\\login\\page.tsx",
+      "src\\app\\admin\\page.tsx",
+      "src\\app\\admin\\settings\\page.tsx",
+      "src\\app\\[locale]\\about\\case-studies\\page.tsx",
+      "src\\app\\[locale]\\about\\page.tsx",
+      "src\\app\\[locale]\\blog\\page.tsx",
+      "src\\app\\[locale]\\blog\\[slug]\\page.tsx",
+      "src\\app\\[locale]\\contact\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\analytics\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\clients\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\email\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\leads\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\payments\\page.tsx",
+      "src\\app\\[locale]\\dashboard\\projects\\page.tsx",
+      "src\\app\\[locale]\\faq\\page.tsx",
+      "src\\app\\[locale]\\industries\\page.tsx",
+      "src\\app\\[locale]\\login\\page.tsx",
+      "src\\app\\[locale]\\page.tsx",
+      "src\\app\\[locale]\\services\\page.tsx",
+      "src\\app\\[locale]\\testimonials\\page.tsx"
+    ],
+    "layout.tsx": [
+      "src\\app\\admin\\layout.tsx",
+      "src\\app\\layout.tsx",
+      "src\\app\\[locale]\\dashboard\\layout.tsx",
+      "src\\app\\[locale]\\layout.tsx"
+    ],
+    "route.ts": [
+      "src\\app\\api\\contact\\route.ts",
+      "src\\app\\api\\email\\send\\route.ts",
+      "src\\app\\api\\entities\\activity\\route.ts",
+      "src\\app\\api\\entities\\attachments\\route.ts",
+      "src\\app\\api\\entities\\health\\route.ts",
+      "src\\app\\api\\entities\\notes\\route.ts",
+      "src\\app\\api\\entities\\notifications\\route.ts",
+      "src\\app\\api\\entities\\route.ts",
+      "src\\app\\api\\entities\\tasks\\route.ts",
+      "src\\app\\api\\leads\\export\\route.ts",
+      "src\\app\\api\\leads\\route.ts",
+      "src\\app\\api\\leads\\update-status\\route.ts",
+      "src\\app\\api\\leads\\[entityId]\\route.ts",
+      "src\\app\\api\\leads\\[id]\\convert\\route.ts",
+      "src\\app\\api\\leads\\[id]\\notes\\route.ts",
+      "src\\app\\api\\leads\\[id]\\timeline\\route.ts",
+      "src\\app\\logout\\route.ts"
+    ],
+    "TodayWorkPanel.tsx": [
+      "src\\app\\[locale]\\dashboard\\components\\crm\\TodayWorkPanel.tsx",
+      "src\\components\\crm\\TodayWorkPanel.tsx"
+    ],
+    "LeadCard.tsx": [
+      "src\\components\\dashboard\\LeadCard.tsx",
+      "src\\modules\\leads\\components\\LeadCard.tsx"
+    ],
+    "LeadStatusBadge.tsx": [
+      "src\\components\\dashboard\\LeadStatusBadge.tsx",
+      "src\\modules\\leads\\components\\LeadStatusBadge.tsx"
+    ],
+    "README.md": [
+      "src\\components\\entities\\README.md",
+      "src\\modules\\leads\\README.md"
+    ],
+    "seo.ts": [
+      "src\\config\\seo.ts",
+      "src\\lib\\seo.ts"
+    ],
+    "site.ts": [
+      "src\\config\\site.ts",
+      "src\\constants\\site.ts"
+    ],
+    "business.ts": [
+      "src\\constants\\business.ts",
+      "src\\content\\business.ts"
+    ],
+    "analytics.ts": [
+      "src\\lib\\analytics.ts",
+      "src\\services\\analytics.ts"
+    ],
+    "rbac.ts": [
+      "src\\lib\\auth\\rbac.ts",
+      "src\\lib\\rbac.ts",
+      "src\\types\\rbac.ts"
+    ],
+    "tenant.ts": [
+      "src\\lib\\auth\\tenant.ts",
+      "src\\lib\\tenant.ts"
+    ],
+    "contact.ts": [
+      "src\\lib\\validation\\contact.ts",
+      "src\\types\\contact.ts"
+    ],
+    "lead.ts": [
+      "src\\modules\\leads\\types\\lead.ts",
+      "src\\types\\lead.ts"
+    ],
+    "payments.ts": [
+      "src\\modules\\payments\\services\\payments.ts",
+      "src\\services\\payments.ts"
+    ],
+    "payment.ts": [
+      "src\\modules\\payments\\types\\payment.ts",
+      "src\\types\\payment.ts"
+    ],
+    "dashboard.ts": [
+      "src\\services\\dashboard.ts",
+      "src\\types\\dashboard.ts"
+    ]
+  },
+  "legacyServices": [],
+  "legacyTypes": [],
+  "barrelFiles": [
+    "src\\api\\index.ts",
+    "src\\components\\entities\\index.ts",
+    "src\\hooks\\index.ts",
+    "src\\lib\\auth\\index.ts",
+    "src\\lib\\entities\\index.ts",
+    "src\\lib\\index.ts",
+    "src\\lib\\supabase\\index.ts",
+    "src\\modules\\clients\\api\\index.ts",
+    "src\\modules\\clients\\components\\index.ts",
+    "src\\modules\\clients\\hooks\\index.ts",
+    "src\\modules\\clients\\index.ts",
+    "src\\modules\\clients\\mappers\\index.ts",
+    "src\\modules\\clients\\repositories\\index.ts",
+    "src\\modules\\clients\\services\\index.ts",
+    "src\\modules\\leads\\components\\index.ts",
+    "src\\modules\\leads\\index.ts",
+    "src\\modules\\payments\\components\\index.ts",
+    "src\\modules\\payments\\index.ts",
+    "src\\modules\\payments\\services\\index.ts",
+    "src\\modules\\projects\\components\\index.ts",
+    "src\\modules\\projects\\hooks\\index.ts",
+    "src\\modules\\projects\\index.ts",
+    "src\\modules\\projects\\services\\index.ts",
+    "src\\repositories\\index.ts",
+    "src\\services\\index.ts",
+    "src\\types\\index.ts"
+  ],
+  "emptyDirectories": [
+    "src\\components\\ui",
+    "src\\components\\widgets",
+    "src\\data",
+    "src\\emails",
+    "src\\hooks\\api",
+    "src\\lib\\crm",
+    "src\\mappers",
+    "src\\modules\\auth",
+    "src\\modules\\crm\\customers",
+    "src\\modules\\crm\\dashboard",
+    "src\\modules\\crm\\deals",
+    "src\\modules\\crm\\enquiries",
+    "src\\modules\\crm\\invoices",
+    "src\\modules\\crm\\leads",
+    "src\\modules\\crm\\quotations",
+    "src\\modules\\crm\\tasks",
+    "src\\modules\\shared",
+    "src\\styles",
+    "src\\utils"
+  ],
+  "todoFiles": [
+    "src\\components\\dashboard\\LeadNotes.tsx",
+    "src\\types\\tasks.ts"
+  ]
+}
