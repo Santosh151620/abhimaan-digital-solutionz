@@ -3,7 +3,7 @@ import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
 import { getDashboardSnapshot } from "@/services/dashboard";
 
 import ExecutivePanel from "./components/crm/ExecutivePanel";
-import PipelineOverview from "./components/crm/PipelineOverview";
+import PipelineOverview from "./components/crm/PipelineOverviewLegacy";
 import RevenueForecast from "./components/crm/RevenueForecast";
 import RevenueKPI from "./components/crm/RevenueKPI";
 import SalesCopilot from "./components/crm/SalesCopilot";
