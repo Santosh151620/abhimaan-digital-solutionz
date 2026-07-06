@@ -1,5 +1,6 @@
 import React from "react";
 import type { LeadEntity } from "../types/lead.entity";
+import LeadStatusBadge from "./LeadStatusBadge";
 
 /**
  * LeadCard
@@ -28,7 +29,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
         </div>
 
         <div className="lead-card__meta">
-          {lead.status}
+          <LeadStatusBadge status={lead.status} />
         </div>
       </div>
 

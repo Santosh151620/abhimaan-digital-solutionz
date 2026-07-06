@@ -1,5 +1,4 @@
-import type { LeadStatus } from "@/types/lead";
-
+import type { LeadStatus } from "../types/lead.entity";
 interface LeadStatusBadgeProps {
   status: LeadStatus;
 }
@@ -29,14 +28,8 @@ const statusStyles: Record<
       "bg-purple-500/20 text-purple-300 border border-purple-500/30",
   },
 
-  proposal: {
-    label: "Proposal",
-    className:
-      "bg-amber-500/20 text-amber-300 border border-amber-500/30",
-  },
-
-  won: {
-    label: "Won",
+  converted: {
+    label: "Converted",
     className:
       "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
   },

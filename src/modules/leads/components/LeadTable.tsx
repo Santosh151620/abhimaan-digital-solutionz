@@ -16,31 +16,31 @@ const STATUS_OPTIONS: Array<{
   value: "all" | LeadStatus;
   label: string;
 }> = [
-    {
-      value: "all",
-      label: "All",
-    },
-    {
-      value: "new",
-      label: "New",
-    },
-    {
-      value: "contacted",
-      label: "Contacted",
-    },
-    {
-      value: "qualified",
-      label: "Qualified",
-    },
-    {
-      value: "lost",
-      label: "Lost",
-    },
-    {
-      value: "converted",
-      label: "Converted",
-    },
-  ];
+  {
+    value: "all",
+    label: "All",
+  },
+  {
+    value: "new",
+    label: "New",
+  },
+  {
+    value: "contacted",
+    label: "Contacted",
+  },
+  {
+    value: "qualified",
+    label: "Qualified",
+  },
+  {
+    value: "lost",
+    label: "Lost",
+  },
+  {
+    value: "converted",
+    label: "Converted",
+  },
+];
 
 function getStatusClasses(status: LeadStatus): string {
   switch (status) {
