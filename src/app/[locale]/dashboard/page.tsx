@@ -2,8 +2,12 @@ import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
 
 import { getDashboardSnapshot } from "@/services/dashboard";
 
+// CRM Dashboard Composition
+// TODO: remove Legacy swap after entity CRM migration complete
 import ExecutivePanel from "./components/crm/ExecutivePanel";
+// TEMP LEGACY SWITCH (remove after CRM v2 stabilizes)
 import PipelineOverview from "./components/crm/PipelineOverviewLegacy";
+
 import RevenueForecast from "./components/crm/RevenueForecast";
 import RevenueKPI from "./components/crm/RevenueKPI";
 import SalesCopilot from "./components/crm/SalesCopilot";
