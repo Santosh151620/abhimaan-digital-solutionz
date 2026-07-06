@@ -1,4 +1,4 @@
-import { LeadStatus } from '../types/lead.entity';
+import type { LeadStatus } from '../types/lead.entity';
 
 export const LEAD_STATUS_LABELS: Record<LeadStatus, string> = {
   new: 'New',
