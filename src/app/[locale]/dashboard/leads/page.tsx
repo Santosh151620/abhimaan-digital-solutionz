@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import LeadModal from "@/components/dashboard/LeadModal";
-import LeadTable from "@/components/dashboard/LeadTable";
+import LeadModal from "@/modules/leads/components/LeadModal";
+import LeadTable from "@/modules/leads/components/LeadTable";
 import { useLeads } from "@/modules/leads/hooks/useLeads";
 import { updateLead } from "@/modules/leads/api/lead.api";
 import { toLead } from "@/modules/leads/mappers/lead.ui.mapper";

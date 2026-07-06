@@ -5,7 +5,7 @@ import { memo } from "react";
 import type { Project, ProjectStatus } from "@/modules/projects/types/project";
 
 import ProjectStatusBadge from "./ProjectStatusBadge";
-import Pagination from "@/components/dashboard/Pagination";
+import Pagination from "@/modules/shared/components/Pagination";
 
 import { useProjectAnalytics } from "@/modules/projects/hooks/useProjectAnalytics";
 import { useProjectFilters } from "@/modules/projects/hooks/useProjectFilters";

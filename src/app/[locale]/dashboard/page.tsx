@@ -1,4 +1,4 @@
-import AnalyticsCards from "@/components/dashboard/AnalyticsCards";
+import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
 
 import { getDashboardSnapshot } from "@/services/dashboard";
 
