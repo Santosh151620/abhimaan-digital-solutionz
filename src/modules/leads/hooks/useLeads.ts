@@ -19,7 +19,7 @@ export function useLeads() {
         throw new Error('Failed to fetch leads');
       }
 
-      const data = (await res.json()) as LeadEntity[];
+      const data: LeadEntity[] = await res.json();
 
       setLeads(data);
     } catch (e) {
