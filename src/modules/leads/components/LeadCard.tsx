@@ -1,6 +1,6 @@
 import React from "react";
-//import { LeadEntity } from "@/modules/entities/LeadEntity";
 import type { LeadEntity } from "../types/lead.entity";
+
 /**
  * LeadCard
  * Strict LeadEntity-only UI contract
@@ -17,29 +17,32 @@ export const LeadCard: React.FC<LeadCardProps> = ({
   onClick,
   className = "",
 }) => {
-  if (!lead) return null;
-
   return (
     <div
       className={`lead-card ${className}`}
       onClick={() => onClick?.(lead)}
     >
       <div className="lead-card__header">
-        <div className="lead-card__title">{lead.entityId}</div>
-        <div className="lead-card__meta">{lead.status}</div>
+        <div className="lead-card__title">
+          {lead.title ?? lead.entityId}
+        </div>
+
+        <div className="lead-card__meta">
+          {lead.status}
+        </div>
       </div>
 
       <div className="lead-card__body">
         <div className="lead-card__row">
-          <span>Email:</span> {lead.email}
+          <span>Email:</span> {lead.email ?? "-"}
         </div>
 
         <div className="lead-card__row">
-          <span>Phone:</span> {lead.phone}
+          <span>Phone:</span> {lead.phone ?? "-"}
         </div>
 
         <div className="lead-card__row">
-          <span>Source:</span> {lead.source}
+          <span>Source:</span> {lead.source ?? "-"}
         </div>
       </div>
 

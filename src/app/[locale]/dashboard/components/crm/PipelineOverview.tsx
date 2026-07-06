@@ -1,5 +1,6 @@
 import type { PipelineSnapshot } from "@/services/crm/pipeline";
 
+
 interface Props {
   data: PipelineSnapshot["stages"];
 }
