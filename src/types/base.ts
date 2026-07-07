@@ -4,16 +4,6 @@ export interface EntityReference {
   entityType: EntityType;
   entityId: string;
 }
-export interface BaseEntity extends AuditFields {
-  id: string;
-  entityType: EntityType;
-  isDeleted?: boolean;
-
-  /**
-   * ðŸ§  v5 SaaS MULTI-TENANT FIELD
-   */
-  organizationId?: string;
-}
 
 export interface AuditFields {
   createdAt: string;
@@ -28,6 +18,11 @@ export interface BaseEntity extends AuditFields {
   id: string;
   entityType: EntityType;
   isDeleted?: boolean;
+
+  /**
+   * Multi-tenant organization id.
+   */
+  organizationId?: string;
 }
 
 export interface ServiceResult<T> {
