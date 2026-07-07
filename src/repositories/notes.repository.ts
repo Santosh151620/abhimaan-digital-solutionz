@@ -15,6 +15,7 @@ export class NotesRepository extends BaseRepository<Note> {
       .select("*")
       .eq("entityType", entityType)
       .eq("entityId", entityId)
+      .eq("organization_id", this.organizationId)
       .order("updatedAt", { ascending: false });
 
     if (error) {

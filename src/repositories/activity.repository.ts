@@ -16,6 +16,7 @@ export class ActivityRepository extends BaseRepository<Activity> {
       .select("*")
       .eq("entityType", entityType)
       .eq("entityId", entityId)
+      .eq("organization_id", this.organizationId)
       .order("createdAt", { ascending: false });
 
     if (error) {
