@@ -1,4 +1,9 @@
-﻿export default function DashboardLoading() {
+cd C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz
+
+$file = ".\src\app\[locale]\dashboard\loading.tsx"
+
+$content = @'
+export default function DashboardLoading() {
   return (
     <main className="min-h-screen space-y-8 bg-slate-950 p-6 text-white">
       <div className="h-10 w-64 animate-pulse rounded-xl bg-slate-800" />
@@ -21,3 +26,8 @@
     </main>
   );
 }
+'@
+
+Set-Content -LiteralPath $file -Value $content -Encoding UTF8
+
+Write-Host "Dashboard loading state created."
