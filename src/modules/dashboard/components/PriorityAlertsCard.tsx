@@ -6,7 +6,7 @@
 
 export default function PriorityAlertsCard() {
   return (
-    <section className="rounded-2xl border border-amber-500/20 bg-slate-900 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1">
+    <section className="rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-amber-500/20 bg-slate-900 p-6 shadow-lg transition-all duration-300 hover:-translate-y-1">
 
       <h2 className="text-lg font-semibold text-white">
         Priority Alerts
@@ -26,3 +26,4 @@ export default function PriorityAlertsCard() {
     </section>
   );
 }
+

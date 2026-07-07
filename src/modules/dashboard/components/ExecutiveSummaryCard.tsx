@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 export default function ExecutiveSummaryCard() {
   return (
-    <div className="rounded-2xl border border-slate-800 bg-slate-950 p-6">
+    <div className="rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-slate-800 bg-slate-950 p-6">
       <h2 className="text-lg font-semibold text-white">
         Executive Summary
       </h2>
@@ -25,3 +25,4 @@ function Metric({label,value}:{label:string;value:string}) {
     </div>
   );
 }
+

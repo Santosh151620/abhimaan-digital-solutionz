@@ -24,7 +24,7 @@ const insights: Insight[] = [
 
 export default function SmartInsightsPanel() {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+    <section className="rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-slate-800 bg-slate-900 p-6">
       <div className="mb-4">
         <h2 className="text-lg font-semibold">
           Smart CRM Insights
@@ -59,3 +59,4 @@ export default function SmartInsightsPanel() {
     </section>
   );
 }
+

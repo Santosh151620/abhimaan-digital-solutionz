@@ -10,7 +10,7 @@ export default function DashboardEmptyState({
   action = "Create your first lead",
 }: DashboardEmptyStateProps) {
   return (
-    <section className="rounded-2xl border border-slate-800 bg-slate-900 p-8 text-center">
+    <section className="rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-slate-800 bg-slate-900 p-8 text-center">
 
       <div className="mb-4 text-5xl">
         📊
@@ -33,3 +33,4 @@ export default function DashboardEmptyState({
     </section>
   );
 }
+
