@@ -1,4 +1,4 @@
-﻿$root = "C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz"
+$root = "C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz"
 
 $targets = @(
     "src\modules\leads",

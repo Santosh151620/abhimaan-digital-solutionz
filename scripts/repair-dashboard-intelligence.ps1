@@ -1,4 +1,9 @@
-﻿import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+cd C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz
+
+$path = ".\src\app\[locale]\dashboard\page.tsx"
+
+$content = @'
+import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
 
 import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummaryCard";
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
@@ -47,15 +52,20 @@ export default async function DashboardPage() {
         </h3>
 
         <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
-          <p>âœ“ CRM Intelligence</p>
-          <p>âœ“ Executive Intelligence</p>
-          <p>âœ“ Revenue Forecast Engine</p>
-          <p>âœ“ Workflow Intelligence</p>
-          <p>âœ“ Dashboard Analytics</p>
-          <p>âœ“ Production Services</p>
+          <p>✓ CRM Intelligence</p>
+          <p>✓ Executive Intelligence</p>
+          <p>✓ Revenue Forecast Engine</p>
+          <p>✓ Workflow Intelligence</p>
+          <p>✓ Dashboard Analytics</p>
+          <p>✓ Production Services</p>
         </div>
       </section>
 
     </main>
   );
 }
+'@
+
+Set-Content -LiteralPath $path -Value $content -Encoding UTF8
+
+Write-Host "Dashboard repaired and intelligence cards wired."
