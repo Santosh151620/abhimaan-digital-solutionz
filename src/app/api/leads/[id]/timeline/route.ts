@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin } from "@/lib/requireAdmin";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { createClient } from "@/lib/supabase/server";
+import { LeadsService } from "@/modules/leads/services/LeadsService";
+import { withTenantRequest } from "@/lib/tenant/withTenantRequest";
 
 type RouteParams = {
   id: string;
@@ -14,47 +15,32 @@ export async function GET(
     params: Promise<RouteParams>;
   }
 ) {
-  try {
-    await requireAdmin();
+  return withTenantRequest(req, async () => {
+    try {
+      const supabase = await createClient();
+      const service = new LeadsService(supabase);
 
-    const { id } = await params;
+      const { id } = await params;
 
-    const { data, error } = await supabaseAdmin
-      .from("lead_activity_timeline")
-      .select("*")
-      .eq("lead_id", id)
-      .order("created_at", {
-        ascending: false,
+      const timeline = await service.listTimeline(id);
+
+      return NextResponse.json({
+        success: true,
+        timeline,
       });
-
-    if (error) {
+    } catch (err: unknown) {
       return NextResponse.json(
         {
           success: false,
-          error: error.message,
+          error:
+            err instanceof Error
+              ? err.message
+              : "Unable to load timeline",
         },
         {
           status: 500,
         }
       );
     }
-
-    return NextResponse.json({
-      success: true,
-      timeline: data ?? [],
-    });
-  } catch (err: unknown) {
-    return NextResponse.json(
-      {
-        success: false,
-        error:
-          err instanceof Error
-            ? err.message
-            : "Unauthorized",
-      },
-      {
-        status: 401,
-      }
-    );
-  }
+  });
 }
