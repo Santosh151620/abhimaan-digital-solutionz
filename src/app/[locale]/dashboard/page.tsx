@@ -1,19 +1,19 @@
 ﻿import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
-
 import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummaryCard";
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
 import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
 import ActionCenterCard from "@/modules/dashboard/components/ActionCenterCard";
 import DashboardEmptyState from "@/modules/dashboard/components/DashboardEmptyState";
-<DashboardEmptyState />
 import { getDashboardSnapshot } from "@/services/dashboard";
-
 import ExecutivePanel from "./components/crm/ExecutivePanel";
 import PipelineOverview from "./components/crm/PipelineOverviewLegacy";
 import RevenueForecast from "./components/crm/RevenueForecast";
 import RevenueKPI from "./components/crm/RevenueKPI";
 import SalesCopilot from "./components/crm/SalesCopilot";
 import TodayWorkPanel from "./components/crm/TodayWorkPanel";
+import ExecutiveDemoBanner from "@/modules/dashboard/components/ExecutiveDemoBanner";
+import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
+
 
 export default async function DashboardPage() {
   const dashboard = await getDashboardSnapshot();
@@ -29,6 +29,9 @@ export default async function DashboardPage() {
           Real-time visibility into sales activity, pipeline health, and opportunities.
         </p>
       </section>
+      <DashboardEmptyState />
+<ExecutiveDemoBanner />
+<PriorityAlertsCard />
 
       <ExecutivePanel executive={dashboard.executive} />
 
