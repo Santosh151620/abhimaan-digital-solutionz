@@ -4,7 +4,8 @@ import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummar
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
 import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
 import ActionCenterCard from "@/modules/dashboard/components/ActionCenterCard";
-
+import DashboardEmptyState from "@/modules/dashboard/components/DashboardEmptyState";
+<DashboardEmptyState />
 import { getDashboardSnapshot } from "@/services/dashboard";
 
 import ExecutivePanel from "./components/crm/ExecutivePanel";
@@ -18,11 +19,20 @@ export default async function DashboardPage() {
   const dashboard = await getDashboardSnapshot();
 
   return (
-    <main className="min-h-screen space-y-8 bg-slate-950 p-6 text-white">
+    <main className="min-h-screen space-y-6 sm:space-y-8 bg-slate-950 px-4 py-5 text-white sm:p-6">
+
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
+        <h1 className="text-xl font-bold sm:text-2xl">
+          CRM Intelligence Dashboard
+        </h1>
+        <p className="mt-2 text-sm text-slate-400">
+          Real-time visibility into sales activity, pipeline health, and opportunities.
+        </p>
+      </section>
 
       <ExecutivePanel executive={dashboard.executive} />
 
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
         <ExecutiveSummaryCard />
         <PipelineIntelligenceCard />
         <CRMHealthCard />
@@ -59,3 +69,4 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
