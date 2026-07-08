@@ -1,0 +1,122 @@
+========================================
+COMMAND PALETTE TARGET INSPECTION
+========================================
+
+FOUND: .\src\app\layout.tsx
+----------------------------------------
+import "@/app/globals.css";
+import Header from "../components/layout/Header";
+import Footer from "../components/layout/Footer";
+import WhatsAppButton from "../components/layout/WhatsAppButton";
+import { NextIntlClientProvider } from "next-intl";
+
+export default async function RootLayout({
+  children
+}: {
+  children: React.ReactNode;
+}) {
+  const locale = "en";
+
+  const messages = (await import("../../messages/en.json")).default;
+
+  return (
+    <html lang={locale}>
+      <body className="overflow-x-hidden">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <Header />
+          <main className="pt-24">{children}</main>
+          <Footer />
+          <WhatsAppButton />
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
+
+========================================
+
+FOUND: .\src\app\[locale]\layout.tsx
+----------------------------------------
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
+
+import { routing } from "@/i18n/routing";
+
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({
+    locale,
+  }));
+}
+
+interface LocaleLayoutProps {
+  children: React.ReactNode;
+  params: Promise<{
+    locale: string;
+  }>;
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: LocaleLayoutProps) {
+  const { locale } = await params;
+
+  if (
+    !routing.locales.includes(
+      locale as (typeof routing.locales)[number]
+    )
+  ) {
+    notFound();
+  }
+
+  setRequestLocale(locale);
+
+  const messages = await getMessages();
+
+  return (
+    <NextIntlClientProvider
+      locale={locale}
+      messages={messages}
+    >
+      <Header />
+
+      <main className="pt-24 min-h-screen">
+        {children}
+      </main>
+
+      <Footer />
+      <WhatsAppButton />
+    </NextIntlClientProvider>
+  );
+}
+
+========================================
+
+===== Existing Context Providers =====
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\layout.tsx:55
+    </NextIntlClientProvider>
+
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\layout.tsx:24
+        </NextIntlClientProvider>
+
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\lib\auth\auth-context.ts:1
+import { createContext, useContext } from "react";
+
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\lib\auth\auth-context.ts:8
+export const AuthContext = createContext<AuthContextType>({
+
+===== Existing Keyboard Events =====
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\dashboard\LeadCardLegacy.tsx:32
+      if (e.key === "Escape") {
+
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\dashboard\LeadCardLegacy.tsx:37
+    window.addEventListener("keydown", handleEsc);
+
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\dashboard\LeadCardLegacy.tsx:41
+      window.removeEventListener("keydown", handleEsc);
+

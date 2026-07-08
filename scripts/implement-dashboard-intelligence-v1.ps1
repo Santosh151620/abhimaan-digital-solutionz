@@ -1,6 +1,6 @@
 $root = Get-Location
 
-$dashboard = "$root\src\modules\dashboard\components"
+$dashboard = Join-Path $root "src\modules\dashboard\components"
 
 New-Item -ItemType Directory -Force -Path $dashboard | Out-Null
 
