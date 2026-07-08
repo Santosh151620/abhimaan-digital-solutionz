@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { CommandCenterPanel } from "@/modules/dashboard/command-center";
 import { CEOBriefingPanel } from "@/modules/dashboard/ceo-briefing";
 import { DealIntelligencePanel } from "@/modules/dashboard/deal-intelligence";
 import { StrategicInsightsPanel } from "@/modules/dashboard/strategic-insights";
@@ -57,6 +58,8 @@ export default async function DashboardPage() {
         </p>
       </section>
       <DashboardEmptyState />
+
+<CommandCenterPanel />
 <ExecutiveDemoBanner />
 <PriorityAlertsCard />
 
@@ -162,6 +165,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
