@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { BusinessHealthPanel } from "@/modules/dashboard/business-health";
 import { ExecutiveTimelinePanel } from "@/modules/dashboard/executive-timeline";
 import { PredictiveAnalyticsPanel } from "@/modules/dashboard/predictive-analytics";
 import { SalesVelocityPanel } from "@/modules/dashboard/sales-velocity";
@@ -67,6 +68,8 @@ export default async function DashboardPage() {
         <ExecutiveSummaryCard />
         <PipelineIntelligenceCard />
         <CRMHealthCard />
+
+<BusinessHealthPanel />
         <ActionCenterCard />
       </div>
 
@@ -147,6 +150,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
