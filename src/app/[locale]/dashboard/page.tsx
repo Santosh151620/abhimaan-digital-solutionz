@@ -1,3 +1,6 @@
+import { AIInsightsPanel } from "@/modules/dashboard/ai";
+import NotificationSummary from "@/modules/dashboard/notifications/NotificationSummary";
+import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
 import { QuickActionsPanel } from "@/modules/dashboard/quick-actions";
@@ -73,6 +76,17 @@ export default async function DashboardPage() {
   <ActivityFeed />
   <LiveStatus />
 </section>
+
+
+      <section className="grid gap-6 xl:grid-cols-3">
+
+        <AIInsightsPanel />
+
+        <NotificationSummary />
+
+        <LiveActivityTicker />
+
+      </section>
 
       <section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">
         <h3 className="mb-3 text-sm font-semibold text-emerald-400">
