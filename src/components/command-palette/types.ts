@@ -1,8 +1,10 @@
 export interface CommandItem {
   id: string;
   title: string;
+
   subtitle?: string;
   group?: string;
+
   shortcut?: string;
 
   icon?: string;
@@ -14,6 +16,9 @@ export interface CommandItem {
 
   disabled?: boolean;
   hidden?: boolean;
+
+  action?: string;
+  route?: string;
 
   run: () => void;
 }

@@ -1,3 +1,3 @@
-export function navigate(path: string) {
-  window.location.href = path;
+export function navigate(route: string) {
+  window.location.href = route;
 }

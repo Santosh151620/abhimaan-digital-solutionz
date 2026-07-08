@@ -1,5 +1,93 @@
+$root = Get-Location
+$dir = Join-Path $root "src\components\command-palette"
+
+# ======================================================
+# types.ts
+# ======================================================
+
+@'
+export interface CommandItem {
+  id: string;
+  title: string;
+
+  subtitle?: string;
+  group?: string;
+
+  shortcut?: string;
+
+  icon?: string;
+  badge?: string;
+
+  keywords?: string[];
+
+  priority?: number;
+
+  disabled?: boolean;
+  hidden?: boolean;
+
+  action?: string;
+  route?: string;
+
+  run: () => void;
+}
+'@ | Set-Content (Join-Path $dir "types.ts")
+
+# ======================================================
+# navigation.ts
+# ======================================================
+
+@'
+export function navigate(route: string) {
+  window.location.href = route;
+}
+'@ | Set-Content (Join-Path $dir "navigation.ts")
+
+# ======================================================
+# actions.ts
+# ======================================================
+
+@'
+import { navigate } from "./navigation";
+import { CommandItem } from "./types";
+
+export function execute(command: CommandItem) {
+
+  if (command.disabled) {
+    return;
+  }
+
+  if (command.route) {
+    navigate(command.route);
+    return;
+  }
+
+  command.run();
+
+}
+'@ | Set-Content (Join-Path $dir "actions.ts")
+
+# ======================================================
+# commands.ts
+# ======================================================
+
+@'
 import { execute } from "./actions";
 import { CommandItem } from "./types";
+
+function cmd(data: Omit<CommandItem,"run">): CommandItem {
+
+  return {
+    ...data,
+    run: () => execute(command)
+  };
+
+  function command(): CommandItem {
+    return item;
+  }
+
+  const item = {} as CommandItem;
+
+}
 
 export const commandRegistry: CommandItem[] = [
 
@@ -180,4 +268,7 @@ run(){execute(this);}
 }
 
 ];
+'@ | Set-Content (Join-Path $dir "commands.ts")
 
+Write-Host ""
+Write-Host "CRM Command Actions implemented."
