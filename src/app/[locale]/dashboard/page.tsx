@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { CEOBriefingPanel } from "@/modules/dashboard/ceo-briefing";
 import { DealIntelligencePanel } from "@/modules/dashboard/deal-intelligence";
 import { StrategicInsightsPanel } from "@/modules/dashboard/strategic-insights";
 import { GoalTrackerPanel } from "@/modules/dashboard/goal-tracker";
@@ -65,6 +66,8 @@ export default async function DashboardPage() {
 <ExecutiveMetricsPanel />
 
 <ExecutiveTimelinePanel />
+
+<CEOBriefingPanel />
 
 
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -159,6 +162,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
