@@ -1,22 +1,49 @@
 "use client";
 
-import { createContext, useContext } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+} from "react";
 
-export interface CommandPaletteContextValue {
-  open: () => void;
-  close: () => void;
-  toggle: () => void;
-  isOpen: boolean;
+interface CommandPaletteContextValue {
+  open: boolean;
+  setOpen: (value: boolean) => void;
 }
 
-export const CommandPaletteContext =
-createContext<CommandPaletteContextValue | null>(null);
+const CommandPaletteContext =
+  createContext<CommandPaletteContextValue | null>(null);
+
+export function CommandPaletteProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const value = useMemo(
+    () => ({
+      open,
+      setOpen,
+    }),
+    [open]
+  );
+
+  return (
+    <CommandPaletteContext.Provider value={value}>
+      {children}
+    </CommandPaletteContext.Provider>
+  );
+}
 
 export function useCommandPalette() {
   const ctx = useContext(CommandPaletteContext);
 
   if (!ctx) {
-    throw new Error("CommandPaletteProvider missing.");
+    throw new Error(
+      "useCommandPalette must be used inside CommandPaletteProvider."
+    );
   }
 
   return ctx;

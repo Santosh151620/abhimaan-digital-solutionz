@@ -3,9 +3,12 @@
 import { useMemo, useState } from "react";
 
 import CommandPaletteModal from "./CommandPaletteModal";
+import { useCommandPalette } from "./CommandPaletteContext";
 import { commandRegistry } from "./commands";
 
 export default function CommandPalette() {
+
+const { open, setOpen } = useCommandPalette();
 
 const [query,setQuery]=useState("");
 
@@ -28,7 +31,7 @@ return text.includes(query.toLowerCase());
 
 return(
 
-<CommandPaletteModal open>
+<CommandPaletteModal open={open} onClose={() => setOpen(false)}>
 
 <div className="border-b border-slate-800 p-4">
 
