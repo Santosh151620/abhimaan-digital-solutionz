@@ -1,6 +1,7 @@
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import WhatsAppButton from "@/components/layout/WhatsAppButton";
+import { CommandPaletteProvider } from "@/components/command-palette";
 
 import { routing } from "@/i18n/routing";
 
@@ -44,14 +45,19 @@ export default async function LocaleLayout({
       locale={locale}
       messages={messages}
     >
-      <Header />
+      <CommandPaletteProvider>
 
-      <main className="pt-24 min-h-screen">
-        {children}
-      </main>
+        <Header />
 
-      <Footer />
-      <WhatsAppButton />
+        <main className="pt-24 min-h-screen">
+          {children}
+        </main>
+
+        <Footer />
+
+        <WhatsAppButton />
+
+      </CommandPaletteProvider>
     </NextIntlClientProvider>
   );
 }
