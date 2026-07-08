@@ -1,4 +1,8 @@
+
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { QuickActionsPanel } from "@/modules/dashboard/quick-actions";
+import { RecentLeadsPanel } from "@/modules/dashboard/recent-leads";
+import { TeamPerformancePanel } from "@/modules/dashboard/team-performance";
 import NotificationCenter from "@/modules/dashboard/notifications/NotificationCenter";
 import ActivityFeed from "@/modules/dashboard/activity/ActivityFeed";
 import LiveStatus from "@/modules/dashboard/live/LiveStatus";
@@ -56,6 +60,13 @@ export default async function DashboardPage() {
       <TodayWorkPanel items={dashboard.today} />
 
       <RevenueForecast {...dashboard.forecast} />
+
+      <QuickActionsPanel />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <RecentLeadsPanel />
+        <TeamPerformancePanel />
+      </div>
 
 <section className="grid gap-6 xl:grid-cols-3">
   <NotificationCenter />
