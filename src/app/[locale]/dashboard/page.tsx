@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { GoalTrackerPanel } from "@/modules/dashboard/goal-tracker";
 import { BusinessHealthPanel } from "@/modules/dashboard/business-health";
 import { ExecutiveTimelinePanel } from "@/modules/dashboard/executive-timeline";
 import { PredictiveAnalyticsPanel } from "@/modules/dashboard/predictive-analytics";
@@ -95,6 +96,8 @@ export default async function DashboardPage() {
 
 <CustomerSuccessPanel />
 
+<GoalTrackerPanel />
+
       <QuickActionsPanel />
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -150,6 +153,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
