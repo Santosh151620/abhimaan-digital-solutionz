@@ -1,8 +1,9 @@
-﻿import { AIInsightsPanel } from "@/modules/dashboard/ai";
+import { AIInsightsPanel } from "@/modules/dashboard/ai";
 import NotificationSummary from "@/modules/dashboard/notifications/NotificationSummary";
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { ExecutiveMetricsPanel } from "@/modules/dashboard/executive";
 import { InsightsPanel } from "@/modules/dashboard/insights";
 import { AutomationPanel } from "@/modules/dashboard/automation";
 import { RiskAlertsPanel } from "@/modules/dashboard/risk-alerts";
@@ -48,7 +49,11 @@ export default async function DashboardPage() {
 <ExecutiveDemoBanner />
 <PriorityAlertsCard />
 
-      <ExecutivePanel executive={dashboard.executive} />
+      
+<ExecutivePanel executive={dashboard.executive} />
+
+<ExecutiveMetricsPanel />
+
 
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
         <ExecutiveSummaryCard />
@@ -112,18 +117,19 @@ export default async function DashboardPage() {
         </h3>
 
         <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
-          <p>✓ CRM Intelligence</p>
-          <p>✓ Executive Intelligence</p>
-          <p>✓ Revenue Forecast Engine</p>
-          <p>✓ Workflow Intelligence</p>
-          <p>✓ Dashboard Analytics</p>
-          <p>✓ Production Services</p>
+          <p>? CRM Intelligence</p>
+          <p>? Executive Intelligence</p>
+          <p>? Revenue Forecast Engine</p>
+          <p>? Workflow Intelligence</p>
+          <p>? Dashboard Analytics</p>
+          <p>? Production Services</p>
         </div>
       </section>
 
     </main>
   );
 }
+
 
 
 
