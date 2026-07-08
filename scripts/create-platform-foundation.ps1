@@ -109,3 +109,199 @@ Write-Host "========================================"
 Write-Host "Platform Foundation Completed"
 Write-Host "========================================"
 Write-Host ""
+# ------------------------------------------------------------------
+# Product Documentation
+# V0-2
+# ------------------------------------------------------------------
+
+Write-Section "Generating Product Documentation"
+
+$Documents = @(
+    @{
+        File = "docs\Product Guide.md"
+        Title = "Abhimaan Digital Solutionz CRM Product Guide"
+        Content = @"
+# Abhimaan Digital Solutionz CRM
+
+## Version
+
+V0.2
+
+## Product Vision
+
+Enterprise-ready CRM platform supporting both SaaS and On-Premise deployments.
+
+## Deployment Models
+
+- SaaS
+- On-Premise
+- Hybrid
+
+## Core Platform
+
+- Dashboard
+- Executive Dashboard
+- AI Dashboard
+- Business Intelligence
+- Executive Intelligence
+- Command Palette
+
+## CRM Roadmap
+
+- Leads
+- Companies
+- Contacts
+- Opportunities
+- Tasks
+- Calendar
+- Activities
+- Quotes
+- Invoices
+- Customer Portal
+
+## Future
+
+- AI
+- Automation
+- Reports
+- RBAC
+- Audit
+- Integrations
+- APIs
+
+"@
+    },
+    @{
+        File = "docs\Knowledge Base.md"
+        Title = "Knowledge Base"
+        Content = @"
+# Knowledge Base
+
+This document is the central knowledge repository for the CRM platform.
+
+## Sections
+
+- Platform
+- Dashboard
+- AI
+- CRM
+- Modules
+- Automation
+- Deployment
+- Security
+- Documentation
+
+This document will continuously evolve during development.
+
+"@
+    },
+    @{
+        File = "docs\Developer Guide.md"
+        Title = "Developer Guide"
+        Content = @"
+# Developer Guide
+
+## Technology
+
+- Next.js
+- React
+- TypeScript
+- TailwindCSS
+
+## Principles
+
+- Modular
+- Reusable
+- Automation First
+- Script Driven
+- Zero Regression
+
+"@
+    },
+    @{
+        File = "docs\Administrator Guide.md"
+        Title = "Administrator Guide"
+        Content = @"
+# Administrator Guide
+
+## Responsibilities
+
+- Tenant Administration
+- Organization Management
+- User Management
+- Roles
+- Permissions
+- Monitoring
+- Backup
+- Restore
+
+"@
+    },
+    @{
+        File = "docs\Sales Guide.md"
+        Title = "Sales Guide"
+        Content = @"
+# Sales Guide
+
+## Target Customers
+
+- Small Business
+- Mid-size Business
+- Enterprise
+
+## Deployment
+
+- SaaS
+- On-Premise
+- Hybrid
+
+## Key Selling Points
+
+- Executive Dashboards
+- AI
+- Automation
+- CRM
+- Modular Platform
+
+"@
+    },
+    @{
+        File = "docs\Architecture.md"
+        Title = "Architecture"
+        Content = @"
+# Architecture
+
+## Layers
+
+Presentation
+
+Business
+
+CRM
+
+Platform
+
+Infrastructure
+
+Documentation
+
+Automation
+
+Hybrid Deployment Ready
+
+"@
+    }
+)
+
+foreach ($Document in $Documents) {
+
+    $FullPath = Join-Path $ProjectRoot $Document.File
+
+    Set-Content `
+        -LiteralPath $FullPath `
+        -Value $Document.Content `
+        -Encoding UTF8
+
+    Write-Host "[DOC] $($Document.File)"
+
+}
