@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { MarketIntelligencePanel } from "@/modules/dashboard/market-intelligence";
 import { ExecutiveScorecardPanel } from "@/modules/dashboard/executive-scorecard";
 import { CommandCenterPanel } from "@/modules/dashboard/command-center";
 import { CEOBriefingPanel } from "@/modules/dashboard/ceo-briefing";
@@ -63,6 +64,12 @@ export default async function DashboardPage() {
 <CommandCenterPanel />
 
 <ExecutiveScorecardPanel />
+
+<MarketIntelligencePanel />
+
+<MarketIntelligencePanel />
+
+<MarketIntelligencePanel />
 <ExecutiveDemoBanner />
 <PriorityAlertsCard />
 
@@ -168,6 +175,9 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
+
+
 
 
 
