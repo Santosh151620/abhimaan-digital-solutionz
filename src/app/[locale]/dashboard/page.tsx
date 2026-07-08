@@ -3,6 +3,8 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { InsightsPanel } from "@/modules/dashboard/insights";
+import { AutomationPanel } from "@/modules/dashboard/automation";
 import { RiskAlertsPanel } from "@/modules/dashboard/risk-alerts";
 import { AISummaryPanel } from "@/modules/dashboard/ai-summary";
 import { AIScorePanel } from "@/modules/dashboard/ai-score";
@@ -91,7 +93,11 @@ export default async function DashboardPage() {
 
       </section>
 
-      <section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">
+      
+<section className="grid gap-6">
+  <AutomationPanel />
+</section>
+<section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">
         <h3 className="mb-3 text-sm font-semibold text-emerald-400">
           System Status
         </h3>
@@ -109,6 +115,9 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
+
+
 
 
 
