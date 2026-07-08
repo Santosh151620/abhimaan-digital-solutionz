@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { StrategicInsightsPanel } from "@/modules/dashboard/strategic-insights";
 import { GoalTrackerPanel } from "@/modules/dashboard/goal-tracker";
 import { BusinessHealthPanel } from "@/modules/dashboard/business-health";
 import { ExecutiveTimelinePanel } from "@/modules/dashboard/executive-timeline";
@@ -90,6 +91,8 @@ export default async function DashboardPage() {
 
 <PredictiveAnalyticsPanel />
 
+<StrategicInsightsPanel />
+
       <TodayWorkPanel items={dashboard.today} />
 
       <RevenueForecast {...dashboard.forecast} />
@@ -153,6 +156,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
