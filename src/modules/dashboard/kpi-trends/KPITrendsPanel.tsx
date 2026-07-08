@@ -2,39 +2,38 @@
 
 import { kpiTrends } from "./data";
 
-export default function KPITrendsPanel() {
+export default function KPITrendsPanel(){
 
-  return (
+ return(
 
-    <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+  <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
 
-      <h3 className="mb-4 text-lg font-bold text-white">
-        KPI Trends
-      </h3>
+   <h3 className="mb-4 text-lg font-bold text-white">
+    KPI Trends
+   </h3>
 
-      <div className="grid gap-3 sm:grid-cols-2">
+   <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
 
-        {kpiTrends.map((item)=>(
+    {kpiTrends.map((k)=>(
 
-          <div
-            key={item.label}
-            className="rounded-xl border border-slate-800 bg-slate-950 p-4"
-          >
-            <div className="text-sm text-slate-400">
-              {item.label}
-            </div>
+     <div
+      key={k.name}
+      className="rounded-xl border border-slate-800 bg-slate-950 p-4"
+     >
+      <div className="text-sm text-slate-400">{k.name}</div>
 
-            <div className="mt-2 text-2xl font-bold text-emerald-400">
-              {item.value}
-            </div>
-          </div>
-
-        ))}
-
+      <div className="mt-2 text-xl font-bold text-teal-400">
+       {k.trend}
       </div>
 
-    </section>
+     </div>
 
-  );
+    ))}
+
+   </div>
+
+  </section>
+
+ );
 
 }
