@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { RevenueIntelligencePanel } from "@/modules/dashboard/revenue-intelligence";
 import { KPITrendsPanel } from "@/modules/dashboard/kpi-trends";
 import { ExecutiveMetricsPanel } from "@/modules/dashboard/executive";
 import { InsightsPanel } from "@/modules/dashboard/insights";
@@ -69,6 +70,8 @@ export default async function DashboardPage() {
 
       <RevenueKPI data={dashboard.revenue} />
 
+<RevenueIntelligencePanel />
+
       <PipelineOverview data={dashboard.pipeline} />
 
       <SalesCopilot data={dashboard.copilot} />
@@ -132,6 +135,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
