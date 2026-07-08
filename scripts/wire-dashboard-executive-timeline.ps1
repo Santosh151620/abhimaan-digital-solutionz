@@ -4,23 +4,23 @@ $page="src\app\[locale]\dashboard\page.tsx"
 
 $content=Get-Content -LiteralPath $page -Raw
 
-$import='import { PredictiveAnalyticsPanel } from "@/modules/dashboard/predictive-analytics";'
+$import='import { ExecutiveTimelinePanel } from "@/modules/dashboard/executive-timeline";'
 
-if($content -notmatch "dashboard/predictive-analytics"){
+if($content -notmatch "dashboard/executive-timeline"){
     $content=$content -replace `
 'import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";',
 ("import AnalyticsCards from `"@/modules/dashboard/components/AnalyticsCards`";`r`n"+$import)
 }
 
 $content=$content.Replace(
-'<SalesCopilot data={dashboard.copilot} />',
+'<ExecutiveMetricsPanel />',
 @'
-<SalesCopilot data={dashboard.copilot} />
+<ExecutiveMetricsPanel />
 
-<PredictiveAnalyticsPanel />
+<ExecutiveTimelinePanel />
 '@
 )
 
 Set-Content -LiteralPath $page -Value $content
 
-Write-Host "Predictive Analytics wired."
+Write-Host "Executive Timeline wired."

@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { ExecutiveTimelinePanel } from "@/modules/dashboard/executive-timeline";
 import { PredictiveAnalyticsPanel } from "@/modules/dashboard/predictive-analytics";
 import { SalesVelocityPanel } from "@/modules/dashboard/sales-velocity";
 import { CustomerSuccessPanel } from "@/modules/dashboard/customer-success";
@@ -58,6 +59,8 @@ export default async function DashboardPage() {
 <ExecutivePanel executive={dashboard.executive} />
 
 <ExecutiveMetricsPanel />
+
+<ExecutiveTimelinePanel />
 
 
       <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
@@ -144,6 +147,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
