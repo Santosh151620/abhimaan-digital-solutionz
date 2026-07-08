@@ -1,104 +1,112 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import CommandPaletteModal from "./CommandPaletteModal";
 import { commandRegistry } from "./commands";
 
 export default function CommandPalette() {
-  const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState(0);
 
-  const commands = useMemo(() => {
-    if (!query.trim()) {
-      return commandRegistry;
-    }
+const [query,setQuery]=useState("");
 
-    return commandRegistry.filter((c) =>
-      `${c.title} ${c.subtitle ?? ""} ${c.group ?? ""}`
-        .toLowerCase()
-        .includes(query.toLowerCase())
-    );
-  }, [query]);
+const commands=useMemo(()=>{
 
-  const handleQueryChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setQuery(e.target.value);
-    setSelected(0);
-  };
+return commandRegistry.filter(c=>{
 
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "ArrowDown") {
-        e.preventDefault();
+const text=[
+c.title,
+c.subtitle,
+c.group,
+...(c.keywords ?? [])
+].join(" ").toLowerCase();
 
-        setSelected((v) =>
-          Math.min(v + 1, Math.max(commands.length - 1, 0))
-        );
-      }
+return text.includes(query.toLowerCase());
 
-      if (e.key === "ArrowUp") {
-        e.preventDefault();
+});
 
-        setSelected((v) => Math.max(v - 1, 0));
-      }
+},[query]);
 
-      if (e.key === "Enter") {
-        commands[selected]?.run();
-      }
-    }
+return(
 
-    window.addEventListener("keydown", onKey);
+<CommandPaletteModal open>
 
-    return () => {
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [commands, selected]);
+<div className="border-b border-slate-800 p-4">
 
-  return (
-    <CommandPaletteModal open>
-      <div className="border-b border-slate-800 p-4">
-        <input
-          autoFocus
-          value={query}
-          onChange={handleQueryChange}
-          placeholder="Search anything..."
-          className="w-full bg-transparent text-white outline-none placeholder:text-slate-500"
-        />
-      </div>
+<input
+autoFocus
+value={query}
+onChange={(e)=>setQuery(e.target.value)}
+placeholder="Search..."
+className="w-full bg-transparent text-white outline-none"
+/>
 
-      <div className="max-h-[520px] overflow-auto p-2">
-        {commands.map((cmd, index) => (
-          <button
-            key={cmd.id}
-            type="button"
-            onClick={cmd.run}
-            className={
-              "w-full rounded-xl p-3 text-left transition " +
-              (selected === index
-                ? "border border-teal-500/40 bg-teal-500/20"
-                : "hover:bg-slate-900")
-            }
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-semibold text-white">
-                  {cmd.title}
-                </div>
+<div className="mt-2 text-xs text-slate-500">
+{commands.length} commands
+</div>
 
-                <div className="text-xs text-slate-400">
-                  {cmd.subtitle}
-                </div>
-              </div>
+</div>
 
-              <span className="text-[10px] text-slate-500">
-                {cmd.shortcut}
-              </span>
-            </div>
-          </button>
-        ))}
-      </div>
-    </CommandPaletteModal>
-  );
+<div className="max-h-[520px] overflow-auto p-2">
+
+{commands.length===0 && (
+
+<div className="p-6 text-center text-slate-500">
+No commands found.
+</div>
+
+)}
+
+{commands.map(cmd=>(
+
+<div key={cmd.id}>
+
+<div className="mb-1 mt-4 text-[10px] uppercase tracking-wider text-slate-500">
+{cmd.group}
+</div>
+
+<button
+onClick={cmd.run}
+className="w-full rounded-xl border border-transparent p-3 text-left hover:border-slate-700 hover:bg-slate-900"
+>
+
+<div className="flex items-center justify-between">
+
+<div>
+
+<div className="font-semibold text-white">
+
+{cmd.icon ?? "•"} {cmd.title}
+
+{cmd.badge && (
+<span className="ml-2 rounded bg-teal-600 px-2 py-0.5 text-[10px]">
+{cmd.badge}
+</span>
+)}
+
+</div>
+
+<div className="text-xs text-slate-400">
+{cmd.subtitle}
+</div>
+
+</div>
+
+<div className="text-[10px] text-slate-500">
+{cmd.shortcut}
+</div>
+
+</div>
+
+</button>
+
+</div>
+
+))}
+
+</div>
+
+</CommandPaletteModal>
+
+);
+
 }
