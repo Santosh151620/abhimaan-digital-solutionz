@@ -3,6 +3,9 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { PredictiveAnalyticsPanel } from "@/modules/dashboard/predictive-analytics";
+import { SalesVelocityPanel } from "@/modules/dashboard/sales-velocity";
+import { CustomerSuccessPanel } from "@/modules/dashboard/customer-success";
 import { RevenueIntelligencePanel } from "@/modules/dashboard/revenue-intelligence";
 import { KPITrendsPanel } from "@/modules/dashboard/kpi-trends";
 import { ExecutiveMetricsPanel } from "@/modules/dashboard/executive";
@@ -74,11 +77,17 @@ export default async function DashboardPage() {
 
       <PipelineOverview data={dashboard.pipeline} />
 
+<SalesVelocityPanel />
+
       <SalesCopilot data={dashboard.copilot} />
+
+<PredictiveAnalyticsPanel />
 
       <TodayWorkPanel items={dashboard.today} />
 
       <RevenueForecast {...dashboard.forecast} />
+
+<CustomerSuccessPanel />
 
       <QuickActionsPanel />
 
@@ -135,6 +144,9 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
+
+
 
 
 
