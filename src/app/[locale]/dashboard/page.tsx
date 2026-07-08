@@ -1,4 +1,7 @@
-﻿import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import NotificationCenter from "@/modules/dashboard/notifications/NotificationCenter";
+import ActivityFeed from "@/modules/dashboard/activity/ActivityFeed";
+import LiveStatus from "@/modules/dashboard/live/LiveStatus";
 import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummaryCard";
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
 import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
@@ -54,22 +57,30 @@ export default async function DashboardPage() {
 
       <RevenueForecast {...dashboard.forecast} />
 
+<section className="grid gap-6 xl:grid-cols-3">
+  <NotificationCenter />
+  <ActivityFeed />
+  <LiveStatus />
+</section>
+
       <section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">
         <h3 className="mb-3 text-sm font-semibold text-emerald-400">
           System Status
         </h3>
 
         <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
-          <p>âœ“ CRM Intelligence</p>
-          <p>âœ“ Executive Intelligence</p>
-          <p>âœ“ Revenue Forecast Engine</p>
-          <p>âœ“ Workflow Intelligence</p>
-          <p>âœ“ Dashboard Analytics</p>
-          <p>âœ“ Production Services</p>
+          <p>✓ CRM Intelligence</p>
+          <p>✓ Executive Intelligence</p>
+          <p>✓ Revenue Forecast Engine</p>
+          <p>✓ Workflow Intelligence</p>
+          <p>✓ Dashboard Analytics</p>
+          <p>✓ Production Services</p>
         </div>
       </section>
 
     </main>
   );
 }
+
+
 
