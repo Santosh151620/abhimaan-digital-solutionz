@@ -3,6 +3,7 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { DealIntelligencePanel } from "@/modules/dashboard/deal-intelligence";
 import { StrategicInsightsPanel } from "@/modules/dashboard/strategic-insights";
 import { GoalTrackerPanel } from "@/modules/dashboard/goal-tracker";
 import { BusinessHealthPanel } from "@/modules/dashboard/business-health";
@@ -87,6 +88,8 @@ export default async function DashboardPage() {
 
 <SalesVelocityPanel />
 
+<DealIntelligencePanel />
+
       <SalesCopilot data={dashboard.copilot} />
 
 <PredictiveAnalyticsPanel />
@@ -156,6 +159,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
