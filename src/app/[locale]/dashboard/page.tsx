@@ -3,6 +3,9 @@ import NotificationSummary from "@/modules/dashboard/notifications/NotificationS
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import { RiskAlertsPanel } from "@/modules/dashboard/risk-alerts";
+import { AISummaryPanel } from "@/modules/dashboard/ai-summary";
+import { AIScorePanel } from "@/modules/dashboard/ai-score";
 import { QuickActionsPanel } from "@/modules/dashboard/quick-actions";
 import { RecentLeadsPanel } from "@/modules/dashboard/recent-leads";
 import { TeamPerformancePanel } from "@/modules/dashboard/team-performance";
@@ -106,6 +109,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 
