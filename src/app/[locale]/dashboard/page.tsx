@@ -1,4 +1,4 @@
-import { AIInsightsPanel } from "@/modules/dashboard/ai";
+﻿import { AIInsightsPanel } from "@/modules/dashboard/ai";
 import NotificationSummary from "@/modules/dashboard/notifications/NotificationSummary";
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
@@ -96,6 +96,15 @@ export default async function DashboardPage() {
       
 <section className="grid gap-6">
   <AutomationPanel />
+  <section className="grid gap-6">
+  <InsightsPanel />
+</section>
+
+<section className="grid gap-6 xl:grid-cols-3">
+  <AIScorePanel />
+  <AISummaryPanel />
+  <RiskAlertsPanel />
+</section>
 </section>
 <section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">
         <h3 className="mb-3 text-sm font-semibold text-emerald-400">
@@ -115,6 +124,7 @@ export default async function DashboardPage() {
     </main>
   );
 }
+
 
 
 

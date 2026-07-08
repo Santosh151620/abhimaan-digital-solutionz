@@ -4,28 +4,42 @@ $page="src\app\[locale]\dashboard\page.tsx"
 
 $content=Get-Content -LiteralPath $page -Raw
 
-$import='import { InsightsPanel } from "@/modules/dashboard/insights";'
+# Remove existing orphan sections
+$content=[regex]::Replace(
+    $content,
+    '(?s)<section className="grid gap-6">\s*<InsightsPanel\s*/>\s*</section>',
+    ''
+)
 
-if($content -notmatch "dashboard/insights"){
-    $content=$content -replace `
-'import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";',
-("import AnalyticsCards from `"@/modules/dashboard/components/AnalyticsCards`";`r`n"+$import)
-}
+$content=[regex]::Replace(
+    $content,
+    '(?s)<section className="grid gap-6 xl:grid-cols-3">\s*<AIScorePanel\s*/>\s*<AISummaryPanel\s*/>\s*<RiskAlertsPanel\s*/>\s*</section>',
+    ''
+)
 
-$anchor='<section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">'
+$anchor='<AIRecommendationsPanel />'
 
-$panel=@'
+if($content.Contains($anchor)){
+
+$content=$content.Replace(
+$anchor,
+@'
+<AIRecommendationsPanel />
 
 <section className="grid gap-6">
   <InsightsPanel />
 </section>
 
+<section className="grid gap-6 xl:grid-cols-3">
+  <AIScorePanel />
+  <AISummaryPanel />
+  <RiskAlertsPanel />
+</section>
 '@
+)
 
-if($content -notmatch "InsightsPanel"){
-    $content=$content.Replace($anchor,$panel+$anchor)
 }
 
 Set-Content -LiteralPath $page -Value $content
 
-Write-Host "Dashboard Insights wired."
+Write-Host "Dashboard Insights rewired."
