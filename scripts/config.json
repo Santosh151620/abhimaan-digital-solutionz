@@ -1,0 +1,6 @@
+﻿{
+  "version": "1.0.0",
+  "factory": "crm.ps1",
+  "documentation": "docs.ps1",
+  "build": "build.ps1"
+}
