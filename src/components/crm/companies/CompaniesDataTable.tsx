@@ -1,9 +1,7 @@
-﻿interface Props {
-}
-
-
-export function CompaniesDataTable() {
+﻿export function CompaniesDataTable() {
     return (
-        <div>Companies DataTable</div>
+        <div>
+            Companies DataTable
+        </div>
     );
 }

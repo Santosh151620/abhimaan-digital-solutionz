@@ -1,6 +1,36 @@
 ﻿{
-  "version": "1.0.0",
-  "factory": "crm.ps1",
-  "documentation": "docs.ps1",
-  "build": "build.ps1"
+  "factoryVersion": "1.0.0",
+  "platform": "Abhimaan Digital Solutionz CRM",
+  "framework": "Next.js 16",
+  "typescript": true,
+  "tailwind": true,
+  "router": "App Router",
+  "deployment": {
+    "saas": true,
+    "onPrem": true
+  },
+  "paths": {
+    "src": "src",
+    "app": "src/app",
+    "api": "src/app/api",
+    "components": "src/components",
+    "hooks": "src/hooks",
+    "repositories": "src/repositories",
+    "services": "src/services",
+    "types": "src/types",
+    "config": "src/config",
+    "validation": "src/lib/validation",
+    "docs": "docs",
+    "tests": "tests"
+  },
+  "modules": [
+    "Companies",
+    "Contacts",
+    "Opportunities",
+    "Tasks",
+    "Calendar",
+    "Activities",
+    "Quotes",
+    "Invoices"
+  ]
 }
