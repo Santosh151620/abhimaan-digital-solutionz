@@ -1,17 +1,19 @@
 ﻿'use client';
 
-import Link from 'next/link';
-
 interface CompaniesToolbarProps {
     total: number;
     selected: number;
-    onDeleteSelected?: () => void;
+    onAdd?: () => void;
+    onRefresh?: () => void;
+    onExport?: () => void;
 }
 
 export function CompaniesToolbar({
     total,
     selected,
-    onDeleteSelected,
+    onAdd,
+    onRefresh,
+    onExport,
 }: CompaniesToolbarProps) {
     return (
         <div className="flex flex-col gap-4 rounded-xl border bg-background p-4 md:flex-row md:items-center md:justify-between">
@@ -27,24 +29,31 @@ export function CompaniesToolbar({
                 </p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
 
-                {selected > 0 && (
-                    <button
-                        type="button"
-                        onClick={onDeleteSelected}
-                        className="rounded-lg border px-4 py-2 text-sm hover:bg-muted"
-                    >
-                        Delete Selected
-                    </button>
-                )}
+                <button
+                    type="button"
+                    onClick={onRefresh}
+                    className="rounded-lg border px-4 py-2 hover:bg-muted"
+                >
+                    Refresh
+                </button>
 
-                <Link
-                    href="/crm/companies/new"
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+                <button
+                    type="button"
+                    onClick={onExport}
+                    className="rounded-lg border px-4 py-2 hover:bg-muted"
+                >
+                    Export CSV
+                </button>
+
+                <button
+                    type="button"
+                    onClick={onAdd}
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
                 >
                     + New Company
-                </Link>
+                </button>
 
             </div>
 

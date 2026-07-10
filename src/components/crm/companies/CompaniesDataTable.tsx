@@ -7,10 +7,11 @@ import { CompaniesColumns } from './CompaniesColumns';
 import { CompaniesFilters } from './CompaniesFilters';
 import { CompaniesToolbar } from './CompaniesToolbar';
 import type { Company, CompanyStatus } from '@/types/crm/Companies';
-
+import { useQueryClient } from '@tanstack/react-query';
 
 export function CompaniesDataTable() {
     const router = useRouter();
+    const queryClient = useQueryClient();
     const { data = [], isLoading, isError } = useCompanies();
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState<CompanyStatus | 'ALL'>('ALL');
@@ -92,7 +93,58 @@ export function CompaniesDataTable() {
         setSortBy(column);
         setSortDirection('asc');
     }
+    function exportCsv() {
 
+        const headers = [
+            'Name',
+            'Industry',
+            'Website',
+            'Phone',
+            'Status',
+        ];
+
+        const rows = companies.map(company => [
+
+            company.name,
+            company.industry ?? '',
+            company.website ?? '',
+            company.phone ?? '',
+            company.status,
+
+        ]);
+
+        const csv = [
+            headers,
+            ...rows,
+        ]
+            .map(row => row.join(','))
+            .join('\n');
+
+        const blob = new Blob(
+            [csv],
+            {
+                type: 'text/csv',
+            }
+        );
+
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+
+        link.href = url;
+
+        link.download = 'companies.csv';
+
+        link.click();
+
+        URL.revokeObjectURL(url);
+    }
+
+    function refreshData() {
+        queryClient.invalidateQueries({
+            queryKey: ['companies'],
+        });
+    }
     const toggleAll = () => {
         if (selected.length === companies.length) {
             setSelected([]);
@@ -131,6 +183,9 @@ export function CompaniesDataTable() {
             <CompaniesToolbar
                 total={companies.length}
                 selected={selected.length}
+                onAdd={() => router.push('/crm/companies/new')}
+                onRefresh={refreshData}
+                onExport={exportCsv}
             />
 
             <CompaniesFilters
@@ -206,31 +261,25 @@ export function CompaniesDataTable() {
                                 <td
                                     colSpan={CompaniesColumns.length}
                                     className="p-12"
-                                >
-                                    <div className="flex flex-col items-center justify-center gap-4 text-center">
+                                ><div className="flex flex-col items-center gap-4 py-10">
 
-                                        <div className="text-5xl">
+                                        <div className="text-6xl">
                                             🏢
                                         </div>
 
-                                        <div>
-
-                                            <h3 className="text-xl font-semibold">
-                                                No companies yet
-                                            </h3>
-
-                                            <p className="mt-2 text-muted-foreground">
-                                                Start building your CRM by creating your first company.
-                                            </p>
-
+                                        <div className="text-lg font-semibold">
+                                            No companies found
                                         </div>
 
+                                        <p className="text-muted-foreground">
+                                            Create your first company to get started.
+                                        </p>
+
                                         <button
-                                            type="button"
+                                            className="rounded-lg bg-primary px-5 py-2 text-primary-foreground"
                                             onClick={() =>
                                                 router.push('/crm/companies/new')
                                             }
-                                            className="rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground"
                                         >
                                             + New Company
                                         </button>
@@ -335,7 +384,31 @@ export function CompaniesDataTable() {
                     </tbody>
 
                 </table>
+<div className="flex items-center justify-between border-t bg-muted/30 px-5 py-3 text-sm text-muted-foreground">
 
+    <div>
+
+        Showing
+
+        <strong className="mx-1">
+            {companies.length}
+        </strong>
+
+        companies
+
+    </div>
+
+    <div>
+
+        Sorted by
+
+        <strong className="ml-1 capitalize">
+            {sortBy}
+        </strong>
+
+    </div>
+
+</div>
             </div>
 
         </section >
