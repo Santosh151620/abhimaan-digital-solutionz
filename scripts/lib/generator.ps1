@@ -1,8 +1,9 @@
 ﻿Set-StrictMode -Version Latest
 
-function Assert-Module {
+function Assert-CrmModule {
 
     param(
+        [Parameter(Mandatory = $true)]
         [string]$Module
     )
 
@@ -12,141 +13,143 @@ function Assert-Module {
 
     }
 
-    $configFile = Join-Path $Script:ScriptRoot "config.json"
-
-    if (-not (Test-Path -LiteralPath $configFile)) {
-
-        Stop-Factory "config.json not found."
-
-    }
-
-    $config = Get-Content `
-        -LiteralPath $configFile `
-        -Raw | ConvertFrom-Json
-
-    if ($config.modules -notcontains $Module) {
-
-        Stop-Factory "Unsupported CRM Module : $Module"
-
-    }
-
 }
 
-function New-ModuleScaffold {
+function New-CrmModule {
 
     param(
+        [Parameter(Mandatory = $true)]
         [string]$Module
     )
 
-    Assert-Module $Module
+    Assert-CrmModule $Module
 
-    Write-Section "Generating Module : $Module"
+    Write-Section ("Generating Module : " + $Module)
 
     New-ModuleFolders $Module
 
-    Write-Success "Folder Structure Ready"
+    New-ModulePages `
+        -Module $Module
 
-}
+    New-ModuleComponents `
+        -Module $Module
 
-function New-ModulePages {
+    New-CrudArtifacts `
+        -Module $Module
 
-    param(
-        [string]$Module
-    )
+    New-ApiArtifacts `
+        -Module $Module
 
-    $ctx = Get-ModuleContext $Module
+    Register-All `
+        -Module $Module
 
-    $paths = Get-ModulePaths $Module
-
-    Write-Template `
-        -Path (Join-Path $paths.App "page.tsx") `
-        -Template (Get-PageTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Join-Path $paths.App "new\page.tsx") `
-        -Template (Get-NewPageTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Join-Path $paths.App "[id]\page.tsx") `
-        -Template (Get-DetailsPageTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Join-Path $paths.App "[id]\edit\page.tsx") `
-        -Template (Get-EditPageTemplate) `
-        -Context $ctx
-
-    Write-Success "Pages Generated"
-
-}
-
-function New-ComponentScaffold {
-
-    param(
-        [string]$Module
-    )
-
-    $ctx = Get-ModuleContext $Module
-
-    Write-Template `
-        -Path (Get-ModuleFile $Module "DataTable") `
-        -Template (Get-DataTableTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Get-ModuleFile $Module "Columns") `
-        -Template (Get-ColumnsTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Get-ModuleFile $Module "Toolbar") `
-        -Template (Get-ToolbarTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Get-ModuleFile $Module "Filters") `
-        -Template (Get-FiltersTemplate) `
-        -Context $ctx
-
-    Write-Template `
-        -Path (Get-ModuleFile $Module "Form") `
-        -Template (Get-FormTemplate) `
-        -Context $ctx
-
-    Write-Success "Components Generated"
-
-}
-
-function New-Module {
-
-    param(
-        [string]$Module
-    )
-
-    Assert-Module $Module
-
-    Write-Section "CRM MODULE FACTORY"
-
-    New-ModuleScaffold $Module
-
-    New-ModulePages $Module
-
-    New-ComponentScaffold $Module
-
-    New-CrudArtifacts $Module
-
-    New-ApiArtifacts $Module
-
-    Register-CrmModule $Module
-
-    Test-GeneratedModule $Module
+    Test-GeneratedModule `
+        -Module $Module
 
     Write-Host ""
     Write-Host "==========================================" -ForegroundColor Green
     Write-Host " MODULE GENERATED SUCCESSFULLY" -ForegroundColor Green
     Write-Host "==========================================" -ForegroundColor Green
+    Write-Host ""
+
+}
+
+function Update-CrmModule {
+
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Module
+    )
+
+    Assert-CrmModule $Module
+
+    Write-Section ("Regenerating Module : " + $Module)
+
+    New-ModuleFolders $Module
+
+    New-ModulePages `
+        -Module $Module `
+        -Force
+
+    New-ModuleComponents `
+        -Module $Module `
+        -Force
+
+    New-CrudArtifacts `
+        -Module $Module `
+        -Force
+
+    New-ApiArtifacts `
+        -Module $Module `
+        -Force
+
+    Register-All `
+        -Module $Module
+
+    Test-GeneratedModule `
+        -Module $Module
+
+    Write-Success "Module Regenerated"
+
+}
+
+function Remove-CrmModule {
+
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Module
+    )
+
+    Assert-CrmModule $Module
+
+    Write-Section ("Removing Module : " + $Module)
+
+    $paths = Get-ModulePaths $Module
+
+    $targets = @(
+        $paths.App,
+        $paths.Components,
+        $paths.Api,
+        $paths.Repository,
+        $paths.Service,
+        $paths.Types,
+        $paths.Hook,
+        $paths.Validation,
+        $paths.Documentation,
+        $paths.Test
+    )
+
+    foreach ($target in $targets) {
+
+        if (Test-Path -LiteralPath $target) {
+
+            Remove-Item `
+                -LiteralPath $target `
+                -Recurse `
+                -Force
+
+            Write-Success ("Deleted : " + $target)
+
+        }
+
+    }
+
+}
+
+function Show-CrmModules {
+
+    $modules = Get-RegisteredModules
+
+    Write-Host ""
+    Write-Host "Registered CRM Modules"
+    Write-Host "----------------------"
+
+    foreach ($module in ($modules | Sort-Object)) {
+
+        Write-Host (" - " + $module)
+
+    }
+
     Write-Host ""
 
 }

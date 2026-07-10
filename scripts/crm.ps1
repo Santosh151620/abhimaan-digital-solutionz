@@ -4,6 +4,9 @@ param(
     [Parameter(Mandatory = $true, Position = 0)]
     [ValidateSet(
         "create",
+        "regenerate",
+        "delete",
+        "list",
         "verify",
         "doctor",
         "clean",
@@ -31,37 +34,66 @@ switch ($Command) {
 
     "create" {
 
-        New-Module $Module
-        break
+        if ([string]::IsNullOrWhiteSpace($Module)) {
+            Stop-Factory "Module name is required."
+        }
 
+        New-CrmModule $Module
+        break
+    }
+
+    "regenerate" {
+
+        if ([string]::IsNullOrWhiteSpace($Module)) {
+            Stop-Factory "Module name is required."
+        }
+
+        Update-CrmModule $Module
+        break
+    }
+
+    "delete" {
+
+        if ([string]::IsNullOrWhiteSpace($Module)) {
+            Stop-Factory "Module name is required."
+        }
+
+        Remove-CrmModule $Module
+        break
+    }
+
+    "list" {
+
+        Show-CrmModules
+        break
     }
 
     "verify" {
 
+        if ([string]::IsNullOrWhiteSpace($Module)) {
+            Stop-Factory "Module name is required."
+        }
+
         Invoke-Verify $Module
         break
-
     }
 
     "doctor" {
 
         Invoke-Doctor
         break
-
     }
 
     "clean" {
 
         Invoke-Clean
         break
-
     }
 
     "sync" {
 
         Invoke-Sync
         break
-
     }
 
 }

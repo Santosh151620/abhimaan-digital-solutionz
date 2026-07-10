@@ -8,28 +8,11 @@ function Get-ModuleContext {
 
     $route = $Module.ToLower()
 
-    return @{
-
+    @{
         Module = $Module
-
+        ModuleLower = $route
         Route = $route
-
         DisplayName = $Module
-
-        Repository = "${Module}Repository"
-
-        Service = "${Module}Service"
-
-        Hook = "use${Module}"
-
-        Type = $Module
-
-        Validation = "${Module}Schema"
-
-        RouteUrl = "/crm/$route"
-
-        ApiUrl = "/api/crm/$route"
-
     }
 
 }
@@ -37,24 +20,19 @@ function Get-ModuleContext {
 function Expand-Template {
 
     param(
-
-        [string[]]$Lines,
-
+        [string[]]$Template,
         [hashtable]$Context
-
     )
 
     $result = @()
 
-    foreach ($line in $Lines) {
+    foreach ($line in $Template) {
 
         $text = $line
 
         foreach ($key in $Context.Keys) {
 
-            $token = "{{" + $key + "}}"
-
-            $text = $text.Replace($token,[string]$Context[$key])
+            $text = $text.Replace("{{" + $key + "}}",[string]$Context[$key])
 
         }
 
@@ -80,24 +58,24 @@ function Write-Template {
 
     )
 
-    $content = Expand-Template `
-        -Lines $Template `
-        -Context $Context
-
     Write-TextFile `
         -Path $Path `
-        -Content $content `
+        -Content (Expand-Template $Template $Context) `
         -Force:$Force
 
 }
 
+# --------------------------------------------------
+# Pages
+# --------------------------------------------------
+
 function Get-PageTemplate {
 
-    return @(
+@(
+"import { {{Module}}DataTable } from '@/components/crm/{{ModuleLower}}';",
+"",
 "export default function {{Module}}Page() {",
-"    return (",
-"        <div>{{Module}} Module</div>",
-"    );",
+"    return <{{Module}}DataTable />;",
 "}"
 )
 
@@ -105,11 +83,11 @@ function Get-PageTemplate {
 
 function Get-NewPageTemplate {
 
-    return @(
+@(
+"import { {{Module}}Form } from '@/components/crm/{{ModuleLower}}';",
+"",
 "export default function New{{Module}}Page() {",
-"    return (",
-"        <div>Create {{Module}}</div>",
-"    );",
+"    return <{{Module}}Form />;",
 "}"
 )
 
@@ -117,18 +95,18 @@ function Get-NewPageTemplate {
 
 function Get-DetailsPageTemplate {
 
-    return @(
+@(
 "interface PageProps {",
 "    params: Promise<{ id: string }>;",
 "}",
 "",
-"export default async function {{Module}}DetailsPage({ params }: PageProps) {",
+"export default async function {{Module}}DetailsPage(",
+"    { params }: PageProps",
+") {",
 "",
 "    const { id } = await params;",
 "",
-"    return (",
-"        <div>{{Module}} : {id}</div>",
-"    );",
+"    return <div>{id}</div>;",
 "",
 "}"
 )
@@ -137,31 +115,29 @@ function Get-DetailsPageTemplate {
 
 function Get-EditPageTemplate {
 
-    return @(
-"interface PageProps {",
-"    params: Promise<{ id: string }>;",
-"}",
+@(
+"import { {{Module}}Form } from '@/components/crm/{{ModuleLower}}';",
 "",
-"export default async function Edit{{Module}}Page({ params }: PageProps) {",
+"export default function Edit{{Module}}Page() {",
 "",
-"    const { id } = await params;",
-"",
-"    return (",
-"        <div>Edit {{Module}} : {id}</div>",
-"    );",
+"    return <{{Module}}Form />;",
 "",
 "}"
 )
 
 }
 
+# --------------------------------------------------
+# Components
+# --------------------------------------------------
+
 function Get-DataTableTemplate {
 
-    return @(
+@(
 "export function {{Module}}DataTable() {",
 "",
 "    return (",
-"        <div>{{Module}} DataTable</div>",
+"        <div>{{DisplayName}}</div>",
 "    );",
 "",
 "}"
@@ -171,24 +147,17 @@ function Get-DataTableTemplate {
 
 function Get-ColumnsTemplate {
 
-    return @(
-"export const {{Module}}Columns = [",
-"    {",
-"        accessorKey: 'id',",
-"        header: 'ID'",
-"    }",
-"];"
+@(
+"export const {{Module}}Columns = [];"
 )
 
 }
 
 function Get-ToolbarTemplate {
 
-    return @(
+@(
 "export function {{Module}}Toolbar() {",
-"",
-"    return <div>{{Module}} Toolbar</div>;",
-"",
+"    return null;",
 "}"
 )
 
@@ -196,11 +165,9 @@ function Get-ToolbarTemplate {
 
 function Get-FiltersTemplate {
 
-    return @(
+@(
 "export function {{Module}}Filters() {",
-"",
-"    return <div>{{Module}} Filters</div>;",
-"",
+"    return null;",
 "}"
 )
 
@@ -208,12 +175,32 @@ function Get-FiltersTemplate {
 
 function Get-FormTemplate {
 
-    return @(
+@(
 "export function {{Module}}Form() {",
 "",
-"    return <div>{{Module}} Form</div>;",
+"    return (",
+"        <form>",
+"            <div>{{DisplayName}} Form</div>",
+"        </form>",
+"    );",
 "",
 "}"
+)
+
+}
+
+# --------------------------------------------------
+# Barrel
+# --------------------------------------------------
+
+function Get-BarrelTemplate {
+
+@(
+"export * from './{{Module}}DataTable';",
+"export * from './{{Module}}Columns';",
+"export * from './{{Module}}Toolbar';",
+"export * from './{{Module}}Filters';",
+"export * from './{{Module}}Form';"
 )
 
 }

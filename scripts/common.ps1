@@ -88,7 +88,7 @@ function Write-TextFile {
 
     if ((Test-Path -LiteralPath $Path) -and (-not $Force)) {
 
-        Write-WarningMessage "Skipped Existing : $Path"
+        Write-WarningMessage ("Skipped Existing : " + $Path)
 
         return
 
@@ -99,7 +99,16 @@ function Write-TextFile {
         -Encoding UTF8 `
         -Value $Content
 
-    Write-Success "Created File : $Path"
+    if ($Force) {
+
+        Write-Success ("Updated File : " + $Path)
+
+    }
+    else {
+
+        Write-Success ("Created File : " + $Path)
+
+    }
 
 }
 
