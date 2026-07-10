@@ -110,13 +110,17 @@ export function CompaniesDataTable() {
     };
 
     if (isLoading) {
-        return <div className="p-8">Loading companies...</div>;
+        return (
+            <div className="rounded-xl border bg-background p-10 text-center text-muted-foreground">
+                Loading companies...
+            </div>
+        );
     }
 
     if (isError) {
         return (
             <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-red-700">
-                Unable to load companies.
+                No companies match the current filters.
             </div>
         );
     }

@@ -1,16 +1,23 @@
-﻿'use client';
+﻿import { CompaniesDataTable } from '@/components/crm/companies';
+import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 
-import { useCompanies } from '@/hooks/crm/useCompanies';
-import { CompaniesDataTable } from '@/components/crm/companies';
+export default async function CompaniesPage() {
+    const companies =
+        await CompaniesServiceInstance.list();
 
-export default function CompaniesPage() {
-    const { data = [] } = useCompanies();
+    const total = companies.length;
 
-    const total = data.length;
-    const active = data.filter((c) => c.status === 'ACTIVE').length;
-    const prospect = data.filter((c) => c.status === 'PROSPECT').length;
-    const inactive = data.filter((c) => c.status === 'INACTIVE').length;
-    const archived = data.filter((c) => c.status === 'ARCHIVED').length;
+    const active = companies.filter(
+        (company) => company.status === 'ACTIVE'
+    ).length;
+
+    const prospect = companies.filter(
+        (company) => company.status === 'PROSPECT'
+    ).length;
+
+    const inactive = companies.filter(
+        (company) => company.status === 'INACTIVE'
+    ).length;
 
     return (
         <main className="space-y-6">
@@ -27,56 +34,46 @@ export default function CompaniesPage() {
 
             </section>
 
-            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            <section className="grid gap-4 md:grid-cols-4">
 
                 <div className="rounded-xl border bg-background p-5">
                     <p className="text-sm text-muted-foreground">
                         Total Companies
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold">
+                    <h2 className="mt-2 text-3xl font-bold">
                         {total}
-                    </p>
+                    </h2>
                 </div>
 
-                <div className="rounded-xl border bg-green-50 p-5">
-                    <p className="text-sm text-green-700">
+                <div className="rounded-xl border bg-background p-5">
+                    <p className="text-sm text-muted-foreground">
                         Active
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold text-green-700">
+                    <h2 className="mt-2 text-3xl font-bold text-green-600">
                         {active}
-                    </p>
+                    </h2>
                 </div>
 
-                <div className="rounded-xl border bg-blue-50 p-5">
-                    <p className="text-sm text-blue-700">
+                <div className="rounded-xl border bg-background p-5">
+                    <p className="text-sm text-muted-foreground">
                         Prospects
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold text-blue-700">
+                    <h2 className="mt-2 text-3xl font-bold text-blue-600">
                         {prospect}
-                    </p>
+                    </h2>
                 </div>
 
-                <div className="rounded-xl border bg-gray-50 p-5">
-                    <p className="text-sm text-gray-700">
+                <div className="rounded-xl border bg-background p-5">
+                    <p className="text-sm text-muted-foreground">
                         Inactive
                     </p>
 
-                    <p className="mt-2 text-3xl font-bold text-gray-700">
+                    <h2 className="mt-2 text-3xl font-bold text-gray-600">
                         {inactive}
-                    </p>
-                </div>
-
-                <div className="rounded-xl border bg-red-50 p-5">
-                    <p className="text-sm text-red-700">
-                        Archived
-                    </p>
-
-                    <p className="mt-2 text-3xl font-bold text-red-700">
-                        {archived}
-                    </p>
+                    </h2>
                 </div>
 
             </section>
