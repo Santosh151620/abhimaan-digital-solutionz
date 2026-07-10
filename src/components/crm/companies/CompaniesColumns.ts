@@ -1,7 +1,7 @@
 ﻿import type { Company } from '@/types/crm/Companies';
 
 export interface CompanyColumn {
-    key: keyof Company | 'select';
+    key: keyof Company | 'select' | 'actions';
     label: string;
     className?: string;
 }
@@ -32,5 +32,10 @@ export const CompaniesColumns: CompanyColumn[] = [
         key: 'status',
         label: 'Status',
         className: 'w-36',
+    },
+    {
+        key: 'actions',
+        label: 'Actions',
+        className: 'w-44',
     },
 ];

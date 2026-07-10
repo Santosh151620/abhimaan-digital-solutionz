@@ -6,78 +6,65 @@
 const companies: CompanyDetails[] = [
     {
         id: '1',
-        name: 'Abhimaan Digital Solutionz',
-        legalName: 'Abhimaan Digital Solutionz Pvt Ltd',
-        industry: 'IT Services',
-        website: 'https://abhimaan.com',
+        name: 'Acme Technologies',
+        legalName: 'Acme Technologies Pvt Ltd',
+        industry: 'Software',
+        website: 'https://acme.test',
         phone: '+91 9876543210',
-        email: 'info@abhimaan.com',
+        email: 'hello@acme.test',
 
         status: 'ACTIVE',
 
-        address: 'Whitefield',
+        address: 'MG Road',
         city: 'Bengaluru',
         state: 'Karnataka',
         country: 'India',
 
-        employees: 42,
-        annualRevenue: 2500000,
+        employees: 120,
+        annualRevenue: 5000000,
 
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
 
-        contacts: [
-            {
-                id: 'c1',
-                name: 'Santosh',
-                email: 'santosh@abhimaan.com',
-                role: 'Founder',
-            },
-        ],
-
-        opportunities: [
-            {
-                id: 'o1',
-                title: 'CRM Implementation',
-                value: 850000,
-                stage: 'Proposal',
-                probability: 70,
-            },
-        ],
-
-        activities: [
-            {
-                id: 'a1',
-                type: 'NOTE',
-                title: 'Company created',
-                createdAt: new Date().toISOString(),
-            },
-        ],
+        contacts: [],
+        opportunities: [],
+        activities: [],
     },
 ];
 
 export class CompaniesRepository {
+
     async list(): Promise<Company[]> {
         return companies;
     }
 
-    async findById(id: string): Promise<CompanyDetails | null> {
-        return companies.find((company) => company.id === id) ?? null;
+    async findById(
+        id: string
+    ): Promise<CompanyDetails | null> {
+        return (
+            companies.find(
+                company => company.id === id
+            ) ?? null
+        );
     }
 
     async create(data: unknown) {
         return data;
     }
 
-    async update(id: string, data: unknown) {
-        void id;
-        return data;
+    async update(
+        id: string,
+        data: unknown
+    ) {
+        return {
+            id,data,
+                    };
     }
 
     async delete(id: string) {
-        void id;
         return true;
     }
+
 }
 
 export const CompaniesRepositoryInstance =

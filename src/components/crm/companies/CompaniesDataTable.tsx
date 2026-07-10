@@ -130,8 +130,10 @@ export function CompaniesDataTable() {
 
                             <tr
                                 key={company.id}
-                                onClick={() => router.push(`/crm/companies/${company.id}`)}
                                 className="cursor-pointer border-t transition hover:bg-muted/20"
+                                onClick={() =>
+                                    router.push(`/crm/companies/${company.id}`)
+                                }
                             >
 
                                 <td className="p-4">
@@ -148,7 +150,15 @@ export function CompaniesDataTable() {
                                 </td>
 
                                 <td className="p-4 font-medium">
-                                    {company.name}
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            router.push(`/crm/companies/${company.id}`);
+                                        }}
+                                        className="rounded border px-3 py-1 text-sm hover:bg-muted">
+                                        View
+                                    </button>
                                 </td>
 
                                 <td className="p-4">
@@ -171,6 +181,34 @@ export function CompaniesDataTable() {
                                         {company.status}
                                     </span>
 
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex gap-2">
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.push(
+                                                    `/crm/companies/${company.id}`
+                                                )
+                                            }
+                                            className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                        >
+                                            View
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push(`/crm/companies/${company.id}/edit`);
+                                            }}
+                                            className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                        >
+                                            Edit
+                                        </button>
+
+                                    </div>
                                 </td>
 
                             </tr>
