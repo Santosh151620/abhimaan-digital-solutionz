@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useCompanies } from '@/hooks/crm/useCompanies';
 import { CompaniesColumns } from './CompaniesColumns';
 import { CompaniesFilters } from './CompaniesFilters';
@@ -8,8 +9,8 @@ import { CompaniesToolbar } from './CompaniesToolbar';
 import type { Company, CompanyStatus } from '@/types/crm/Companies';
 
 export function CompaniesDataTable() {
+    const router = useRouter();
     const { data = [], isLoading, isError } = useCompanies();
-
     const [search, setSearch] = useState('');
     const [status, setStatus] = useState<CompanyStatus | 'ALL'>('ALL');
     const [selected, setSelected] = useState<string[]>([]);
@@ -93,6 +94,7 @@ export function CompaniesDataTable() {
                                         companies.length > 0 &&
                                         selected.length === companies.length
                                     }
+                                    onClick={(e) => e.stopPropagation()}
                                     onChange={toggleAll}
                                 />
                             </th>
@@ -128,7 +130,8 @@ export function CompaniesDataTable() {
 
                             <tr
                                 key={company.id}
-                                className="border-t transition hover:bg-muted/20"
+                                onClick={() => router.push(`/crm/companies/${company.id}`)}
+                                className="cursor-pointer border-t transition hover:bg-muted/20"
                             >
 
                                 <td className="p-4">
@@ -136,6 +139,7 @@ export function CompaniesDataTable() {
                                     <input
                                         type="checkbox"
                                         checked={selected.includes(company.id)}
+                                        onClick={(e) => e.stopPropagation()}
                                         onChange={() =>
                                             toggleSelection(company.id)
                                         }
@@ -181,4 +185,4 @@ export function CompaniesDataTable() {
 
         </section>
     );
-}
+};
