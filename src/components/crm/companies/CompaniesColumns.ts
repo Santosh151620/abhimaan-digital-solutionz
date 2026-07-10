@@ -4,6 +4,7 @@ export interface CompanyColumn {
     key: keyof Company | 'select' | 'actions';
     label: string;
     className?: string;
+    
 }
 
 export const CompaniesColumns: CompanyColumn[] = [

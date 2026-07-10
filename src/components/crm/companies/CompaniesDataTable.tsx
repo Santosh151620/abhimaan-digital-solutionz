@@ -8,6 +8,7 @@ import { CompaniesFilters } from './CompaniesFilters';
 import { CompaniesToolbar } from './CompaniesToolbar';
 import type { Company, CompanyStatus } from '@/types/crm/Companies';
 
+
 export function CompaniesDataTable() {
     const router = useRouter();
     const { data = [], isLoading, isError } = useCompanies();
@@ -15,18 +16,59 @@ export function CompaniesDataTable() {
     const [status, setStatus] = useState<CompanyStatus | 'ALL'>('ALL');
     const [selected, setSelected] = useState<string[]>([]);
 
+    const [sortBy, setSortBy] = useState<
+        'name' | 'industry' | 'status'
+    >('name');
+
+    const [sortDirection, setSortDirection] = useState<
+        'asc' | 'desc'
+    >('asc');
+
     const companies = useMemo(() => {
-        return data.filter((company: Company) => {
+        const filtered = data.filter((company: Company) => {
             const matchesSearch = company.name
                 .toLowerCase()
                 .includes(search.toLowerCase());
 
             const matchesStatus =
-                status === 'ALL' || company.status === status;
+                status === 'ALL' ||
+                company.status === status;
 
             return matchesSearch && matchesStatus;
         });
-    }, [data, search, status]);
+
+        filtered.sort((a, b) => {
+            const left = String(
+                a[sortBy] ?? ''
+            ).toLowerCase();
+
+            const right = String(
+                b[sortBy] ?? ''
+            ).toLowerCase();
+
+            if (left < right) {
+                return sortDirection === 'asc'
+                    ? -1
+                    : 1;
+            }
+
+            if (left > right) {
+                return sortDirection === 'asc'
+                    ? 1
+                    : -1;
+            }
+
+            return 0;
+        });
+
+        return filtered;
+    }, [
+        data,
+        search,
+        status,
+        sortBy,
+        sortDirection,
+    ]);
 
     const toggleSelection = (id: string) => {
         setSelected((current) =>
@@ -35,6 +77,21 @@ export function CompaniesDataTable() {
                 : [...current, id]
         );
     };
+    function toggleSort(
+        column: 'name' | 'industry' | 'status'
+    ) {
+        if (sortBy === column) {
+            setSortDirection((current) =>
+                current === 'asc'
+                    ? 'desc'
+                    : 'asc'
+            );
+            return;
+        }
+
+        setSortBy(column);
+        setSortDirection('asc');
+    }
 
     const toggleAll = () => {
         if (selected.length === companies.length) {
@@ -106,121 +163,146 @@ export function CompaniesDataTable() {
                                     key={column.key}
                                     className={`p-4 text-left text-sm font-semibold ${column.className ?? ''}`}
                                 >
+                                    {column.key === 'name' ||
+                                        column.key === 'industry' ||
+                                        column.key === 'status' ? (
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                toggleSort(
+                                                    column.key as
+                                                    | 'name'
+                                                    | 'industry'
+                                                    | 'status'
+                                                )
+                                            }
+                                            
+                                    className="flex items-center gap-1 font-semibold"
+                                        >
                                     {column.label}
-                                </th>
+
+                                    {sortBy === column.key &&
+                                        (sortDirection === 'asc'
+                                            ? '▲'
+                                            : '▼')}
+                                </button>
+                            ) : (
+                            column.label
+                                    )}
+                        </th>
                             ))}
-                        </tr>
+                    </tr>
 
-                    </thead>
+                </thead>
 
-                    <tbody>
+                <tbody>
 
-                        {companies.length === 0 && (
-                            <tr>
-                                <td
-                                    colSpan={CompaniesColumns.length}
-                                    className="p-12 text-center text-muted-foreground"
-                                >
-                                    No companies found.
-                                </td>
-                            </tr>
-                        )}
-
-                        {companies.map((company) => (
-
-                            <tr
-                                key={company.id}
-                                className="cursor-pointer border-t transition hover:bg-muted/20"
-                                onClick={() =>
-                                    router.push(`/crm/companies/${company.id}`)
-                                }
+                    {companies.length === 0 && (
+                        <tr>
+                            <td
+                                colSpan={CompaniesColumns.length}
+                                className="p-12 text-center text-muted-foreground"
                             >
+                                No companies found.
+                            </td>
+                        </tr>
+                    )}
 
-                                <td className="p-4">
+                    {companies.map((company) => (
 
-                                    <input
-                                        type="checkbox"
-                                        checked={selected.includes(company.id)}
-                                        onClick={(e) => e.stopPropagation()}
-                                        onChange={() =>
-                                            toggleSelection(company.id)
+                        <tr
+                            key={company.id}
+                            className="cursor-pointer border-t transition hover:bg-muted/20"
+                            onClick={() =>
+                                router.push(`/crm/companies/${company.id}`)
+                            }
+                        >
+
+                            <td className="p-4">
+
+                                <input
+                                    type="checkbox"
+                                    checked={selected.includes(company.id)}
+                                    onClick={(e) => e.stopPropagation()}
+                                    onChange={() =>
+                                        toggleSelection(company.id)
+                                    }
+                                />
+
+                            </td>
+
+                            <td className="p-4 font-medium">
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        router.push(`/crm/companies/${company.id}`);
+                                    }}
+                                    className="rounded border px-3 py-1 text-sm hover:bg-muted">
+                                    View
+                                </button>
+                            </td>
+
+                            <td className="p-4">
+                                {company.industry ?? '—'}
+                            </td>
+
+                            <td className="p-4">
+                                {company.website ?? '—'}
+                            </td>
+
+                            <td className="p-4">
+                                {company.phone ?? '—'}
+                            </td>
+
+                            <td className="p-4">
+
+                                <span
+                                    className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClasses[company.status]}`}
+                                >
+                                    {company.status}
+                                </span>
+
+                            </td>
+                            <td className="p-4">
+                                <div className="flex gap-2">
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            router.push(
+                                                `/crm/companies/${company.id}`
+                                            )
                                         }
-                                    />
+                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                    >
+                                        View
+                                    </button>
 
-                                </td>
-
-                                <td className="p-4 font-medium">
                                     <button
                                         type="button"
                                         onClick={(e) => {
                                             e.stopPropagation();
-                                            router.push(`/crm/companies/${company.id}`);
+                                            router.push(`/crm/companies/${company.id}/edit`);
                                         }}
-                                        className="rounded border px-3 py-1 text-sm hover:bg-muted">
-                                        View
-                                    </button>
-                                </td>
-
-                                <td className="p-4">
-                                    {company.industry ?? '—'}
-                                </td>
-
-                                <td className="p-4">
-                                    {company.website ?? '—'}
-                                </td>
-
-                                <td className="p-4">
-                                    {company.phone ?? '—'}
-                                </td>
-
-                                <td className="p-4">
-
-                                    <span
-                                        className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClasses[company.status]}`}
+                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
                                     >
-                                        {company.status}
-                                    </span>
+                                        Edit
+                                    </button>
 
-                                </td>
-                                <td className="p-4">
-                                    <div className="flex gap-2">
+                                </div>
+                            </td>
 
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                router.push(
-                                                    `/crm/companies/${company.id}`
-                                                )
-                                            }
-                                            className="rounded border px-3 py-1 text-sm hover:bg-muted"
-                                        >
-                                            View
-                                        </button>
+                        </tr>
 
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                router.push(`/crm/companies/${company.id}/edit`);
-                                            }}
-                                            className="rounded border px-3 py-1 text-sm hover:bg-muted"
-                                        >
-                                            Edit
-                                        </button>
+                    ))}
 
-                                    </div>
-                                </td>
+                </tbody>
 
-                            </tr>
+            </table>
 
-                        ))}
+        </div>
 
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
+        </section >
     );
 };
