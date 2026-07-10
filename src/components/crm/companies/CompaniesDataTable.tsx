@@ -384,31 +384,31 @@ export function CompaniesDataTable() {
                     </tbody>
 
                 </table>
-<div className="flex items-center justify-between border-t bg-muted/30 px-5 py-3 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between border-t bg-muted/30 px-5 py-3 text-sm text-muted-foreground">
 
-    <div>
+                    <div>
 
-        Showing
+                        Showing
 
-        <strong className="mx-1">
-            {companies.length}
-        </strong>
+                        <strong className="mx-1">
+                            {companies.length}
+                        </strong>
 
-        companies
+                        companies
 
-    </div>
+                    </div>
 
-    <div>
+                    <div>
 
-        Sorted by
+                        Sorted by
 
-        <strong className="ml-1 capitalize">
-            {sortBy}
-        </strong>
+                        <strong className="ml-1 capitalize">
+                            {sortBy}
+                        </strong>
 
-    </div>
+                    </div>
 
-</div>
+                </div>
             </div>
 
         </section >
