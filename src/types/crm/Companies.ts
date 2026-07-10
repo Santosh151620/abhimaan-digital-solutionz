@@ -6,9 +6,12 @@
 
 export interface Company {
     id: string;
+
     name: string;
     legalName?: string;
+
     industry?: string;
+
     website?: string;
     phone?: string;
     email?: string;
@@ -23,6 +26,17 @@ export interface Company {
     employees?: number;
     annualRevenue?: number;
 
+    /**
+     * Platform Standard
+     * Soft Delete
+     */
+    isDeleted?: boolean;
+    deletedAt?: string | null;
+    deletedBy?: string | null;
+
+    /**
+     * Audit
+     */
     createdAt: string;
     updatedAt: string;
 }

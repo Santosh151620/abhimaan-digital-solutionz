@@ -1,65 +1,31 @@
 ﻿'use client';
 
-import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { CompaniesForm } from '@/components/crm/companies';
 import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
-import type { Company } from '@/types/crm/Companies';
 
-interface PageProps {
-    params: Promise<{
-        id: string;
-    }>;
-}
+import type { CompanyDetails } from '@/types/crm/Companies';
 
-export default function EditCompaniesPage({
-    params,
-}: PageProps) {
-    const { id } = use(params);
+export default function EditCompaniesPage() {
 
     const router = useRouter();
 
-    const [company, setCompany] =
-        useState<Partial<Company>>();
+    async function handleSubmit(
+        values: Partial<CompanyDetails>
+    ) {
 
-    useEffect(() => {
-        async function load() {
-            const data =
-                await CompaniesServiceInstance.details(id);
+        await CompaniesServiceInstance.update('', values);
 
-            if (data) {
-                setCompany(data);
-            }
-        }
+        router.push('/crm/companies');
 
-        load();
-    }, [id]);
-
-    async function handleSubmit(values: Partial<Company>) {
-        await CompaniesServiceInstance.update(
-            id,
-            values
-        );
-
-        router.push(`/crm/companies/${id}`);
-    }
-
-    if (!company) {
-        return (
-            <div className="p-6">
-                Loading company...
-            </div>
-        );
     }
 
     return (
         <CompaniesForm
-            initialValues={company}
             onSubmit={handleSubmit}
-            onCancel={() =>
-                router.push(`/crm/companies/${id}`)
-            }
+            onCancel={() => router.push('/crm/companies')}
         />
     );
+
 }

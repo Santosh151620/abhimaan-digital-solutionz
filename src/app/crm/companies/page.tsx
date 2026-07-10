@@ -1,5 +1,8 @@
-﻿import { CompaniesDataTable } from '@/components/crm/companies';
-import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
+﻿import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
+import {
+CompaniesDataTable,
+    CompaniesSummaryCards,
+} from '@/components/crm/companies';
 
 export default async function CompaniesPage() {
     const companies =
@@ -77,7 +80,7 @@ export default async function CompaniesPage() {
                 </div>
 
             </section>
-
+<CompaniesSummaryCards />
             <CompaniesDataTable />
 
         </main>
