@@ -176,62 +176,90 @@ export function CompaniesDataTable() {
                                                     | 'status'
                                                 )
                                             }
-                                            
-                                    className="flex items-center gap-1 font-semibold"
+
+                                            className="flex items-center gap-1 font-semibold"
                                         >
-                                    {column.label}
+                                            {column.label}
 
-                                    {sortBy === column.key &&
-                                        (sortDirection === 'asc'
-                                            ? '▲'
-                                            : '▼')}
-                                </button>
-                            ) : (
-                            column.label
+                                            {sortBy === column.key &&
+                                                (sortDirection === 'asc'
+                                                    ? '▲'
+                                                    : '▼')}
+                                        </button>
+                                    ) : (
+                                        column.label
                                     )}
-                        </th>
+                                </th>
                             ))}
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    {companies.length === 0 && (
-                        <tr>
-                            <td
-                                colSpan={CompaniesColumns.length}
-                                className="p-12 text-center text-muted-foreground"
-                            >
-                                No companies found.
-                            </td>
                         </tr>
-                    )}
 
-                    {companies.map((company) => (
+                    </thead>
 
-                        <tr
-                            key={company.id}
-                            className="cursor-pointer border-t transition hover:bg-muted/20"
-                            onClick={() =>
-                                router.push(`/crm/companies/${company.id}`)
-                            }
-                        >
+                    <tbody>
 
-                            <td className="p-4">
+                        {companies.length === 0 && (
+                            <tr>
+                                <td
+                                    colSpan={CompaniesColumns.length}
+                                    className="p-12"
+                                >
+                                    <div className="flex flex-col items-center justify-center gap-4 text-center">
 
-                                <input
-                                    type="checkbox"
-                                    checked={selected.includes(company.id)}
-                                    onClick={(e) => e.stopPropagation()}
-                                    onChange={() =>
-                                        toggleSelection(company.id)
-                                    }
-                                />
+                                        <div className="text-5xl">
+                                            🏢
+                                        </div>
 
-                            </td>
+                                        <div>
 
-                            <td className="p-4 font-medium">
+                                            <h3 className="text-xl font-semibold">
+                                                No companies yet
+                                            </h3>
+
+                                            <p className="mt-2 text-muted-foreground">
+                                                Start building your CRM by creating your first company.
+                                            </p>
+
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.push('/crm/companies/new')
+                                            }
+                                            className="rounded-lg bg-primary px-5 py-2 font-medium text-primary-foreground"
+                                        >
+                                            + New Company
+                                        </button>
+
+                                    </div>
+                                </td>
+                            </tr>
+                        )}
+
+                        {companies.map((company) => (
+
+                            <tr
+                                key={company.id}
+                                className="cursor-pointer border-t transition hover:bg-muted/20"
+                                onClick={() =>
+                                    router.push(`/crm/companies/${company.id}`)
+                                }
+                            >
+
+                                <td className="p-4">
+
+                                    <input
+                                        type="checkbox"
+                                        checked={selected.includes(company.id)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        onChange={() =>
+                                            toggleSelection(company.id)
+                                        }
+                                    />
+
+                                </td>
+
+                                {/* <td className="p-4 font-medium">
                                 <button
                                     type="button"
                                     onClick={(e) => {
@@ -241,67 +269,70 @@ export function CompaniesDataTable() {
                                     className="rounded border px-3 py-1 text-sm hover:bg-muted">
                                     View
                                 </button>
-                            </td>
+                            </td> */}
+                                <td className="p-4 font-medium">
+                                    {company.name}
+                                </td>
 
-                            <td className="p-4">
-                                {company.industry ?? '—'}
-                            </td>
+                                <td className="p-4">
+                                    {company.industry ?? '—'}
+                                </td>
 
-                            <td className="p-4">
-                                {company.website ?? '—'}
-                            </td>
+                                <td className="p-4">
+                                    {company.website ?? '—'}
+                                </td>
 
-                            <td className="p-4">
-                                {company.phone ?? '—'}
-                            </td>
+                                <td className="p-4">
+                                    {company.phone ?? '—'}
+                                </td>
 
-                            <td className="p-4">
+                                <td className="p-4">
 
-                                <span
-                                    className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClasses[company.status]}`}
-                                >
-                                    {company.status}
-                                </span>
-
-                            </td>
-                            <td className="p-4">
-                                <div className="flex gap-2">
-
-                                    <button
-                                        type="button"
-                                        onClick={() =>
-                                            router.push(
-                                                `/crm/companies/${company.id}`
-                                            )
-                                        }
-                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                    <span
+                                        className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClasses[company.status]}`}
                                     >
-                                        View
-                                    </button>
+                                        {company.status}
+                                    </span>
 
-                                    <button
-                                        type="button"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            router.push(`/crm/companies/${company.id}/edit`);
-                                        }}
-                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
-                                    >
-                                        Edit
-                                    </button>
+                                </td>
+                                <td className="p-4">
+                                    <div className="flex gap-2">
 
-                                </div>
-                            </td>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                router.push(
+                                                    `/crm/companies/${company.id}`
+                                                )
+                                            }
+                                            className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                        >
+                                            View
+                                        </button>
 
-                        </tr>
+                                        <button
+                                            type="button"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                router.push(`/crm/companies/${company.id}/edit`);
+                                            }}
+                                            className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                        >
+                                            Edit
+                                        </button>
 
-                    ))}
+                                    </div>
+                                </td>
 
-                </tbody>
+                            </tr>
 
-            </table>
+                        ))}
 
-        </div>
+                    </tbody>
+
+                </table>
+
+            </div>
 
         </section >
     );
