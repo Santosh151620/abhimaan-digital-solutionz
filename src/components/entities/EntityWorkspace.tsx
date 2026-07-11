@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 import type { Activity } from "@/types/activity";
 import type { Attachment } from "@/types/attachments";
 import type { Note } from "@/types/notes";
@@ -16,6 +18,9 @@ export interface EntityWorkspaceProps {
   entityType?: string;
   entityId?: string;
 
+  overview?: ReactNode;
+  timeline?: ReactNode;
+
   activities?: Activity[];
   notes?: Note[];
   tasks?: Task[];
@@ -26,6 +31,8 @@ export interface EntityWorkspaceProps {
 export default function EntityWorkspace({
   entityType,
   entityId,
+  overview,
+  timeline,
   activities = [],
   notes = [],
   tasks = [],
@@ -34,11 +41,9 @@ export default function EntityWorkspace({
 }: EntityWorkspaceProps) {
   return (
     <div className="space-y-6">
-
       {(entityType || entityId) && (
         <div className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3">
           <div className="flex flex-wrap gap-6 text-sm">
-
             <div>
               <span className="text-slate-500">Entity Type</span>
 
@@ -48,16 +53,19 @@ export default function EntityWorkspace({
             </div>
 
             <div>
-              <span className="text-slate-500">Entity Id</span>
+              <span className="text-slate-500">Entity ID</span>
 
               <div className="break-all font-medium text-white">
                 {entityId ?? "-"}
               </div>
             </div>
-
           </div>
         </div>
       )}
+
+      {overview}
+
+      {timeline}
 
       <section className="space-y-3 rounded-xl border border-slate-800 bg-slate-950 p-5">
         <h2 className="text-lg font-semibold text-white">
@@ -98,7 +106,6 @@ export default function EntityWorkspace({
 
         <NotificationPanel notifications={notifications} />
       </section>
-
     </div>
   );
 }

@@ -1,50 +1,47 @@
-import Link from "next/link";
+"use client";
 
 interface EntityHeaderProps {
-    title: string;
-    subtitle?: string;
-    backHref?: string;
-    actions?: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  status?: React.ReactNode;
+  actions?: React.ReactNode;
 }
 
 export default function EntityHeader({
-    title,
-    subtitle,
-    backHref,
-    actions,
+  title,
+  subtitle,
+  status,
+  actions,
 }: EntityHeaderProps) {
-    return (
-        <div className="flex flex-col gap-4 border-b pb-6 lg:flex-row lg:items-center lg:justify-between">
+  return (
+    <div className="flex flex-col gap-4 rounded-xl border border-slate-800 bg-slate-950 p-6 lg:flex-row lg:items-center lg:justify-between">
 
-            <div>
+      <div>
 
-                {backHref && (
-                    <Link
-                        href={backHref}
-                        className="mb-3 inline-block text-sm text-muted-foreground hover:text-primary"
-                    >
-                        ← Back
-                    </Link>
-                )}
+        <div className="flex items-center gap-3">
 
-                <h1 className="text-3xl font-bold">
-                    {title}
-                </h1>
+          <h1 className="text-2xl font-bold text-white">
+            {title}
+          </h1>
 
-                {subtitle && (
-                    <p className="mt-2 text-muted-foreground">
-                        {subtitle}
-                    </p>
-                )}
-
-            </div>
-
-            {actions && (
-                <div className="flex flex-wrap gap-2">
-                    {actions}
-                </div>
-            )}
+          {status}
 
         </div>
-    );
+
+        {subtitle && (
+          <p className="mt-2 text-sm text-slate-400">
+            {subtitle}
+          </p>
+        )}
+
+      </div>
+
+      {actions && (
+        <div className="flex flex-wrap gap-2">
+          {actions}
+        </div>
+      )}
+
+    </div>
+  );
 }

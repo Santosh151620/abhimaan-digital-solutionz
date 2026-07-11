@@ -22,6 +22,7 @@ export default defineConfig([
     "out/**",
     "build/**",
     "scripts/**",
+    "SprintExports/**",
     "next-env.d.ts",
   ]),
 ]);
