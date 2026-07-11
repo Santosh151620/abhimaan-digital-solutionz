@@ -16,31 +16,31 @@ const STATUS_OPTIONS: Array<{
   value: "all" | LeadStatus;
   label: string;
 }> = [
-  {
-    value: "all",
-    label: "All",
-  },
-  {
-    value: "new",
-    label: "New",
-  },
-  {
-    value: "contacted",
-    label: "Contacted",
-  },
-  {
-    value: "qualified",
-    label: "Qualified",
-  },
-  {
-    value: "lost",
-    label: "Lost",
-  },
-  {
-    value: "converted",
-    label: "Converted",
-  },
-];
+    {
+      value: "all",
+      label: "All",
+    },
+    {
+      value: "new",
+      label: "New",
+    },
+    {
+      value: "contacted",
+      label: "Contacted",
+    },
+    {
+      value: "qualified",
+      label: "Qualified",
+    },
+    {
+      value: "lost",
+      label: "Lost",
+    },
+    {
+      value: "converted",
+      label: "Converted",
+    },
+  ];
 
 function getStatusClasses(status: LeadStatus): string {
   switch (status) {
@@ -222,7 +222,7 @@ function LeadTable({
                   colSpan={7}
                   className="px-6 py-16 text-center text-slate-400"
                 >
-                  Loading leads...
+                  Loading Lead Pipeline...
                 </td>
               </tr>
             )}
@@ -233,7 +233,9 @@ function LeadTable({
                   colSpan={7}
                   className="px-6 py-16 text-center text-slate-400"
                 >
-                  No leads found.
+                  No leads match the selected filters.
+
+                  Try changing your search or create a new lead.
                 </td>
               </tr>
             )}
@@ -242,7 +244,8 @@ function LeadTable({
               paginatedLeads.map((lead) => (
                 <tr
                   key={lead.entityId}
-                  className="border-b border-white/5 transition hover:bg-white/5"
+                  onClick={() => onOpenLead(lead)}
+                  className="cursor-pointer border-b border-white/5 transition hover:bg-white/5"
                 >
                   <td className="px-5 py-4 align-top">
 
@@ -302,22 +305,22 @@ function LeadTable({
                         Open
                       </button>
 
-                      {(
+                      {lead.status === "converted" ? (
+                        <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/20 px-3 py-2 text-sm font-medium text-emerald-300">
+                          Client
+                        </span>
+                      ) : (
                         <button
                           type="button"
-                          onClick={() => onConvertLead(lead)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onConvertLead(lead);
+                          }}
                           className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white transition hover:bg-emerald-700"
                         >
                           Convert
                         </button>
                       )}
-
-                      {lead.status !== "converted" && (
-                        <span className="rounded-lg bg-emerald-500/20 px-3 py-2 text-sm font-medium text-emerald-300 border border-emerald-500/30">
-                          Client
-                        </span>
-                      )}
-
                     </div>
 
                   </td>

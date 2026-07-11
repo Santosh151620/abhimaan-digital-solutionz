@@ -130,12 +130,12 @@ export class CompaniesRepository {
     }
 
     async delete(
-        id: string,
+        _id: string,
         deletedBy = 'system'
     ): Promise<boolean> {
 
         const company = companies.find(
-            item => item.id === id
+            item => item.id === _id
         );
 
         if (!company) {
@@ -153,11 +153,11 @@ export class CompaniesRepository {
     }
 
     async restore(
-        id: string
+        _id: string
     ): Promise<boolean> {
 
         const company = companies.find(
-            item => item.id === id
+            item => item.id === _id
         );
 
         if (!company) {

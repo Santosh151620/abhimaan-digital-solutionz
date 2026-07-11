@@ -4,7 +4,7 @@
         return [];
     }
 
-    async findById(id: string) {
+    async findById(_id: string) {
         return null;
     }
 
@@ -12,11 +12,11 @@
         return data;
     }
 
-    async update(id: string, data: unknown) {
+    async update(_id: string, data: unknown) {
         return data;
     }
 
-    async delete(id: string) {
+    async delete(_id: string) {
         return true;
     }
 

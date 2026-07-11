@@ -24,7 +24,8 @@ export default async function DashboardPage() {
                 </h1>
 
                 <p className="text-muted-foreground">
-                    Welcome back. Here's your business overview.
+                    Welcome back. Here&apos;s your business overview.
+                    
                 </p>
 
             </section>
