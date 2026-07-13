@@ -3,26 +3,34 @@ import { createClient } from "@/lib/supabase/server";
 import { LeadsService } from "@/modules/leads/services/LeadsService";
 import { withTenantRequest } from "@/lib/tenant/withTenantRequest";
 
+type RouteParams = {
+  id: string;
+};
+
 export async function GET(
   req: NextRequest,
-  context: {
-    params: Promise<{ entityId: string }>;
+  {
+    params,
+  }: {
+    params: Promise<RouteParams>;
   }
 ) {
   return withTenantRequest(req, async () => {
     const supabase = await createClient();
     const service = new LeadsService(supabase);
 
-    const { entityId } = await context.params;
+    const { id } = await params;
 
-    return Response.json(await service.getLead(entityId));
+    return Response.json(await service.getLead(id));
   });
 }
 
 export async function PUT(
   req: NextRequest,
-  context: {
-    params: Promise<{ entityId: string }>;
+  {
+    params,
+  }: {
+    params: Promise<RouteParams>;
   }
 ) {
   return withTenantRequest(req, async () => {
@@ -30,27 +38,29 @@ export async function PUT(
     const service = new LeadsService(supabase);
 
     const body = await req.json();
-    const { entityId } = await context.params;
+    const { id } = await params;
 
     return Response.json(
-      await service.updateLead(entityId, body)
+      await service.updateLead(id, body)
     );
   });
 }
 
 export async function DELETE(
   req: NextRequest,
-  context: {
-    params: Promise<{ entityId: string }>;
+  {
+    params,
+  }: {
+    params: Promise<RouteParams>;
   }
 ) {
   return withTenantRequest(req, async () => {
     const supabase = await createClient();
     const service = new LeadsService(supabase);
 
-    const { entityId } = await context.params;
+    const { id } = await params;
 
-    await service.deleteLead(entityId);
+    await service.deleteLead(id);
 
     return Response.json({ success: true });
   });
