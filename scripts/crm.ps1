@@ -2,16 +2,23 @@
 param(
 
     [Parameter(Mandatory = $true, Position = 0)]
-    [ValidateSet(
-        "create",
-        "regenerate",
-        "delete",
-        "list",
-        "verify",
-        "doctor",
-        "clean",
-        "sync"
-    )]
+   [ValidateSet(
+    "create",
+    "regenerate",
+    "delete",
+    "list",
+    "verify",
+    "doctor",
+    "clean",
+    "sync",
+
+    "build",
+    "cleanup",
+    "audit",
+    "dbpush",
+    "migration",
+    "reports"
+)]
     [string]$Command,
 
     [Parameter(Position = 1)]
@@ -95,7 +102,40 @@ switch ($Command) {
         Invoke-Sync
         break
     }
+"build" {
+    & (Join-Path $scriptRoot "build.ps1")
+    break
+}
 
+"cleanup" {
+    & (Join-Path $scriptRoot "refactor.ps1")
+    break
+}
+
+"audit" {
+    & (Join-Path $scriptRoot "verify.ps1")
+    break
+}
+
+"dbpush" {
+    & (Join-Path $scriptRoot "db.ps1") push
+    break
+}
+
+"migration" {
+
+    if ([string]::IsNullOrWhiteSpace($Module)) {
+        Stop-Factory "Migration name is required."
+    }
+
+    & (Join-Path $scriptRoot "db.ps1") migration $Module
+    break
+}
+
+"reports" {
+    & (Join-Path $scriptRoot "modules\reports.ps1")
+    break
+}
 }
 
 Write-Host ""
