@@ -1,4 +1,5 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import { BaseRepository } from "@/lib/db/base-repository";
 import type { Task } from "@/types/tasks";
 
