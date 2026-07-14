@@ -11,30 +11,24 @@ import type {
 export interface CreateLeadInput {
   full_name: string;
   email: string;
-
   phone?: string | null;
   company?: string | null;
   service_interest?: string | null;
   message?: string | null;
   source?: string | null;
-
   status?: LeadStatus;
-
   client_id?: string | null;
 }
 
 export interface UpdateLeadInput {
   full_name?: string;
   email?: string;
-
   phone?: string | null;
   company?: string | null;
   service_interest?: string | null;
   message?: string | null;
   source?: string | null;
-
   status?: LeadStatus;
-
   client_id?: string | null;
 }
 
@@ -72,15 +66,23 @@ export class LeadsRepository extends BaseRepository<Lead> {
     });
   }
 
-  async updateLead(id: string, input: UpdateLeadInput): Promise<Lead> {
+  async updateLead(
+    id: string,
+    input: UpdateLeadInput
+  ): Promise<Lead> {
     return this.update(id, input);
   }
 
-  async updateStatus(id: string, status: LeadStatus): Promise<Lead> {
+  async updateStatus(
+    id: string,
+    status: LeadStatus
+  ): Promise<Lead> {
     return this.update(id, { status });
   }
 
-  async listTimeline(leadId: string): Promise<LeadTimeline[]> {
+  async listTimeline(
+    leadId: string
+  ): Promise<LeadTimeline[]> {
     const { data, error } = await this.supabase
       .from("lead_activity_timeline")
       .select("*")
@@ -111,6 +113,6 @@ export class LeadsRepository extends BaseRepository<Lead> {
   }
 
   async deleteLead(id: string): Promise<void> {
-    return this.delete(id);
+    await this.delete(id);
   }
 }
