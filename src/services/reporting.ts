@@ -5,7 +5,19 @@ import type {
   ProjectReport,
   RevenueReport,
   TaskReport,
+  TeamPerformanceReport,
 } from "@/types/reporting";
+
+export async function getTeamPerformanceReport(): Promise<TeamPerformanceReport> {
+  return {
+    members: [],
+    averageProductivity: 0,
+    workloadDistribution: 0,
+    totalAssignedTasks: 0,
+    completedTasks: 0,
+    leadConversionRate: 0,
+  };
+}
 
 export async function getLeadReport(): Promise<LeadReport> {
   return {
@@ -53,6 +65,7 @@ export async function getExecutiveReport(): Promise<ExecutiveReport> {
     revenue: await getRevenueReport(),
     projects: await getProjectReport(),
     tasks: await getTaskReport(),
+    team: await getTeamPerformanceReport(),
   };
 }
 
