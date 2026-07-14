@@ -14,6 +14,7 @@ param(
 
     "build",
     "cleanup",
+    "cleanup-delete",
     "audit",
     "dbpush",
     "migration",
@@ -27,7 +28,7 @@ param(
 )
 
 $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-
+$global:ProjectRoot = Split-Path $scriptRoot -Parent
 . (Join-Path $scriptRoot "common.ps1")
 . (Join-Path $scriptRoot "lib\filesystem.ps1")
 . (Join-Path $scriptRoot "lib\templates.ps1")
@@ -36,6 +37,7 @@ $scriptRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 . (Join-Path $scriptRoot "lib\registry.ps1")
 . (Join-Path $scriptRoot "lib\verify.ps1")
 . (Join-Path $scriptRoot "lib\generator.ps1")
+. (Join-Path $scriptRoot "lib\cleanup.ps1")
 
 switch ($Command) {
 
@@ -108,7 +110,14 @@ switch ($Command) {
 }
 
 "cleanup" {
-    & (Join-Path $scriptRoot "refactor.ps1")
+
+    Invoke-ProjectCleanup
+    break
+}
+
+"cleanup-delete" {
+
+    Invoke-ProjectCleanup -Delete
     break
 }
 
