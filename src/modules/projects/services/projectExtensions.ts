@@ -185,3 +185,8 @@ export function calculateProjectKPIs(projects: Project[]) {
     completionRate: total ? Math.round((completed / total) * 100) : 0,
   };
 }
+
+
+
+
+

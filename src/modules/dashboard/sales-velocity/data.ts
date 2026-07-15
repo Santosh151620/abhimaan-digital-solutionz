@@ -4,3 +4,8 @@ export const salesVelocity=[
  {label:"Velocity Score",value:"91"},
  {label:"Opportunity Growth",value:"+19%"}
 ];
+
+
+
+
+

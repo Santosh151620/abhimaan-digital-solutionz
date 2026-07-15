@@ -4,3 +4,8 @@ export const boardSummary=[
  {title:"Growth",value:"+24% YoY"},
  {title:"Strategic Risk",value:"Low"}
 ];
+
+
+
+
+

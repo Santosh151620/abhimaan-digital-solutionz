@@ -37,3 +37,8 @@ export default function FeaturedPosts({
     </section>
   );
 }
+
+
+
+
+

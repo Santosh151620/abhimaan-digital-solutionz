@@ -4,3 +4,8 @@ export const goals = [
   { name:"Conversion Rate", target:"25%", progress:76 },
   { name:"Customer Retention", target:"95%", progress:91 }
 ];
+
+
+
+
+

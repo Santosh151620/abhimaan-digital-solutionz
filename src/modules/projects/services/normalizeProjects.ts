@@ -25,3 +25,8 @@ export function normalizeProjects(projects: Project[]): Project[] {
 
   }));
 }
+
+
+
+
+

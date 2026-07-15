@@ -4,3 +4,7 @@ export const marketIntelligence=[
  {title:"Market Share",value:"8.4%"},
  {title:"Demand Trend",value:"Increasing"}
 ]
+
+
+
+

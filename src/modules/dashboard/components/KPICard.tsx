@@ -1,4 +1,4 @@
-﻿import { ReactNode } from "react";
+import { ReactNode } from "react";
 
 interface KPICardProps {
   title: string;
@@ -95,7 +95,7 @@ export default function KPICard({
                   : "text-rose-400"
               }`}
             >
-              {trend.positive ? "▲" : "▼"} {trend.value}
+              {trend.positive ? "?" : "?"} {trend.value}
             </span>
           ) : (
             <span />
@@ -107,4 +107,9 @@ export default function KPICard({
     </div>
   );
 }
+
+
+
+
+
 

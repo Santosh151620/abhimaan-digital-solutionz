@@ -96,3 +96,8 @@ export interface ProjectUpdateInput {
   notes?: string | null;
   progress_percentage?: number;
 }
+
+
+
+
+

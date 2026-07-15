@@ -20,3 +20,7 @@ export async function moveOpportunity(
 export async function pipelineSummary() {
     return PipelineServiceInstance.summary();
 }
+
+
+
+

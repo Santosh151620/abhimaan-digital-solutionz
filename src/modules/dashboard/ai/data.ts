@@ -12,3 +12,8 @@ export const aiInsights = [
     value:"Forecast indicates +18% this month"
   }
 ];
+
+
+
+
+

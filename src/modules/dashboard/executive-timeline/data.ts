@@ -4,3 +4,8 @@ export const executiveTimeline=[
  {time:"12:00",event:"Revenue forecast updated"},
  {time:"15:45",event:"AI generated strategic recommendation"}
 ];
+
+
+
+
+

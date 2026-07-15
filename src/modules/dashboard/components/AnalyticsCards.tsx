@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 
 type AnalyticsData = {
   overview: {
@@ -100,7 +100,7 @@ export default function AnalyticsCards({
     {
       title: "Conversion Rate",
       value: `${data.overview.conversionRate}%`,
-      subtitle: "Lead → Client",
+      subtitle: "Lead ? Client",
       color: "text-cyan-400",
     },
     {
@@ -118,19 +118,19 @@ export default function AnalyticsCards({
   const revenueCards: CardProps[] = [
     {
       title: "Revenue Collected",
-      value: `₹${data.revenue.projectedRevenue.toLocaleString()}`,
+      value: `?${data.revenue.projectedRevenue.toLocaleString()}`,
       subtitle: "Total collections",
       color: "text-emerald-400",
     },
     {
       title: "Outstanding",
-      value: `₹${data.revenue.outstandingRevenue.toLocaleString()}`,
+      value: `?${data.revenue.outstandingRevenue.toLocaleString()}`,
       subtitle: "Pending collection",
       color: "text-amber-400",
     },
     {
       title: "Forecast",
-      value: `₹${data.revenue.totalRevenue.toLocaleString()}`,
+      value: `?${data.revenue.totalRevenue.toLocaleString()}`,
       subtitle: "Projected revenue",
       color: "text-violet-400",
     },
@@ -230,4 +230,9 @@ export default function AnalyticsCards({
     </div>
   );
 }
+
+
+
+
+
 

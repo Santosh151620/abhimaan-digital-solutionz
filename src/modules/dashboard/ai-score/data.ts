@@ -8,3 +8,8 @@ export const aiScore = {
     "Operational efficiency"
   ]
 };
+
+
+
+
+

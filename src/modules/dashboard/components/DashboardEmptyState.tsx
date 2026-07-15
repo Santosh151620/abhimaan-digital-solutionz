@@ -1,4 +1,4 @@
-﻿type DashboardEmptyStateProps = {
+type DashboardEmptyStateProps = {
   title?: string;
   description?: string;
   action?: string;
@@ -13,7 +13,7 @@ export default function DashboardEmptyState({
     <section className="rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-slate-800 bg-slate-900 p-8 text-center">
 
       <div className="mb-4 text-5xl">
-        📊
+        ??
       </div>
 
       <h2 className="text-xl font-semibold text-white">
@@ -33,4 +33,9 @@ export default function DashboardEmptyState({
     </section>
   );
 }
+
+
+
+
+
 

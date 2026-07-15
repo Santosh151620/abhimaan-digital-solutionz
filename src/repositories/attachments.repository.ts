@@ -23,3 +23,7 @@ export class AttachmentsRepository extends BaseRepository<Attachment> {
     return (data ?? []) as Attachment[];
   }
 }
+
+
+
+

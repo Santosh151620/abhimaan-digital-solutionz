@@ -25,3 +25,8 @@ export function adminLeadTemplate(
     <p>${data.message}</p>
   `;
 }
+
+
+
+
+

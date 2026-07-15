@@ -17,3 +17,8 @@ export function validateLeadEntity(entity: LeadEntity): string[] {
 
   return errors;
 }
+
+
+
+
+

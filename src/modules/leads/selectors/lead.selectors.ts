@@ -27,3 +27,8 @@ export function selectLeadScoreAverage(leads: LeadEntity[]): number {
   const sum = leads.reduce((acc, l) => acc + (l.score ?? 0), 0);
   return sum / leads.length;
 }
+
+
+
+
+

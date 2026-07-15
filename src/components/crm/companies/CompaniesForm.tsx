@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState } from 'react';
 import type { Company } from '@/types/crm/Companies';
@@ -224,3 +224,7 @@ export function CompaniesForm({
         </form>
     );
 }
+
+
+
+

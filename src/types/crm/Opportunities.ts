@@ -30,3 +30,7 @@ export interface Opportunity {
     createdAt: string;
     updatedAt: string;
 }
+
+
+
+

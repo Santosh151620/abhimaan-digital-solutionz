@@ -1,4 +1,4 @@
-﻿import { CompaniesRepositoryInstance } from '@/repositories/crm/CompaniesRepository';
+import { CompaniesRepositoryInstance } from '@/repositories/crm/CompaniesRepository';
 import type { CompanyDetails } from '@/types/crm/Companies';
 
 export class CompaniesService {
@@ -40,3 +40,7 @@ export class CompaniesService {
 
 export const CompaniesServiceInstance =
     new CompaniesService();
+
+
+
+

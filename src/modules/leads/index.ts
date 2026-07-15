@@ -19,3 +19,8 @@ export * from './integrations/lead.sync.adapter';
 export * from './integrations/lead.search.adapter';
 export * from './integrations/lead.validation.adapter';
 export * from './integrations/lead.permissions.adapter';
+
+
+
+
+

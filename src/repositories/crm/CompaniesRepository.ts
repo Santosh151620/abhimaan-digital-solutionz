@@ -1,4 +1,4 @@
-﻿import type {
+import type {
     Company,
     CompanyDetails,
 } from '@/types/crm/Companies';
@@ -183,3 +183,7 @@ export class CompaniesRepository {
 
 export const CompaniesRepositoryInstance =
     new CompaniesRepository();
+
+
+
+

@@ -64,3 +64,7 @@ export interface DashboardReport {
   executive: ExecutiveReport;
   generatedAt: Date;
 }
+
+
+
+

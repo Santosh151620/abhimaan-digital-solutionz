@@ -26,3 +26,7 @@ export class NotesRepository extends BaseRepository<Note> {
     return (data ?? []) as Note[];
   }
 }
+
+
+
+

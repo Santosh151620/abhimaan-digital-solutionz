@@ -5,3 +5,8 @@ export const salesFunnel = [
   { stage:"Negotiation", count:18 },
   { stage:"Closed", count:12 }
 ];
+
+
+
+
+

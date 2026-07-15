@@ -21,3 +21,8 @@ export function mapLeadToSearchDocument(lead: LeadEntity) {
     updatedAt: lead.updatedAt,
   };
 }
+
+
+
+
+

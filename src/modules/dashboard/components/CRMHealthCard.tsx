@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 export default function CRMHealthCard() {
   return (
@@ -8,11 +8,16 @@ export default function CRMHealthCard() {
       </h2>
 
       <div className="mt-4 space-y-3 text-sm text-slate-300">
-        <p>✅ Lead pipeline active</p>
-        <p>✅ Customer data connected</p>
-        <p>✅ Workflow engine available</p>
+        <p>? Lead pipeline active</p>
+        <p>? Customer data connected</p>
+        <p>? Workflow engine available</p>
       </div>
     </div>
   );
 }
+
+
+
+
+
 

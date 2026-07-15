@@ -116,3 +116,7 @@ export class LeadsRepository extends BaseRepository<Lead> {
     await this.delete(id);
   }
 }
+
+
+
+

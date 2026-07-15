@@ -1,4 +1,4 @@
-﻿type Insight = {
+type Insight = {
   title: string;
   description: string;
   priority: "High" | "Medium" | "Low";
@@ -59,4 +59,9 @@ export default function SmartInsightsPanel() {
     </section>
   );
 }
+
+
+
+
+
 

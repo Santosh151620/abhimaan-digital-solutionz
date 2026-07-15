@@ -19,3 +19,7 @@ export interface PipelineColumn {
     opportunities: PipelineOpportunity[];
     totalValue: number;
 }
+
+
+
+

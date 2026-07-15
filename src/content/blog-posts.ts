@@ -66,3 +66,8 @@ export const getLocalizedBlogPosts = (locale: string) => {
   return posts[locale] || posts["en"];
 };
 
+
+
+
+
+

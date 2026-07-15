@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useQuery } from '@tanstack/react-query';
 import type { Company } from '@/types/crm/Companies';
@@ -19,3 +19,7 @@ export function useCompanies() {
         queryFn: fetchCompanies,
     });
 }
+
+
+
+

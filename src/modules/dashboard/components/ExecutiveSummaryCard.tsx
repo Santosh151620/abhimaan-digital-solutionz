@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 export default function ExecutiveSummaryCard() {
   return (
@@ -25,4 +25,9 @@ function Metric({label,value}:{label:string;value:string}) {
     </div>
   );
 }
+
+
+
+
+
 

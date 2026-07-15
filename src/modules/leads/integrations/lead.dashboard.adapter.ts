@@ -25,3 +25,8 @@ export function aggregateLeadMetrics(leads: LeadEntity[]) {
     converted: leads.filter((l) => l.status === 'converted').length,
   };
 }
+
+
+
+
+

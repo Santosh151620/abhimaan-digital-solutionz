@@ -48,3 +48,8 @@ export function toLeadDTO(entity: LeadEntity): LeadDTO {
     updatedAt: entity.updatedAt,
   };
 }
+
+
+
+
+

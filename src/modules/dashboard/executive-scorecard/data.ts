@@ -4,3 +4,8 @@ export const executiveScorecard=[
  {title:"Customer Success",score:"96"},
  {title:"Operations",score:"94"}
 ];
+
+
+
+
+

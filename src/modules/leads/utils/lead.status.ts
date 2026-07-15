@@ -19,3 +19,7 @@ export function isLeadActive(status: LeadStatus): boolean {
 export function isLeadClosed(status: LeadStatus): boolean {
   return status === 'lost' || status === 'converted';
 }
+
+
+
+

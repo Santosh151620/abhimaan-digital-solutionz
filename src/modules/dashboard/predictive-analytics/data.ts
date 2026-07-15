@@ -4,3 +4,8 @@ export const predictiveAnalytics=[
  {metric:"Growth Probability",value:"89%"},
  {metric:"Expansion Potential",value:"High"}
 ];
+
+
+
+
+

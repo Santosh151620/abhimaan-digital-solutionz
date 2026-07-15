@@ -34,3 +34,8 @@ export function fromEntityRef(ref: LeadEntityRef): LeadEntity {
     updatedAt: new Date().toISOString(),
   };
 }
+
+
+
+
+

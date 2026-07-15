@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 import type { CompanyDetails } from '@/types/crm/Companies';
@@ -31,3 +31,7 @@ export async function deleteCompanies(id: string) {
 export async function restoreCompanies(id: string) {
     return CompaniesServiceInstance.restore(id);
 }
+
+
+
+

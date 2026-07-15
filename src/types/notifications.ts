@@ -20,3 +20,8 @@ export interface Notification extends EntityReference {
   createdAt: string;
   readAt?: string | null;
 }
+
+
+
+
+

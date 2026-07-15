@@ -23,3 +23,7 @@ export class NotificationsRepository extends BaseRepository<Notification> {
     return (data ?? []) as Notification[];
   }
 }
+
+
+
+

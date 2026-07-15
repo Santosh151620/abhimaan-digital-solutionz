@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -242,8 +242,8 @@ export function CompaniesDataTable() {
 
                                             {sortBy === column.key &&
                                                 (sortDirection === 'asc'
-                                                    ? '▲'
-                                                    : '▼')}
+                                                    ? '?'
+                                                    : '?')}
                                         </button>
                                     ) : (
                                         column.label
@@ -264,7 +264,7 @@ export function CompaniesDataTable() {
                                 ><div className="flex flex-col items-center gap-4 py-10">
 
                                         <div className="text-6xl">
-                                            🏢
+                                            ??
                                         </div>
 
                                         <div className="text-lg font-semibold">
@@ -328,15 +328,15 @@ export function CompaniesDataTable() {
                                 </td>
 
                                 <td className="p-4">
-                                    {company.industry ?? '—'}
+                                    {company.industry ?? '�'}
                                 </td>
 
                                 <td className="p-4">
-                                    {company.website ?? '—'}
+                                    {company.website ?? '�'}
                                 </td>
 
                                 <td className="p-4">
-                                    {company.phone ?? '—'}
+                                    {company.phone ?? '�'}
                                 </td>
 
                                 <td className="p-4">

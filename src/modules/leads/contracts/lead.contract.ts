@@ -18,3 +18,8 @@ export interface LeadServiceContract {
   getLead(entityId: string): Promise<LeadEntity | null>;
   listLeads(): Promise<LeadEntity[]>;
 }
+
+
+
+
+

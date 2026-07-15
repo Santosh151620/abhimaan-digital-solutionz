@@ -26,3 +26,7 @@ export class ActivityRepository extends BaseRepository<Activity> {
     return (data ?? []) as Activity[];
   }
 }
+
+
+
+

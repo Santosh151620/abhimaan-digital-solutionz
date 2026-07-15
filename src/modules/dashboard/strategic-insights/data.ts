@@ -4,3 +4,8 @@ export const strategicInsights=[
  {title:"AI Recommendation",detail:"Prioritize high-value renewals this week."},
  {title:"Executive Focus",detail:"Expand partner-led opportunities in Q3."}
 ];
+
+
+
+
+

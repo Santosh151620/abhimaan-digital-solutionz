@@ -9,3 +9,8 @@ export const ENTITY_MODULES = [
 export type EntityModule = (typeof ENTITY_MODULES)[number];
 
 export const DEFAULT_PAGE_SIZE = 20;
+
+
+
+
+

@@ -99,3 +99,7 @@ export interface ActivityFilter {
 export interface ActivityAdapter<TSource> {
   toActivity(source: TSource): ActivityItem;
 }
+
+
+
+

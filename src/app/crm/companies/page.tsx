@@ -1,4 +1,4 @@
-﻿import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
+import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 import {
 CompaniesDataTable,
     CompaniesSummaryCards,
@@ -86,3 +86,7 @@ export default async function CompaniesPage() {
         </main>
     );
 }
+
+
+
+

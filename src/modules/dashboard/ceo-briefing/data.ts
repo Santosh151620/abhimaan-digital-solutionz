@@ -4,3 +4,8 @@ export const ceoBriefing=[
  {title:"Risk",summary:"No critical operational risks detected."},
  {title:"AI Focus",summary:"Prioritize top renewal accounts this week."}
 ];
+
+
+
+
+

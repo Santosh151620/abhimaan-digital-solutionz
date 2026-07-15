@@ -25,3 +25,8 @@ export default function RequirePermission({
 
   return allowed ? <>{children}</> : <>{fallback}</>;
 }
+
+
+
+
+

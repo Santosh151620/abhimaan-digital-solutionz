@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 export default function PipelineIntelligenceCard() {
   return (
@@ -13,4 +13,9 @@ export default function PipelineIntelligenceCard() {
     </div>
   );
 }
+
+
+
+
+
 

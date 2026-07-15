@@ -34,3 +34,8 @@ export function createLeadFromPartial(
     updatedAt: partial.updatedAt ?? new Date().toISOString(),
   };
 }
+
+
+
+
+

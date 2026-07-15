@@ -21,3 +21,8 @@ export interface Attachment extends EntityReference {
   uploadedAt: string;
   uploadedBy?: string | null;
 }
+
+
+
+
+

@@ -1,4 +1,4 @@
-﻿export type CompanyStatus =
+export type CompanyStatus =
     | 'ACTIVE'
     | 'INACTIVE'
     | 'PROSPECT'
@@ -70,3 +70,7 @@ export interface CompanyDetails extends Company {
     opportunities: CompanyOpportunity[];
     activities: CompanyActivity[];
 }
+
+
+
+

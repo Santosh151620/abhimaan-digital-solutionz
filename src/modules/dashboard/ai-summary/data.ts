@@ -6,3 +6,8 @@ export const aiSummary = {
     "Revenue trend is moving toward target."
   ]
 };
+
+
+
+
+

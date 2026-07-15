@@ -4,3 +4,8 @@ export const goals=[
  {goal:"Lead Conversion",progress:69},
  {goal:"Customer Retention",progress:91}
 ];
+
+
+
+
+

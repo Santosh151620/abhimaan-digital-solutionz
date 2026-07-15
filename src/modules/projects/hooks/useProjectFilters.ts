@@ -70,3 +70,8 @@ export function useProjectFilters(projects: Project[]) {
     totalCount: filteredProjects.length,
   };
 }
+
+
+
+
+

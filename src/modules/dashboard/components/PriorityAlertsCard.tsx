@@ -1,4 +1,4 @@
-﻿const alerts = [
+const alerts = [
   "3 leads require follow-up",
   "Pipeline opportunities need review",
   "Customer information completeness can improve",
@@ -18,7 +18,7 @@ export default function PriorityAlertsCard() {
             key={alert}
             className="rounded-xl border border-slate-800 bg-slate-950 p-3 text-sm text-slate-300"
           >
-            ⚡ {alert}
+            ? {alert}
           </div>
         ))}
       </div>
@@ -26,4 +26,9 @@ export default function PriorityAlertsCard() {
     </section>
   );
 }
+
+
+
+
+
 

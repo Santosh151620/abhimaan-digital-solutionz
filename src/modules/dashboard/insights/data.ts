@@ -4,3 +4,8 @@ export const insights=[
  {title:"Win Rate",value:"31%"},
  {title:"Forecast Accuracy",value:"92%"}
 ];
+
+
+
+
+

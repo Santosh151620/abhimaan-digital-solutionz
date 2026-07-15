@@ -4,3 +4,8 @@ export const dealIntelligence=[
  {deal:"Manufacturing Suite",score:"91"},
  {deal:"Retail Expansion",score:"88"}
 ];
+
+
+
+
+

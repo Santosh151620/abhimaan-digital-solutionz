@@ -38,3 +38,7 @@ export class LeadActivityAdapter
     return source.map((item) => this.toActivity(item));
   }
 }
+
+
+
+

@@ -22,3 +22,8 @@ export function mapLeadToActivity(lead: LeadEntity) {
     createdAt: lead.updatedAt,
   };
 }
+
+
+
+
+

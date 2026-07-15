@@ -1,4 +1,4 @@
-﻿export default function ExecutiveDemoBanner() {
+export default function ExecutiveDemoBanner() {
   return (
     <section className="rounded-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-xl border border-teal-500/20 bg-gradient-to-r from-slate-900 to-slate-800 p-5 shadow-xl transition-all duration-300 hover:shadow-teal-500/10 sm:p-6">
 
@@ -23,4 +23,9 @@
     </section>
   );
 }
+
+
+
+
+
 

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import type { CompanyStatus } from '@/types/crm/Companies';
 
@@ -53,3 +53,7 @@ export function CompaniesFilters({
         </div>
     );
 }
+
+
+
+

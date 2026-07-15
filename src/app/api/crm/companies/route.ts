@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 
 export async function GET() {
@@ -39,3 +39,7 @@ export async function POST(request: Request) {
         );
     }
 }
+
+
+
+

@@ -21,3 +21,8 @@ export function toSyncPayload(lead: LeadEntity): LeadSyncPayload {
 export function fromSyncPayload(payload: LeadSyncPayload): LeadEntity {
   return payload.payload;
 }
+
+
+
+
+

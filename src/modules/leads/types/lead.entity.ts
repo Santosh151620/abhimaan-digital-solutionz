@@ -23,3 +23,8 @@ export interface LeadEntity {
   createdAt: string;
   updatedAt: string;
 }
+
+
+
+
+

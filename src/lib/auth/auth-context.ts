@@ -12,3 +12,8 @@ export const AuthContext = createContext<AuthContextType>({
 export function useAuth() {
   return useContext(AuthContext);
 }
+
+
+
+
+

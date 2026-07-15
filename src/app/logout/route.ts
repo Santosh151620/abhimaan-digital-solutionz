@@ -15,3 +15,8 @@ export async function GET(request: Request) {
   return NextResponse.redirect(new URL("/mr/login", origin));
   return NextResponse.redirect(new URL("/te/login", origin));
 }
+
+
+
+
+

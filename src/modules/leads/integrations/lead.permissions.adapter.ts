@@ -15,3 +15,8 @@ export function getLeadPermissions(_lead: LeadEntity, role: string): LeadPermiss
 export function canEditLead(_lead: LeadEntity, role: string): boolean {
   return role === 'admin' || role === 'manager';
 }
+
+
+
+
+

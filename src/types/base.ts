@@ -43,3 +43,7 @@ export interface PaginatedResult<T> {
   limit: number;
   hasMore: boolean;
 }
+
+
+
+

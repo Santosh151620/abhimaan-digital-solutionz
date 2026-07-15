@@ -4,3 +4,8 @@ export const customerSuccess=[
  {metric:"Renewals",value:"96%"},
  {metric:"Churn Risk",value:"Low"}
 ];
+
+
+
+
+
