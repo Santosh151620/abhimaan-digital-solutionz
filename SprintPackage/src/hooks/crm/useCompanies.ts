@@ -1,5 +1,0 @@
-﻿export function useCompanies() {
-
-    return {};
-
-}

@@ -17,11 +17,11 @@ export default function Header() {
   const btnT = useTranslations("Buttons");
 
   const languages = [
-    { code: "en", name: "English" },
-    { code: "hi", name: "à¤¹à¤¿à¤¨à¥à¤¦à¥€ (Hindi)" },
-    { code: "kn", name: "à²•à²¨à³à²¨à²¡ (Kannada)" },
-    { code: "te", name: "à°¤à±†à°²à±à°—à± (Telugu)" },
-    { code: "mr", name: "à¤®à¤°à¤¾à¤ à¥€ (Marathi)" }
+   { "code": "en", "name": "English" },
+  { "code": "hi", "name": "हिंदी (Hindi)" },
+  { "code": "kn", "name": "ಕನ್ನಡ (Kannada)" },
+  { "code": "te", "name": "తెలుగు (Telugu)" },
+  { "code": "mr", "name": "मराठी (Marathi)" }
   ];
 
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -38,7 +38,7 @@ export default function Header() {
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-slate-950/85 backdrop-blur-xl border-b border-slate-900/60 shadow-[0_6px_35px_rgba(0,0,0,0.6)] transition-all duration-200 ${isPending ? "opacity-70" : "opacity-100"}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 py-3 flex items-center justify-between">
 
         {/* 1. BRAND LOGO - Particle snow emitter enabled */}
         <Link href={`/${locale}`} className="group relative flex-shrink-0 pr-12 sm:pr-9">
@@ -74,7 +74,7 @@ export default function Header() {
         </nav>
 
         {/* 3. CONTROL ACTIONS - Resized elite button */}
-        <div className="hidden xl:flex items-center gap-4 flex-shrink-0">
+        <div className="hidden xl:flex items-center gap-6 flex-shrink-0">
           <select
             value={locale}
             onChange={handleLanguageChange}
