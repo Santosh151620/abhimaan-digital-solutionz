@@ -1,17 +1,15 @@
 export type OpportunityStage =
-    | "LEAD"
-    | "QUALIFIED"
-    | "PROPOSAL"
-    | "NEGOTIATION"
-    | "WON"
-    | "LOST";
+    | 'LEAD'
+    | 'QUALIFIED'
+    | 'PROPOSAL'
+    | 'NEGOTIATION'
+    | 'WON'
+    | 'LOST';
 
 export interface Opportunity {
-
     id: string;
 
-    companyId?: string;
-    contactId?: string;
+    companyId: string;
 
     title: string;
     description?: string;
@@ -31,13 +29,4 @@ export interface Opportunity {
 
     createdAt: string;
     updatedAt: string;
-
-}
-
-export interface OpportunityDetails
-    extends Opportunity {
-
-    companyName?: string;
-    contactName?: string;
-
 }

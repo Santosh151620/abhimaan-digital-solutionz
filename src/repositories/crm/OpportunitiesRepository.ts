@@ -1,155 +1,132 @@
-import type {
-    Opportunity,
-    OpportunityDetails,
-} from "@/types/crm/Opportunities";
+import type { Opportunity } from '@/types/crm/Opportunities';
 
-const opportunities: OpportunityDetails[] = [];
+const opportunities: Opportunity[] = [];
 
 export class OpportunitiesRepository {
 
-    async list() {
+    async list(): Promise<Opportunity[]> {
         return opportunities.filter(
-            x => !x.isDeleted
+            opportunity => !opportunity.isDeleted
         );
     }
 
-    async listArchived() {
+    async listArchived(): Promise<Opportunity[]> {
         return opportunities.filter(
-            x => x.isDeleted
+            opportunity => opportunity.isDeleted
         );
     }
 
-    async findById(id: string) {
+    async findById(
+        id: string
+    ): Promise<Opportunity | null> {
 
         return (
             opportunities.find(
-                x => x.id === id
+                opportunity => opportunity.id === id
             ) ?? null
         );
 
     }
 
     async create(
-        data: Partial<OpportunityDetails>,
-    ) {
+        data: Partial<Opportunity>
+    ): Promise<Opportunity> {
 
-        const item: OpportunityDetails = {
+        const opportunity: Opportunity = {
 
             id: Date.now().toString(),
 
-            title: data.title ?? "",
+            companyId: data.companyId ?? '',
 
-            description:
-                data.description,
+            title: data.title ?? '',
+            description: data.description,
 
-            companyId:
-                data.companyId,
+            value: data.value ?? 0,
+            probability: data.probability ?? 0,
 
-            contactId:
-                data.contactId,
+            stage: data.stage ?? 'LEAD',
 
-            companyName:
-                data.companyName,
-
-            contactName:
-                data.contactName,
-
-            value:
-                data.value ?? 0,
-
-            probability:
-                data.probability ?? 0,
-
-            stage:
-                data.stage ?? "LEAD",
-
-            expectedCloseDate:
-                data.expectedCloseDate,
-
-            owner:
-                data.owner,
+            expectedCloseDate: data.expectedCloseDate,
+            owner: data.owner,
 
             isDeleted: false,
-
             deletedAt: null,
-
             deletedBy: null,
 
-            createdAt:
-                new Date().toISOString(),
-
-            updatedAt:
-                new Date().toISOString(),
-
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         };
 
-        opportunities.push(item);
+        opportunities.push(opportunity);
 
-        return item;
+        return opportunity;
 
     }
 
     async update(
         id: string,
-        data: Partial<OpportunityDetails>,
-    ) {
+        data: Partial<Opportunity>
+    ): Promise<Opportunity | null> {
 
-        const item =
+        const opportunity =
             opportunities.find(
-                x => x.id === id
+                item => item.id === id
             );
 
-        if (!item) {
+        if (!opportunity) {
             return null;
         }
 
-        Object.assign(item, data);
+        Object.assign(opportunity, data);
 
-        item.updatedAt =
+        opportunity.updatedAt =
             new Date().toISOString();
 
-        return item;
+        return opportunity;
 
     }
 
-    async delete(id: string) {
+    async delete(
+        id: string,
+        deletedBy = 'system'
+    ): Promise<boolean> {
 
-        const item =
+        const opportunity =
             opportunities.find(
-                x => x.id === id
+                item => item.id === id
             );
 
-        if (!item) {
+        if (!opportunity) {
             return false;
         }
 
-        item.isDeleted = true;
-
-        item.deletedAt =
+        opportunity.isDeleted = true;
+        opportunity.deletedAt =
             new Date().toISOString();
+        opportunity.deletedBy = deletedBy;
 
         return true;
 
     }
 
-    async restore(id: string) {
+    async restore(
+        id: string
+    ): Promise<boolean> {
 
-        const item =
+        const opportunity =
             opportunities.find(
-                x => x.id === id
+                item => item.id === id
             );
 
-        if (!item) {
+        if (!opportunity) {
             return false;
         }
 
-        item.isDeleted = false;
+        opportunity.isDeleted = false;
+        opportunity.deletedAt = null;
+        opportunity.deletedBy = null;
 
-        item.deletedAt = null;
-
-        item.deletedBy = null;
-
-        item.updatedAt =
+        opportunity.updatedAt =
             new Date().toISOString();
 
         return true;
