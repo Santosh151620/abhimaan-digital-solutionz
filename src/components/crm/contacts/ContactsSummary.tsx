@@ -13,15 +13,15 @@ export default function ContactsSummary({
     const totalContacts = contacts.length;
 
     const activeContacts = contacts.filter(
-        (contact) => contact.status === 'Active'
+        (contact) => contact.status === 'ACTIVE'
     ).length;
 
     const inactiveContacts = contacts.filter(
-        (contact) => contact.status === 'Inactive'
+        (contact) => contact.status === 'INACTIVE'
     ).length;
 
     const primaryContacts = contacts.filter(
-        (contact) => contact.isPrimary === true
+        (contact) => Boolean(contact.companyId)
     ).length;
 
 

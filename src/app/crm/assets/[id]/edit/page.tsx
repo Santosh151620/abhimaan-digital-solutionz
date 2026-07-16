@@ -1,10 +1,11 @@
 import { notFound, redirect } from 'next/navigation';
-
+import type { Asset } from '@/types/crm/Assets';
 import AssetsForm from '@/components/crm/assets/AssetsForm';
 
 import {
     getAsset,
     updateAsset,
+    updateAssetStatus,
 } from '../../actions';
 
 interface Props {
@@ -46,7 +47,7 @@ export default async function EditAssetPage({
 
                 category: String(
                     formData.get('category') ?? ''
-                ),
+                ) as Asset['category'],
 
                 assignedTo: String(
                     formData.get('assignedTo') ?? ''
@@ -70,7 +71,7 @@ export default async function EditAssetPage({
 
                 status:
                     (formData.get('status') as import('@/types/crm/Assets').AssetStatus)
-                    ?? asset.status,
+                    ?? updateAssetStatus,
 
                 notes: String(
                     formData.get('notes') ?? ''

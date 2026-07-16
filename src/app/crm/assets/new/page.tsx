@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import type { Asset } from '@/types/crm/Assets';
 
 import AssetsForm from '@/components/crm/assets/AssetsForm';
 
@@ -26,7 +27,7 @@ export default function NewAssetPage() {
 
                 category: String(
                     formData.get('category') ?? ''
-                ),
+                ) as Asset['category'],
 
                 assignedTo: String(
                     formData.get('assignedTo') ?? ''

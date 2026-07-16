@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-
+import type { ContractStatus } from '@/types/crm/Contracts';
 import type { Contract } from '@/types/crm/Contracts';
 
 interface Props {
@@ -20,17 +20,32 @@ export default function ContractsTable({
         );
     }
 
-    const badgeClasses: Record<
-        Contract['status'],
-        string
-    > = {
-        Draft: 'bg-gray-100 text-gray-700',
-        Pending: 'bg-yellow-100 text-yellow-700',
-        Active: 'bg-green-100 text-green-700',
-        Expired: 'bg-red-100 text-red-700',
-        Terminated: 'bg-slate-200 text-slate-700',
-    };
+    const badgeClasses: Partial<
+    Record<ContractStatus, string>
+> = {
 
+    Draft:
+        'bg-gray-100 text-gray-700',
+
+    Pending:
+        'bg-yellow-100 text-yellow-700',
+
+    Active:
+        'bg-green-100 text-green-700',
+
+    Completed:
+        'bg-blue-100 text-blue-700',
+
+    Expired:
+        'bg-red-100 text-red-700',
+
+    Terminated:
+        'bg-red-100 text-red-700',
+
+    Cancelled:
+        'bg-gray-100 text-gray-700',
+
+};
     return (
 
         <div className="overflow-x-auto rounded-xl border bg-card">

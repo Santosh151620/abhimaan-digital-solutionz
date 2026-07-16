@@ -8,7 +8,13 @@ import type {
 
 interface Props {
     initialData?: Partial<Ticket>;
-    action: (formData: FormData) => void | Promise<void>;
+    action: (
+        formData: FormData
+    ) =>
+        void |
+        Promise<
+            unknown
+        >;
 }
 
 const statuses: TicketStatus[] = [
@@ -33,9 +39,14 @@ export default function TicketsForm({
     return (
 
         <form
-            action={action}
-            className="space-y-6 rounded-xl border bg-card p-6"
-        >
+    action={
+        action
+            ? async (formData) => {
+                  await action(formData);
+              }
+            : undefined
+    }
+>
 
             <div className="grid gap-6 md:grid-cols-2">
 
@@ -77,7 +88,7 @@ export default function TicketsForm({
 
                     <input
                         name="customerName"
-                        defaultValue={initialData?.customerName}
+                        defaultValue={initialData?.description}
                         required
                         className="w-full rounded-lg border px-3 py-2"
                     />

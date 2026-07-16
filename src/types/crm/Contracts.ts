@@ -1,7 +1,10 @@
 export type ContractStatus =
-    | 'Draft'
+       | 'Draft'
+    | 'Pending'
     | 'Active'
+    | 'Completed'
     | 'Expired'
+    | 'Terminated'
     | 'Cancelled';
 
 export interface Contract {

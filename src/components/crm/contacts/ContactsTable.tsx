@@ -69,7 +69,7 @@ export default function ContactsTable({
 
 
                             <td className="px-4 py-3">
-                                {contact.companyName ?? '-'}
+                                {contact.companyId ?? '-'}
                             </td>
 
 

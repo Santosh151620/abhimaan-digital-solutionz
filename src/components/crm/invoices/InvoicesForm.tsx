@@ -55,7 +55,7 @@ export default function InvoicesForm({
 
                     <input
                         name="title"
-                        defaultValue={initialData?.title}
+                        defaultValue={initialData?.customerName}
                         required
                         className="w-full rounded-lg border px-3 py-2"
                     />
@@ -131,7 +131,7 @@ export default function InvoicesForm({
                         type="number"
                         step="0.01"
                         name="amount"
-                        defaultValue={initialData?.amount}
+                        defaultValue={initialData?.balanceAmount}
                         className="w-full rounded-lg border px-3 py-2"
                     />
 

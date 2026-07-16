@@ -1,13 +1,16 @@
 'use client';
-
-import type {
-    Invoice,
-    InvoiceStatus,
-} from '@/types/crm/Invoices';
+import type { Invoice } from '@/types/crm/Invoices';
+import type {InvoiceStatus} from '@/types/crm/Invoices';
 
 interface Props {
+
+    invoices: Invoice[];
     initialData?: Partial<Invoice>;
-    action: (formData: FormData) => void | Promise<void>;
+
+   action?: (
+    formData: FormData
+) => void | Promise<void>;
+
 }
 
 const statuses: InvoiceStatus[] = [
@@ -26,10 +29,14 @@ export default function InvoicesForm({
     return (
 
         <form
-            action={action}
-            className="space-y-6 rounded-xl border bg-card p-6"
-        >
-
+    action={
+        action
+            ? async (formData) => {
+                  await action(formData);
+              }
+            : undefined
+    }
+>
             <div className="grid gap-6 md:grid-cols-2">
 
                 <div>

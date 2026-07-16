@@ -87,7 +87,7 @@ export default function TicketsTable({
 
 
                                 <td className="px-4 py-3">
-                                    {ticket.customerName}
+                                    {ticket.companyId}
                                 </td>
 
 

@@ -6,47 +6,6 @@ import type { Ticket } from '@/types/crm/Tickets';
 
 const tickets: Ticket[] = [];
 
-async function saveTicket(formData: FormData) {
-    'use server';
-
-    const ticketNumber = String(
-        formData.get('ticketNumber') ?? ''
-    );
-
-    const subject = String(
-        formData.get('subject') ?? ''
-    );
-
-    const customerName = String(
-        formData.get('customerName') ?? ''
-    );
-
-    const companyId = String(
-        formData.get('companyId') ?? ''
-    );
-
-    const status = String(
-        formData.get('status') ?? 'Open'
-    );
-
-    const priority = String(
-        formData.get('priority') ?? 'Medium'
-    );
-
-    const description = String(
-        formData.get('description') ?? ''
-    );
-
-    console.log({
-        ticketNumber,
-        subject,
-        customerName,
-        companyId,
-        status,
-        priority,
-        description,
-    });
-}
 
 export default async function TicketsPage() {
 

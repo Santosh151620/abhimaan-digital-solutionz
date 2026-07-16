@@ -63,12 +63,12 @@ class AssetsService {
 
             active: assets.filter(
                 asset =>
-                    asset.status === 'Active'
+                    asset.status ==='Allocated'
             ).length,
 
             inactive: assets.filter(
                 asset =>
-                    asset.status === 'Inactive'
+                    asset.status ==='Retired'
             ).length,
 
             maintenance: assets.filter(

@@ -25,7 +25,7 @@ export interface Asset {
 
     name: string;
 
-    category: AssetCategory;
+    category?: AssetCategory;
 
     serialNumber?: string;
 

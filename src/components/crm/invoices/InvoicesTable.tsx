@@ -81,7 +81,7 @@ export default function InvoicesTable({
                             <td className="px-4 py-3">
 
                                 <div className="font-medium">
-                                    {invoice.title}
+                                    {invoice.customerName}
                                 </div>
 
                                 <div className="text-xs text-muted-foreground">
@@ -100,7 +100,7 @@ export default function InvoicesTable({
 
                             <td className="px-4 py-3">
                                 {invoice.currency}{' '}
-                                {invoice.amount.toLocaleString()}
+                                {(invoice.amount ?? 0).toLocaleString()}
                             </td>
 
                             <td className="px-4 py-3">

@@ -68,7 +68,7 @@ class ContractsService {
             ).length,
 
             completed: contracts.filter(
-                (c) => c.status === 'Completed'
+                (c) => c.status === 'Expired'
             ).length,
 
             cancelled: contracts.filter(

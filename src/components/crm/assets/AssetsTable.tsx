@@ -102,7 +102,7 @@ export default function AssetsTable({
                                 ₹
                                 {(
                                     asset.currentValue ??
-                                    asset.purchaseValue
+                                    asset.purchaseCost
                                 ).toLocaleString()}
                             </td>
 

@@ -5,7 +5,8 @@ import ContractsForm from '@/components/crm/contracts/ContractsForm';
 import {
     getContract,
     updateContract,
-} from '../../actions';
+    updateContractStatus,
+} from '../actions';
 
 interface Props {
     params: Promise<{
@@ -68,7 +69,7 @@ export default async function EditContractPage({
 
                 status:
                     (formData.get('status') as import('@/types/crm/Contracts').ContractStatus)
-                    ?? contract.status,
+                    ?? contract?.status,
 
                 notes: String(
                     formData.get('notes') ?? ''
