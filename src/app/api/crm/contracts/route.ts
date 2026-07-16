@@ -1,16 +1,37 @@
 import { NextResponse } from 'next/server';
 
+import {
+    ContractsServiceInstance,
+} from '@/services/crm/ContractsService';
+
 export async function GET() {
-    return NextResponse.json([]);
+
+    const contracts =
+        ContractsServiceInstance.list();
+
+    return NextResponse.json(
+        contracts
+    );
+
 }
 
-export async function POST() {
+export async function POST(
+    request: Request
+) {
+
+    const body =
+        await request.json();
+
+    const contract =
+        ContractsServiceInstance.create(
+            body
+        );
+
     return NextResponse.json(
+        contract,
         {
-            message: 'Not implemented',
-        },
-        {
-            status: 501,
+            status: 201,
         }
     );
+
 }
