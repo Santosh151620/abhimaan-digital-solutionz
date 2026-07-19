@@ -42,8 +42,8 @@ import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOvervie
 import RevenueForecast from "@/modules/crm/dashboard/components/RevenueForecast";
 import RevenueKPI from "@/modules/crm/dashboard/components/RevenueKPI";
 import SalesCopilot from "@/modules/crm/dashboard/components/SalesCopilot";
+import TodayWorkPanel from "@/modules/crm/dashboard/components/TodayWorkPanel";
 
-import TodayWorkPanel from "./components/crm/TodayWorkPanel";
 import ExecutiveDemoBanner from "@/modules/dashboard/components/ExecutiveDemoBanner";
 import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
 
