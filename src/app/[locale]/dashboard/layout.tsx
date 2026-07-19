@@ -21,11 +21,11 @@ export default function DashboardLayout({
     },
     {
       label: "Reports",
-      href: "#",
+      href: "/en/dashboard/reports",
     },
     {
       label: "Settings",
-      href: "#",
+      href: "/en/dashboard/settings",
     },
   ];
 
@@ -33,26 +33,27 @@ export default function DashboardLayout({
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="flex">
         <aside className="hidden md:flex md:w-72 md:flex-col border-r border-slate-800 bg-black/40 backdrop-blur-xl">
-          <div className="p-6 border-b border-slate-800">
+          <div className="border-b border-slate-800 p-6">
             <h1 className="text-2xl font-bold">
-              Abhimaan Digital
+              Abhimaan Digital Solutionz
             </h1>
 
-            <p className="text-sm text-slate-400 mt-1">
-              Admin CRM
+            <p className="mt-1 text-sm text-slate-400">
+              Customer Portal
             </p>
           </div>
 
-          <nav className="p-4 space-y-2">
+          <nav className="space-y-2 p-4">
             {navItems.map((item) => {
               const active =
-                pathname === item.href;
+                pathname === item.href ||
+                pathname.startsWith(`${item.href}/`);
 
               return (
                 <Link
-                  key={item.label}
+                  key={item.href}
                   href={item.href}
-                  className={`block px-4 py-3 rounded-xl transition ${
+                  className={`block rounded-xl px-4 py-3 transition ${
                     active
                       ? "bg-cyan-600 text-white"
                       : "text-slate-400 hover:bg-slate-900 hover:text-white"
@@ -65,22 +66,18 @@ export default function DashboardLayout({
           </nav>
         </aside>
 
-        <div className="flex-1 min-w-0">
-          <header className="h-16 border-b border-slate-800 bg-black/30 backdrop-blur-xl flex items-center justify-between px-6">
-            <div>
-              <h2 className="font-semibold">
-                CRM Dashboard
-              </h2>
-            </div>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex h-16 items-center justify-between border-b border-slate-800 bg-black/30 px-6 backdrop-blur-xl">
+            <h2 className="font-semibold">
+              Customer Workspace
+            </h2>
 
-            <div className="text-sm text-slate-400">
-              Abhimaan Digital Solutionz
-            </div>
+            <span className="text-sm text-slate-400">
+              Website
+            </span>
           </header>
 
-          <main className="p-6">
-            {children}
-          </main>
+          <main className="p-6">{children}</main>
         </div>
       </div>
     </div>

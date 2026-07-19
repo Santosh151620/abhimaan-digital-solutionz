@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+
+import fs from "fs";
+import path from "path";
+
+const ROOT = process.cwd();
+
+const WEBSITE_ROOT = path.join(ROOT, "src", "app", "[locale]");
+
+const IGNORE = [
+  ".next",
+  "node_modules",
+  ".git",
+  "dist",
+  "build",
+];
+
+const exts = [".ts", ".tsx", ".js", ".jsx"];
+
+const patterns = [
+  "/crm/",
+  "/admin/",
+  "/dashboard/",
+  "@/components/crm",
+  "@/services/crm",
+  "@/repositories/crm",
+];
+
+const findings = [];
+
+function walk(dir) {
+  if (!fs.existsSync(dir)) return;
+
+  for (const item of fs.readdirSync(dir)) {
+    if (IGNORE.includes(item)) continue;
+
+    const full = path.join(dir, item);
+
+    const stat = fs.statSync(full);
+
+    if (stat.isDirectory()) {
+      walk(full);
+      continue;
+    }
+
+    if (!exts.includes(path.extname(full))) continue;
+
+    const text = fs.readFileSync(full, "utf8");
+
+    for (const pattern of patterns) {
+      if (text.includes(pattern)) {
+        findings.push({
+          file: path.relative(ROOT, full),
+          pattern,
+        });
+      }
+    }
+  }
+}
+
+walk(WEBSITE_ROOT);
+
+console.log("");
+console.log("========================================");
+console.log(" WEBSITE -> ENTERPRISE DEPENDENCY REPORT");
+console.log("========================================");
+console.log("");
+
+if (!findings.length) {
+  console.log("✔ Website is isolated.");
+  process.exit(0);
+}
+
+for (const f of findings) {
+  console.log(f.file);
+  console.log("   ->", f.pattern);
+}
+
+console.log("");
+console.log("Total:", findings.length);

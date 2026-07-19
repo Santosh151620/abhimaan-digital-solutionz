@@ -17,13 +17,13 @@ let companies: Company[] = [];
 
     }
 
-    const activeCompanies = companies.filter(
-        (company: any) => company.status === "ACTIVE"
-    ).length;
+  const activeCompanies = companies.filter(
+    (company: Company) => company.status === "ACTIVE"
+).length;
 
-    const prospects = companies.filter(
-        (company: any) => company.status === "PROSPECT"
-    ).length;
+const prospects = companies.filter(
+    (company: Company) => company.status === "PROSPECT"
+).length;
 
     return (
 
@@ -36,7 +36,7 @@ let companies: Company[] = [];
                 </h1>
 
                 <p className="text-muted-foreground">
-                    Welcome back. Here's your business overview.
+                    Welcome back. Here&apos;s your business overview.
                 </p>
 
             </section>
@@ -110,7 +110,7 @@ let companies: Company[] = [];
 
                             <tbody>
 
-                                {companies.slice(0, 5).map((company: any) => (
+                                {companies.slice(0, 5).map((company: Company) => (
 
                                     <tr
                                         key={company.id}

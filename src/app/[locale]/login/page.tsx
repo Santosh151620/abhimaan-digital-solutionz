@@ -21,7 +21,7 @@ export default function LoginPage() {
       } = await supabase.auth.getSession();
 
       if (session) {
-        router.replace("/en/dashboard/leads");
+        router.replace("/crm");
         return;
       }
 
@@ -49,7 +49,7 @@ export default function LoginPage() {
       return;
     }
 
-    router.replace("/en/dashboard/leads");
+    router.replace("/crm");
   };
 
   if (checkingSession) {

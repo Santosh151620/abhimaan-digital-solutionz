@@ -4,7 +4,7 @@ import ContractsForm from '@/components/crm/contracts/ContractsForm';
 import {
     getContract,
     updateContract,
-    updateContractStatus,
+    //updateContractStatus,
 } from '../actions';
 
 interface Props {
