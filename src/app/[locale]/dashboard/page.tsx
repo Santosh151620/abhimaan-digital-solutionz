@@ -36,8 +36,10 @@ import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
 import ActionCenterCard from "@/modules/dashboard/components/ActionCenterCard";
 import DashboardEmptyState from "@/modules/dashboard/components/DashboardEmptyState";
 import { getDashboardSnapshot } from "@/services/dashboard";
-import ExecutivePanel from "./components/crm/ExecutivePanel";
-import PipelineOverview from "./components/crm/PipelineOverviewLegacy";
+
+import ExecutivePanel from "@/modules/crm/dashboard/components/ExecutivePanel";
+import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOverviewLegacy";
+
 import RevenueForecast from "./components/crm/RevenueForecast";
 import RevenueKPI from "./components/crm/RevenueKPI";
 import SalesCopilot from "./components/crm/SalesCopilot";
