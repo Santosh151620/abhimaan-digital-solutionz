@@ -40,11 +40,9 @@ export async function updateContact(
 
 
 export async function deleteContact(
-    id: string
+    id: string,
 ) {
-    return ContactsServiceInstance.delete(
-        id
-    );
+    return ContactsServiceInstance.delete(id);
 }
 
 

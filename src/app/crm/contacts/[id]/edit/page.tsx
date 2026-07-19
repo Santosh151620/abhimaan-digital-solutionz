@@ -3,9 +3,7 @@ import {
     redirect,
 } from 'next/navigation';
 
-
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-
 import PageHeader from '@/components/crm/ui/PageHeader';
 
 import {
@@ -20,21 +18,24 @@ import {
     updateContact,
 } from '../../actions';
 
+import type {
+    ContactDetails,
+} from '@/types/crm/Contacts';
+
 
 interface Props {
     params: Promise<{
-        id:string;
+        id: string;
     }>;
 }
 
 
 export default async function EditContactPage({
     params,
-}:Props){
-
+}: Props) {
 
     const {
-        id
+        id,
     } = await params;
 
 
@@ -42,21 +43,20 @@ export default async function EditContactPage({
         await ContactsServiceInstance.details(id);
 
 
-    if(!contact){
+    if (!contact) {
         notFound();
     }
 
 
     async function submit(
-        values:any
-    ){
-
+        values: Partial<ContactDetails>
+    ) {
         'use server';
 
 
         await updateContact(
             id,
-            values
+            values,
         );
 
 
@@ -67,7 +67,6 @@ export default async function EditContactPage({
 
 
     return (
-
         <CRMPageLayout>
 
             <PageHeader
@@ -82,6 +81,5 @@ export default async function EditContactPage({
             />
 
         </CRMPageLayout>
-
     );
 }

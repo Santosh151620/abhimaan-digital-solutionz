@@ -14,12 +14,16 @@ import {
     redirect,
 } from 'next/navigation';
 
+import type {
+    ContactDetails,
+} from '@/types/crm/Contacts';
+
 
 export default function NewContactPage() {
 
 
     async function submit(
-        values: any
+        values: Partial<ContactDetails>
     ) {
         'use server';
 
@@ -36,7 +40,6 @@ export default function NewContactPage() {
 
 
     return (
-
         <CRMPageLayout>
 
             <PageHeader
@@ -50,6 +53,5 @@ export default function NewContactPage() {
             />
 
         </CRMPageLayout>
-
     );
 }
