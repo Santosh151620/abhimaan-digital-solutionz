@@ -1,14 +1,25 @@
-'use client';
-import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
-import { use } from 'react';
-import { useRouter } from 'next/navigation';
+import {
+  notFound,
+  redirect,
+} from 'next/navigation';
+
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 
 import PageHeader from '@/components/crm/ui/PageHeader';
 
-import { CompaniesForm } from '@/components/crm/companies';
-import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
+import {
+  CompaniesForm,
+} from '@/components/crm/companies';
 
-import type { CompanyDetails } from '@/types/crm/Companies';
+import {
+  getCompany,
+  updateCompany,
+} from '../../actions';
+
+import type {
+  CompanyDetails,
+} from '@/types/crm/Companies';
+
 
 interface PageProps {
   params: Promise<{
@@ -16,36 +27,58 @@ interface PageProps {
   }>;
 }
 
-export default function EditCompanyPage({
+
+export default async function EditCompanyPage({
   params,
 }: PageProps) {
-  const { id } = use(params);
 
-  const router = useRouter();
+  const {
+    id,
+  } = await params;
 
-  async function handleSubmit(
+
+  const company = await getCompany(id);
+
+
+  if (!company) {
+    notFound();
+  }
+
+
+  async function submit(
     values: Partial<CompanyDetails>
   ) {
-    await CompaniesServiceInstance.update(
+    'use server';
+
+
+    await updateCompany(
       id,
       values
     );
 
-    router.push(`/crm/companies/${id}`);
-    router.refresh();
+
+    redirect(
+      `/crm/companies/${id}`
+    );
   }
 
+
   return (
+
     <CRMPageLayout>
+
       <PageHeader
         title="Edit Company"
         description="Update company information and subscription details."
       />
 
+
       <CompaniesForm
-        onSubmit={handleSubmit}
-        onCancel={() => router.push(`/crm/companies/${id}`)}
+        initialValues={company}
+        onSubmit={submit}
       />
+
     </CRMPageLayout>
+
   );
 }
