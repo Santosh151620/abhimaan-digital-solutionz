@@ -38,7 +38,8 @@ import DashboardEmptyState from "@/modules/dashboard/components/DashboardEmptySt
 import { getDashboardSnapshot } from "@/services/dashboard";
 
 import ExecutivePanel from "@/modules/crm/dashboard/components/ExecutivePanel";
-import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOverviewLegacy";
+
+import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOverview";
 import RevenueForecast from "@/modules/crm/dashboard/components/RevenueForecast";
 import RevenueKPI from "@/modules/crm/dashboard/components/RevenueKPI";
 import SalesCopilot from "@/modules/crm/dashboard/components/SalesCopilot";
