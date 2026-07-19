@@ -6,9 +6,6 @@ import {
     createContract
 } from '../actions';
 
-import {
-    revalidatePath
-} from 'next/cache';
 
 export default function NewContractPage() {
 

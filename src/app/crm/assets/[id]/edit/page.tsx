@@ -5,7 +5,6 @@ import AssetsForm from '@/components/crm/assets/AssetsForm';
 import {
     getAsset,
     updateAsset,
-    updateAssetStatus,
 } from '../../actions';
 
 interface Props {
