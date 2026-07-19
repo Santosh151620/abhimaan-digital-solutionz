@@ -1,37 +1,55 @@
-'use client';
-import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
-import { useRouter } from 'next/navigation';
-
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import PageHeader from '@/components/crm/ui/PageHeader';
 
-import { CompaniesForm } from '@/components/crm/companies';
-import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
+import {
+    CompaniesForm,
+} from '@/components/crm/companies';
 
-import type { CompanyDetails } from '@/types/crm/Companies';
+import {
+    createCompany,
+} from '../actions';
+
+import {
+    redirect,
+} from 'next/navigation';
+
+import type {
+    CompanyDetails,
+} from '@/types/crm/Companies';
+
 
 export default function NewCompaniesPage() {
-  const router = useRouter();
 
-  async function handleSubmit(
-    values: Partial<CompanyDetails>
-  ) {
-    await CompaniesServiceInstance.create(values);
 
-    router.push('/crm/companies');
-    router.refresh();
-  }
+    async function submit(
+        values: Partial<CompanyDetails>
+    ) {
+        'use server';
 
-  return (
-    <CRMPageLayout>
-      <PageHeader
-        title="New Company"
-        description="Register a new customer organization in the CRM."
-      />
+        await createCompany(
+            values
+        );
 
-      <CompaniesForm
-        onSubmit={handleSubmit}
-        onCancel={() => router.push('/crm/companies')}
-      />
-    </CRMPageLayout>
-  );
+        redirect(
+            '/crm/companies'
+        );
+    }
+
+
+    return (
+
+        <CRMPageLayout>
+
+            <PageHeader
+                title="New Company"
+                description="Register a new customer organization in the CRM."
+            />
+
+            <CompaniesForm
+                onSubmit={submit}
+            />
+
+        </CRMPageLayout>
+
+    );
 }
