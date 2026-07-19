@@ -49,9 +49,9 @@ export default function NewAssetPage() {
                     formData.get('location') ?? ''
                 ),
 
-                status:
-                    (formData.get('status') as import('@/types/crm/Assets').AssetStatus)
-                    ?? 'Active',
+               status: String(
+    formData.get('status') ?? 'Active'
+) as Asset['status'],
 
                 notes: String(
                     formData.get('notes') ?? ''

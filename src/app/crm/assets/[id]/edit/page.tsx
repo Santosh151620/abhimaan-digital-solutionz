@@ -69,9 +69,10 @@ export default async function EditAssetPage({
                     formData.get('location') ?? ''
                 ),
 
-                status:
-                    (formData.get('status') as import('@/types/crm/Assets').AssetStatus)
-                    ?? updateAssetStatus,
+status:
+    String(
+        formData.get('status') ?? asset?.status
+    ) as Asset['status'],
 
                 notes: String(
                     formData.get('notes') ?? ''

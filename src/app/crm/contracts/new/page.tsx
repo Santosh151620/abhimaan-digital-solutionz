@@ -3,8 +3,12 @@ import { redirect } from 'next/navigation';
 import ContractsForm from '@/components/crm/contracts/ContractsForm';
 
 import {
-    createContract,
+    createContract
 } from '../actions';
+
+import {
+    revalidatePath
+} from 'next/cache';
 
 export default function NewContractPage() {
 
@@ -28,9 +32,9 @@ export default function NewContractPage() {
                     formData.get('contractNumber') ?? ''
                 ),
 
-                status:
-                    (formData.get('status') as import('@/types/crm/Contracts').ContractStatus)
-                    ?? 'Draft',
+                status: String(
+                    formData.get('status') ?? 'Draft'
+                ) as import('@/types/crm/Contracts').ContractStatus,
 
                 startDate: String(
                     formData.get('startDate') ?? ''

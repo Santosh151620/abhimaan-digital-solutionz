@@ -1,3 +1,6 @@
-export { default as ExecutivePanel } from "./ExecutivePanel";
-
-export { default as PipelineOverview } from "./PipelineOverview";
+export * from './ExecutivePanel';
+export * from './PipelineOverview';
+export * from './RevenueForecast';
+export * from './RevenueKPI';
+export * from './SalesCopilot';
+export * from './TodayWorkPanel';

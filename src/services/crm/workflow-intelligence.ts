@@ -1,6 +1,6 @@
 import { getInactiveLeads } from "./lead-intelligence";
-import { getPipelineData } from "@/modules/crm/dashboard/services/pipeline";
-import { getRevenueIntelligence } from "@/modules/crm/dashboard/services/revenue-intelligence";
+import { getPipelineData } from "./pipeline";
+import { getRevenueIntelligence } from "./revenue-intelligence";
 import { getProjects } from "@/modules/projects/services/projects";
 
 export interface WorkflowLead {

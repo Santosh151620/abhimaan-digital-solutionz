@@ -9,13 +9,16 @@ import type {
     ContractStatus,
 } from '@/types/crm/Contracts';
 
+
 export async function getContracts() {
     return ContractsServiceInstance.list();
 }
 
+
 export async function getArchivedContracts() {
     return ContractsServiceInstance.listArchived();
 }
+
 
 export async function getContract(
     id: string
@@ -23,11 +26,13 @@ export async function getContract(
     return ContractsServiceInstance.details(id);
 }
 
+
 export async function createContract(
     data: Partial<Contract>
 ) {
     return ContractsServiceInstance.create(data);
 }
+
 
 export async function updateContract(
     id: string,
@@ -39,17 +44,20 @@ export async function updateContract(
     );
 }
 
+
 export async function deleteContract(
     id: string
 ) {
     return ContractsServiceInstance.delete(id);
 }
 
+
 export async function restoreContract(
     id: string
 ) {
     return ContractsServiceInstance.restore(id);
 }
+
 
 export async function updateContractStatus(
     id: string,
@@ -60,6 +68,7 @@ export async function updateContractStatus(
         status
     );
 }
+
 
 export async function getContractsSummary() {
     return ContractsServiceInstance.summary();
