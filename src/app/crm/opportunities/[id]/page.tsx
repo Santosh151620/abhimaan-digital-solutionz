@@ -24,7 +24,7 @@ export default async function OpportunityDetailsPage({
 
     return (
 
-        <div className="space-y-6">
+        <div className="">
 
             <div className="flex justify-between">
 

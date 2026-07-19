@@ -1,20 +1,32 @@
-import Link from 'next/link';
+import Link from "next/link";
+ import type { Company } from "@/types/crm/Companies";
+import { CompaniesServiceInstance } from "@/services/crm/CompaniesService";
 
-import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
-
+export const dynamic = "force-dynamic";
 export default async function DashboardPage() {
-    const companies =
-        await CompaniesServiceInstance.list();
+
+let companies: Company[] = [];
+
+    try {
+
+        companies = await CompaniesServiceInstance.list();
+
+    } catch {
+
+        companies = [];
+
+    }
 
     const activeCompanies = companies.filter(
-        company => company.status === 'ACTIVE'
+        (company: any) => company.status === "ACTIVE"
     ).length;
 
     const prospects = companies.filter(
-        company => company.status === 'PROSPECT'
+        (company: any) => company.status === "PROSPECT"
     ).length;
 
     return (
+
         <main className="space-y-8 p-8">
 
             <section>
@@ -24,8 +36,7 @@ export default async function DashboardPage() {
                 </h1>
 
                 <p className="text-muted-foreground">
-                    Welcome back. Here&apos;s your business overview.
-                    
+                    Welcome back. Here's your business overview.
                 </p>
 
             </section>
@@ -56,7 +67,7 @@ export default async function DashboardPage() {
 
             <section className="grid gap-6 xl:grid-cols-3">
 
-                <div className="xl:col-span-2 rounded-xl border bg-background p-6">
+                <div className="rounded-xl border bg-background p-6">
 
                     <div className="mb-5 flex items-center justify-between">
 
@@ -99,7 +110,7 @@ export default async function DashboardPage() {
 
                             <tbody>
 
-                                {companies.slice(0, 5).map(company => (
+                                {companies.slice(0, 5).map((company: any) => (
 
                                     <tr
                                         key={company.id}
@@ -118,7 +129,7 @@ export default async function DashboardPage() {
                                         </td>
 
                                         <td className="p-3">
-                                            {company.industry ?? '—'}
+                                            {company.industry ?? "—"}
                                         </td>
 
                                         <td className="p-3">
@@ -174,31 +185,43 @@ export default async function DashboardPage() {
             </section>
 
         </main>
+
     );
+
 }
 
 function DashboardCard({
+
     title,
+
     value,
+
 }: {
+
     title: string;
+
     value: number | string;
+
 }) {
+
     return (
+
         <div className="rounded-xl border bg-background p-6">
 
             <p className="text-sm text-muted-foreground">
+
                 {title}
+
             </p>
 
             <h2 className="mt-3 text-3xl font-bold">
+
                 {value}
+
             </h2>
 
         </div>
+
     );
+
 }
-
-
-
-

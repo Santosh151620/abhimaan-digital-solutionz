@@ -1,5 +1,4 @@
 import { notFound, redirect } from 'next/navigation';
-
 import ContractsForm from '@/components/crm/contracts/ContractsForm';
 
 import {
@@ -84,7 +83,7 @@ export default async function EditContractPage({
 
     return (
 
-        <div className="space-y-6">
+        <div className="">
 
             <h1 className="text-2xl font-bold">
                 Edit Contract

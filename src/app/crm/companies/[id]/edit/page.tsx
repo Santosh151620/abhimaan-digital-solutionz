@@ -1,12 +1,14 @@
-﻿"use client";
+'use client';
+import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
+import { use } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { use } from "react";
-import { useRouter } from "next/navigation";
+import PageHeader from '@/components/crm/ui/PageHeader';
 
-import { CompaniesForm } from "@/components/crm/companies";
-import { CompaniesServiceInstance } from "@/services/crm/CompaniesService";
+import { CompaniesForm } from '@/components/crm/companies';
+import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 
-import type { CompanyDetails } from "@/types/crm/Companies";
+import type { CompanyDetails } from '@/types/crm/Companies';
 
 interface PageProps {
   params: Promise<{
@@ -30,23 +32,20 @@ export default function EditCompanyPage({
     );
 
     router.push(`/crm/companies/${id}`);
+    router.refresh();
   }
 
   return (
-    <main className="mx-auto max-w-5xl space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">
-          Edit Company
-        </h1>
-
-        <p className="text-muted-foreground">
-          Update company information
-        </p>
-      </div>
+    <CRMPageLayout>
+      <PageHeader
+        title="Edit Company"
+        description="Update company information and subscription details."
+      />
 
       <CompaniesForm
         onSubmit={handleSubmit}
+        onCancel={() => router.push(`/crm/companies/${id}`)}
       />
-    </main>
+    </CRMPageLayout>
   );
 }

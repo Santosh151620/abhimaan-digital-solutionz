@@ -96,3 +96,28 @@ body {
     animation: streamLight 6s linear infinite;
   }
 }
+@keyframes crmFade {
+
+0%{
+opacity:0;
+transform:translateY(14px);
+}
+
+100%{
+opacity:1;
+transform:translateY(0);
+}
+
+}
+
+.crm-page{
+
+animation:crmFade .35s ease;
+
+}
+
+.crm-page{
+
+animation:crmFade .35s ease;
+
+}

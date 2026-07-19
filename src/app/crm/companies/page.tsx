@@ -1,92 +1,80 @@
+import PageHeader from '@/components/crm/ui/PageHeader';
+import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
 import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 import {
-CompaniesDataTable,
-    CompaniesSummaryCards,
+  CompaniesDataTable,
+  CompaniesSummaryCards,
 } from '@/components/crm/companies';
 
 export default async function CompaniesPage() {
-    const companies =
-        await CompaniesServiceInstance.list();
+  const companies = await CompaniesServiceInstance.list();
 
-    const total = companies.length;
+  const total = companies.length;
 
-    const active = companies.filter(
-        (company) => company.status === 'ACTIVE'
-    ).length;
+  const active = companies.filter(
+    (company) => company.status === 'ACTIVE'
+  ).length;
 
-    const prospect = companies.filter(
-        (company) => company.status === 'PROSPECT'
-    ).length;
+  const prospect = companies.filter(
+    (company) => company.status === 'PROSPECT'
+  ).length;
 
-    const inactive = companies.filter(
-        (company) => company.status === 'INACTIVE'
-    ).length;
+  const inactive = companies.filter(
+    (company) => company.status === 'INACTIVE'
+  ).length;
 
-    return (
-        <main className="space-y-6">
+  return (
+    <CRMPageLayout>
+      <PageHeader
+        title="Companies"
+        description="Manage customers, organizations and subscription lifecycle."
+      />
 
-            <section>
+      <section className="grid gap-6 md:grid-cols-4">
+        <div className="rounded-2xl border border-cyan-500/20 bg-white/80 p-6 shadow-sm backdrop-blur">
+          <p className="text-sm text-slate-500">
+            Total Companies
+          </p>
 
-                <h1 className="text-3xl font-bold">
-                    Companies
-                </h1>
+          <h2 className="mt-3 text-4xl font-bold text-slate-900">
+            {total}
+          </h2>
+        </div>
 
-                <p className="mt-2 text-muted-foreground">
-                    Manage companies, customers and business accounts.
-                </p>
+        <div className="rounded-2xl border border-emerald-500/20 bg-white/80 p-6 shadow-sm backdrop-blur">
+          <p className="text-sm text-slate-500">
+            Active
+          </p>
 
-            </section>
+          <h2 className="mt-3 text-4xl font-bold text-emerald-600">
+            {active}
+          </h2>
+        </div>
 
-            <section className="grid gap-4 md:grid-cols-4">
+        <div className="rounded-2xl border border-blue-500/20 bg-white/80 p-6 shadow-sm backdrop-blur">
+          <p className="text-sm text-slate-500">
+            Prospects
+          </p>
 
-                <div className="rounded-xl border bg-background p-5">
-                    <p className="text-sm text-muted-foreground">
-                        Total Companies
-                    </p>
+          <h2 className="mt-3 text-4xl font-bold text-blue-600">
+            {prospect}
+          </h2>
+        </div>
 
-                    <h2 className="mt-2 text-3xl font-bold">
-                        {total}
-                    </h2>
-                </div>
+        <div className="rounded-2xl border border-slate-500/20 bg-white/80 p-6 shadow-sm backdrop-blur">
+          <p className="text-sm text-slate-500">
+            Inactive
+          </p>
 
-                <div className="rounded-xl border bg-background p-5">
-                    <p className="text-sm text-muted-foreground">
-                        Active
-                    </p>
+          <h2 className="mt-3 text-4xl font-bold text-slate-600">
+            {inactive}
+          </h2>
+        </div>
+      </section>
 
-                    <h2 className="mt-2 text-3xl font-bold text-green-600">
-                        {active}
-                    </h2>
-                </div>
+      <CompaniesSummaryCards />
 
-                <div className="rounded-xl border bg-background p-5">
-                    <p className="text-sm text-muted-foreground">
-                        Prospects
-                    </p>
-
-                    <h2 className="mt-2 text-3xl font-bold text-blue-600">
-                        {prospect}
-                    </h2>
-                </div>
-
-                <div className="rounded-xl border bg-background p-5">
-                    <p className="text-sm text-muted-foreground">
-                        Inactive
-                    </p>
-
-                    <h2 className="mt-2 text-3xl font-bold text-gray-600">
-                        {inactive}
-                    </h2>
-                </div>
-
-            </section>
-<CompaniesSummaryCards />
-            <CompaniesDataTable />
-
-        </main>
-    );
+      <CompaniesDataTable />
+    </CRMPageLayout>
+  );
 }
-
-
-
-

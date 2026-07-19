@@ -88,7 +88,7 @@ export default async function EditAssetPage({
 
     return (
 
-        <div className="space-y-6">
+        <div className="">
 
             <h1 className="text-2xl font-bold">
                 Edit Asset

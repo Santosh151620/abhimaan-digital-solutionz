@@ -8,85 +8,33 @@ const contracts: Contract[] = [];
 async function saveContract(formData: FormData) {
     'use server';
 
-    const contractNumber = String(
-        formData.get('contractNumber') ?? ''
-    );
-
-    const title = String(
-        formData.get('title') ?? ''
-    );
-
-    const customerName = String(
-        formData.get('customerName') ?? ''
-    );
-
-    const companyId = String(
-        formData.get('companyId') ?? ''
-    );
-
-    const status = String(
-        formData.get('status') ?? 'Draft'
-    );
-
-    const startDate = String(
-        formData.get('startDate') ?? ''
-    );
-
-    const endDate = String(
-        formData.get('endDate') ?? ''
-    );
-
-    const description = String(
-        formData.get('description') ?? ''
-    );
-
     console.log({
-        contractNumber,
-        title,
-        customerName,
-        companyId,
-        status,
-        startDate,
-        endDate,
-        description,
+        contractNumber: String(formData.get('contractNumber') ?? ''),
+        title: String(formData.get('title') ?? ''),
+        customerName: String(formData.get('customerName') ?? ''),
+        companyId: String(formData.get('companyId') ?? ''),
+        status: String(formData.get('status') ?? ''),
+        startDate: String(formData.get('startDate') ?? ''),
+        endDate: String(formData.get('endDate') ?? ''),
+        value: Number(formData.get('value') ?? 0),
     });
 }
 
-export default async function ContractsPage() {
-
+export default function ContractsPage() {
     return (
-
         <div className="space-y-8 p-6">
-
             <div>
-
-                <h1 className="text-3xl font-bold">
-                    Contracts
-                </h1>
-
+                <h1 className="text-3xl font-bold">Contracts</h1>
                 <p className="text-muted-foreground">
-                    Manage customer contracts and agreements.
+                    Manage customer contracts.
                 </p>
-
             </div>
 
+            <ContractsSummary contracts={contracts} />
 
-            <ContractsSummary
-                contracts={contracts}
-            />
+            <ContractsForm action={saveContract} />
 
-
-            <ContractsForm
-                action={saveContract}
-            />
-
-
-            <ContractsTable
-                contracts={contracts}
-            />
-
+            <ContractsTable contracts={contracts} />
         </div>
-
     );
-
 }

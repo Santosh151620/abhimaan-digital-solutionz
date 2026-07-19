@@ -1,6 +1,6 @@
 export default function NewAssetPage() {
     return (
-        <div className="p-6">
+        <div className="">
             New Asset
         </div>
     );

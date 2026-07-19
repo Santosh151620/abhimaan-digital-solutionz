@@ -10,54 +10,60 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({
-    locale,
-  }));
+    return routing.locales.map((locale) => ({
+        locale,
+    }));
 }
 
 interface LocaleLayoutProps {
-  children: React.ReactNode;
-  params: Promise<{
-    locale: string;
-  }>;
+    children: React.ReactNode;
+    params: Promise<{
+        locale: string;
+    }>;
 }
 
 export default async function LocaleLayout({
-  children,
-  params,
+    children,
+    params,
 }: LocaleLayoutProps) {
-  const { locale } = await params;
 
-  if (
-    !routing.locales.includes(
-      locale as (typeof routing.locales)[number]
-    )
-  ) {
-    notFound();
-  }
+    const { locale } = await params;
 
-  setRequestLocale(locale);
+    if (
+        !routing.locales.includes(
+            locale as (typeof routing.locales)[number]
+        )
+    ) {
+        notFound();
+    }
 
-  const messages = await getMessages();
+    setRequestLocale(locale);
 
-  return (
-    <NextIntlClientProvider
-      locale={locale}
-      messages={messages}
-    >
-      <CommandPaletteProvider>
+    const messages = await getMessages();
 
-        <Header />
+    return (
 
-        <main className="pt-24 min-h-screen">
-          {children}
-        </main>
+        <NextIntlClientProvider
+            locale={locale}
+            messages={messages}
+        >
 
-        <Footer />
+            <CommandPaletteProvider>
 
-        <WhatsAppButton />
+                <Header />
 
-      </CommandPaletteProvider>
-    </NextIntlClientProvider>
-  );
+                <main className="min-h-screen pt-24">
+                    {children}
+                </main>
+
+                <Footer />
+
+                <WhatsAppButton />
+
+            </CommandPaletteProvider>
+
+        </NextIntlClientProvider>
+
+    );
+
 }

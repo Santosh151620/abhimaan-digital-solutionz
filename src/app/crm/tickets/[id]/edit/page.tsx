@@ -11,7 +11,7 @@ export default async function EditAssetPage({
     const { id } = await params;
 
     return (
-        <div className="p-6">
+        <div className="">
             Edit Asset {id}
         </div>
     );

@@ -1,6 +1,6 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { notFound } from "next/navigation";
-
+import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
 import EntityOverviewGrid from "@/components/entities/EntityOverviewGrid";
 import EntityWorkspace from "@/components/entities/EntityWorkspace";
 import { CompaniesServiceInstance } from "@/services/crm/CompaniesService";
@@ -23,7 +23,7 @@ export default async function CompanyDetailsPage({
   }
 
   return (
-    <main className="space-y-6">
+    <CRMPageLayout>
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-3xl font-bold">
@@ -94,6 +94,6 @@ export default async function CompanyDetailsPage({
           />
         }
       />
-    </main>
+    </CRMPageLayout>
   );
 }

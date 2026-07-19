@@ -1,3 +1,5 @@
+'use client';
+
 import type { Asset } from '@/types/crm/Assets';
 
 interface Props {
@@ -7,29 +9,27 @@ interface Props {
 export default function AssetsSummary({
     assets,
 }: Props) {
-
     const total = assets.length;
 
     const available = assets.filter(
-        (asset) => asset.status === 'Available'
+        a => a.status === 'Available',
     ).length;
 
     const allocated = assets.filter(
-        (asset) => asset.status === 'Allocated'
+        a => a.status === 'Allocated',
     ).length;
 
     const maintenance = assets.filter(
-        (asset) => asset.status === 'Maintenance'
+        a => a.status === 'Maintenance',
     ).length;
 
     const retired = assets.filter(
-        (asset) => asset.status === 'Retired'
+        a => a.status === 'Retired',
     ).length;
 
     const totalValue = assets.reduce(
-        (sum, asset) =>
-            sum + (asset.currentValue ?? 0),
-        0
+        (sum, a) => sum + (a.currentValue ?? 0),
+        0,
     );
 
     const cards = [
@@ -55,33 +55,26 @@ export default function AssetsSummary({
         },
         {
             title: 'Current Value',
-            value: totalValue.toLocaleString(),
+            value: `₹ ${totalValue.toLocaleString()}`,
         },
     ];
 
     return (
         <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
-
-            {cards.map((card) => (
-
+            {cards.map(card => (
                 <div
                     key={card.title}
-                    className="rounded-xl border bg-white p-5"
+                    className="rounded-xl border bg-card p-5 shadow-sm"
                 >
-
-                    <div className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground">
                         {card.title}
-                    </div>
+                    </p>
 
-                    <div className="mt-2 text-2xl font-bold">
+                    <h2 className="mt-2 text-3xl font-bold">
                         {card.value}
-                    </div>
-
+                    </h2>
                 </div>
-
             ))}
-
         </div>
     );
-
 }

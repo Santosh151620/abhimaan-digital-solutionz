@@ -6,7 +6,7 @@ export default async function ContactsPage() {
         await ContactsServiceInstance.list();
 
     return (
-        <div className="space-y-6">
+        <div className="">
 
             <div>
                 <h1 className="text-3xl font-bold">

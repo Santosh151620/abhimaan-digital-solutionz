@@ -62,7 +62,7 @@ export default function NewContractPage() {
 
     return (
 
-        <div className="space-y-6">
+        <div className="">
 
             <h1 className="text-2xl font-bold">
                 New Contract

@@ -1,92 +1,79 @@
-import AssetsForm from '@/components/crm/assets/AssetsForm';
+import Link from 'next/link';
+
 import AssetsSummary from '@/components/crm/assets/AssetsSummary';
 import AssetsTable from '@/components/crm/assets/AssetsTable';
+
 import type { Asset } from '@/types/crm/Assets';
 
 const assets: Asset[] = [];
 
-async function saveAsset(formData: FormData) {
-    'use server';
-
-    const assetNumber = String(
-        formData.get('assetNumber') ?? ''
-    );
-
-    const name = String(
-        formData.get('name') ?? ''
-    );
-
-    const customerName = String(
-        formData.get('customerName') ?? ''
-    );
-
-    const companyId = String(
-        formData.get('companyId') ?? ''
-    );
-
-    const category = String(
-        formData.get('category') ?? ''
-    );
-
-    const status = String(
-        formData.get('status') ?? 'Active'
-    );
-
-    const purchaseDate = String(
-        formData.get('purchaseDate') ?? ''
-    );
-
-    const description = String(
-        formData.get('description') ?? ''
-    );
-
-    console.log({
-        assetNumber,
-        name,
-        customerName,
-        companyId,
-        category,
-        status,
-        purchaseDate,
-        description,
-    });
-}
-
 export default async function AssetsPage() {
-
     return (
+        <div className="crm-page space-y-8">
 
-        <div className="space-y-8 p-6">
+            <div className="flex items-center justify-between">
 
-            <div>
+                <div className="rounded-3xl border border-cyan-500/20 bg-white/5 p-8 backdrop-blur-xl">
 
-                <h1 className="text-3xl font-bold">
-                    Assets
-                </h1>
+                    <h1 className="bg-gradient-to-r from-cyan-300 via-blue-300 to-emerald-300 bg-clip-text text-4xl font-black text-transparent">
 
-                <p className="text-muted-foreground">
-                    Manage customer assets and lifecycle tracking.
-                </p>
+                        Assets
+
+                    </h1>
+
+                    <p className="mt-2 text-slate-400">
+
+                        Manage customer assets and lifecycle tracking.
+
+                    </p>
+
+                </div>
+
+                <Link
+                    href="/crm/assets/new"
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+                >
+                    + New Asset
+                </Link>
 
             </div>
-
 
             <AssetsSummary
                 assets={assets}
             />
 
+            <div className="rounded-xl border bg-card p-4">
 
-            <AssetsForm
-                action={saveAsset}
-            />
+                <input
+                    type="text"
+                    placeholder="Search assets..."
+                    className="w-full rounded-lg border bg-background px-3 py-2"
+                />
 
+            </div>
 
-            <AssetsTable
-                assets={assets}
-            />
+            {assets.length === 0 ? (
+
+                <div className="rounded-xl border bg-card p-12 text-center">
+
+                    <h2 className="text-xl font-semibold">
+                        No Assets Found
+                    </h2>
+
+                    <p className="mt-2 text-muted-foreground">
+                        Click <strong>New Asset</strong> to create your first asset.
+                    </p>
+
+                </div>
+
+            ) : (
+
+                <AssetsTable
+                    assets={assets}
+                />
+
+            )}
 
         </div>
-
     );
-
 }
