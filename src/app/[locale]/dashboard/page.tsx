@@ -39,10 +39,10 @@ import { getDashboardSnapshot } from "@/services/dashboard";
 
 import ExecutivePanel from "@/modules/crm/dashboard/components/ExecutivePanel";
 import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOverviewLegacy";
+import RevenueForecast from "@/modules/crm/dashboard/components/RevenueForecast";
+import RevenueKPI from "@/modules/crm/dashboard/components/RevenueKPI";
+import SalesCopilot from "@/modules/crm/dashboard/components/SalesCopilot";
 
-import RevenueForecast from "./components/crm/RevenueForecast";
-import RevenueKPI from "./components/crm/RevenueKPI";
-import SalesCopilot from "./components/crm/SalesCopilot";
 import TodayWorkPanel from "./components/crm/TodayWorkPanel";
 import ExecutiveDemoBanner from "@/modules/dashboard/components/ExecutiveDemoBanner";
 import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
