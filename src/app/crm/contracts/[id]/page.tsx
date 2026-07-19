@@ -1,9 +1,8 @@
-import { notFound, redirect } from 'next/navigation';
-import ContractsForm from '@/components/crm/contracts/ContractsForm';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 import {
     getContract,
-    updateContract,
 } from '../actions';
 
 interface Props {
@@ -12,11 +11,12 @@ interface Props {
     }>;
 }
 
-export default async function EditContractPage({
+export default async function ContractDetailsPage({
     params,
 }: Props) {
 
-    const { id } = await params;
+    const { id } =
+        await params;
 
     const contract =
         await getContract(id);
@@ -25,73 +25,106 @@ export default async function EditContractPage({
         notFound();
     }
 
-    async function submit(
-        formData: FormData
-    ) {
-        'use server';
-
-        await updateContract(
-            id,
-            {
-                title: String(
-                    formData.get('title') ?? ''
-                ),
-
-                contractNumber: String(
-                    formData.get('contractNumber') ?? ''
-                ),
-
-                customerName: String(
-                    formData.get('customerName') ?? ''
-                ),
-
-                companyId: String(
-                    formData.get('companyId') ?? ''
-                ),
-
-                startDate: String(
-                    formData.get('startDate') ?? ''
-                ),
-
-                endDate: String(
-                    formData.get('endDate') ?? ''
-                ),
-
-                value: Number(
-                    formData.get('value') ?? 0
-                ),
-
-                currency: String(
-                    formData.get('currency') ?? 'INR'
-                ),
-
-                status: String(
-                    formData.get('status') ?? contract?.status
-                ) as import('@/types/crm/Contracts').ContractStatus,
-
-                notes: String(
-                    formData.get('notes') ?? ''
-                ),
-            }
-        );
-
-        redirect(
-            `/crm/contracts/${id}`
-        );
-    }
-
     return (
 
-        <div className="">
+        <div className="space-y-6">
 
-            <h1 className="text-2xl font-bold">
-                Edit Contract
-            </h1>
+            <div className="flex items-center justify-between">
 
-            <ContractsForm
-                initialData={contract}
-                action={submit}
-            />
+                <div>
+
+                    <h1 className="text-3xl font-bold">
+                        {contract.title}
+                    </h1>
+
+                    <p className="text-muted-foreground">
+                        {contract.contractNumber}
+                    </p>
+
+                </div>
+
+                <Link
+                    href={`/crm/contracts/${contract.id}/edit`}
+                    className="rounded-lg border px-4 py-2"
+                >
+                    Edit
+                </Link>
+
+            </div>
+
+            <div className="grid gap-4 rounded-xl border bg-card p-6 md:grid-cols-2">
+
+                <div>
+                    <div className="text-sm text-muted-foreground">
+                        Customer
+                    </div>
+                    <div className="font-medium">
+                        {contract.customerName}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="text-sm text-muted-foreground">
+                        Company
+                    </div>
+                    <div className="font-medium">
+                        {contract.companyId}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="text-sm text-muted-foreground">
+                        Status
+                    </div>
+                    <div className="font-medium">
+                        {contract.status}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="text-sm text-muted-foreground">
+                        Value
+                    </div>
+                    <div className="font-medium">
+                        {contract.currency} {contract.value.toLocaleString()}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="text-sm text-muted-foreground">
+                        Start Date
+                    </div>
+                    <div className="font-medium">
+                        {contract.startDate}
+                    </div>
+                </div>
+
+                <div>
+                    <div className="text-sm text-muted-foreground">
+                        End Date
+                    </div>
+                    <div className="font-medium">
+                        {contract.endDate}
+                    </div>
+                </div>
+
+            </div>
+
+            {contract.notes && (
+
+                <div className="rounded-xl border bg-card p-6">
+
+                    <h2 className="mb-2 font-semibold">
+                        Notes
+                    </h2>
+
+                    <p className="whitespace-pre-wrap">
+                        {contract.notes}
+                    </p>
+
+                </div>
+
+            )}
 
         </div>
 

@@ -53,36 +53,7 @@ class AssetsService {
     }
 
     summary() {
-
-        const assets =
-            AssetsRepositoryInstance.list();
-
-        return {
-
-            total: assets.length,
-
-            active: assets.filter(
-                asset =>
-                    asset.status ==='Allocated'
-            ).length,
-
-            inactive: assets.filter(
-                asset =>
-                    asset.status ==='Retired'
-            ).length,
-
-            maintenance: assets.filter(
-                asset =>
-                    asset.status === 'Maintenance'
-            ).length,
-
-            retired: assets.filter(
-                asset =>
-                    asset.status === 'Retired'
-            ).length,
-
-        };
-
+        return AssetsRepositoryInstance.summary();
     }
 
 }

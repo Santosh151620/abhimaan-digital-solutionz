@@ -1,10 +1,18 @@
-import { notFound, redirect } from 'next/navigation';
+import {
+    notFound,
+    redirect,
+} from 'next/navigation';
+
+import type {
+    ContractStatus,
+} from '@/types/crm/Contracts';
+
 import ContractsForm from '@/components/crm/contracts/ContractsForm';
+
 import {
     getContract,
     updateContract,
 } from '../../actions';
-
 
 interface Props {
     params: Promise<{
@@ -18,7 +26,8 @@ export default async function EditContractPage({
 
     const { id } = await params;
 
-    const contract = await getContract(id);
+    const contract =
+        await getContract(id);
 
     if (!contract) {
         notFound();
@@ -29,55 +38,63 @@ export default async function EditContractPage({
     ) {
         'use server';
 
-        await updateContract(id, {
-            title: String(
-                formData.get('title') ?? ''
-            ),
+        await updateContract(
+            id,
+            {
 
-            contractNumber: String(
-                formData.get('contractNumber') ?? ''
-            ),
+                title: String(
+                    formData.get('title') ?? ''
+                ),
 
-            customerName: String(
-                formData.get('customerName') ?? ''
-            ),
+                contractNumber: String(
+                    formData.get('contractNumber') ?? ''
+                ),
 
-            companyId: String(
-                formData.get('companyId') ?? ''
-            ),
+                customerName: String(
+                    formData.get('customerName') ?? ''
+                ),
 
-            startDate: String(
-                formData.get('startDate') ?? ''
-            ),
+                companyId: String(
+                    formData.get('companyId') ?? ''
+                ),
 
-            endDate: String(
-                formData.get('endDate') ?? ''
-            ),
+                startDate: String(
+                    formData.get('startDate') ?? ''
+                ),
 
-            value: Number(
-                formData.get('value') ?? 0
-            ),
+                endDate: String(
+                    formData.get('endDate') ?? ''
+                ),
 
-            currency: String(
-                formData.get('currency') ?? 'INR'
-            ),
+                value: Number(
+                    formData.get('value') ?? 0
+                ),
 
-            status: String(
-                formData.get('status') ?? contract?.status
-            ) as import('@/types/crm/Contracts').ContractStatus,
+                currency: String(
+                    formData.get('currency') ?? 'INR'
+                ),
 
-            notes: String(
-                formData.get('notes') ?? ''
-            ),
-        });
+                status: String(
+                    formData.get('status') ?? contract?.status
+                ) as ContractStatus,
+
+                notes: String(
+                    formData.get('notes') ?? ''
+                ),
+
+            }
+        );
 
         redirect(
             `/crm/contracts/${id}`
         );
+
     }
 
     return (
+
         <div>
+
             <h1 className="text-2xl font-bold">
                 Edit Contract
             </h1>
@@ -86,6 +103,9 @@ export default async function EditContractPage({
                 initialData={contract}
                 action={submit}
             />
+
         </div>
+
     );
+
 }

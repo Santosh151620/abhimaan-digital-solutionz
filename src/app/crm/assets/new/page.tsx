@@ -1,11 +1,15 @@
 import { redirect } from 'next/navigation';
-import type { Asset } from '@/types/crm/Assets';
+
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import PageHeader from '@/components/crm/ui/PageHeader';
 
 import AssetsForm from '@/components/crm/assets/AssetsForm';
 
 import {
     createAsset,
 } from '../actions';
+
+import type { Asset } from '@/types/crm/Assets';
 
 export default function NewAssetPage() {
 
@@ -49,9 +53,9 @@ export default function NewAssetPage() {
                     formData.get('location') ?? ''
                 ),
 
-               status: String(
-    formData.get('status') ?? 'Active'
-) as Asset['status'],
+                status: String(
+                    formData.get('status') ?? 'Available'
+                ) as Asset['status'],
 
                 notes: String(
                     formData.get('notes') ?? ''
@@ -67,17 +71,18 @@ export default function NewAssetPage() {
 
     return (
 
-        <div className="">
+        <CRMPageLayout>
 
-            <h1 className="text-2xl font-bold">
-                New Asset
-            </h1>
+            <PageHeader
+                title="New Asset"
+                description="Create a new asset."
+            />
 
             <AssetsForm
                 action={submit}
             />
 
-        </div>
+        </CRMPageLayout>
 
     );
 

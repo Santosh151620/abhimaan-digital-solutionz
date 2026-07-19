@@ -3,11 +3,15 @@ import Link from 'next/link';
 import AssetsSummary from '@/components/crm/assets/AssetsSummary';
 import AssetsTable from '@/components/crm/assets/AssetsTable';
 
-import type { Asset } from '@/types/crm/Assets';
+//import type { Asset } from '@/types/crm/Assets';
 
-const assets: Asset[] = [];
+import {
+    listAssets,
+} from './actions';
 
 export default async function AssetsPage() {
+
+    const assets = await listAssets();
     return (
         <div className="crm-page space-y-8">
 
