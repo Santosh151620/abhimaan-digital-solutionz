@@ -1,6 +1,5 @@
 import type { PipelineSnapshot } from "@/services/crm/pipeline";
 
-
 interface Props {
   data: PipelineSnapshot["stages"];
 }
@@ -26,7 +25,7 @@ function PipelineLeadCard({
   lead: PipelineSnapshot["stages"][keyof PipelineSnapshot["stages"]][number];
 }) {
   return (
-    <div className="rounded-lg border border-slate-800 p-3 transition hover:border-slate-700">
+    <div className="rounded-lg border border-slate-800 p-3">
       <div className="flex items-center justify-between gap-2">
         <p className="truncate text-sm font-medium text-white">
           {lead.full_name}
