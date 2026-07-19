@@ -1,4 +1,5 @@
-import type { PipelineSnapshot } from "@/services/crm/pipeline";
+
+import type { PipelineSnapshot } from "../services/pipeline";
 
 interface Props {
   data: PipelineSnapshot["stages"];
@@ -13,7 +14,10 @@ const STAGES = [
   { key: "lost", label: "Lost" },
 ] as const;
 
-const priorityStyles = {
+type PipelineLead =
+  PipelineSnapshot["stages"][keyof PipelineSnapshot["stages"]][number];
+
+const priorityStyles: Record<PipelineLead["priority"], string> = {
   hot: "border-red-500/40 text-red-400",
   warm: "border-yellow-500/40 text-yellow-400",
   cold: "border-slate-600 text-slate-400",
@@ -22,7 +26,7 @@ const priorityStyles = {
 function PipelineLeadCard({
   lead,
 }: {
-  lead: PipelineSnapshot["stages"][keyof PipelineSnapshot["stages"]][number];
+  lead: PipelineLead;
 }) {
   return (
     <div className="rounded-lg border border-slate-800 p-3">
@@ -78,7 +82,7 @@ export default function PipelineOverview({
                   No leads
                 </p>
               ) : (
-                leads.map((lead) => (
+                leads.map((lead: PipelineLead) => (
                   <PipelineLeadCard
                     key={lead.id}
                     lead={lead}

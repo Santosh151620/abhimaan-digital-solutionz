@@ -3,7 +3,7 @@ import type { Lead, LeadStatus } from "@/types/lead";
 import {
   calculateLeadScore,
   type LeadWithScore,
-} from "./lead-intelligence";
+} from "@/services/crm/lead-intelligence";
 
 export interface PipelineSnapshot {
   stages: Record<LeadStatus, LeadWithScore[]>;

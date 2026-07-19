@@ -3,7 +3,7 @@ import type {
   ExecutiveSnapshot,
   ExecutiveAction,
   ExecutiveAlert,
-} from "@/services/crm/executive-intelligence";
+} from "../services/executive-intelligence";
 
 interface Props {
   executive: ExecutiveSnapshot;

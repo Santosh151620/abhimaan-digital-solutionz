@@ -1,5 +1,5 @@
 import KPICard from "@/modules/dashboard/components/KPICard";
-import type { RevenueSnapshot } from "@/services/crm/revenue-intelligence";
+import type { RevenueSnapshot } from "../services/revenue-intelligence";
 
 interface Props {
   data: RevenueSnapshot;
