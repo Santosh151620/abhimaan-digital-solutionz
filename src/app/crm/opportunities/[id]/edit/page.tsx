@@ -1,9 +1,20 @@
-import { notFound } from 'next/navigation';
+import {
+    notFound,
+    redirect,
+} from 'next/navigation';
 
-import EditOpportunityClient from './EditOpportunityClient';
+import {
+    OpportunitiesForm,
+} from '@/components/crm/opportunities';
 
-import { updateOpportunity } from '../../actions';
-import { OpportunitiesServiceInstance } from '@/services/crm/OpportunitiesService';
+import type {
+    Opportunity,
+} from '@/types/crm/Opportunities';
+
+import {
+    listOpportunities,
+    updateOpportunity,
+} from '../../actions';
 
 interface Props {
     params: Promise<{
@@ -15,20 +26,43 @@ export default async function EditOpportunityPage({
     params,
 }: Props) {
 
-    const { id } = await params;
+    const { id } =
+        await params;
+
+    const opportunities =
+        await listOpportunities();
 
     const opportunity =
-        await OpportunitiesServiceInstance.details(id);
+        opportunities.find(
+            item => item.id === id,
+        );
 
     if (!opportunity) {
         notFound();
     }
 
+    async function submit(
+        values: Partial<Opportunity>,
+    ) {
+        'use server';
+
+        await updateOpportunity(
+            id,
+            values,
+        );
+
+        redirect(
+            `/crm/opportunities/${id}`,
+        );
+    }
+
     return (
-        <EditOpportunityClient
-            opportunity={opportunity}
-            updateOpportunity={updateOpportunity}
+
+        <OpportunitiesForm
+            initialValues={opportunity}
+            onSubmit={submit}
         />
+
     );
 
 }

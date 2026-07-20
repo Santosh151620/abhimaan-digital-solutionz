@@ -1,11 +1,13 @@
 import Link from 'next/link';
 
-import { OpportunitiesServiceInstance } from '@/services/crm/OpportunitiesService';
+import {
+    listOpportunities,
+} from './actions';
 
 export default async function OpportunitiesPage() {
 
     const opportunities =
-        await OpportunitiesServiceInstance.list();
+    await listOpportunities();
 
     return (
 

@@ -1,27 +1,39 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useRouter } from 'next/navigation';
+import {
+    OpportunitiesForm,
+} from '@/components/crm/opportunities';
 
-import { OpportunitiesForm } from '@/components/crm/opportunities';
-import { createOpportunity } from '../actions';
+import {
+    createOpportunity,
+} from '../actions';
+
+import type {
+    Opportunity,
+} from '@/types/crm/Opportunities';
 
 export default function NewOpportunityPage() {
 
-    const router = useRouter();
+    async function submit(
+        values: Partial<Opportunity>,
+    ) {
+        'use server';
+
+        await createOpportunity(
+            values,
+        );
+
+        redirect(
+            '/crm/opportunities',
+        );
+    }
 
     return (
+
         <OpportunitiesForm
-            onSubmit={async values => {
-                await createOpportunity(values);
-                router.push('/crm/opportunities');
-                router.refresh();
-            }}
-            onCancel={() => router.back()}
+            onSubmit={submit}
         />
+
     );
 
 }
-
-
-
-

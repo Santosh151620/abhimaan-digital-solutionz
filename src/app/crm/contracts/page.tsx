@@ -1,13 +1,17 @@
-import { revalidatePath } from 'next/cache';
+import Link from 'next/link';
 
 import ContractsForm from '@/components/crm/contracts/ContractsForm';
 import ContractsSummary from '@/components/crm/contracts/ContractsSummary';
 import ContractsTable from '@/components/crm/contracts/ContractsTable';
 
 import {
-    getContracts,
     createContract,
+    getContracts,
 } from './actions';
+
+import type {
+    ContractStatus,
+} from '@/types/crm/Contracts';
 
 async function saveContract(
     formData: FormData,
@@ -32,9 +36,10 @@ async function saveContract(
             formData.get('companyId') ?? '',
         ),
 
-        status: String(
-            formData.get('status') ?? 'Draft',
-        ) as never,
+        status:
+            String(
+                formData.get('status') ?? 'Draft',
+            ) as ContractStatus,
 
         startDate: String(
             formData.get('startDate') ?? '',
@@ -58,7 +63,6 @@ async function saveContract(
 
     });
 
-    revalidatePath('/crm/contracts');
 }
 
 export default async function ContractsPage() {
@@ -70,15 +74,26 @@ export default async function ContractsPage() {
 
         <div className="space-y-8 p-6">
 
-            <div>
+            <div className="flex items-center justify-between">
 
-                <h1 className="text-3xl font-bold">
-                    Contracts
-                </h1>
+                <div>
 
-                <p className="text-muted-foreground">
-                    Manage customer contracts and agreements.
-                </p>
+                    <h1 className="text-3xl font-bold">
+                        Contracts
+                    </h1>
+
+                    <p className="text-muted-foreground">
+                        Manage customer contracts and agreements.
+                    </p>
+
+                </div>
+
+                <Link
+                    href="/crm/contracts/new"
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+                >
+                    + New Contract
+                </Link>
 
             </div>
 

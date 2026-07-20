@@ -1,14 +1,18 @@
-import { ContactsServiceInstance } from "@/services/crm/ContactsService";
+import {
+    listContacts,
+} from './actions';
 
 export default async function ContactsPage() {
 
     const contacts =
-        await ContactsServiceInstance.list();
+        await listContacts();
 
     return (
-        <div className="">
+
+        <div>
 
             <div>
+
                 <h1 className="text-3xl font-bold">
                     Contacts
                 </h1>
@@ -16,6 +20,7 @@ export default async function ContactsPage() {
                 <p className="text-muted-foreground">
                     CRM Contacts
                 </p>
+
             </div>
 
             <div className="rounded-xl border">
@@ -64,7 +69,7 @@ export default async function ContactsPage() {
                                 </td>
 
                                 <td className="p-3">
-                                    {contact.companyId ?? "-"}
+                                    {contact.companyId ?? '-'}
                                 </td>
 
                                 <td className="p-3">
@@ -90,10 +95,7 @@ export default async function ContactsPage() {
             </div>
 
         </div>
+
     );
 
 }
-
-
-
-

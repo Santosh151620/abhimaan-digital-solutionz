@@ -1,3 +1,5 @@
+import { redirect } from 'next/navigation';
+
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import PageHeader from '@/components/crm/ui/PageHeader';
 
@@ -9,32 +11,21 @@ import {
     createCompany,
 } from '../actions';
 
-import {
-    redirect,
-} from 'next/navigation';
-
 import type {
     CompanyDetails,
 } from '@/types/crm/Companies';
 
-
 export default function NewCompaniesPage() {
 
-
     async function submit(
-        values: Partial<CompanyDetails>
+        values: Partial<CompanyDetails>,
     ) {
         'use server';
 
-        await createCompany(
-            values
-        );
+        await createCompany(values);
 
-        redirect(
-            '/crm/companies'
-        );
+        redirect('/crm/companies');
     }
-
 
     return (
 
@@ -52,4 +43,5 @@ export default function NewCompaniesPage() {
         </CRMPageLayout>
 
     );
+
 }

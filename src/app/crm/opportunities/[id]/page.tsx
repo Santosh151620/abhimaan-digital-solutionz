@@ -1,13 +1,13 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
-import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
-import EntityOverviewGrid from "@/components/entities/EntityOverviewGrid";
-import EntityWorkspace from "@/components/entities/EntityWorkspace";
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
+import EntityWorkspace from '@/components/entities/EntityWorkspace';
 
 import {
-    OpportunitiesServiceInstance,
-} from "@/services/crm/OpportunitiesService";
+    listOpportunities,
+} from '../actions';
 
 interface Props {
     params: Promise<{
@@ -21,8 +21,13 @@ export default async function OpportunityDetailsPage({
 
     const { id } = await params;
 
+    const opportunities =
+        await listOpportunities();
+
     const opportunity =
-        await OpportunitiesServiceInstance.details(id);
+        opportunities.find(
+            item => item.id === id,
+        );
 
     if (!opportunity) {
         notFound();
@@ -73,39 +78,43 @@ export default async function OpportunityDetailsPage({
                     <EntityOverviewGrid
                         items={[
                             {
-                                title: "Stage",
+                                title: 'Stage',
                                 value: opportunity.stage,
                             },
                             {
-                                title: "Company",
+                                title: 'Company',
                                 value: opportunity.companyId,
                             },
                             {
-                                title: "Value",
+                                title: 'Value',
                                 value: `₹ ${opportunity.value}`,
                             },
                             {
-                                title: "Probability",
+                                title: 'Probability',
                                 value: `${opportunity.probability}%`,
                             },
                             {
-                                title: "Expected Close",
-                                value: opportunity.expectedCloseDate ?? "—",
+                                title: 'Expected Close',
+                                value:
+                                    opportunity.expectedCloseDate ??
+                                    '—',
                             },
                             {
-                                title: "Owner",
-                                value: opportunity.owner ?? "—",
+                                title: 'Owner',
+                                value:
+                                    opportunity.owner ??
+                                    '—',
                             },
                             {
-                                title: "Created",
+                                title: 'Created',
                                 value: new Date(
-                                    opportunity.createdAt
+                                    opportunity.createdAt,
                                 ).toLocaleDateString(),
                             },
                             {
-                                title: "Last Updated",
+                                title: 'Last Updated',
                                 value: new Date(
-                                    opportunity.updatedAt
+                                    opportunity.updatedAt,
                                 ).toLocaleDateString(),
                             },
                         ]}
