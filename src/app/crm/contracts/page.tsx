@@ -1,71 +1,70 @@
-import {
-    revalidatePath,
-} from 'next/cache';
+import { revalidatePath } from 'next/cache';
 
 import ContractsForm from '@/components/crm/contracts/ContractsForm';
 import ContractsSummary from '@/components/crm/contracts/ContractsSummary';
 import ContractsTable from '@/components/crm/contracts/ContractsTable';
 
-import type {
-    Contract,
-} from '@/types/crm/Contracts';
-
 import {
+    getContracts,
     createContract,
 } from './actions';
 
-
-const contracts: Contract[] = [];
-
-
 async function saveContract(
-    formData: FormData
+    formData: FormData,
 ) {
     'use server';
 
     await createContract({
 
         contractNumber: String(
-            formData.get('contractNumber') ?? ''
+            formData.get('contractNumber') ?? '',
         ),
 
         title: String(
-            formData.get('title') ?? ''
+            formData.get('title') ?? '',
         ),
 
         customerName: String(
-            formData.get('customerName') ?? ''
+            formData.get('customerName') ?? '',
         ),
 
         companyId: String(
-            formData.get('companyId') ?? ''
+            formData.get('companyId') ?? '',
         ),
 
         status: String(
-            formData.get('status') ?? 'Draft'
-        ) as Contract['status'],
+            formData.get('status') ?? 'Draft',
+        ) as never,
 
         startDate: String(
-            formData.get('startDate') ?? ''
+            formData.get('startDate') ?? '',
         ),
 
         endDate: String(
-            formData.get('endDate') ?? ''
+            formData.get('endDate') ?? '',
         ),
 
         value: Number(
-            formData.get('value') ?? 0
+            formData.get('value') ?? 0,
         ),
+
+        currency: String(
+            formData.get('currency') ?? 'INR',
+        ),
+
+        notes: String(
+            formData.get('notes') ?? '',
+        ),
+
     });
 
-
-    revalidatePath(
-        '/crm/contracts'
-    );
+    revalidatePath('/crm/contracts');
 }
 
+export default async function ContractsPage() {
 
-export default function ContractsPage() {
+    const contracts =
+        await getContracts();
 
     return (
 
@@ -78,21 +77,18 @@ export default function ContractsPage() {
                 </h1>
 
                 <p className="text-muted-foreground">
-                    Manage customer contracts.
+                    Manage customer contracts and agreements.
                 </p>
 
             </div>
-
 
             <ContractsSummary
                 contracts={contracts}
             />
 
-
             <ContractsForm
                 action={saveContract}
             />
-
 
             <ContractsTable
                 contracts={contracts}
@@ -101,4 +97,5 @@ export default function ContractsPage() {
         </div>
 
     );
+
 }

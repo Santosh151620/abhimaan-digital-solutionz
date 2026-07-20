@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import {
-    getTicket,
+    getProject,
 } from '../actions';
 
 interface Props {
@@ -11,17 +11,17 @@ interface Props {
     }>;
 }
 
-export default async function TicketDetailsPage({
+export default async function ProjectDetailsPage({
     params,
 }: Props) {
 
     const { id } =
         await params;
 
-    const ticket =
-        await getTicket(id);
+    const project =
+        await getProject(id);
 
-    if (!ticket) {
+    if (!project) {
         notFound();
     }
 
@@ -34,17 +34,17 @@ export default async function TicketDetailsPage({
                 <div>
 
                     <h1 className="text-3xl font-bold">
-                        {ticket.subject}
+                        {project.name}
                     </h1>
 
                     <p className="text-muted-foreground">
-                        {ticket.ticketNumber}
+                        {project.projectNumber}
                     </p>
 
                 </div>
 
                 <Link
-                    href={`/crm/tickets/${ticket.id}/edit`}
+                    href={`/crm/projects/${project.id}/edit`}
                     className="rounded-lg border px-4 py-2"
                 >
                     Edit
@@ -55,62 +55,105 @@ export default async function TicketDetailsPage({
             <div className="grid gap-4 rounded-xl border bg-card p-6 md:grid-cols-2">
 
                 <div>
+
+                    <div className="text-sm text-muted-foreground">
+                        Customer
+                    </div>
+
+                    <div className="font-medium">
+                        {project.customerName}
+                    </div>
+
+                </div>
+
+                <div>
+
                     <div className="text-sm text-muted-foreground">
                         Company
                     </div>
+
                     <div className="font-medium">
-                        {ticket.companyId || '-'}
+                        {project.companyId}
                     </div>
+
                 </div>
 
                 <div>
+
                     <div className="text-sm text-muted-foreground">
-                        Contact
+                        Contract
                     </div>
+
                     <div className="font-medium">
-                        {ticket.contactId || '-'}
+                        {project.contractId || '-'}
                     </div>
+
                 </div>
 
                 <div>
+
+                    <div className="text-sm text-muted-foreground">
+                        Manager
+                    </div>
+
+                    <div className="font-medium">
+                        {project.manager || '-'}
+                    </div>
+
+                </div>
+
+                <div>
+
                     <div className="text-sm text-muted-foreground">
                         Status
                     </div>
+
                     <div className="font-medium">
-                        {ticket.status}
+                        {project.status}
                     </div>
+
                 </div>
 
                 <div>
+
                     <div className="text-sm text-muted-foreground">
-                        Priority
+                        Budget
                     </div>
+
                     <div className="font-medium">
-                        {ticket.priority}
+                        {project.currency}{' '}
+                        {project.budget.toLocaleString()}
                     </div>
+
                 </div>
 
                 <div>
+
                     <div className="text-sm text-muted-foreground">
-                        Assigned To
+                        Start Date
                     </div>
+
                     <div className="font-medium">
-                        {ticket.assignedTo || '-'}
+                        {project.startDate}
                     </div>
+
                 </div>
 
                 <div>
+
                     <div className="text-sm text-muted-foreground">
-                        Category
+                        End Date
                     </div>
+
                     <div className="font-medium">
-                        {ticket.category || '-'}
+                        {project.endDate}
                     </div>
+
                 </div>
 
             </div>
 
-            {ticket.description && (
+            {project.description && (
 
                 <div className="rounded-xl border bg-card p-6">
 
@@ -119,23 +162,7 @@ export default async function TicketDetailsPage({
                     </h2>
 
                     <p className="whitespace-pre-wrap">
-                        {ticket.description}
-                    </p>
-
-                </div>
-
-            )}
-
-            {ticket.resolution && (
-
-                <div className="rounded-xl border bg-card p-6">
-
-                    <h2 className="mb-2 font-semibold">
-                        Resolution
-                    </h2>
-
-                    <p className="whitespace-pre-wrap">
-                        {ticket.resolution}
+                        {project.description}
                     </p>
 
                 </div>

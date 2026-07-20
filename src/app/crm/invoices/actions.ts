@@ -1,7 +1,6 @@
 'use server';
 
 import { InvoicesServiceInstance } from '@/services/crm/InvoicesService';
-
 import type {
     Invoice,
     InvoiceStatus,
@@ -25,6 +24,43 @@ export async function createInvoice(
     data: Partial<Invoice>,
 ) {
     return InvoicesServiceInstance.create(data);
+}
+
+export async function saveInvoice(
+    formData: FormData,
+) {
+    await InvoicesServiceInstance.create({
+        invoiceNumber: String(
+            formData.get('invoiceNumber') ?? '',
+        ),
+        title: String(
+            formData.get('title') ?? '',
+        ),
+        customerName: String(
+            formData.get('customerName') ?? '',
+        ),
+        companyId: String(
+            formData.get('companyId') ?? '',
+        ),
+        issueDate: String(
+            formData.get('issueDate') ?? '',
+        ),
+        dueDate: String(
+            formData.get('dueDate') ?? '',
+        ),
+        total: Number(
+            formData.get('total') ?? 0,
+        ),
+        currency: String(
+            formData.get('currency') ?? 'INR',
+        ),
+        status: (
+            formData.get('status') as InvoiceStatus
+        ) ?? 'Draft',
+        notes: String(
+            formData.get('notes') ?? '',
+        ),
+    });
 }
 
 export async function updateInvoice(
