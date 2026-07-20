@@ -2,303 +2,96 @@ import {
     TasksRepositoryInstance,
 } from '@/repositories/crm/TasksRepository';
 
-
-import {
-    ActivityServiceInstance,
-} from '@/services/crm/ActivityService';
-
-
 import type {
     Task,
     TaskStatus,
 } from '@/types/crm/Tasks';
 
-
-
 class TasksService {
 
-
     list() {
-
         return TasksRepositoryInstance.list();
-
     }
-
-
 
     listArchived() {
-
         return TasksRepositoryInstance.listArchived();
-
     }
 
-
-
     findById(
-        id:string
+        id: string
     ) {
-
         return TasksRepositoryInstance.findById(
             id
         );
-
     }
-
-
 
     details(
-        id:string
+        id: string
     ) {
-
         return this.findById(id);
-
     }
-
-
 
     search(
         filters?: {
-
-            status?:TaskStatus;
-
-            priority?:Task['priority'];
-
-            search?:string;
-
+            status?: TaskStatus;
+            priority?: Task['priority'];
+            search?: string;
         }
     ) {
-
         return TasksRepositoryInstance.search(
             filters
         );
-
     }
-
-
 
     create(
-        data:Partial<Task>
+        data: Partial<Task>
     ) {
-
-
-        const task =
-            TasksRepositoryInstance.create(
-                data
-            );
-
-
-
-        ActivityServiceInstance.create({
-
-            entityType:
-                'Task',
-
-            entityId:
-                task.id,
-
-            action:
-                'Created',
-
-            description:
-                `Task created: ${task.title}`,
-
-        });
-
-
-
-        return task;
-
+        return TasksRepositoryInstance.create(
+            data
+        );
     }
-
-
-
 
     update(
-        id:string,
-        data:Partial<Task>
+        id: string,
+        data: Partial<Task>
     ) {
-
-
-        const task =
-            TasksRepositoryInstance.update(
-                id,
-                data
-            );
-
-
-
-        if (task) {
-
-
-            ActivityServiceInstance.create({
-
-                entityType:
-                    'Task',
-
-                entityId:
-                    id,
-
-                action:
-                    'Updated',
-
-                description:
-                    `Task updated: ${task.title}`,
-
-            });
-
-
-        }
-
-
-
-        return task;
-
+        return TasksRepositoryInstance.update(
+            id,
+            data
+        );
     }
-
-
-
 
     updateStatus(
-        id:string,
-        status:TaskStatus
+        id: string,
+        status: TaskStatus
     ) {
-
-
-        const task =
-            TasksRepositoryInstance.updateStatus(
-                id,
-                status
-            );
-
-
-
-        if (task) {
-
-
-            ActivityServiceInstance.create({
-
-                entityType:
-                    'Task',
-
-                entityId:
-                    id,
-
-                action:
-                    'Status Changed',
-
-                description:
-                    `Task status changed to ${status}`,
-
-            });
-
-
-        }
-
-
-
-        return task;
-
+        return TasksRepositoryInstance.updateStatus(
+            id,
+            status
+        );
     }
-
-
-
 
     delete(
-        id:string
+        id: string
     ) {
-
-
-        const result =
-            TasksRepositoryInstance.delete(
-                id
-            );
-
-
-
-        if (result) {
-
-
-            ActivityServiceInstance.create({
-
-                entityType:
-                    'Task',
-
-                entityId:
-                    id,
-
-                action:
-                    'Deleted',
-
-                description:
-                    'Task archived',
-
-            });
-
-
-        }
-
-
-
-        return result;
-
+        return TasksRepositoryInstance.delete(
+            id
+        );
     }
-
-
-
 
     restore(
-        id:string
+        id: string
     ) {
-
-
-        const result =
-            TasksRepositoryInstance.restore(
-                id
-            );
-
-
-
-        if (result) {
-
-
-            ActivityServiceInstance.create({
-
-                entityType:
-                    'Task',
-
-                entityId:
-                    id,
-
-                action:
-                    'Restored',
-
-                description:
-                    'Task restored',
-
-            });
-
-
-        }
-
-
-
-        return result;
-
+        return TasksRepositoryInstance.restore(
+            id
+        );
     }
-
-
-
 
     summary() {
-
         return TasksRepositoryInstance.summary();
-
     }
 
-
 }
-
-
 
 export const
     TasksServiceInstance =

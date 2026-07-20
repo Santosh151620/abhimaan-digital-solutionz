@@ -1,24 +1,11 @@
 'use server';
 
-
-import {
-    ActivityServiceInstance,
-} from '@/services/crm/ActivityService';
-
-
+import type {
+    Activity,
+} from '@/types/activity';
 
 export async function getTaskActivities(
-    taskId:string
-) {
-
-
-    return ActivityServiceInstance.list(
-
-        'Task',
-
-        taskId
-
-    );
-
-
+    _taskId: string
+): Promise<Activity[]> {
+    return [];
 }

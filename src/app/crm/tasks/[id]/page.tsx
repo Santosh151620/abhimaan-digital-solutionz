@@ -1,3 +1,7 @@
+import type {
+    Activity,
+} from '@/types/activity';
+
 import {
     notFound,
 } from 'next/navigation';
@@ -14,7 +18,6 @@ import {
 import {
     getTaskAttachments,
 } from './attachment-actions';
-
 
 import TaskAttachments from './TaskAttachments';
 
@@ -227,7 +230,8 @@ export default async function TaskDetailsPage({
 
                     {
                         activities.map(
-                            activity => (
+                            (
+                                activity: Activity) => (
 
                                 <div
 
@@ -239,7 +243,7 @@ export default async function TaskDetailsPage({
 
                                     <p className="font-medium">
 
-                                        {activity.action}
+                                        {activity.title ?? activity.type}
 
                                     </p>
 

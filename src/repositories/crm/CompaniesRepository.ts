@@ -3,187 +3,582 @@ import type {
     CompanyDetails,
 } from '@/types/crm/Companies';
 
-const companies: CompanyDetails[] = [
-    {
-        id: '1',
 
-        name: 'Acme Technologies',
-        legalName: 'Acme Technologies Pvt Ltd',
 
-        industry: 'Software',
+class CompaniesRepository {
 
-        website: 'https://acme.test',
-        phone: '+91 9876543210',
-        email: 'hello@acme.test',
 
-        status: 'ACTIVE',
+    private companies =
+        new Map<string, CompanyDetails>();
 
-        address: 'MG Road',
-        city: 'Bengaluru',
-        state: 'Karnataka',
-        country: 'India',
 
-        employees: 120,
-        annualRevenue: 5000000,
 
-        isDeleted: false,
-        deletedAt: null,
-        deletedBy: null,
+    list() {
 
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        return Array.from(
 
-        contacts: [],
-        opportunities: [],
-        activities: [],
-    },
-];
+            this.companies.values()
 
-export class CompaniesRepository {
+        )
+        .filter(
 
-    async list(): Promise<Company[]> {
-        return companies.filter(
-            company => !company.isDeleted
+            company =>
+                !company.isDeleted
+
         );
+
     }
 
-    async listArchived(): Promise<Company[]> {
-        return companies.filter(
-            company => company.isDeleted
+
+
+
+    listArchived() {
+
+        return Array.from(
+
+            this.companies.values()
+
+        )
+        .filter(
+
+            company =>
+                company.isDeleted
+
         );
+
     }
 
-    async findById(
-        id: string
-    ): Promise<CompanyDetails | null> {
+
+
+
+    findById(
+        id:string
+    ) {
 
         return (
-            companies.find(
-                company => company.id === id
-            ) ?? null
+            this.companies.get(id)
+            ??
+            null
         );
 
     }
 
-    async create(
-        data: Partial<CompanyDetails>
-    ): Promise<CompanyDetails> {
 
-        const company: CompanyDetails = {
-            id: Date.now().toString(),
 
-            name: data.name ?? '',
 
-            legalName: data.legalName,
-            industry: data.industry,
-            website: data.website,
-            phone: data.phone,
-            email: data.email,
+    details(
+        id:string
+    ) {
 
-            status: data.status ?? 'ACTIVE',
+        return this.findById(id);
 
-            address: data.address,
-            city: data.city,
-            state: data.state,
-            country: data.country,
+    }
 
-            employees: data.employees,
-            annualRevenue: data.annualRevenue,
 
-            isDeleted: false,
-            deletedAt: null,
-            deletedBy: null,
 
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
 
-            contacts: [],
-            opportunities: [],
-            activities: [],
+    create(
+        data:Partial<CompanyDetails>
+    ) {
+
+
+        const now =
+            new Date().toISOString();
+
+
+
+        const company:CompanyDetails = {
+
+
+            id:
+                crypto.randomUUID(),
+
+
+
+            companyNumber:
+                data.companyNumber
+                ??
+                `CMP-${Date.now()}`,
+
+
+
+            name:
+                data.name
+                ??
+                '',
+
+
+
+            legalName:
+                data.legalName,
+
+
+
+            industry:
+                data.industry,
+
+
+
+            website:
+                data.website,
+
+
+
+            phone:
+                data.phone,
+
+
+
+            email:
+                data.email,
+
+
+
+            status:
+                data.status
+                ??
+                'ACTIVE',
+
+
+
+            address:
+                data.address,
+
+
+
+            city:
+                data.city,
+
+
+
+            state:
+                data.state,
+
+
+
+            country:
+                data.country,
+
+
+
+            employees:
+                data.employees,
+
+
+
+            annualRevenue:
+                data.annualRevenue,
+
+
+
+            isDeleted:
+                false,
+
+
+
+            deletedAt:
+                null,
+
+
+
+            deletedBy:
+                null,
+
+
+
+            createdAt:
+                now,
+
+
+
+            updatedAt:
+                now,
+
+
+
+            contacts:
+                data.contacts
+                ??
+                [],
+
+
+
+            opportunities:
+                data.opportunities
+                ??
+                [],
+
+
+
+            activities:
+                data.activities
+                ??
+                [],
+
+
         };
 
-        companies.push(company);
 
-        return company;
-    }
 
-    async update(
-        id: string,
-        data: Partial<CompanyDetails>
-    ): Promise<CompanyDetails | null> {
+        this.companies.set(
 
-        const company = companies.find(
-            item => item.id === id
+            company.id,
+
+            company
+
         );
 
-        if (!company) {
+
+
+        return company;
+
+
+    }
+
+
+
+
+
+    update(
+        id:string,
+        data:Partial<CompanyDetails>
+    ) {
+
+
+        const existing =
+            this.companies.get(id);
+
+
+
+        if (!existing) {
+
             return null;
+
         }
 
-        Object.assign(company, data);
 
-        company.updatedAt =
-            new Date().toISOString();
 
-        return company;
+        const updated:CompanyDetails = {
+
+
+            ...existing,
+
+
+            ...data,
+
+
+
+            updatedAt:
+                new Date().toISOString(),
+
+
+        };
+
+
+
+        this.companies.set(
+
+            id,
+
+            updated
+
+        );
+
+
+
+        return updated;
+
 
     }
 
-    async delete(
-        _id: string,
-        deletedBy = 'system'
-    ): Promise<boolean> {
 
-        const company = companies.find(
-            item => item.id === _id
-        );
+
+
+
+    delete(
+        id:string
+    ) {
+
+
+        const company =
+            this.companies.get(id);
+
+
 
         if (!company) {
+
             return false;
+
         }
+
+
 
         company.isDeleted = true;
+
+
+        company.status =
+            'ARCHIVED';
+
+
+
         company.deletedAt =
             new Date().toISOString();
-        company.deletedBy = deletedBy;
-        company.status = 'ARCHIVED';
 
-        return true;
 
-    }
-
-    async restore(
-        _id: string
-    ): Promise<boolean> {
-
-        const company = companies.find(
-            item => item.id === _id
-        );
-
-        if (!company) {
-            return false;
-        }
-
-        company.isDeleted = false;
-        company.deletedAt = null;
-        company.deletedBy = null;
-
-        if (company.status === 'ARCHIVED') {
-            company.status = 'ACTIVE';
-        }
 
         company.updatedAt =
             new Date().toISOString();
 
+
+
+        this.companies.set(
+
+            id,
+
+            company
+
+        );
+
+
+
         return true;
 
+
     }
+
+
+
+
+
+    restore(
+        id:string
+    ) {
+
+
+        const company =
+            this.companies.get(id);
+
+
+
+        if (!company) {
+
+            return false;
+
+        }
+
+
+
+        company.isDeleted = false;
+
+
+        company.deletedAt = null;
+
+
+        company.deletedBy = null;
+
+
+
+        if (
+            company.status ===
+            'ARCHIVED'
+        ) {
+
+            company.status =
+                'ACTIVE';
+
+        }
+
+
+
+        company.updatedAt =
+            new Date().toISOString();
+
+
+
+        this.companies.set(
+
+            id,
+
+            company
+
+        );
+
+
+
+        return true;
+
+
+    }
+
+
+
+
+
+    search(
+        filters?: {
+
+            status?:Company['status'];
+
+            industry?:string;
+
+            search?:string;
+
+        }
+    ) {
+
+
+        let companies =
+            this.list();
+
+
+
+
+        if (
+            filters?.status
+        ) {
+
+            companies =
+                companies.filter(
+
+                    company =>
+
+                        company.status ===
+                        filters.status
+
+                );
+
+        }
+
+
+
+
+
+        if (
+            filters?.industry
+        ) {
+
+            companies =
+                companies.filter(
+
+                    company =>
+
+                        company.industry ===
+                        filters.industry
+
+                );
+
+        }
+
+
+
+
+
+        if (
+            filters?.search
+        ) {
+
+
+            const keyword =
+                filters.search.toLowerCase();
+
+
+
+            companies =
+                companies.filter(
+
+                    company =>
+
+
+                        company.name
+                            .toLowerCase()
+                            .includes(keyword)
+
+
+                        ||
+
+                        company.email
+                            ?.toLowerCase()
+                            .includes(keyword)
+
+
+                );
+
+
+        }
+
+
+
+
+        return companies;
+
+
+    }
+
+
+
+
+
+    summary() {
+
+
+        const companies =
+            this.list();
+
+
+
+        return {
+
+
+            total:
+                companies.length,
+
+
+
+            active:
+                companies.filter(
+
+                    company =>
+
+                        company.status ===
+                        'ACTIVE'
+
+                ).length,
+
+
+
+            inactive:
+                companies.filter(
+
+                    company =>
+
+                        company.status ===
+                        'INACTIVE'
+
+                ).length,
+
+
+
+            prospect:
+                companies.filter(
+
+                    company =>
+
+                        company.status ===
+                        'PROSPECT'
+
+                ).length,
+
+
+        };
+
+
+    }
+
 
 }
 
-export const CompaniesRepositoryInstance =
-    new CompaniesRepository();
 
 
-
-
+export const
+    CompaniesRepositoryInstance =
+        new CompaniesRepository();

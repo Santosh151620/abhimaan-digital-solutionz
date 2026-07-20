@@ -4,7 +4,7 @@ import type {
 
 
 
-export const CRM_ADMIN_ROLE:UserRole = {
+export const CRM_ADMIN_ROLE: UserRole = {
 
 
     role:
@@ -12,51 +12,87 @@ export const CRM_ADMIN_ROLE:UserRole = {
 
 
 
-    permissions:[
+    permissions: [
 
+
+
+        // TASK
 
         {
-
             module:
                 'Task',
 
             action:
                 'view',
-
         },
 
 
         {
-
             module:
                 'Task',
 
             action:
                 'create',
-
         },
 
 
         {
-
             module:
                 'Task',
 
             action:
                 'update',
-
         },
 
 
         {
-
             module:
                 'Task',
 
             action:
                 'delete',
-
         },
+
+
+
+
+        // COMPANY
+
+        {
+            module:
+                'Company',
+
+            action:
+                'view',
+        },
+
+
+        {
+            module:
+                'Company',
+
+            action:
+                'create',
+        },
+
+
+        {
+            module:
+                'Company',
+
+            action:
+                'update',
+        },
+
+
+        {
+            module:
+                'Company',
+
+            action:
+                'delete',
+        },
+
 
     ],
 

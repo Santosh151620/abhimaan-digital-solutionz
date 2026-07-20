@@ -1,46 +1,157 @@
-import { CompaniesRepositoryInstance } from '@/repositories/crm/CompaniesRepository';
-import type { CompanyDetails } from '@/types/crm/Companies';
+import {
+    CompaniesRepositoryInstance,
+} from '@/repositories/crm/CompaniesRepository';
 
-export class CompaniesService {
 
-    async list() {
+
+import type {
+    Company,
+    CompanyDetails,
+} from '@/types/crm/Companies';
+
+
+
+class CompaniesService {
+
+
+
+    list() {
+
         return CompaniesRepositoryInstance.list();
+
     }
 
-    async listArchived() {
+
+
+
+
+    listArchived() {
+
         return CompaniesRepositoryInstance.listArchived();
+
     }
 
-    async details(id: string) {
-        return CompaniesRepositoryInstance.findById(id);
-    }
 
-    async create(
-        data: Partial<CompanyDetails>
+
+
+
+    findById(
+        id:string
     ) {
-        return CompaniesRepositoryInstance.create(data);
+
+        return CompaniesRepositoryInstance.findById(
+            id
+        );
+
     }
 
-    async update(
-        id: string,
-        data: Partial<CompanyDetails>
+
+
+
+
+    details(
+        id:string
     ) {
-        return CompaniesRepositoryInstance.update(id, data);
+
+        return this.findById(id);
+
     }
 
-    async delete(id: string) {
-        return CompaniesRepositoryInstance.delete(id);
+
+
+
+
+    search(
+        filters?: {
+
+            status?:Company['status'];
+
+            industry?:string;
+
+            search?:string;
+
+        }
+    ) {
+
+        return CompaniesRepositoryInstance.search(
+            filters
+        );
+
     }
 
-    async restore(id: string) {
-        return CompaniesRepositoryInstance.restore(id);
+
+
+
+
+    create(
+        data:Partial<CompanyDetails>
+    ) {
+
+        return CompaniesRepositoryInstance.create(
+            data
+        );
+
     }
+
+
+
+
+
+    update(
+        id:string,
+        data:Partial<CompanyDetails>
+    ) {
+
+        return CompaniesRepositoryInstance.update(
+            id,
+            data
+        );
+
+    }
+
+
+
+
+
+    delete(
+        id:string
+    ) {
+
+        return CompaniesRepositoryInstance.delete(
+            id
+        );
+
+    }
+
+
+
+
+
+    restore(
+        id:string
+    ) {
+
+        return CompaniesRepositoryInstance.restore(
+            id
+        );
+
+    }
+
+
+
+
+
+    summary() {
+
+        return CompaniesRepositoryInstance.summary();
+
+    }
+
 
 }
 
-export const CompaniesServiceInstance =
-    new CompaniesService();
 
 
-
-
+export const
+    CompaniesServiceInstance =
+        new CompaniesService();
