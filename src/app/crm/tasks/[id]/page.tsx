@@ -7,11 +7,21 @@ import {
     getTaskDetails,
 } from './actions';
 
+import {
+    getTaskActivities,
+} from './activity-actions';
+
+import {
+    getTaskAttachments,
+} from './attachment-actions';
+
+
+import TaskAttachments from './TaskAttachments';
 
 interface Props {
 
     params: Promise<{
-        id:string;
+        id: string;
     }>;
 
 }
@@ -34,12 +44,21 @@ export default async function TaskDetailsPage({
         );
 
 
+    const activities =
+        await getTaskActivities(
+            id
+        );
+
+
     if (!task) {
 
         notFound();
 
     }
-
+    const attachments =
+        await getTaskAttachments(
+            id
+        );
 
 
     return (
@@ -174,7 +193,13 @@ export default async function TaskDetailsPage({
 
             </div>
 
+            <TaskAttachments
 
+                taskId={id}
+
+                initialAttachments={attachments}
+
+            />
 
             <div className="rounded-lg border p-6">
 
@@ -184,15 +209,73 @@ export default async function TaskDetailsPage({
                 </h2>
 
 
-                <p className="text-sm text-muted-foreground">
-                    Timeline integration will connect with CRM audit engine.
-                </p>
+
+                <div className="space-y-4">
+
+
+                    {
+                        activities.length === 0 && (
+
+                            <p className="text-sm text-muted-foreground">
+                                No activity recorded.
+                            </p>
+
+                        )
+                    }
+
+
+
+                    {
+                        activities.map(
+                            activity => (
+
+                                <div
+
+                                    key={activity.id}
+
+                                    className="border-b pb-3 last:border-0"
+
+                                >
+
+                                    <p className="font-medium">
+
+                                        {activity.action}
+
+                                    </p>
+
+
+                                    <p className="text-sm">
+
+                                        {activity.description}
+
+                                    </p>
+
+
+                                    <p className="text-xs text-muted-foreground">
+
+                                        {
+                                            new Date(
+                                                activity.createdAt
+                                            ).toLocaleString()
+                                        }
+
+                                    </p>
+
+
+                                </div>
+
+                            )
+                        )
+                    }
+
+
+                </div>
 
 
             </div>
-<TaskEditForm
-    task={task}
-/>
+            <TaskEditForm
+                task={task}
+            />
 
 
         </div>

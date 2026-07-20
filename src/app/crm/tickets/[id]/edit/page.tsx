@@ -89,9 +89,9 @@ export default async function EditTicketPage({
             </h1>
 
             <TicketsForm
-    initialData={currentTicket}
-    action={submit}
-/>
+                initialData={currentTicket}
+                action={submit}
+            />
 
         </div>
 
