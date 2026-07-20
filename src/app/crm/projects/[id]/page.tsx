@@ -55,7 +55,6 @@ export default async function ProjectDetailsPage({
             <div className="grid gap-4 rounded-xl border bg-card p-6 md:grid-cols-2">
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Customer
                     </div>
@@ -63,11 +62,9 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.customerName}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Company
                     </div>
@@ -75,11 +72,9 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.companyId}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Contract
                     </div>
@@ -87,11 +82,9 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.contractId || '-'}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Manager
                     </div>
@@ -99,11 +92,9 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.manager || '-'}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Status
                     </div>
@@ -111,24 +102,20 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.status}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Budget
                     </div>
 
                     <div className="font-medium">
-                        {project.currency}{' '}
+                        {project.currency}{" "}
                         {project.budget.toLocaleString()}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         Start Date
                     </div>
@@ -136,11 +123,9 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.startDate}
                     </div>
-
                 </div>
 
                 <div>
-
                     <div className="text-sm text-muted-foreground">
                         End Date
                     </div>
@@ -148,7 +133,6 @@ export default async function ProjectDetailsPage({
                     <div className="font-medium">
                         {project.endDate}
                     </div>
-
                 </div>
 
             </div>

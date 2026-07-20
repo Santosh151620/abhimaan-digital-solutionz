@@ -1,11 +1,10 @@
 import Link from 'next/link';
 
-import ProjectsSummary from '@/components/crm/projects/ProjectsSummary';
-import ProjectsTable from '@/components/crm/projects/ProjectsTable';
-
 import {
     getProjects,
 } from './actions';
+
+import ProjectsClient from './ProjectsClient';
 
 export default async function ProjectsPage() {
 
@@ -14,7 +13,7 @@ export default async function ProjectsPage() {
 
     return (
 
-        <div className="space-y-8 p-6">
+        <div className="space-y-6">
 
             <div className="flex items-center justify-between">
 
@@ -25,7 +24,7 @@ export default async function ProjectsPage() {
                     </h1>
 
                     <p className="text-muted-foreground">
-                        Manage customer projects and delivery.
+                        Manage customer projects.
                     </p>
 
                 </div>
@@ -34,17 +33,13 @@ export default async function ProjectsPage() {
                     href="/crm/projects/new"
                     className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
                 >
-                    + New Project
+                    New Project
                 </Link>
 
             </div>
 
-            <ProjectsSummary
-                projects={projects}
-            />
-
-            <ProjectsTable
-                projects={projects}
+            <ProjectsClient
+                initialProjects={projects}
             />
 
         </div>

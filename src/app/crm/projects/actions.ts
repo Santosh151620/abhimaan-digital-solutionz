@@ -1,6 +1,8 @@
 'use server';
 
-import { ProjectsServiceInstance } from '@/services/crm/ProjectsService';
+import {
+    ProjectsServiceInstance,
+} from '@/services/crm/ProjectsService';
 
 import type {
     Project,
@@ -8,41 +10,83 @@ import type {
 } from '@/types/crm/Projects';
 
 export async function getProjects() {
+
     return ProjectsServiceInstance.list();
+
 }
 
 export async function getArchivedProjects() {
+
     return ProjectsServiceInstance.listArchived();
+
 }
 
 export async function getProject(
-    id: string
+    id: string,
 ) {
-    return ProjectsServiceInstance.details(id);
+
+    return ProjectsServiceInstance.details(
+        id
+    );
+
 }
 
 export async function createProject(
-    data: Partial<Project>
+    data: Partial<Project>,
 ) {
-    return ProjectsServiceInstance.create(data);
+
+    return ProjectsServiceInstance.create(
+        data
+    );
+
 }
 
 export async function updateProject(
     id: string,
-    data: Partial<Project>
+    data: Partial<Project>,
 ) {
+
     return ProjectsServiceInstance.update(
         id,
         data
     );
+
 }
 
 export async function updateProjectStatus(
     id: string,
-    status: ProjectStatus
+    status: ProjectStatus,
 ) {
+
     return ProjectsServiceInstance.updateStatus(
         id,
         status
     );
+
+}
+
+export async function deleteProject(
+    id: string,
+) {
+
+    return ProjectsServiceInstance.delete(
+        id
+    );
+
+}
+
+export async function restoreProject(
+    id: string,
+) {
+
+    return ProjectsServiceInstance.restore(
+        id
+    );
+
+}
+
+export async function getProjectsSummary() {
+
+    return ProjectsServiceInstance.summary();
+
 }
