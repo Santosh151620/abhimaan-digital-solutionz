@@ -1,44 +1,65 @@
-import { QuotationsRepositoryInstance } from '@/repositories/crm/QuotationsRepository';
+import {
+    QuotationsRepositoryInstance,
+} from '@/repositories/crm/QuotationsRepository';
 
 import type {
     Quotation,
     QuotationStatus,
 } from '@/types/crm/Quotations';
 
+
 class QuotationsService {
 
-    list() {
+    async list() {
         return QuotationsRepositoryInstance.list();
     }
 
-    listArchived() {
+
+    async listArchived() {
         return QuotationsRepositoryInstance.listArchived();
     }
 
-    details(id: string) {
+
+    async details(
+        id: string
+    ) {
         return QuotationsRepositoryInstance.details(id);
     }
 
-    create(data: Partial<Quotation>) {
+
+    async create(
+        data: Partial<Quotation>
+    ) {
         return QuotationsRepositoryInstance.create(data);
     }
 
-    update(
+
+    async update(
         id: string,
         data: Partial<Quotation>
     ) {
-        return QuotationsRepositoryInstance.update(id, data);
+        return QuotationsRepositoryInstance.update(
+            id,
+            data
+        );
     }
 
-    delete(id: string) {
+
+    async delete(
+        id: string
+    ) {
         return QuotationsRepositoryInstance.delete(id);
     }
 
-    restore(id: string) {
+
+    async restore(
+        id: string
+    ) {
         return QuotationsRepositoryInstance.restore(id);
     }
 
-    updateStatus(
+
+    async updateStatus(
         id: string,
         status: QuotationStatus
     ) {
@@ -48,13 +69,16 @@ class QuotationsService {
         );
     }
 
-    summary() {
 
-        const quotations = this.list();
+    async summary() {
+
+        const quotations =
+            await this.list();
 
         return {
 
-            total: quotations.length,
+            total:
+                quotations.length,
 
             draft:
                 quotations.filter(
@@ -87,6 +111,7 @@ class QuotationsService {
     }
 
 }
+
 
 export const QuotationsServiceInstance =
     new QuotationsService();

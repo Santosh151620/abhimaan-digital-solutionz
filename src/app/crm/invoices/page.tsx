@@ -1,62 +1,47 @@
-import InvoicesForm from '@/components/crm/invoices/InvoicesForm';
+import Link from 'next/link';
+
+import {
+    listInvoices,
+} from './actions';
+
 import InvoicesSummary from '@/components/crm/invoices/InvoicesSummary';
 import InvoicesTable from '@/components/crm/invoices/InvoicesTable';
-import type { Invoice } from '@/types/crm/Invoices';
 
-const invoices: Invoice[] = [];
-
-async function saveInvoice(formData: FormData) {
-    'use server';
-
-    const invoiceNumber = String(
-        formData.get('invoiceNumber') ?? ''
-    );
-
-    const customerName = String(
-        formData.get('customerName') ?? ''
-    );
-
-    const companyId = String(
-        formData.get('companyId') ?? ''
-    );
-
-    const status = String(
-        formData.get('status') ?? 'Draft'
-    );
-
-    const amount = String(
-        formData.get('amount') ?? '0'
-    );
-
-    const dueDate = String(
-        formData.get('dueDate') ?? ''
-    );
-
-    console.log({
-        invoiceNumber,
-        customerName,
-        companyId,
-        status,
-        amount,
-        dueDate,
-    });
-}
 
 export default async function InvoicesPage() {
+
+
+    const invoices =
+        await listInvoices();
+
 
     return (
 
         <div className="space-y-8 p-6">
 
-            <div>
 
-                <h1 className="text-3xl font-bold">
-                    Invoices
-                </h1>
+            <div className="flex items-center justify-between">
 
-                <p className="text-muted-foreground">
-                    Manage customer invoices and billing lifecycle.
-                </p>
+                <div>
+
+                    <h1 className="text-3xl font-bold">
+                        Invoices
+                    </h1>
+
+                    <p className="text-muted-foreground">
+                        Manage customer invoices and billing lifecycle.
+                    </p>
+
+                </div>
+
+
+                <Link
+                    href="/crm/invoices/new"
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+                >
+                    + New Invoice
+                </Link>
+
 
             </div>
 
@@ -66,14 +51,10 @@ export default async function InvoicesPage() {
             />
 
 
-            <InvoicesForm
-                action={saveInvoice}
-            />
-
-
             <InvoicesTable
                 invoices={invoices}
             />
+
 
         </div>
 

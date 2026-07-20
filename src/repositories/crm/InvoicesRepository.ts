@@ -1,137 +1,165 @@
-import type { Invoice } from '@/types/crm/Invoices';
+import type {
+    Invoice,
+    InvoiceStatus,
+} from '@/types/crm/Invoices';
 
 
 class InvoicesRepository {
 
+    private invoices =
+        new Map<string, Invoice>();
 
-    private invoices: Invoice[] = [];
 
+    list(): Invoice[] {
 
-    async list(): Promise<Invoice[]> {
-
-        return this.invoices.filter(
-            invoice => !invoice.archived
+        return [
+            ...this.invoices.values()
+        ]
+        .filter(
+            (invoice) =>
+                !invoice.archived
         );
 
     }
 
 
-    async listArchived(): Promise<Invoice[]> {
+    listArchived(): Invoice[] {
 
-        return this.invoices.filter(
-            invoice => invoice.archived
+        return [
+            ...this.invoices.values()
+        ]
+        .filter(
+            (invoice) =>
+                invoice.archived
         );
 
     }
 
 
-    async findById(
-        id:string
-    ):Promise<Invoice | null>{
+    details(
+        id: string
+    ): Invoice | null {
 
         return (
-            this.invoices.find(
-                invoice=>invoice.id===id
-            ) ?? null
+            this.invoices.get(id)
+            ??
+            null
         );
 
     }
 
 
-    async create(
-        data:Partial<Invoice>
-    ):Promise<Invoice>{
+    create(
+        data: Partial<Invoice>
+    ): Invoice {
+
+        const now =
+            new Date().toISOString().substring(0,10)
 
 
-        const invoice:Invoice = {
+        const invoice: Invoice = {
 
-            id:crypto.randomUUID(),
+            id:
+                crypto.randomUUID(),
+
 
             invoiceNumber:
                 data.invoiceNumber ??
                 `INV-${Date.now()}`,
 
+
             companyId:
-                data.companyId ?? '',
+                data.companyId ??
+                '',
+
 
             customerName:
-                data.customerName ?? '',
+                data.customerName ??
+                '',
+
+
+            contractId:
+                data.contractId,
+
+
+            quotationId:
+                data.quotationId,
+
 
             status:
-                data.status ?? 'Draft',
+                data.status ??
+                'Draft',
+
 
             issueDate:
                 data.issueDate ??
-                new Date().toISOString(),
+                now.substring(0,10),
+
 
             dueDate:
                 data.dueDate ??
-                new Date().toISOString(),
+                now.substring(0,10),
+
 
             subtotal:
-                data.subtotal ?? 0,
+                data.subtotal ??
+                0,
+
 
             tax:
-                data.tax ?? 0,
+                data.tax ??
+                0,
+
 
             total:
-                data.total ?? 0,
+                data.total ??
+                0,
+
 
             currency:
-                data.currency ?? 'INR',
+                data.currency ??
+                'INR',
+
+
+            title:
+                data.title,
+
+
+            amount:
+                data.amount,
+
+
+            paidAmount:
+                data.paidAmount ??
+                0,
+
+
+            balanceAmount:
+                data.balanceAmount ??
+                data.total ??
+                0,
+
+
+            notes:
+                data.notes,
+
 
             archived:false,
 
+
             createdAt:
-                new Date().toISOString(),
+                now,
+
 
             updatedAt:
-                new Date().toISOString(),
-
-            contractId:data.contractId,
-
-            quotationId:data.quotationId,
-
-            paidAmount:data.paidAmount,
-
-            balanceAmount:data.balanceAmount,
-
-            notes:data.notes,
+                now,
 
         };
 
 
-        this.invoices.push(invoice);
-
-
-        return invoice;
-
-    }
-
-
-
-    async update(
-        id:string,
-        data:Partial<Invoice>
-    ){
-
-        const invoice =
-            await this.findById(id);
-
-
-        if(!invoice)
-            throw new Error(
-                'Invoice not found'
-            );
-
-
-        Object.assign(
-            invoice,
-            data,
-            {
-                updatedAt:
-                    new Date().toISOString()
-            }
+        this.invoices.set(
+            invoice.id,
+            invoice
         );
 
 
@@ -141,7 +169,63 @@ class InvoicesRepository {
 
 
 
-    async archive(
+    update(
+        id:string,
+        data:Partial<Invoice>
+    ): Invoice | null {
+
+
+        const existing =
+            this.invoices.get(id);
+
+
+        if(!existing){
+            return null;
+        }
+
+
+        const updated = {
+
+            ...existing,
+
+            ...data,
+
+            updatedAt:
+                new Date()
+                .toISOString(),
+
+        };
+
+
+        this.invoices.set(
+            id,
+            updated
+        );
+
+
+        return updated;
+
+    }
+
+
+
+    updateStatus(
+        id:string,
+        status:InvoiceStatus
+    ){
+
+        return this.update(
+            id,
+            {
+                status
+            }
+        );
+
+    }
+
+
+
+    delete(
         id:string
     ){
 
@@ -156,7 +240,7 @@ class InvoicesRepository {
 
 
 
-    async restore(
+    restore(
         id:string
     ){
 
@@ -166,6 +250,88 @@ class InvoicesRepository {
                 archived:false
             }
         );
+
+    }
+
+
+
+    summary(){
+
+        const invoices =
+            this.list();
+
+
+        return {
+
+            total:
+                invoices.length,
+
+
+            draft:
+                invoices.filter(
+                    i =>
+                    i.status === 'Draft'
+                ).length,
+
+
+            sent:
+                invoices.filter(
+                    i =>
+                    i.status === 'Sent'
+                ).length,
+
+
+            paid:
+                invoices.filter(
+                    i =>
+                    i.status === 'Paid'
+                ).length,
+
+
+            overdue:
+                invoices.filter(
+                    i =>
+                    i.status === 'Overdue'
+                ).length,
+
+
+            cancelled:
+                invoices.filter(
+                    i =>
+                    i.status === 'Cancelled'
+                ).length,
+
+
+            totalValue:
+                invoices.reduce(
+                    (
+                        sum,
+                        invoice
+                    ) =>
+                        sum +
+                        invoice.total,
+                    0
+                ),
+
+
+            outstandingValue:
+                invoices.reduce(
+                    (
+                        sum,
+                        invoice
+                    ) =>
+                        sum +
+                        (
+                            invoice.total -
+                            (
+                                invoice.paidAmount ??
+                                0
+                            )
+                        ),
+                    0
+                ),
+
+        };
 
     }
 

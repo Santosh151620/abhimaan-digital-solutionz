@@ -46,8 +46,8 @@ class ContractsRepository {
         data: Partial<Contract>
     ): Contract {
 
-        const now =
-            new Date().toISOString();
+        const now = new Date().toISOString();
+        const today = now.split('T')[0];
 
         const contract: Contract = {
 
@@ -74,12 +74,10 @@ class ContractsRepository {
                 data.status ?? 'Draft',
 
             startDate:
-                data.startDate ??
-                now.substring(0, 10),
+                data.startDate ?? today,
 
             endDate:
-                data.endDate ??
-                now.substring(0, 10),
+                data.endDate ?? today,
 
             value:
                 data.value ?? 0,

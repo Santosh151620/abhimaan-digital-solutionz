@@ -51,37 +51,7 @@ class ContractsService {
     }
 
     summary() {
-
-        const contracts =
-            ContractsRepositoryInstance.list();
-
-        return {
-
-            total: contracts.length,
-
-            draft: contracts.filter(
-                (c) => c.status === 'Draft'
-            ).length,
-
-            active: contracts.filter(
-                (c) => c.status === 'Active'
-            ).length,
-
-            completed: contracts.filter(
-                (c) => c.status === 'Expired'
-            ).length,
-
-            cancelled: contracts.filter(
-                (c) => c.status === 'Cancelled'
-            ).length,
-
-            value: contracts.reduce(
-                (sum, c) => sum + c.value,
-                0,
-            ),
-
-        };
-
+        return ContractsRepositoryInstance.summary();
     }
 
 }

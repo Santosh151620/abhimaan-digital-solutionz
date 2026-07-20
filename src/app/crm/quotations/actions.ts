@@ -6,45 +6,58 @@ import type {
     QuotationStatus,
 } from '@/types/crm/Quotations';
 
-export async function listQuotations() {
+export async function getQuotations() {
     return QuotationsServiceInstance.list();
 }
 
-export async function listArchivedQuotations() {
+export async function getArchivedQuotations() {
     return QuotationsServiceInstance.listArchived();
 }
 
+export async function getQuotation(
+    id: string,
+) {
+    return QuotationsServiceInstance.details(id);
+}
+
 export async function createQuotation(
-    data: Partial<Quotation>
+    data: Partial<Quotation>,
 ) {
     return QuotationsServiceInstance.create(data);
 }
 
 export async function updateQuotation(
     id: string,
-    data: Partial<Quotation>
+    data: Partial<Quotation>,
 ) {
-    return QuotationsServiceInstance.update(id, data);
+    return QuotationsServiceInstance.update(
+        id,
+        data,
+    );
 }
 
-export async function deleteQuotation(id: string) {
+export async function archiveQuotation(
+    id: string,
+) {
     return QuotationsServiceInstance.delete(id);
 }
 
-export async function restoreQuotation(id: string) {
+export async function restoreQuotation(
+    id: string,
+) {
     return QuotationsServiceInstance.restore(id);
 }
 
 export async function updateQuotationStatus(
     id: string,
-    status: QuotationStatus
+    status: QuotationStatus,
 ) {
     return QuotationsServiceInstance.updateStatus(
         id,
-        status
+        status,
     );
 }
 
-export async function QuotationsSummary() {
+export async function getQuotationSummary() {
     return QuotationsServiceInstance.summary();
 }

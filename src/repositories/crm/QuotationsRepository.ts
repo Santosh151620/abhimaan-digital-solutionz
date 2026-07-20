@@ -3,42 +3,65 @@ import type {
     QuotationStatus,
 } from '@/types/crm/Quotations';
 
+
 class QuotationsRepository {
 
-    private quotations = new Map<string, Quotation>();
+    private quotations =
+        new Map<string, Quotation>();
 
-    list(): Quotation[] {
 
-        return [...this.quotations.values()]
-            .filter((quotation) => !quotation.archived)
-            .sort((a, b) =>
-                b.createdAt.localeCompare(a.createdAt)
+    async list(): Promise<Quotation[]> {
+
+        return [
+            ...this.quotations.values(),
+        ]
+            .filter(
+                quotation => !quotation.archived
+            )
+            .sort(
+                (a, b) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt
+                    )
             );
 
     }
 
-    listArchived(): Quotation[] {
 
-        return [...this.quotations.values()]
-            .filter((quotation) => quotation.archived);
+    async listArchived(): Promise<Quotation[]> {
 
-    }
-
-    details(id: string): Quotation | null {
-
-        return this.quotations.get(id) ?? null;
+        return [
+            ...this.quotations.values(),
+        ].filter(
+            quotation => quotation.archived
+        );
 
     }
 
-    create(
+
+    async details(
+        id: string
+    ): Promise<Quotation | null> {
+
+        return (
+            this.quotations.get(id) ??
+            null
+        );
+
+    }
+
+
+    async create(
         data: Partial<Quotation>
-    ): Quotation {
+    ): Promise<Quotation> {
 
-        const now = new Date().toISOString();
+        const now =
+            new Date().toISOString();
 
         const quotation: Quotation = {
 
-            id: crypto.randomUUID(),
+            id:
+                crypto.randomUUID(),
 
             quotationNumber:
                 data.quotationNumber ??
@@ -52,7 +75,7 @@ class QuotationsRepository {
 
             title:
                 data.title ?? '',
-            
+
             customerName:
                 data.customerName ?? '',
 
@@ -91,11 +114,14 @@ class QuotationsRepository {
             items:
                 data.items ?? [],
 
-            createdAt: now,
+            archived:
+                false,
 
-            updatedAt: now,
+            createdAt:
+                now,
 
-            archived: false,
+            updatedAt:
+                now,
 
         };
 
@@ -108,10 +134,11 @@ class QuotationsRepository {
 
     }
 
-    update(
+
+    async update(
         id: string,
         data: Partial<Quotation>
-    ): Quotation | null {
+    ): Promise<Quotation | null> {
 
         const existing =
             this.quotations.get(id);
@@ -140,21 +167,25 @@ class QuotationsRepository {
 
     }
 
-    updateStatus(
+
+    async updateStatus(
         id: string,
         status: QuotationStatus
-    ): Quotation | null {
+    ): Promise<Quotation | null> {
 
         return this.update(
             id,
-            { status }
+            {
+                status,
+            }
         );
 
     }
 
-    delete(
+
+    async delete(
         id: string
-    ): boolean {
+    ): Promise<boolean> {
 
         const quotation =
             this.quotations.get(id);
@@ -164,6 +195,7 @@ class QuotationsRepository {
         }
 
         quotation.archived = true;
+
         quotation.updatedAt =
             new Date().toISOString();
 
@@ -176,9 +208,10 @@ class QuotationsRepository {
 
     }
 
-    restore(
+
+    async restore(
         id: string
-    ): boolean {
+    ): Promise<boolean> {
 
         const quotation =
             this.quotations.get(id);
@@ -188,6 +221,7 @@ class QuotationsRepository {
         }
 
         quotation.archived = false;
+
         quotation.updatedAt =
             new Date().toISOString();
 
@@ -201,6 +235,7 @@ class QuotationsRepository {
     }
 
 }
+
 
 export const QuotationsRepositoryInstance =
     new QuotationsRepository();

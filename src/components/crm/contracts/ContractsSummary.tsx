@@ -79,7 +79,10 @@ export default function ContractsSummary({
                 </div>
 
                 <div className="mt-2 text-3xl font-bold">
-                    ₹ {totalValue.toLocaleString()}
+                    {totalValue.toLocaleString('en-IN', {
+                        style: 'currency',
+                        currency: 'INR',
+                    })}
                 </div>
             </div>
 
