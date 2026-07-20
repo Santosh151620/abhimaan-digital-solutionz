@@ -1,176 +1,184 @@
 'use client';
 
+import Link from 'next/link';
+import { useState } from 'react';
+
+import {
+    createCompany,
+    deleteCompany,
+} from './actions';
 
 import type {
     Company,
+    CompanyDetails,
 } from '@/types/crm/Companies';
 
-
-
 interface Props {
-
     initialCompanies: Company[];
-
 }
 
-
-
 export default function CompaniesClient({
-
     initialCompanies,
-
 }: Props) {
 
+    const [
+        companies,
+        setCompanies,
+    ] = useState<Company[]>(
+        initialCompanies
+    );
+
+    const [
+        name,
+        setName,
+    ] = useState('');
+
+    async function handleCreate() {
+
+        if (!name.trim()) {
+            return;
+        }
+
+        const company =
+            await createCompany({
+                name,
+                status: 'ACTIVE',
+            } as Partial<CompanyDetails>);
+
+        setCompanies(
+            previous => [
+                ...previous,
+                company,
+            ]
+        );
+
+        setName('');
+
+    }
+
+    async function handleDelete(
+        id: string
+    ) {
+
+        const success =
+            await deleteCompany(id);
+
+        if (!success) {
+            return;
+        }
+
+        setCompanies(
+            previous =>
+                previous.filter(
+                    company =>
+                        company.id !== id
+                )
+        );
+
+    }
 
     return (
 
-        <div className="space-y-4">
+        <div className="space-y-6">
 
+            <div className="flex gap-3">
 
-            <div className="flex items-center justify-between">
+                <input
+                    value={name}
+                    onChange={
+                        e =>
+                            setName(
+                                e.target.value
+                            )
+                    }
+                    placeholder="Company name"
+                    className="flex-1 rounded border px-3 py-2"
+                />
 
-
-                <h2 className="font-semibold">
-                    Company List
-                </h2>
-
-
-                <span className="text-sm text-muted-foreground">
-
-                    {initialCompanies.length} records
-
-                </span>
-
+                <button
+                    onClick={handleCreate}
+                    className="rounded bg-primary px-4 py-2 text-primary-foreground"
+                >
+                    Add Company
+                </button>
 
             </div>
 
-
-
-
-            <div className="space-y-3">
-
+            <div className="rounded-lg border">
 
                 {
-                    initialCompanies.length === 0 && (
+                    companies.map(
+                        company => (
 
-                        <div className="rounded border p-4 text-sm text-muted-foreground">
+                            <div
+                                key={company.id}
+                                className="flex items-center justify-between border-b p-4 last:border-0"
+                            >
 
-                            No companies found.
+                                <div>
 
+                                    <p className="font-medium">
+                                        {company.name}
+                                    </p>
+
+                                    <p className="text-sm text-muted-foreground">
+                                        {company.status}
+                                        {' • '}
+                                        {company.industry ?? '-'}
+                                    </p>
+
+                                    {
+                                        company.email && (
+
+                                            <p className="text-sm text-muted-foreground">
+                                                {company.email}
+                                            </p>
+
+                                        )
+                                    }
+
+                                </div>
+
+                                <div className="flex items-center gap-3">
+
+                                    <Link
+                                        href={`/crm/companies/${company.id}`}
+                                        className="text-sm text-primary"
+                                    >
+                                        View
+                                    </Link>
+
+                                    <button
+                                        onClick={
+                                            () =>
+                                                handleDelete(
+                                                    company.id
+                                                )
+                                        }
+                                        className="text-sm text-destructive"
+                                    >
+                                        Archive
+                                    </button>
+
+                                </div>
+
+                            </div>
+
+                        )
+                    )
+                }
+
+                {
+                    companies.length === 0 && (
+
+                        <div className="p-6 text-center text-muted-foreground">
+                            No companies available.
                         </div>
 
                     )
                 }
 
-
-
-                {
-                    initialCompanies.map(
-
-                        company => (
-
-                            <div
-
-                                key={company.id}
-
-                                className="rounded-lg border p-4"
-
-                            >
-
-                                <div className="flex justify-between">
-
-
-                                    <div>
-
-
-                                        <h3 className="font-medium">
-
-                                            {company.name}
-
-                                        </h3>
-
-
-                                        {
-                                            company.legalName && (
-
-                                                <p className="text-sm text-muted-foreground">
-
-                                                    {company.legalName}
-
-                                                </p>
-
-                                            )
-                                        }
-
-
-                                    </div>
-
-
-
-
-                                    <span className="text-sm">
-
-                                        {company.status}
-
-                                    </span>
-
-
-                                </div>
-
-
-
-
-                                <div className="mt-2 grid gap-2 text-sm md:grid-cols-3">
-
-
-                                    {
-                                        company.industry && (
-
-                                            <p>
-                                                Industry: {company.industry}
-                                            </p>
-
-                                        )
-                                    }
-
-
-
-                                    {
-                                        company.email && (
-
-                                            <p>
-                                                Email: {company.email}
-                                            </p>
-
-                                        )
-                                    }
-
-
-
-                                    {
-                                        company.city && (
-
-                                            <p>
-                                                Location: {company.city}
-                                            </p>
-
-                                        )
-                                    }
-
-
-                                </div>
-
-
-                            </div>
-
-                        )
-
-                    )
-                }
-
-
             </div>
-
 
         </div>
 
