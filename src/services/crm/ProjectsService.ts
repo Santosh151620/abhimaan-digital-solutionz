@@ -7,7 +7,7 @@ import type {
     ProjectStatus,
 } from '@/types/crm/Projects';
 
-class ProjectsService {
+export class ProjectsService {
 
     list() {
         return ProjectsRepositoryInstance.list();
@@ -18,47 +18,55 @@ class ProjectsService {
     }
 
     details(
-        id: string
+        id: string,
     ) {
-        return ProjectsRepositoryInstance.details(id);
+        return ProjectsRepositoryInstance.details(
+            id,
+        );
     }
 
     create(
-        data: Partial<Project>
+        data: Partial<Project>,
     ) {
-        return ProjectsRepositoryInstance.create(data);
+        return ProjectsRepositoryInstance.create(
+            data,
+        );
     }
 
     update(
         id: string,
-        data: Partial<Project>
+        data: Partial<Project>,
     ) {
         return ProjectsRepositoryInstance.update(
             id,
-            data
+            data,
         );
     }
 
     updateStatus(
         id: string,
-        status: ProjectStatus
+        status: ProjectStatus,
     ) {
         return ProjectsRepositoryInstance.updateStatus(
             id,
-            status
+            status,
         );
     }
 
     delete(
-        id: string
+        id: string,
     ) {
-        return ProjectsRepositoryInstance.delete(id);
+        return ProjectsRepositoryInstance.delete(
+            id,
+        );
     }
 
     restore(
-        id: string
+        id: string,
     ) {
-        return ProjectsRepositoryInstance.restore(id);
+        return ProjectsRepositoryInstance.restore(
+            id,
+        );
     }
 
     summary() {
@@ -67,6 +75,11 @@ class ProjectsService {
 
 }
 
-export const
-    ProjectsServiceInstance =
-        new ProjectsService();
+export async function createProjectsService() {
+
+    return new ProjectsService();
+
+}
+
+export const ProjectsServiceInstance =
+    new ProjectsService();

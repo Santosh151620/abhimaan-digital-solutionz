@@ -1,7 +1,7 @@
 'use server';
 
 import {
-    ProjectsServiceInstance,
+    createProjectsService,
 } from '@/services/crm/ProjectsService';
 
 import type {
@@ -9,15 +9,21 @@ import type {
     ProjectStatus,
 } from '@/types/crm/Projects';
 
+async function service() {
+
+    return createProjectsService();
+
+}
+
 export async function getProjects() {
 
-    return ProjectsServiceInstance.list();
+    return (await service()).list();
 
 }
 
 export async function getArchivedProjects() {
 
-    return ProjectsServiceInstance.listArchived();
+    return (await service()).listArchived();
 
 }
 
@@ -25,8 +31,8 @@ export async function getProject(
     id: string,
 ) {
 
-    return ProjectsServiceInstance.details(
-        id
+    return (await service()).details(
+        id,
     );
 
 }
@@ -35,8 +41,8 @@ export async function createProject(
     data: Partial<Project>,
 ) {
 
-    return ProjectsServiceInstance.create(
-        data
+    return (await service()).create(
+        data,
     );
 
 }
@@ -46,9 +52,9 @@ export async function updateProject(
     data: Partial<Project>,
 ) {
 
-    return ProjectsServiceInstance.update(
+    return (await service()).update(
         id,
-        data
+        data,
     );
 
 }
@@ -58,9 +64,9 @@ export async function updateProjectStatus(
     status: ProjectStatus,
 ) {
 
-    return ProjectsServiceInstance.updateStatus(
+    return (await service()).updateStatus(
         id,
-        status
+        status,
     );
 
 }
@@ -69,8 +75,8 @@ export async function deleteProject(
     id: string,
 ) {
 
-    return ProjectsServiceInstance.delete(
-        id
+    return (await service()).delete(
+        id,
     );
 
 }
@@ -79,14 +85,14 @@ export async function restoreProject(
     id: string,
 ) {
 
-    return ProjectsServiceInstance.restore(
-        id
+    return (await service()).restore(
+        id,
     );
 
 }
 
 export async function getProjectsSummary() {
 
-    return ProjectsServiceInstance.summary();
+    return (await service()).summary();
 
 }
