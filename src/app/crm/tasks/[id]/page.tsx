@@ -7,6 +7,7 @@ import {
 } from 'next/navigation';
 
 import TaskEditForm from './TaskEditForm';
+
 import {
     getTaskDetails,
 } from './actions';
@@ -29,45 +30,36 @@ interface Props {
 
 }
 
-
-
 export default async function TaskDetailsPage({
     params,
 }: Props) {
-
 
     const {
         id,
     } = await params;
 
-
     const task =
         await getTaskDetails(
-            id
+            id,
         );
-
-
-    const activities =
-        await getTaskActivities(
-            id
-        );
-
 
     if (!task) {
 
         notFound();
 
     }
+
+    const activities =
+        await getTaskActivities();
+
     const attachments =
         await getTaskAttachments(
-            id
+            id,
         );
-
 
     return (
 
         <div className="space-y-6">
-
 
             <div>
 
@@ -75,17 +67,13 @@ export default async function TaskDetailsPage({
                     {task.title}
                 </h1>
 
-
                 <p className="text-sm text-muted-foreground">
                     {task.taskNumber}
                 </p>
 
             </div>
 
-
-
             <div className="grid gap-4 md:grid-cols-3">
-
 
                 <div className="rounded-lg border p-4">
 
@@ -99,8 +87,6 @@ export default async function TaskDetailsPage({
 
                 </div>
 
-
-
                 <div className="rounded-lg border p-4">
 
                     <p className="text-sm text-muted-foreground">
@@ -112,8 +98,6 @@ export default async function TaskDetailsPage({
                     </p>
 
                 </div>
-
-
 
                 <div className="rounded-lg border p-4">
 
@@ -127,18 +111,13 @@ export default async function TaskDetailsPage({
 
                 </div>
 
-
             </div>
-
-
 
             <div className="rounded-lg border p-6">
 
-
-                <h2 className="font-semibold mb-4">
+                <h2 className="mb-4 font-semibold">
                     Description
                 </h2>
-
 
                 <p className="text-sm">
                     {
@@ -147,74 +126,52 @@ export default async function TaskDetailsPage({
                     }
                 </p>
 
-
             </div>
-
-
 
             <div className="rounded-lg border p-6">
 
-
-                <h2 className="font-semibold mb-4">
+                <h2 className="mb-4 font-semibold">
                     Task Information
                 </h2>
 
-
                 <div className="grid gap-3 md:grid-cols-2">
 
-
                     <p>
-                        Start Date:
-                        {' '}
+                        Start Date:{' '}
                         {task.startDate ?? '-'}
                     </p>
 
-
                     <p>
-                        Estimated Hours:
-                        {' '}
+                        Estimated Hours:{' '}
                         {task.estimatedHours ?? '-'}
                     </p>
 
-
                     <p>
-                        Actual Hours:
-                        {' '}
+                        Actual Hours:{' '}
                         {task.actualHours ?? '-'}
                     </p>
 
-
                     <p>
-                        Assigned To:
-                        {' '}
+                        Assigned To:{' '}
                         {task.assignedTo ?? '-'}
                     </p>
 
-
                 </div>
-
 
             </div>
 
             <TaskAttachments
-
                 taskId={id}
-
                 initialAttachments={attachments}
-
             />
 
             <div className="rounded-lg border p-6">
 
-
-                <h2 className="font-semibold mb-4">
+                <h2 className="mb-4 font-semibold">
                     Activity Timeline
                 </h2>
 
-
-
                 <div className="space-y-4">
-
 
                     {
                         activities.length === 0 && (
@@ -226,61 +183,46 @@ export default async function TaskDetailsPage({
                         )
                     }
 
-
-
                     {
                         activities.map(
                             (
-                                activity: Activity) => (
+                                activity: Activity,
+                            ) => (
 
                                 <div
-
                                     key={activity.id}
-
                                     className="border-b pb-3 last:border-0"
-
                                 >
 
                                     <p className="font-medium">
-
                                         {activity.title ?? activity.type}
-
                                     </p>
-
 
                                     <p className="text-sm">
-
                                         {activity.description}
-
                                     </p>
-
 
                                     <p className="text-xs text-muted-foreground">
-
                                         {
                                             new Date(
-                                                activity.createdAt
+                                                activity.createdAt,
                                             ).toLocaleString()
                                         }
-
                                     </p>
-
 
                                 </div>
 
-                            )
+                            ),
                         )
                     }
 
-
                 </div>
 
-
             </div>
+
             <TaskEditForm
                 task={task}
             />
-
 
         </div>
 

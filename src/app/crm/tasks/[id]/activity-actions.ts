@@ -4,8 +4,8 @@ import type {
     Activity,
 } from '@/types/activity';
 
-export async function getTaskActivities(
-    _taskId: string
-): Promise<Activity[]> {
+export async function getTaskActivities(): Promise<Activity[]> {
+
     return [];
+
 }

@@ -1,3 +1,7 @@
+import type {
+    InvoiceStatus,
+} from '@/types/crm/Invoices';
+
 import {
     notFound,
     redirect,
@@ -115,9 +119,9 @@ export default async function EditInvoicePage({
 
 
                 status:
-                    String(
-                        formData.get('status') ?? invoice?.status
-                    ) as any,
+    String(
+        formData.get('status') ?? invoice?.status
+    ) as InvoiceStatus,
 
 
                 notes:
