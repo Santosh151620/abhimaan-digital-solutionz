@@ -10,34 +10,40 @@ export class PipelineRepository {
 
     private readonly stages: PipelineStage[] = [
         {
-            id: 'lead',
+            id: 'LEAD',
             name: 'Lead',
             color: '#6B7280',
             order: 1,
         },
         {
-            id: 'qualified',
+            id: 'QUALIFIED',
             name: 'Qualified',
             color: '#2563EB',
             order: 2,
         },
         {
-            id: 'proposal',
+            id: 'PROPOSAL',
             name: 'Proposal',
             color: '#F59E0B',
             order: 3,
         },
         {
-            id: 'negotiation',
+            id: 'NEGOTIATION',
             name: 'Negotiation',
             color: '#8B5CF6',
             order: 4,
         },
         {
-            id: 'won',
+            id: 'WON',
             name: 'Won',
             color: '#16A34A',
             order: 5,
+        },
+        {
+            id: 'LOST',
+            name: 'Lost',
+            color: '#DC2626',
+            order: 6,
         },
     ];
 
@@ -75,13 +81,13 @@ export class PipelineRepository {
 
     async moveOpportunity(
         id: string,
-    stage: OpportunityStage
-) {
-    return OpportunitiesRepositoryInstance.update(
-        id,
-        { stage }
-    );
-}
+        stage: OpportunityStage
+    ) {
+        return OpportunitiesRepositoryInstance.update(
+            id,
+            { stage }
+        );
+    }
 
     async summary() {
 
@@ -105,7 +111,3 @@ export class PipelineRepository {
 
 export const PipelineRepositoryInstance =
     new PipelineRepository();
-
-
-
-

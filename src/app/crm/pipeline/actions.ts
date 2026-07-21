@@ -1,26 +1,27 @@
 'use server';
 
-import { PipelineServiceInstance } from '@/services/crm/PipelineService';
-import type { OpportunityStage } from '@/types/crm/Opportunities';
+import {
+    PipelineServiceInstance,
+} from '@/services/crm/PipelineService';
 
-export async function listPipeline() {
+import type {
+    OpportunityStage,
+} from '@/types/crm/Opportunities';
+
+export async function getPipeline() {
     return PipelineServiceInstance.list();
+}
+
+export async function getPipelineSummary() {
+    return PipelineServiceInstance.summary();
 }
 
 export async function moveOpportunity(
     id: string,
-    stage: OpportunityStage
+    stage: OpportunityStage,
 ) {
     return PipelineServiceInstance.moveOpportunity(
         id,
-        stage
+        stage,
     );
 }
-
-export async function pipelineSummary() {
-    return PipelineServiceInstance.summary();
-}
-
-
-
-
