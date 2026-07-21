@@ -1,60 +1,68 @@
-import type { Ticket } from '@/types/crm/Tickets';
-
+import type {
+    Ticket,
+    TicketStatus,
+    TicketSummary,
+} from '@/types/crm/Tickets';
 
 class TicketsRepository {
 
+    private tickets = new Map<string, Ticket>();
 
-    private tickets:Ticket[]=[];
-
-
-    async list(){
-
-        return this.tickets.filter(
-            ticket=>!ticket.archived
+    list() {
+        return Array.from(
+            this.tickets.values(),
+        ).filter(
+            ticket => !ticket.archived,
         );
-
     }
 
-
-    async listArchived(){
-
-        return this.tickets.filter(
-            ticket=>ticket.archived
+    listArchived() {
+        return Array.from(
+            this.tickets.values(),
+        ).filter(
+            ticket => ticket.archived,
         );
-
     }
 
-
-
-    async findById(
-        id:string
-    ){
-
-        return (
-            this.tickets.find(
-                ticket=>ticket.id===id
-            ) ?? null
-        );
-
+    details(
+        id: string,
+    ) {
+        return this.tickets.get(id) ?? null;
     }
 
+    findById(
+        id: string,
+    ) {
+        return this.details(id);
+    }
 
+    create(
+        data: Partial<Ticket>,
+    ) {
 
-    async create(
-        data:Partial<Ticket>
-    ){
+        const now =
+            new Date().toISOString();
 
+        const ticket: Ticket = {
 
-        const ticket:Ticket={
-
-            id:crypto.randomUUID(),
+            id:
+                crypto.randomUUID(),
 
             ticketNumber:
                 data.ticketNumber ??
                 `TKT-${Date.now()}`,
 
+            companyId:
+                data.companyId,
+
+            contactId:
+                data.contactId,
+
             subject:
                 data.subject ?? '',
+
+            description:
+                data.description,
 
             status:
                 data.status ?? 'Open',
@@ -62,70 +70,255 @@ class TicketsRepository {
             priority:
                 data.priority ?? 'Medium',
 
-            archived:false,
+            assignedTo:
+                data.assignedTo,
+
+            category:
+                data.category,
+
+            resolution:
+                data.resolution,
+
+            archived:
+                false,
 
             createdAt:
-                new Date().toISOString(),
+                now,
+
+            updatedAt:
+                now,
+
+        };
+
+        this.tickets.set(
+            ticket.id,
+            ticket,
+        );
+
+        return ticket;
+
+    }
+
+    update(
+        id: string,
+        data: Partial<Ticket>,
+    ) {
+
+        const existing =
+            this.tickets.get(id);
+
+        if (!existing) {
+            return null;
+        }
+
+        const updated: Ticket = {
+
+            ...existing,
+
+            ...data,
 
             updatedAt:
                 new Date().toISOString(),
 
-            companyId:data.companyId,
+        };
 
-            contactId:data.contactId,
+        this.tickets.set(
+            id,
+            updated,
+        );
 
-            description:data.description,
+        return updated;
 
-            assignedTo:data.assignedTo,
+    }
 
-            category:data.category,
+    updateStatus(
+        id: string,
+        status: TicketStatus,
+    ) {
+        return this.update(
+            id,
+            {
+                status,
+            },
+        );
+    }
 
-            resolution:data.resolution,
+    delete(
+        id: string,
+    ) {
+
+        const existing =
+            this.tickets.get(id);
+
+        if (!existing) {
+            return false;
+        }
+
+        existing.archived = true;
+
+        existing.updatedAt =
+            new Date().toISOString();
+
+        this.tickets.set(
+            id,
+            existing,
+        );
+
+        return true;
+
+    }
+
+    restore(
+        id: string,
+    ) {
+
+        const existing =
+            this.tickets.get(id);
+
+        if (!existing) {
+            return false;
+        }
+
+        existing.archived = false;
+
+        existing.updatedAt =
+            new Date().toISOString();
+
+        this.tickets.set(
+            id,
+            existing,
+        );
+
+        return true;
+
+    }
+
+    search(
+        filters?: {
+
+            status?: TicketStatus;
+
+            priority?: Ticket['priority'];
+
+            search?: string;
+
+        },
+    ) {
+
+        let tickets =
+            this.list();
+
+        if (
+            filters?.status
+        ) {
+
+            tickets =
+                tickets.filter(
+                    ticket =>
+                        ticket.status ===
+                        filters.status,
+                );
+
+        }
+
+        if (
+            filters?.priority
+        ) {
+
+            tickets =
+                tickets.filter(
+                    ticket =>
+                        ticket.priority ===
+                        filters.priority,
+                );
+
+        }
+
+        if (
+            filters?.search
+        ) {
+
+            const keyword =
+                filters.search.toLowerCase();
+
+            tickets =
+                tickets.filter(
+                    ticket =>
+
+                        ticket.subject
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            )
+
+                        ||
+
+                        (
+                            ticket.description
+                                ?.toLowerCase()
+                                .includes(
+                                    keyword,
+                                )
+                        ),
+                );
+
+        }
+
+        return tickets;
+
+    }
+
+    summary(): TicketSummary {
+
+        const tickets =
+            this.list();
+
+        return {
+
+            total:
+                tickets.length,
+
+            open:
+                tickets.filter(
+                    ticket =>
+                        ticket.status ===
+                        'Open',
+                ).length,
+
+            inProgress:
+                tickets.filter(
+                    ticket =>
+                        ticket.status ===
+                        'In Progress',
+                ).length,
+
+            resolved:
+                tickets.filter(
+                    ticket =>
+                        ticket.status ===
+                        'Resolved',
+                ).length,
+
+            closed:
+                tickets.filter(
+                    ticket =>
+                        ticket.status ===
+                        'Closed',
+                ).length,
+
+            critical:
+                tickets.filter(
+                    ticket =>
+                        ticket.priority ===
+                        'Critical',
+                ).length,
 
         };
 
-
-        this.tickets.push(ticket);
-
-
-        return ticket;
-
     }
-
-
-
-    async update(
-        id:string,
-        data:Partial<Ticket>
-    ){
-
-        const ticket =
-            await this.findById(id);
-
-
-        if(!ticket)
-            throw new Error(
-                'Ticket not found'
-            );
-
-
-        Object.assign(
-            ticket,
-            data,
-            {
-                updatedAt:
-                new Date().toISOString()
-            }
-        );
-
-
-        return ticket;
-
-    }
-
 
 }
 
-
-export const TicketsRepositoryInstance =
-    new TicketsRepository();
+export const
+    TicketsRepositoryInstance =
+        new TicketsRepository();

@@ -1,4 +1,6 @@
-import { TicketsRepositoryInstance } from '@/repositories/crm/TicketsRepository';
+import {
+    TicketsRepositoryInstance,
+} from '@/repositories/crm/TicketsRepository';
 
 import type {
     Ticket,
@@ -15,35 +17,76 @@ class TicketsService {
         return TicketsRepositoryInstance.listArchived();
     }
 
-    findById(id: string) {
+    findById(
+        id: string
+    ) {
         return TicketsRepositoryInstance.findById(id);
     }
 
-    details(id: string) {
+    details(
+        id: string
+    ) {
         return this.findById(id);
     }
 
-    create(data: Partial<Ticket>) {
-        return TicketsRepositoryInstance.create(data);
+    search(
+        filters?: {
+            status?: TicketStatus;
+            priority?: Ticket['priority'];
+            search?: string;
+        }
+    ) {
+        return TicketsRepositoryInstance.search(
+            filters
+        );
+    }
+
+    create(
+        data: Partial<Ticket>
+    ) {
+        return TicketsRepositoryInstance.create(
+            data
+        );
     }
 
     update(
         id: string,
-        data: Partial<Ticket>,
+        data: Partial<Ticket>
     ) {
         return TicketsRepositoryInstance.update(
             id,
-            data,
+            data
         );
     }
 
     updateStatus(
         id: string,
-        status: TicketStatus,
+        status: TicketStatus
     ) {
-        return this.update(id, {
-            status,
-        });
+        return TicketsRepositoryInstance.updateStatus(
+            id,
+            status
+        );
+    }
+
+    delete(
+        id: string
+    ) {
+        return TicketsRepositoryInstance.delete(
+            id
+        );
+    }
+
+    restore(
+        id: string
+    ) {
+        return TicketsRepositoryInstance.restore(
+            id
+        );
+    }
+
+    summary() {
+        return TicketsRepositoryInstance.summary();
     }
 
 }

@@ -1,6 +1,7 @@
 'use server';
 
 import { TicketsServiceInstance } from '@/services/crm/TicketsService';
+
 import type {
     Ticket,
     TicketStatus,
@@ -10,8 +11,24 @@ export async function getTickets() {
     return TicketsServiceInstance.list();
 }
 
+export async function searchTickets(
+    filters?: {
+        status?: TicketStatus;
+        priority?: Ticket['priority'];
+        search?: string;
+    }
+) {
+    return TicketsServiceInstance.search(filters);
+}
+
 export async function getArchivedTickets() {
     return TicketsServiceInstance.listArchived();
+}
+
+export async function getTicket(
+    id: string
+) {
+    return TicketsServiceInstance.findById(id);
 }
 
 export async function createTicket(
@@ -24,13 +41,22 @@ export async function updateTicket(
     id: string,
     data: Partial<Ticket>
 ) {
-    return TicketsServiceInstance.update(id, data);
+    return TicketsServiceInstance.update(
+        id,
+        data
+    );
 }
 
-export async function getTicket(
+export async function deleteTicket(
     id: string
 ) {
-    return TicketsServiceInstance.findById(id);
+    return TicketsServiceInstance.delete(id);
+}
+
+export async function restoreTicket(
+    id: string
+) {
+    return TicketsServiceInstance.restore(id);
 }
 
 export async function updateTicketStatus(
@@ -41,4 +67,8 @@ export async function updateTicketStatus(
         id,
         status
     );
+}
+
+export async function getTicketsSummary() {
+    return TicketsServiceInstance.summary();
 }
