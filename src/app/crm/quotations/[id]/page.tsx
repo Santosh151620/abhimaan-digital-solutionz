@@ -1,79 +1,169 @@
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import {
+    notFound,
+} from 'next/navigation';
 
-import { QuotationsServiceInstance } from '@/services/crm/QuotationsService';
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+
+import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
+import EntityWorkspace from '@/components/entities/EntityWorkspace';
+
+import {
+    QuotationsServiceInstance,
+} from '@/services/crm/QuotationsService';
+
 
 interface Props {
+
     params: Promise<{
         id: string;
     }>;
+
 }
+
 
 export default async function QuotationDetailsPage({
     params,
 }: Props) {
 
-    const { id } = await params;
+
+    const {
+        id,
+    } = await params;
+
 
     const quotation =
         await QuotationsServiceInstance.details(id);
+
 
     if (!quotation) {
         notFound();
     }
 
+
     return (
 
-        <div className="">
+        <CRMPageLayout>
 
-            <div className="flex items-center justify-between">
 
-                <div>
+            <CRMHeader
 
-                    <h1 className="text-2xl font-bold">
-                        {quotation.title}
-                    </h1>
+                title={quotation.title}
 
-                    <p className="text-gray-500">
-                        {quotation.customerName}
-                    </p>
+                description="Quotation details and related CRM activity."
 
-                </div>
+                actions={[
+                    {
+                        label: "Back",
+                        href: "/crm/quotations",
+                    },
+                    {
+                        label: "Edit",
+                        href: `/crm/quotations/${quotation.id}/edit`,
+                    },
+                ]}
 
-                <Link
-                    href={`/crm/quotations/${id}/edit`}
-                    className="rounded-lg border px-4 py-2"
-                >
-                    Edit
-                </Link>
+            />
 
-            </div>
 
-            <div className="rounded-xl border p-6 space-y-3">
+            <EntityWorkspace
 
-                <p>
-                    <strong>Customer:</strong> {quotation.customerName}
-                </p>
+                entityType="Quotation"
 
-                <p>
-                    <strong>Amount:</strong> {quotation.currency} {quotation.amount}
-                </p>
+                entityId={quotation.id}
 
-                <p>
-                    <strong>Status:</strong> {quotation.status}
-                </p>
+                overview={
 
-                <p>
-                    <strong>Valid Until:</strong> {quotation.validUntil}
-                </p>
+                    <EntityOverviewGrid
 
-                <p>
-                    <strong>Created:</strong> {quotation.createdAt}
-                </p>
+                        items={[
 
-            </div>
+                            {
+                                title: "Quotation Number",
+                                value: quotation.quotationNumber,
+                            },
 
-        </div>
+                            {
+                                title: "Customer",
+                                value: quotation.customerName,
+                            },
+
+                            {
+                                title: "Status",
+                                value: quotation.status,
+                            },
+
+                            {
+                                title: "Company",
+                                value: quotation.companyId || "-",
+                            },
+
+                            {
+                                title: "Opportunity",
+                                value: quotation.opportunityId ?? "-",
+                            },
+
+                            {
+                                title: "Amount",
+                                value:
+                                    `${quotation.currency} ${quotation.amount}`,
+                            },
+
+                            {
+                                title: "Subtotal",
+                                value:
+                                    `${quotation.currency} ${quotation.subtotal}`,
+                            },
+
+                            {
+                                title: "Tax",
+                                value:
+                                    `${quotation.currency} ${quotation.tax}`,
+                            },
+
+                            {
+                                title: "Discount",
+                                value:
+                                    `${quotation.currency} ${quotation.discount}`,
+                            },
+
+                            {
+                                title: "Total",
+                                value:
+                                    `${quotation.currency} ${quotation.total}`,
+                            },
+
+                            {
+                                title: "Valid Until",
+                                value: quotation.validUntil,
+                            },
+
+                            {
+                                title: "Created",
+                                value:
+                                    new Date(
+                                        quotation.createdAt,
+                                    ).toLocaleDateString(),
+                            },
+
+                            {
+                                title: "Updated",
+                                value:
+                                    new Date(
+                                        quotation.updatedAt,
+                                    ).toLocaleDateString(),
+                            },
+
+                        ]}
+
+                    />
+
+                }
+
+            />
+
+
+        </CRMPageLayout>
 
     );
 
