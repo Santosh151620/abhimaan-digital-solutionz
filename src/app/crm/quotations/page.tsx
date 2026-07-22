@@ -1,9 +1,10 @@
 import Link from 'next/link';
-
+import QuotationsKanban from '@/components/crm/quotations/QuotationsKanban';
 import QuotationsSummary from '@/components/crm/quotations/QuotationsSummary';
-import QuotationsTable from '@/components/crm/quotations/QuotationsTable';
-
+import QuotationsDataTable from '@/components/crm/quotations/QuotationsDataTable';
 import { getQuotations } from './actions';
+import QuotationsExport from '@/components/crm/quotations/QuotationsExport';
+import QuotationsImport from '@/components/crm/quotations/QuotationsImport';
 
 export default async function QuotationsPage() {
 
@@ -41,10 +42,16 @@ export default async function QuotationsPage() {
                 quotations={quotations}
             />
 
-            <QuotationsTable
+            <QuotationsDataTable
                 quotations={quotations}
             />
-
+            <QuotationsKanban
+                quotations={quotations}
+            />
+            <QuotationsExport
+    quotations={quotations}
+/>
+<QuotationsImport />
         </div>
 
     );

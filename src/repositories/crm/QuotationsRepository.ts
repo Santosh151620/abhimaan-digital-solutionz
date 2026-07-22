@@ -233,6 +233,113 @@ class QuotationsRepository {
         return true;
 
     }
+async search(
+    filters?: {
+        status?: QuotationStatus;
+        search?: string;
+    }
+): Promise<Quotation[]> {
+
+    let quotations =
+        await this.list();
+
+    if (filters?.status) {
+
+        quotations =
+            quotations.filter(
+                quotation =>
+                    quotation.status ===
+                    filters.status
+            );
+
+    }
+
+    if (filters?.search) {
+
+        const keyword =
+            filters.search
+                .toLowerCase();
+
+        quotations =
+            quotations.filter(
+                quotation =>
+
+                    quotation.title
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    quotation.customerName
+                        .toLowerCase()
+                        .includes(keyword)
+
+                    ||
+
+                    quotation.quotationNumber
+                        .toLowerCase()
+                        .includes(keyword)
+
+            );
+
+    }
+
+    return quotations;
+
+}
+
+async summary() {
+
+    const quotations =
+        await this.list();
+
+    return {
+
+        total:
+            quotations.length,
+
+        draft:
+            quotations.filter(
+                quotation =>
+                    quotation.status ===
+                    'Draft'
+            ).length,
+
+        sent:
+            quotations.filter(
+                quotation =>
+                    quotation.status ===
+                    'Sent'
+            ).length,
+
+        accepted:
+            quotations.filter(
+                quotation =>
+                    quotation.status ===
+                    'Accepted'
+            ).length,
+
+        rejected:
+            quotations.filter(
+                quotation =>
+                    quotation.status ===
+                    'Rejected'
+            ).length,
+
+        value:
+            quotations.reduce(
+                (
+                    total,
+                    quotation,
+                ) =>
+                    total +
+                    quotation.total,
+                0
+            ),
+
+    };
+
+}
 
 }
 

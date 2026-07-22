@@ -4,7 +4,7 @@ import {
 
 import type {
     Quotation,
-    QuotationStatus,
+    QuotationStatus, 
 } from '@/types/crm/Quotations';
 
 
@@ -109,7 +109,17 @@ class QuotationsService {
         };
 
     }
-
+    async search(
+        filters?: {
+            status?: QuotationStatus;
+            search?: string;
+        }
+    ) {
+        return QuotationsRepositoryInstance.search(
+            filters
+        );
+    }
+    
 }
 
 

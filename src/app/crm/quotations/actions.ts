@@ -60,4 +60,16 @@ export async function updateQuotationStatus(
 
 export async function getQuotationSummary() {
     return QuotationsServiceInstance.summary();
+
+    
+}
+export async function searchQuotations(
+    filters?: {
+        status?: QuotationStatus;
+        search?: string;
+    },
+) {
+    return QuotationsServiceInstance.search(
+        filters,
+    );
 }

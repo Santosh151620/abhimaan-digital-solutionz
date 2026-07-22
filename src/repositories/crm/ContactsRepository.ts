@@ -1,25 +1,132 @@
 import type {
     Contact,
     ContactDetails,
-} from "@/types/crm/Contacts";
+} from '@/types/crm/Contacts';
 
 const contacts: ContactDetails[] = [];
+
+export interface ContactSearchFilters {
+    search?: string;
+    status?: ContactDetails['status'];
+    companyId?: string;
+}
+
+export interface ContactsSummary {
+    total: number;
+    active: number;
+    inactive: number;
+    archived: number;
+}
 
 export class ContactsRepository {
 
     async list(): Promise<Contact[]> {
 
-        return contacts.filter(
-            x => !x.isDeleted
-        );
+        return contacts
+            .filter(contact => !contact.isDeleted);
 
     }
 
     async listArchived(): Promise<Contact[]> {
 
-        return contacts.filter(
-            x => x.isDeleted
-        );
+        return contacts
+            .filter(contact => contact.isDeleted);
+
+    }
+
+    async search(
+        filters?: ContactSearchFilters,
+    ): Promise<Contact[]> {
+
+        let result =
+            contacts.filter(
+                contact => !contact.isDeleted,
+            );
+
+        if (filters?.search) {
+
+            const keyword =
+                filters.search.toLowerCase();
+
+            result = result.filter(contact =>
+                (contact.fullName ?? '')
+                    .toLowerCase()
+                    .includes(keyword)
+
+                ||
+
+                (contact.email ?? '')
+                    .toLowerCase()
+                    .includes(keyword)
+
+                ||
+
+                (contact.phone ?? '')
+                    .toLowerCase()
+                    .includes(keyword)
+
+                ||
+
+                (contact.companyName ?? '')
+                    .toLowerCase()
+                    .includes(keyword)
+            );
+
+        }
+
+        if (filters?.status) {
+
+            result = result.filter(
+                contact =>
+                    contact.status ===
+                    filters.status,
+            );
+
+        }
+
+        if (filters?.companyId) {
+
+            result = result.filter(
+                contact =>
+                    contact.companyId ===
+                    filters.companyId,
+            );
+
+        }
+
+        return result;
+
+    }
+
+    async summary(): Promise<ContactsSummary> {
+
+        return {
+
+            total:
+                contacts.filter(
+                    x => !x.isDeleted,
+                ).length,
+
+            active:
+                contacts.filter(
+                    x =>
+                        !x.isDeleted &&
+                        x.status === 'ACTIVE',
+                ).length,
+
+            inactive:
+                contacts.filter(
+                    x =>
+                        !x.isDeleted &&
+                        x.status === 'INACTIVE',
+                ).length,
+
+            archived:
+                contacts.filter(
+                    x => x.isDeleted,
+                ).length,
+
+        };
 
     }
 
@@ -29,7 +136,7 @@ export class ContactsRepository {
 
         return (
             contacts.find(
-                x => x.id === id
+                x => x.id === id,
             ) ?? null
         );
 
@@ -39,27 +146,36 @@ export class ContactsRepository {
         data: Partial<ContactDetails>,
     ): Promise<ContactDetails> {
 
+        const now =
+            new Date().toISOString();
+
         const contact: ContactDetails = {
 
             id: Date.now().toString(),
 
             firstName:
-                data.firstName ?? "",
+                data.firstName ?? '',
 
             lastName:
-                data.lastName ?? "",
+                data.lastName ?? '',
 
             fullName:
-                `${data.firstName ?? ""} ${data.lastName ?? ""}`.trim(),
+                `${data.firstName ?? ''} ${data.lastName ?? ''}`.trim(),
 
-            companyId: data.companyId,
+            companyId:
+                data.companyId,
 
             companyName:
                 data.companyName,
 
-            email: data.email,
-            phone: data.phone,
-            mobile: data.mobile,
+            email:
+                data.email,
+
+            phone:
+                data.phone,
+
+            mobile:
+                data.mobile,
 
             designation:
                 data.designation,
@@ -67,11 +183,17 @@ export class ContactsRepository {
             department:
                 data.department,
 
-            city: data.city,
-            state: data.state,
-            country: data.country,
+            city:
+                data.city,
 
-            notes: data.notes,
+            state:
+                data.state,
+
+            country:
+                data.country,
+
+            notes:
+                data.notes,
 
             opportunities:
                 data.opportunities ?? 0,
@@ -80,17 +202,17 @@ export class ContactsRepository {
                 data.lastActivity,
 
             status:
-                data.status ?? "ACTIVE",
+                data.status ?? 'ACTIVE',
 
             isDeleted: false,
+
             deletedAt: null,
+
             deletedBy: null,
 
-            createdAt:
-                new Date().toISOString(),
+            createdAt: now,
 
-            updatedAt:
-                new Date().toISOString(),
+            updatedAt: now,
 
         };
 
@@ -107,14 +229,17 @@ export class ContactsRepository {
 
         const contact =
             contacts.find(
-                x => x.id === id
+                x => x.id === id,
             );
 
         if (!contact) {
             return null;
         }
 
-        Object.assign(contact, data);
+        Object.assign(
+            contact,
+            data,
+        );
 
         contact.fullName =
             `${contact.firstName} ${contact.lastName}`.trim();
@@ -132,7 +257,7 @@ export class ContactsRepository {
 
         const contact =
             contacts.find(
-                x => x.id === id
+                x => x.id === id,
             );
 
         if (!contact) {
@@ -145,7 +270,7 @@ export class ContactsRepository {
             new Date().toISOString();
 
         contact.status =
-            "INACTIVE";
+            'INACTIVE';
 
         return true;
 
@@ -157,7 +282,7 @@ export class ContactsRepository {
 
         const contact =
             contacts.find(
-                x => x.id === id
+                x => x.id === id,
             );
 
         if (!contact) {
@@ -170,7 +295,7 @@ export class ContactsRepository {
 
         contact.deletedBy = null;
 
-        contact.status = "ACTIVE";
+        contact.status = 'ACTIVE';
 
         contact.updatedAt =
             new Date().toISOString();
@@ -183,7 +308,3 @@ export class ContactsRepository {
 
 export const ContactsRepositoryInstance =
     new ContactsRepository();
-
-
-
-
