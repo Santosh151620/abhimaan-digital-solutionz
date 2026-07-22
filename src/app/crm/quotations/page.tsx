@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
