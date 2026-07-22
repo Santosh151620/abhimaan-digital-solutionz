@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-import PageHeader from '@/components/crm/ui/PageHeader';
+
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
     CompaniesForm,
@@ -31,7 +32,7 @@ export default function NewCompaniesPage() {
 
         <CRMPageLayout>
 
-            <PageHeader
+            <CRMHeader
                 title="New Company"
                 description="Register a new customer organization in the CRM."
             />

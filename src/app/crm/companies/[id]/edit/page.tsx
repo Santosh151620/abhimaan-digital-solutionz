@@ -5,7 +5,7 @@ import {
 
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 
-import PageHeader from '@/components/crm/ui/PageHeader';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
   CompaniesForm,
@@ -67,7 +67,7 @@ export default async function EditCompanyPage({
 
     <CRMPageLayout>
 
-      <PageHeader
+      <CRMHeader
         title="Edit Company"
         description="Update company information and subscription details."
       />

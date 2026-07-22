@@ -4,7 +4,8 @@ import {
 } from 'next/navigation';
 
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-import PageHeader from '@/components/crm/ui/PageHeader';
+
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
     ContactsForm,
@@ -69,7 +70,7 @@ export default async function EditContactPage({
     return (
         <CRMPageLayout>
 
-            <PageHeader
+            <CRMHeader
                 title="Edit Contact"
                 description="Update CRM contact details."
             />

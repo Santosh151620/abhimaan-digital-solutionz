@@ -5,7 +5,7 @@ import {
 
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 
-import PageHeader from '@/components/crm/ui/PageHeader';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
     PipelineBoard,
@@ -26,7 +26,7 @@ export default async function PipelinePage() {
 
         <CRMPageLayout>
 
-            <PageHeader
+            <CRMHeader
                 title="Sales Pipeline"
                 description="Track opportunities through every sales stage."
             />

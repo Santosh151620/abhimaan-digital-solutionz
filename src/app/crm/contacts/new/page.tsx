@@ -1,6 +1,6 @@
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 
-import PageHeader from '@/components/crm/ui/PageHeader';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
     ContactsForm,
@@ -42,7 +42,7 @@ export default function NewContactPage() {
     return (
         <CRMPageLayout>
 
-            <PageHeader
+            <CRMHeader
                 title="New Contact"
                 description="Create a new contact for your CRM."
             />
