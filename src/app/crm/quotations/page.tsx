@@ -49,9 +49,9 @@ export default async function QuotationsPage() {
                 quotations={quotations}
             />
             <QuotationsExport
-    quotations={quotations}
-/>
-<QuotationsImport />
+                quotations={quotations}
+            />
+            <QuotationsImport />
         </div>
 
     );

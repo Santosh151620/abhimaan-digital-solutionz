@@ -40,10 +40,9 @@ export default async function QuotationsArchivePage() {
                 </Link>
 
             </div>
-
-
             <QuotationsTable
                 quotations={quotations}
+                archived
             />
 
         </div>

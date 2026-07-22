@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import type { Activity } from "@/types/activity";
 import type { Attachment } from "@/types/attachments";
@@ -25,9 +25,7 @@ export default function EntityWorkspaceContainer({
   const [attachments] = useState<Attachment[]>([]);
   const [notifications] = useState<Notification[]>([]);
 
-  useEffect(() => {
-     }, [entityType, entityId]);
-
+ 
   return (
     <EntityWorkspace
       entityType={entityType}
