@@ -22,8 +22,3 @@ export class ActivityService {
     return this.repository.create(activity);
   }
 }
-
-
-
-
-

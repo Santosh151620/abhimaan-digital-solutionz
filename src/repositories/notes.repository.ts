@@ -19,9 +19,7 @@ export class NotesRepository extends BaseRepository<Note> {
       .eq("organization_id", this.organizationId)
       .order("updatedAt", { ascending: false });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     return (data ?? []) as Note[];
   }
