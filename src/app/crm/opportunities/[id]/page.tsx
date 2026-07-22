@@ -1,128 +1,183 @@
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+
+
 import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
 import EntityWorkspace from '@/components/entities/EntityWorkspace';
 
+
 import {
-    listOpportunities,
-} from '../actions';
+    OpportunitiesServiceInstance,
+} from '@/services/crm/OpportunitiesService';
+
+
 
 interface Props {
+
     params: Promise<{
-        id: string;
+        id:string;
     }>;
+
 }
 
+
+
 export default async function OpportunityDetailsPage({
+
     params,
-}: Props) {
 
-    const { id } = await params;
+}:Props) {
 
-    const opportunities =
-        await listOpportunities();
+
+    const {
+        id,
+    } = await params;
+
+
 
     const opportunity =
-        opportunities.find(
-            item => item.id === id,
+
+        await OpportunitiesServiceInstance.details(
+            id
         );
 
+
+
     if (!opportunity) {
+
         notFound();
+
     }
+
+
 
     return (
 
+
         <CRMPageLayout>
 
-            <div className="flex items-start justify-between">
 
-                <div>
 
-                    <h1 className="text-3xl font-bold">
-                        {opportunity.title}
-                    </h1>
+            <CRMHeader
 
-                    <p className="text-muted-foreground">
-                        Opportunity Details
-                    </p>
+                title={opportunity.title}
 
-                </div>
+                description="Opportunity details and sales workspace."
 
-                <div className="flex gap-2">
+                actions={[
+                    {
+                        label:"Back",
+                        href:"/crm/opportunities",
+                    },
 
-                    <Link
-                        href="/crm/opportunities"
-                        className="rounded-lg border px-4 py-2 hover:bg-muted"
-                    >
-                        Back
-                    </Link>
+                    {
+                        label:"Edit",
+                        href:`/crm/opportunities/${opportunity.id}/edit`,
+                    },
+                ]}
 
-                    <Link
-                        href={`/crm/opportunities/${opportunity.id}/edit`}
-                        className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground"
-                    >
-                        Edit
-                    </Link>
-
-                </div>
-
-            </div>
-
-            <EntityWorkspace
-                entityType="Opportunity"
-                entityId={opportunity.id}
-                overview={
-                    <EntityOverviewGrid
-                        items={[
-                            {
-                                title: 'Stage',
-                                value: opportunity.stage,
-                            },
-                            {
-                                title: 'Company',
-                                value: opportunity.companyId,
-                            },
-                            {
-                                title: 'Value',
-                                value: `₹ ${opportunity.value}`,
-                            },
-                            {
-                                title: 'Probability',
-                                value: `${opportunity.probability}%`,
-                            },
-                            {
-                                title: 'Expected Close',
-                                value:
-                                    opportunity.expectedCloseDate ??
-                                    '—',
-                            },
-                            {
-                                title: 'Owner',
-                                value:
-                                    opportunity.owner ??
-                                    '—',
-                            },
-                            {
-                                title: 'Created',
-                                value: new Date(
-                                    opportunity.createdAt,
-                                ).toLocaleDateString(),
-                            },
-                            {
-                                title: 'Last Updated',
-                                value: new Date(
-                                    opportunity.updatedAt,
-                                ).toLocaleDateString(),
-                            },
-                        ]}
-                    />
-                }
             />
 
+
+
+
+            <EntityWorkspace
+
+
+                entityType="Opportunity"
+
+
+                entityId={opportunity.id}
+
+
+
+                overview={
+
+
+                    <EntityOverviewGrid
+
+
+                        items={[
+
+
+                            {
+                                title:"Stage",
+                                value:opportunity.stage,
+                            },
+
+
+                            {
+                                title:"Company",
+                                value:opportunity.companyId,
+                            },
+
+
+                            {
+                                title:"Value",
+                                value:`₹ ${opportunity.value}`,
+                            },
+
+
+                            {
+                                title:"Probability",
+                                value:`${opportunity.probability}%`,
+                            },
+
+
+                            {
+                                title:"Expected Close",
+                                value:
+                                    opportunity.expectedCloseDate
+                                    ??
+                                    "-",
+                            },
+
+
+                            {
+                                title:"Owner",
+                                value:
+                                    opportunity.owner
+                                    ??
+                                    "-",
+                            },
+
+
+                            {
+                                title:"Created",
+                                value:
+                                    new Date(
+                                        opportunity.createdAt
+                                    ).toLocaleDateString(),
+                            },
+
+
+                            {
+                                title:"Updated",
+                                value:
+                                    new Date(
+                                        opportunity.updatedAt
+                                    ).toLocaleDateString(),
+                            },
+
+
+                        ]}
+
+
+                    />
+
+
+                }
+
+
+            />
+
+
+
         </CRMPageLayout>
+
 
     );
 

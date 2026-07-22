@@ -1,143 +1,522 @@
-import type { Opportunity } from '@/types/crm/Opportunities';
+import type {
+    Opportunity,
+} from '@/types/crm/Opportunities';
 
-const opportunities: Opportunity[] = [];
 
-export class OpportunitiesRepository {
+class OpportunitiesRepository {
+
+
+    private opportunities =
+        new Map<string, Opportunity>();
+
+
 
     async list(): Promise<Opportunity[]> {
-        return opportunities.filter(
-            opportunity => !opportunity.isDeleted
+
+        return Array.from(
+            this.opportunities.values()
+        )
+        .filter(
+            opportunity =>
+                !opportunity.isDeleted
         );
+
     }
 
+
+
+
     async listArchived(): Promise<Opportunity[]> {
-        return opportunities.filter(
-            opportunity => opportunity.isDeleted
+
+        return Array.from(
+            this.opportunities.values()
+        )
+        .filter(
+            opportunity =>
+                opportunity.isDeleted
         );
+
     }
+
+
+
 
     async findById(
         id: string
     ): Promise<Opportunity | null> {
 
         return (
-            opportunities.find(
-                opportunity => opportunity.id === id
-            ) ?? null
+            this.opportunities.get(id)
+            ??
+            null
         );
 
     }
+
+
+
+
+    async details(
+        id: string
+    ): Promise<Opportunity | null> {
+
+        return this.findById(id);
+
+    }
+
+
+
+
+    async search(
+        filters?: {
+
+            stage?: Opportunity['stage'];
+
+            companyId?: string;
+
+            search?: string;
+
+        }
+    ): Promise<Opportunity[]> {
+
+
+        let opportunities =
+            await this.list();
+
+
+
+
+        if (
+            filters?.stage
+        ) {
+
+            opportunities =
+                opportunities.filter(
+
+                    opportunity =>
+
+                        opportunity.stage ===
+                        filters.stage
+
+                );
+
+        }
+
+
+
+
+
+        if (
+            filters?.companyId
+        ) {
+
+            opportunities =
+                opportunities.filter(
+
+                    opportunity =>
+
+                        opportunity.companyId ===
+                        filters.companyId
+
+                );
+
+        }
+
+
+
+
+
+        if (
+            filters?.search
+        ) {
+
+            const keyword =
+                filters.search.toLowerCase();
+
+
+
+            opportunities =
+                opportunities.filter(
+
+                    opportunity =>
+
+
+                        opportunity.title
+                            .toLowerCase()
+                            .includes(keyword)
+
+
+                        ||
+
+                        opportunity.description
+                            ?.toLowerCase()
+                            .includes(keyword)
+
+                );
+
+        }
+
+
+
+        return opportunities;
+
+    }
+
+
+
+
 
     async create(
         data: Partial<Opportunity>
     ): Promise<Opportunity> {
 
+
+        const now =
+            new Date().toISOString();
+
+
+
         const opportunity: Opportunity = {
 
-            id: Date.now().toString(),
 
-            companyId: data.companyId ?? '',
+            id:
+                crypto.randomUUID(),
 
-            title: data.title ?? '',
-            description: data.description,
 
-            value: data.value ?? 0,
-            probability: data.probability ?? 0,
 
-            stage: data.stage ?? 'LEAD',
+            companyId:
+                data.companyId
+                ??
+                '',
 
-            expectedCloseDate: data.expectedCloseDate,
-            owner: data.owner,
 
-            isDeleted: false,
-            deletedAt: null,
-            deletedBy: null,
 
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            title:
+                data.title
+                ??
+                '',
+
+
+
+            description:
+                data.description,
+
+
+
+            value:
+                data.value
+                ??
+                0,
+
+
+
+            probability:
+                data.probability
+                ??
+                0,
+
+
+
+            stage:
+                data.stage
+                ??
+                'LEAD',
+
+
+
+            expectedCloseDate:
+                data.expectedCloseDate,
+
+
+
+            owner:
+                data.owner,
+
+
+
+            isDeleted:
+                false,
+
+
+
+            deletedAt:
+                null,
+
+
+
+            deletedBy:
+                null,
+
+
+
+            createdAt:
+                now,
+
+
+
+            updatedAt:
+                now,
+
+
         };
 
-        opportunities.push(opportunity);
+
+
+        this.opportunities.set(
+
+            opportunity.id,
+
+            opportunity
+
+        );
+
+
 
         return opportunity;
 
+
     }
+
+
+
+
 
     async update(
         id: string,
         data: Partial<Opportunity>
     ): Promise<Opportunity | null> {
 
-        const opportunity =
-            opportunities.find(
-                item => item.id === id
-            );
 
-        if (!opportunity) {
+        const existing =
+            this.opportunities.get(id);
+
+
+
+        if (!existing) {
+
             return null;
+
         }
 
-        Object.assign(opportunity, data);
 
-        opportunity.updatedAt =
-            new Date().toISOString();
 
-        return opportunity;
+
+        const updated: Opportunity = {
+
+
+            ...existing,
+
+
+            ...data,
+
+
+
+            updatedAt:
+                new Date().toISOString(),
+
+
+        };
+
+
+
+        this.opportunities.set(
+
+            id,
+
+            updated
+
+        );
+
+
+
+        return updated;
+
 
     }
+
+
+
+
 
     async delete(
         id: string,
         deletedBy = 'system'
     ): Promise<boolean> {
 
+
         const opportunity =
-            opportunities.find(
-                item => item.id === id
-            );
+            this.opportunities.get(id);
+
+
 
         if (!opportunity) {
+
             return false;
+
         }
 
-        opportunity.isDeleted = true;
+
+
+
+        opportunity.isDeleted =
+            true;
+
+
+
         opportunity.deletedAt =
             new Date().toISOString();
-        opportunity.deletedBy = deletedBy;
+
+
+
+        opportunity.deletedBy =
+            deletedBy;
+
+
+
+        opportunity.updatedAt =
+            new Date().toISOString();
+
+
+
+        this.opportunities.set(
+
+            id,
+
+            opportunity
+
+        );
+
+
 
         return true;
 
+
     }
+
+
+
+
 
     async restore(
         id: string
     ): Promise<boolean> {
 
+
         const opportunity =
-            opportunities.find(
-                item => item.id === id
-            );
+            this.opportunities.get(id);
+
+
 
         if (!opportunity) {
+
             return false;
+
         }
 
-        opportunity.isDeleted = false;
-        opportunity.deletedAt = null;
-        opportunity.deletedBy = null;
+
+
+
+        opportunity.isDeleted =
+            false;
+
+
+
+        opportunity.deletedAt =
+            null;
+
+
+
+        opportunity.deletedBy =
+            null;
+
+
 
         opportunity.updatedAt =
             new Date().toISOString();
 
+
+
+        this.opportunities.set(
+
+            id,
+
+            opportunity
+
+        );
+
+
+
         return true;
+
 
     }
 
+
+
+
+
+    async summary() {
+
+
+        const opportunities =
+            await this.list();
+
+
+
+        return {
+
+
+            total:
+                opportunities.length,
+
+
+
+            pipelineValue:
+                opportunities.reduce(
+
+                    (
+                        total,
+                        opportunity
+                    ) =>
+                        total +
+                        opportunity.value,
+
+                    0
+
+                ),
+
+
+
+            won:
+                opportunities.filter(
+
+                    opportunity =>
+                        opportunity.stage ===
+                        'WON'
+
+                ).length,
+
+
+
+            lost:
+                opportunities.filter(
+
+                    opportunity =>
+                        opportunity.stage ===
+                        'LOST'
+
+                ).length,
+
+
+        };
+
+
+    }
+
+
 }
+
+
 
 export const OpportunitiesRepositoryInstance =
     new OpportunitiesRepository();
-
-
-
-

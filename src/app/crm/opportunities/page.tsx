@@ -1,110 +1,151 @@
-import Link from 'next/link';
-
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMToolbar from '@/components/crm/shared/toolbar/CRMToolbar';
 import CRMTableContainer from '@/components/crm/shared/table/CRMTableContainer';
+import CRMEmptyState from '@/components/crm/shared/table/CRMEmptyState';
 
 import {
     listOpportunities,
 } from './actions';
 
+
 export default async function OpportunitiesPage() {
+
 
     const opportunities =
         await listOpportunities();
+
+
 
     return (
 
         <CRMPageLayout>
 
+
             <CRMHeader
+
                 title="Opportunities"
-                description="Manage CRM sales opportunities."
+
+                description="Manage CRM sales opportunities and revenue pipeline."
+
                 actions={[
                     {
                         label: 'New Opportunity',
                         href: '/crm/opportunities/new',
                     },
                 ]}
+
             />
 
-            <CRMTableContainer>
 
-                <table className="w-full">
 
-                    <thead>
+            <CRMToolbar
 
-                        <tr className="border-b text-left">
+                title="Opportunities"
 
-                            <th className="p-3">
-                                Title
-                            </th>
+                createHref="/crm/opportunities/new"
 
-                            <th className="p-3">
-                                Company
-                            </th>
+                createLabel="New Opportunity"
 
-                            <th className="p-3">
-                                Stage
-                            </th>
+            />
 
-                            <th className="p-3">
-                                Value
-                            </th>
 
-                            <th className="p-3">
-                                Action
-                            </th>
 
-                        </tr>
+            <CRMTableContainer
 
-                    </thead>
+                title="Opportunities"
 
-                    <tbody>
+                description="Track sales opportunities and deal progress."
 
-                        {opportunities.map(item => (
+            >
 
-                            <tr
-                                key={item.id}
-                                className="border-b"
-                            >
 
-                                <td className="p-3">
-                                    {item.title}
-                                </td>
+                {
+                    opportunities.length === 0 ? (
 
-                                <td className="p-3">
-                                    {item.companyId}
-                                </td>
+                        <CRMEmptyState
 
-                                <td className="p-3">
-                                    {item.stage}
-                                </td>
+                            title="No opportunities found"
 
-                                <td className="p-3">
-                                    ₹ {item.value}
-                                </td>
+                            description="Create your first CRM opportunity to start tracking sales."
 
-                                <td className="p-3">
+                            actionHref="/crm/opportunities/new"
 
-                                    <Link
-                                        href={`/crm/opportunities/${item.id}`}
-                                        className="text-primary"
-                                    >
-                                        View
-                                    </Link>
+                            actionLabel="Create Opportunity"
 
-                                </td>
+                        />
 
-                            </tr>
+                    ) : (
 
-                        ))}
 
-                    </tbody>
+                        <div className="rounded-lg border">
 
-                </table>
+                            {
+                                opportunities.map(
+                                    opportunity => (
+
+                                        <div
+
+                                            key={opportunity.id}
+
+                                            className="flex items-center justify-between border-b p-4 last:border-0"
+
+                                        >
+
+                                            <div>
+
+                                                <p className="font-medium">
+
+                                                    {opportunity.title}
+
+                                                </p>
+
+
+                                                <p className="text-sm text-muted-foreground">
+
+                                                    {opportunity.stage}
+
+                                                    {' • '}
+
+                                                    ₹ {opportunity.value}
+
+                                                </p>
+
+
+                                            </div>
+
+
+
+                                            <a
+
+                                                href={`/crm/opportunities/${opportunity.id}`}
+
+                                                className="text-sm text-primary"
+
+                                            >
+
+                                                View
+
+                                            </a>
+
+
+                                        </div>
+
+                                    )
+
+                                )
+                            }
+
+
+                        </div>
+
+
+                    )
+                }
+
 
             </CRMTableContainer>
+
 
         </CRMPageLayout>
 

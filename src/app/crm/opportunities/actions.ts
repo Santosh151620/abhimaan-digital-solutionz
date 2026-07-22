@@ -1,37 +1,126 @@
 'use server';
 
-import { OpportunitiesServiceInstance } from '@/services/crm/OpportunitiesService';
-import type { Opportunity } from '@/types/crm/Opportunities';
+
+import {
+    OpportunitiesServiceInstance,
+} from '@/services/crm/OpportunitiesService';
+
+
+import type {
+    Opportunity,
+} from '@/types/crm/Opportunities';
+
+
+
 
 export async function listOpportunities() {
+
     return OpportunitiesServiceInstance.list();
+
 }
+
+
+
+
+export async function searchOpportunities(
+    filters?: {
+
+        stage?: Opportunity['stage'];
+
+        companyId?: string;
+
+        search?: string;
+
+    }
+) {
+
+    return OpportunitiesServiceInstance.search(
+        filters
+    );
+
+}
+
+
+
 
 export async function listArchivedOpportunities() {
+
     return OpportunitiesServiceInstance.listArchived();
+
 }
+
+
+
+
+export async function getOpportunity(
+    id:string
+) {
+
+    return OpportunitiesServiceInstance.details(
+        id
+    );
+
+}
+
+
+
 
 export async function createOpportunity(
-    data: Partial<Opportunity>
+    data:Partial<Opportunity>
 ) {
-    return OpportunitiesServiceInstance.create(data);
+
+    return OpportunitiesServiceInstance.create(
+        data
+    );
+
 }
+
+
+
 
 export async function updateOpportunity(
-    id: string,
-    data: Partial<Opportunity>
+    id:string,
+    data:Partial<Opportunity>
 ) {
-    return OpportunitiesServiceInstance.update(id, data);
-}
 
-export async function deleteOpportunity(id: string) {
-    return OpportunitiesServiceInstance.delete(id);
-}
+    return OpportunitiesServiceInstance.update(
+        id,
+        data
+    );
 
-export async function restoreOpportunity(id: string) {
-    return OpportunitiesServiceInstance.restore(id);
 }
 
 
 
 
+export async function deleteOpportunity(
+    id:string
+) {
+
+    return OpportunitiesServiceInstance.delete(
+        id
+    );
+
+}
+
+
+
+
+export async function restoreOpportunity(
+    id:string
+) {
+
+    return OpportunitiesServiceInstance.restore(
+        id
+    );
+
+}
+
+
+
+
+export async function getOpportunitiesSummary() {
+
+    return OpportunitiesServiceInstance.summary();
+
+}
