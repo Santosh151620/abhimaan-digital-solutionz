@@ -6,17 +6,14 @@ import {
 } from '@/services/crm/CompaniesService';
 
 
-
 import {
     PermissionServiceInstance,
 } from '@/services/crm/PermissionService';
 
 
-
 import {
     CRM_ADMIN_ROLE,
 } from '@/shared/crmPermissions';
-
 
 
 import type {
@@ -31,13 +28,10 @@ function can(
     action:
 
         | 'create'
-
         | 'update'
-
         | 'delete'
 
 ) {
-
 
     return PermissionServiceInstance.hasPermission(
 
@@ -49,18 +43,15 @@ function can(
 
     );
 
-
 }
 
 
 
 
 
-export async function getCompanies() {
-
+export async function getCompanies(){
 
     return CompaniesServiceInstance.list();
-
 
 }
 
@@ -70,25 +61,21 @@ export async function getCompanies() {
 
 export async function searchCompanies(
 
-    filters?: {
+    filters?:{
 
-        status?:Company['status'];
+        status?: Company['status'];
 
-        industry?:string;
+        industry?: string;
 
-        search?:string;
+        search?: string;
 
     }
 
-) {
-
+){
 
     return CompaniesServiceInstance.search(
-
         filters
-
     );
-
 
 }
 
@@ -96,11 +83,9 @@ export async function searchCompanies(
 
 
 
-export async function getArchivedCompanies() {
-
+export async function getArchivedCompanies(){
 
     return CompaniesServiceInstance.listArchived();
-
 
 }
 
@@ -112,15 +97,11 @@ export async function getCompany(
 
     id:string
 
-) {
-
+){
 
     return CompaniesServiceInstance.details(
-
         id
-
     );
-
 
 }
 
@@ -132,12 +113,11 @@ export async function createCompany(
 
     data:Partial<CompanyDetails>
 
-) {
+){
 
-
-    if (
+    if(
         !can('create')
-    ) {
+    ){
 
         throw new Error(
             'Permission denied'
@@ -148,11 +128,8 @@ export async function createCompany(
 
 
     return CompaniesServiceInstance.create(
-
         data
-
     );
-
 
 }
 
@@ -166,12 +143,11 @@ export async function updateCompany(
 
     data:Partial<CompanyDetails>
 
-) {
+){
 
-
-    if (
+    if(
         !can('update')
-    ) {
+    ){
 
         throw new Error(
             'Permission denied'
@@ -189,7 +165,6 @@ export async function updateCompany(
 
     );
 
-
 }
 
 
@@ -200,12 +175,11 @@ export async function deleteCompany(
 
     id:string
 
-) {
+){
 
-
-    if (
+    if(
         !can('delete')
-    ) {
+    ){
 
         throw new Error(
             'Permission denied'
@@ -216,11 +190,8 @@ export async function deleteCompany(
 
 
     return CompaniesServiceInstance.delete(
-
         id
-
     );
-
 
 }
 
@@ -232,12 +203,11 @@ export async function restoreCompany(
 
     id:string
 
-) {
+){
 
-
-    if (
+    if(
         !can('update')
-    ) {
+    ){
 
         throw new Error(
             'Permission denied'
@@ -248,11 +218,8 @@ export async function restoreCompany(
 
 
     return CompaniesServiceInstance.restore(
-
         id
-
     );
-
 
 }
 
@@ -260,10 +227,8 @@ export async function restoreCompany(
 
 
 
-export async function getCompaniesSummary() {
-
+export async function getCompaniesSummary(){
 
     return CompaniesServiceInstance.summary();
-
 
 }

@@ -1,78 +1,57 @@
 export type CompanyStatus =
-
     | 'ACTIVE'
-
     | 'INACTIVE'
-
     | 'PROSPECT'
-
     | 'ARCHIVED';
-
 
 
 export interface Company {
 
+    id: string;
 
-    id:string;
+    organizationId?: string;
 
+    companyNumber?: string;
 
-    companyNumber?:string;
+    name: string;
 
+    legalName?: string;
 
-    name:string;
+    industry?: string;
 
+    website?: string;
 
-    legalName?:string;
+    phone?: string;
 
+    email?: string;
 
-    industry?:string;
-
-
-    website?:string;
-
-
-    phone?:string;
-
-
-    email?:string;
+    status: CompanyStatus;
 
 
-    status:CompanyStatus;
+    address?: string;
+
+    city?: string;
+
+    state?: string;
+
+    country?: string;
 
 
-    address?:string;
+    employees?: number;
+
+    annualRevenue?: number;
 
 
-    city?:string;
+    isDeleted?: boolean;
+
+    deletedAt?: string | null;
+
+    deletedBy?: string | null;
 
 
-    state?:string;
+    createdAt: string;
 
-
-    country?:string;
-
-
-    employees?:number;
-
-
-    annualRevenue?:number;
-
-
-
-    isDeleted?:boolean;
-
-
-    deletedAt?:string | null;
-
-
-    deletedBy?:string | null;
-
-
-
-    createdAt:string;
-
-
-    updatedAt:string;
+    updatedAt: string;
 
 }
 
@@ -80,20 +59,15 @@ export interface Company {
 
 export interface CompanyContact {
 
+    id: string;
 
-    id:string;
+    name: string;
 
+    email?: string;
 
-    name:string;
+    phone?: string;
 
-
-    email?:string;
-
-
-    phone?:string;
-
-
-    role?:string;
+    role?: string;
 
 }
 
@@ -101,20 +75,15 @@ export interface CompanyContact {
 
 export interface CompanyOpportunity {
 
+    id: string;
 
-    id:string;
+    title: string;
 
+    value: number;
 
-    title:string;
+    stage: string;
 
-
-    value:number;
-
-
-    stage:string;
-
-
-    probability:number;
+    probability: number;
 
 }
 
@@ -122,45 +91,33 @@ export interface CompanyOpportunity {
 
 export interface CompanyActivity {
 
-
-    id:string;
-
+    id: string;
 
     type:
-
         | 'CALL'
-
         | 'EMAIL'
-
         | 'MEETING'
-
         | 'NOTE'
-
         | 'TASK';
 
 
+    title: string;
 
-    title:string;
+    description?: string;
 
-
-    description?:string;
-
-
-    createdAt:string;
+    createdAt: string;
 
 }
 
 
 
-export interface CompanyDetails extends Company {
+export interface CompanyDetails
+    extends Company {
 
+    contacts: CompanyContact[];
 
-    contacts:CompanyContact[];
+    opportunities: CompanyOpportunity[];
 
-
-    opportunities:CompanyOpportunity[];
-
-
-    activities:CompanyActivity[];
+    activities: CompanyActivity[];
 
 }

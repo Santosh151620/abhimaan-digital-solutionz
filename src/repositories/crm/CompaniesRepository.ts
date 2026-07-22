@@ -13,47 +13,37 @@ class CompaniesRepository {
 
 
 
-    list() {
+    async list(): Promise<CompanyDetails[]> {
 
         return Array.from(
-
             this.companies.values()
-
         )
         .filter(
-
             company =>
                 !company.isDeleted
-
         );
 
     }
 
 
 
-
-    listArchived() {
+    async listArchived(): Promise<CompanyDetails[]> {
 
         return Array.from(
-
             this.companies.values()
-
         )
         .filter(
-
             company =>
                 company.isDeleted
-
         );
 
     }
 
 
 
-
-    findById(
-        id:string
-    ) {
+    async findById(
+        id: string
+    ): Promise<CompanyDetails | null> {
 
         return (
             this.companies.get(id)
@@ -65,10 +55,9 @@ class CompaniesRepository {
 
 
 
-
-    details(
-        id:string
-    ) {
+    async details(
+        id: string
+    ): Promise<CompanyDetails | null> {
 
         return this.findById(id);
 
@@ -76,10 +65,9 @@ class CompaniesRepository {
 
 
 
-
-    create(
-        data:Partial<CompanyDetails>
-    ) {
+    async create(
+        data: Partial<CompanyDetails>
+    ): Promise<CompanyDetails> {
 
 
         const now =
@@ -89,10 +77,12 @@ class CompaniesRepository {
 
         const company:CompanyDetails = {
 
-
             id:
                 crypto.randomUUID(),
 
+
+            organizationId:
+                data.organizationId,
 
 
             companyNumber:
@@ -101,37 +91,30 @@ class CompaniesRepository {
                 `CMP-${Date.now()}`,
 
 
-
             name:
                 data.name
                 ??
                 '',
 
 
-
             legalName:
                 data.legalName,
-
 
 
             industry:
                 data.industry,
 
 
-
             website:
                 data.website,
-
 
 
             phone:
                 data.phone,
 
 
-
             email:
                 data.email,
-
 
 
             status:
@@ -140,60 +123,43 @@ class CompaniesRepository {
                 'ACTIVE',
 
 
-
             address:
                 data.address,
-
 
 
             city:
                 data.city,
 
 
-
             state:
                 data.state,
-
 
 
             country:
                 data.country,
 
 
-
             employees:
                 data.employees,
-
 
 
             annualRevenue:
                 data.annualRevenue,
 
 
-
-            isDeleted:
-                false,
+            isDeleted:false,
 
 
-
-            deletedAt:
-                null,
+            deletedAt:null,
 
 
-
-            deletedBy:
-                null,
+            deletedBy:null,
 
 
-
-            createdAt:
-                now,
+            createdAt:now,
 
 
-
-            updatedAt:
-                now,
-
+            updatedAt:now,
 
 
             contacts:
@@ -202,12 +168,10 @@ class CompaniesRepository {
                 [],
 
 
-
             opportunities:
                 data.opportunities
                 ??
                 [],
-
 
 
             activities:
@@ -215,23 +179,18 @@ class CompaniesRepository {
                 ??
                 [],
 
-
         };
 
 
 
         this.companies.set(
-
             company.id,
-
             company
-
         );
 
 
 
         return company;
-
 
     }
 
@@ -239,10 +198,10 @@ class CompaniesRepository {
 
 
 
-    update(
+    async update(
         id:string,
         data:Partial<CompanyDetails>
-    ) {
+    ):Promise<CompanyDetails | null> {
 
 
         const existing =
@@ -250,7 +209,7 @@ class CompaniesRepository {
 
 
 
-        if (!existing) {
+        if(!existing){
 
             return null;
 
@@ -260,34 +219,26 @@ class CompaniesRepository {
 
         const updated:CompanyDetails = {
 
-
             ...existing,
-
 
             ...data,
 
 
-
             updatedAt:
                 new Date().toISOString(),
-
 
         };
 
 
 
         this.companies.set(
-
             id,
-
             updated
-
         );
 
 
 
         return updated;
-
 
     }
 
@@ -295,9 +246,9 @@ class CompaniesRepository {
 
 
 
-    delete(
+    async delete(
         id:string
-    ) {
+    ):Promise<boolean>{
 
 
         const company =
@@ -305,7 +256,7 @@ class CompaniesRepository {
 
 
 
-        if (!company) {
+        if(!company){
 
             return false;
 
@@ -320,10 +271,8 @@ class CompaniesRepository {
             'ARCHIVED';
 
 
-
         company.deletedAt =
             new Date().toISOString();
-
 
 
         company.updatedAt =
@@ -332,17 +281,13 @@ class CompaniesRepository {
 
 
         this.companies.set(
-
             id,
-
             company
-
         );
 
 
 
         return true;
-
 
     }
 
@@ -350,9 +295,9 @@ class CompaniesRepository {
 
 
 
-    restore(
+    async restore(
         id:string
-    ) {
+    ):Promise<boolean>{
 
 
         const company =
@@ -360,7 +305,7 @@ class CompaniesRepository {
 
 
 
-        if (!company) {
+        if(!company){
 
             return false;
 
@@ -368,20 +313,20 @@ class CompaniesRepository {
 
 
 
-        company.isDeleted = false;
+        company.isDeleted=false;
 
 
-        company.deletedAt = null;
+        company.deletedAt=null;
 
 
-        company.deletedBy = null;
+        company.deletedBy=null;
 
 
 
-        if (
+        if(
             company.status ===
             'ARCHIVED'
-        ) {
+        ){
 
             company.status =
                 'ACTIVE';
@@ -396,17 +341,13 @@ class CompaniesRepository {
 
 
         this.companies.set(
-
             id,
-
             company
-
         );
 
 
 
         return true;
-
 
     }
 
@@ -414,68 +355,52 @@ class CompaniesRepository {
 
 
 
-    search(
+    async search(
         filters?: {
 
-            status?:Company['status'];
+            status?: Company['status'];
 
-            industry?:string;
+            industry?: string;
 
-            search?:string;
+            search?: string;
 
         }
-    ) {
+
+    ):Promise<CompanyDetails[]> {
 
 
         let companies =
-            this.list();
+            await this.list();
 
 
 
-
-        if (
-            filters?.status
-        ) {
+        if(filters?.status){
 
             companies =
                 companies.filter(
-
                     company =>
-
                         company.status ===
                         filters.status
-
                 );
 
         }
 
 
 
-
-
-        if (
-            filters?.industry
-        ) {
+        if(filters?.industry){
 
             companies =
                 companies.filter(
-
                     company =>
-
                         company.industry ===
                         filters.industry
-
                 );
 
         }
 
 
 
-
-
-        if (
-            filters?.search
-        ) {
+        if(filters?.search){
 
 
             const keyword =
@@ -485,14 +410,11 @@ class CompaniesRepository {
 
             companies =
                 companies.filter(
-
                     company =>
-
 
                         company.name
                             .toLowerCase()
                             .includes(keyword)
-
 
                         ||
 
@@ -500,17 +422,13 @@ class CompaniesRepository {
                             ?.toLowerCase()
                             .includes(keyword)
 
-
                 );
-
 
         }
 
 
 
-
         return companies;
-
 
     }
 
@@ -518,11 +436,11 @@ class CompaniesRepository {
 
 
 
-    summary() {
+    async summary(){
 
 
         const companies =
-            this.list();
+            await this.list();
 
 
 
@@ -533,44 +451,31 @@ class CompaniesRepository {
                 companies.length,
 
 
-
             active:
                 companies.filter(
-
                     company =>
-
                         company.status ===
                         'ACTIVE'
-
                 ).length,
-
 
 
             inactive:
                 companies.filter(
-
                     company =>
-
                         company.status ===
                         'INACTIVE'
-
                 ).length,
-
 
 
             prospect:
                 companies.filter(
-
                     company =>
-
                         company.status ===
                         'PROSPECT'
-
                 ).length,
 
 
         };
-
 
     }
 
@@ -579,6 +484,5 @@ class CompaniesRepository {
 
 
 
-export const
-    CompaniesRepositoryInstance =
-        new CompaniesRepository();
+export const CompaniesRepositoryInstance =
+    new CompaniesRepository();

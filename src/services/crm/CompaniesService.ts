@@ -3,7 +3,6 @@ import {
 } from '@/repositories/crm/CompaniesRepository';
 
 
-
 import type {
     Company,
     CompanyDetails,
@@ -14,8 +13,7 @@ import type {
 class CompaniesService {
 
 
-
-    list() {
+    async list(): Promise<CompanyDetails[]> {
 
         return CompaniesRepositoryInstance.list();
 
@@ -23,9 +21,7 @@ class CompaniesService {
 
 
 
-
-
-    listArchived() {
+    async listArchived(): Promise<CompanyDetails[]> {
 
         return CompaniesRepositoryInstance.listArchived();
 
@@ -33,11 +29,9 @@ class CompaniesService {
 
 
 
-
-
-    findById(
+    async findById(
         id:string
-    ) {
+    ):Promise<CompanyDetails | null>{
 
         return CompaniesRepositoryInstance.findById(
             id
@@ -47,11 +41,9 @@ class CompaniesService {
 
 
 
-
-
-    details(
+    async details(
         id:string
-    ) {
+    ):Promise<CompanyDetails | null>{
 
         return this.findById(id);
 
@@ -59,19 +51,18 @@ class CompaniesService {
 
 
 
+    async search(
+        filters?:{
 
+            status?: Company['status'];
 
-    search(
-        filters?: {
+            industry?: string;
 
-            status?:Company['status'];
-
-            industry?:string;
-
-            search?:string;
+            search?: string;
 
         }
-    ) {
+
+    ):Promise<CompanyDetails[]>{
 
         return CompaniesRepositoryInstance.search(
             filters
@@ -81,11 +72,9 @@ class CompaniesService {
 
 
 
-
-
-    create(
+    async create(
         data:Partial<CompanyDetails>
-    ) {
+    ):Promise<CompanyDetails>{
 
         return CompaniesRepositoryInstance.create(
             data
@@ -95,12 +84,10 @@ class CompaniesService {
 
 
 
-
-
-    update(
+    async update(
         id:string,
         data:Partial<CompanyDetails>
-    ) {
+    ):Promise<CompanyDetails | null>{
 
         return CompaniesRepositoryInstance.update(
             id,
@@ -111,11 +98,9 @@ class CompaniesService {
 
 
 
-
-
-    delete(
+    async delete(
         id:string
-    ) {
+    ):Promise<boolean>{
 
         return CompaniesRepositoryInstance.delete(
             id
@@ -125,11 +110,9 @@ class CompaniesService {
 
 
 
-
-
-    restore(
+    async restore(
         id:string
-    ) {
+    ):Promise<boolean>{
 
         return CompaniesRepositoryInstance.restore(
             id
@@ -139,9 +122,7 @@ class CompaniesService {
 
 
 
-
-
-    summary() {
+    async summary(){
 
         return CompaniesRepositoryInstance.summary();
 
@@ -152,6 +133,5 @@ class CompaniesService {
 
 
 
-export const
-    CompaniesServiceInstance =
-        new CompaniesService();
+export const CompaniesServiceInstance =
+    new CompaniesService();
