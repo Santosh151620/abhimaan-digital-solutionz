@@ -1,100 +1,71 @@
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMToolbar from '@/components/crm/shared/toolbar/CRMToolbar';
+import CRMTableContainer from '@/components/crm/shared/table/CRMTableContainer';
+import CRMEmptyState from '@/components/crm/shared/table/CRMEmptyState';
+
+import ContactsTable from '@/components/crm/contacts/ContactsTable';
+
 import {
     listContacts,
 } from './actions';
+
 
 export default async function ContactsPage() {
 
     const contacts =
         await listContacts();
 
+
     return (
 
-        <div>
+        <CRMPageLayout>
 
-            <div>
+            <CRMHeader
+                title="Contacts"
+                description="Manage customer and business contacts."
+                actions={[
+                    {
+                        label: 'New Contact',
+                        href: '/crm/contacts/new',
+                    },
+                ]}
+            />
 
-                <h1 className="text-3xl font-bold">
-                    Contacts
-                </h1>
 
-                <p className="text-muted-foreground">
-                    CRM Contacts
-                </p>
+            <CRMToolbar
+                title="Contacts"
+                createHref="/crm/contacts/new"
+                createLabel="New Contact"
+            />
 
-            </div>
 
-            <div className="rounded-xl border">
+            <CRMTableContainer
+                title="Contacts"
+                description="All CRM contacts."
+            >
 
-                <table className="w-full">
+                {contacts.length === 0 ? (
 
-                    <thead>
+                    <CRMEmptyState
+                        title="No contacts found"
+                        description="Create your first CRM contact to get started."
+                        actionHref="/crm/contacts/new"
+                        actionLabel="Create Contact"
+                    />
 
-                        <tr className="border-b">
+                ) : (
 
-                            <th className="p-3 text-left">
-                                Name
-                            </th>
+                    <ContactsTable
+                        contacts={contacts}
+                    />
 
-                            <th className="p-3 text-left">
-                                Company
-                            </th>
+                )}
 
-                            <th className="p-3 text-left">
-                                Email
-                            </th>
+            </CRMTableContainer>
 
-                            <th className="p-3 text-left">
-                                Phone
-                            </th>
 
-                            <th className="p-3 text-left">
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {contacts.map(contact => (
-
-                            <tr
-                                key={contact.id}
-                                className="border-b"
-                            >
-
-                                <td className="p-3">
-                                    {contact.firstName} {contact.lastName}
-                                </td>
-
-                                <td className="p-3">
-                                    {contact.companyId ?? '-'}
-                                </td>
-
-                                <td className="p-3">
-                                    {contact.email}
-                                </td>
-
-                                <td className="p-3">
-                                    {contact.phone}
-                                </td>
-
-                                <td className="p-3">
-                                    {contact.status}
-                                </td>
-
-                            </tr>
-
-                        ))}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
+        </CRMPageLayout>
 
     );
 
