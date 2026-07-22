@@ -4,7 +4,6 @@ import {
 } from 'next/navigation';
 
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-
 import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
@@ -64,15 +63,23 @@ export default async function EditContactPage({
         redirect(
             `/crm/contacts/${id}`
         );
+
     }
 
 
     return (
+
         <CRMPageLayout>
 
             <CRMHeader
                 title="Edit Contact"
                 description="Update CRM contact details."
+                actions={[
+                    {
+                        label: "Back",
+                        href: `/crm/contacts/${id}`,
+                    },
+                ]}
             />
 
 
@@ -82,5 +89,7 @@ export default async function EditContactPage({
             />
 
         </CRMPageLayout>
+
     );
+
 }

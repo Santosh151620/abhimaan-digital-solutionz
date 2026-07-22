@@ -1,5 +1,9 @@
 import Link from 'next/link';
 
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMTableContainer from '@/components/crm/shared/table/CRMTableContainer';
+
 import {
     listOpportunities,
 } from './actions';
@@ -7,28 +11,24 @@ import {
 export default async function OpportunitiesPage() {
 
     const opportunities =
-    await listOpportunities();
+        await listOpportunities();
 
     return (
 
-        <div className="">
+        <CRMPageLayout>
 
-            <div className="flex items-center justify-between">
+            <CRMHeader
+                title="Opportunities"
+                description="Manage CRM sales opportunities."
+                actions={[
+                    {
+                        label: 'New Opportunity',
+                        href: '/crm/opportunities/new',
+                    },
+                ]}
+            />
 
-                <h1 className="text-2xl font-bold">
-                    Opportunities
-                </h1>
-
-                <Link
-                    href="/crm/opportunities/new"
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
-                >
-                    New Opportunity
-                </Link>
-
-            </div>
-
-            <div className="rounded-xl border">
+            <CRMTableContainer>
 
                 <table className="w-full">
 
@@ -36,11 +36,25 @@ export default async function OpportunitiesPage() {
 
                         <tr className="border-b text-left">
 
-                            <th className="p-3">Title</th>
-                            <th className="p-3">Company</th>
-                            <th className="p-3">Stage</th>
-                            <th className="p-3">Value</th>
-                            <th className="p-3"></th>
+                            <th className="p-3">
+                                Title
+                            </th>
+
+                            <th className="p-3">
+                                Company
+                            </th>
+
+                            <th className="p-3">
+                                Stage
+                            </th>
+
+                            <th className="p-3">
+                                Value
+                            </th>
+
+                            <th className="p-3">
+                                Action
+                            </th>
 
                         </tr>
 
@@ -90,14 +104,10 @@ export default async function OpportunitiesPage() {
 
                 </table>
 
-            </div>
+            </CRMTableContainer>
 
-        </div>
+        </CRMPageLayout>
 
     );
 
 }
-
-
-
-
