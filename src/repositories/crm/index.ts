@@ -12,3 +12,4 @@ export * from './ProjectsRepository';
 export * from './QuotationsRepository';
 export * from './TasksRepository';
 export * from './TicketsRepository';
+export * from './NotesRepository';

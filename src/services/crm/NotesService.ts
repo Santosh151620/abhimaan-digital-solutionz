@@ -1,29 +1,88 @@
 import {
-    NotesRepository,
-} from '@/repositories/notes.repository';
+    NotesRepositoryInstance,
+} from '@/repositories/crm/NotesRepository';
 
 import type {
     Note,
-} from '@/types/notes';
+} from '@/types/crm/Notes';
 
-export class NotesService {
 
-    constructor(
-        private readonly repository: NotesRepository,
-    ) {}
 
-    findByEntity(
-        entityType: string,
-        entityId: string,
-    ): Promise<Note[]> {
+class NotesService {
 
-        return this.repository.findByEntity(
-            entityType,
-            entityId,
+
+    list() {
+
+        return NotesRepositoryInstance.list();
+
+    }
+
+
+
+    findById(
+        id: string
+    ) {
+
+        return NotesRepositoryInstance.findById(
+            id
         );
 
     }
 
+
+
+    create(
+        data: Partial<Note>
+    ) {
+
+        return NotesRepositoryInstance.create(
+            data
+        );
+
+    }
+
+
+
+    update(
+        id: string,
+        data: Partial<Note>
+    ) {
+
+        return NotesRepositoryInstance.update(
+            id,
+            data
+        );
+
+    }
+
+
+
+    delete(
+        id: string
+    ) {
+
+        return NotesRepositoryInstance.delete(
+            id
+        );
+
+    }
+
+
+
+    archive(
+        id: string
+    ) {
+
+        return NotesRepositoryInstance.archive(
+            id
+        );
+
+    }
+
+
 }
 
-export default NotesService;
+
+
+export const NotesServiceInstance =
+    new NotesService();

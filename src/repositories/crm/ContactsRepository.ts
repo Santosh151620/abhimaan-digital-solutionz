@@ -1,5 +1,4 @@
 import type {
-    Contact,
     ContactDetails,
 } from '@/types/crm/Contacts';
 

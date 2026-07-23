@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
