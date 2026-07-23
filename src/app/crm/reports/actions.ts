@@ -2,7 +2,7 @@
 
 import {
     ReportsServiceInstance,
-} from '@/services/crm/ReportsService';
+} from '@/services/crm/ReportService';
 
 import {
     PermissionServiceInstance,
@@ -17,6 +17,7 @@ import type {
     ReportStatus,
 } from '@/types/crm/Reports';
 
+
 function can(
     action:
         | 'create'
@@ -25,16 +26,13 @@ function can(
 ) {
 
     return PermissionServiceInstance.hasPermission(
-
         CRM_ADMIN_ROLE,
-
         'Report',
-
         action,
-
     );
 
 }
+
 
 export async function getReports() {
 
@@ -42,11 +40,13 @@ export async function getReports() {
 
 }
 
+
 export async function getArchivedReports() {
 
     return ReportsServiceInstance.listArchived();
 
 }
+
 
 export async function getReport(
     id: string,
@@ -57,6 +57,7 @@ export async function getReport(
     );
 
 }
+
 
 export async function createReport(
     data: Partial<Report>,
@@ -70,11 +71,13 @@ export async function createReport(
 
     }
 
+
     return ReportsServiceInstance.create(
         data,
     );
 
 }
+
 
 export async function updateReport(
     id: string,
@@ -89,12 +92,14 @@ export async function updateReport(
 
     }
 
+
     return ReportsServiceInstance.update(
         id,
         data,
     );
 
 }
+
 
 export async function deleteReport(
     id: string,
@@ -108,11 +113,13 @@ export async function deleteReport(
 
     }
 
+
     return ReportsServiceInstance.delete(
         id,
     );
 
 }
+
 
 export async function restoreReport(
     id: string,
@@ -126,11 +133,13 @@ export async function restoreReport(
 
     }
 
+
     return ReportsServiceInstance.restore(
         id,
     );
 
 }
+
 
 export async function updateReportStatus(
     id: string,
@@ -145,12 +154,14 @@ export async function updateReportStatus(
 
     }
 
+
     return ReportsServiceInstance.updateStatus(
         id,
         status,
     );
 
 }
+
 
 export async function getReportsSummary() {
 

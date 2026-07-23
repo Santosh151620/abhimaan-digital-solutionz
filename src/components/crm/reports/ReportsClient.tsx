@@ -1,152 +1,119 @@
 'use client';
 
 import {
-    useState,
+    useMemo,
 } from 'react';
 
+import ReportsDashboard from './ReportsDashboard';
+
 import {
-    ReportsForm,
-    ReportsSummary,
-    ReportsTable,
-} from './index';
+    ReportsServiceInstance,
+} from '@/services/crm/ReportService';
 
 import type {
-    Report,
-    ReportSummary,
-} from '@/types/crm/Reports';
+    Report as DashboardReport,
+    ReportType,
+} from '@/types/crm/Report';
 
-interface Props {
 
-    initialReports: Report[];
+function mapReportType(
+    category: string
+): ReportType {
 
-    summary: ReportSummary;
+    switch (category) {
 
-}
+        case 'Sales':
+            return 'Sales';
 
-export default function ReportsClient({
-    initialReports,
-    summary,
-}: Props) {
+        case 'Projects':
+            return 'Projects';
 
-    const [reports, setReports] =
-        useState<Report[]>(
-            initialReports,
-        );
+        case 'Tasks':
+            return 'Tasks';
 
-    const [showForm, setShowForm] =
-        useState(false);
+        case 'Marketing':
+            return 'Leads';
 
-    async function createReport(
-        values: Partial<Report>,
-    ) {
+        case 'Customers':
+            return 'Leads';
 
-        const now =
-            new Date().toISOString();
+        case 'Finance':
+            return 'Revenue';
 
-        const report: Report = {
+        case 'Operations':
+            return 'Activities';
 
-            id:
-                crypto.randomUUID(),
-
-            reportNumber:
-                `RPT-${Date.now()}`,
-
-            companyId:
-                values.companyId,
-
-            title:
-                values.title ?? '',
-
-            description:
-                values.description,
-
-            category:
-                values.category ?? 'CRM',
-
-            format:
-                values.format ?? 'Dashboard',
-
-            status:
-                values.status ?? 'Draft',
-
-            filters:
-                typeof values.filters === 'string'
-                    ? JSON.parse(values.filters)
-                    : values.filters ?? {},
-
-            schedule:
-                values.schedule,
-
-            lastRunAt:
-                values.lastRunAt,
-
-            shared:
-                values.shared ?? false,
-
-            archived:
-                false,
-
-            createdAt:
-                now,
-
-            updatedAt:
-                now,
-
-        };
-
-        setReports(previous => [
-
-            ...previous,
-
-            report,
-
-        ]);
-
-        setShowForm(false);
+        default:
+            return 'Custom';
 
     }
 
+}
+
+
+
+export default function ReportsClient() {
+
+
+    const reports =
+        useMemo(
+            () => {
+
+                const source =
+                    ReportsServiceInstance.list();
+
+
+
+                return source.map(
+                    report =>
+                        ({
+
+                            id:
+                                report.id,
+
+
+                            name:
+                                report.title,
+
+
+                            type:
+                                mapReportType(
+                                    report.category
+                                ),
+
+
+                            description:
+                                report.description,
+
+
+                            generatedAt:
+                                report.generatedAt ??
+                                report.createdAt,
+
+
+                            generatedBy:
+                                report.generatedBy,
+
+
+                            totalRecords:
+                                0,
+
+
+                        } satisfies DashboardReport)
+                );
+
+
+            },
+            []
+        );
+
+
+
     return (
 
-        <div className="space-y-6">
-
-            <div className="flex items-center justify-between">
-
-                <h1 className="text-2xl font-semibold">
-                    Reports
-                </h1>
-
-                <button
-                    onClick={() => setShowForm(true)}
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
-                >
-                    New Report
-                </button>
-
-            </div>
-
-            <ReportsSummary
-                summary={summary}
-            />
-
-            {
-                showForm && (
-
-                    <ReportsForm
-                        onSubmit={createReport}
-                        onCancel={() =>
-                            setShowForm(false)
-                        }
-                    />
-
-                )
-            }
-
-            <ReportsTable
-                reports={reports}
-            />
-
-        </div>
+        <ReportsDashboard
+            reports={reports}
+        />
 
     );
 

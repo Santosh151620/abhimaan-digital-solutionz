@@ -3,122 +3,168 @@ import type {
     ReportStatus,
 } from '@/types/crm/Reports';
 
-class ReportsRepository {
+
+class ReportRepository {
+
 
     private reports =
         new Map<string, Report>();
 
-    list() {
+
+    list(): Report[] {
 
         return Array.from(
-            this.reports.values(),
-        ).filter(
-            report => !report.archived,
+            this.reports.values()
+        )
+        .filter(
+            report =>
+                !report.archived
         );
 
     }
 
-    listArchived() {
+
+
+    listArchived(): Report[] {
 
         return Array.from(
-            this.reports.values(),
-        ).filter(
-            report => report.archived,
+            this.reports.values()
+        )
+        .filter(
+            report =>
+                report.archived
         );
 
     }
+
+
 
     details(
-        id: string,
-    ) {
+        id: string
+    ): Report | null {
 
         return this.reports.get(id) ?? null;
 
     }
 
+
+
+    findById(
+        id: string
+    ): Report | null {
+
+        return this.details(id);
+
+    }
+
+
+
     create(
-        data: Partial<Report>,
+        data: Partial<Report>
     ): Report {
+
 
         const now =
             new Date().toISOString();
 
+
         const report: Report = {
+
 
             id:
                 crypto.randomUUID(),
+
 
             reportNumber:
                 data.reportNumber ??
                 `RPT-${Date.now()}`,
 
+
             companyId:
                 data.companyId,
+
 
             title:
                 data.title ?? '',
 
+
             description:
                 data.description,
 
+
             category:
-                data.category ??
-                'CRM',
+                data.category ?? 'CRM',
+
 
             format:
-                data.format ??
-                'Dashboard',
+                data.format ?? 'Table',
+
 
             status:
-                data.status ??
-                'Draft',
+                data.status ?? 'Draft',
+
 
             filters:
                 data.filters,
 
+
             generatedAt:
                 data.generatedAt,
+
 
             generatedBy:
                 data.generatedBy,
 
+
             lastRunAt:
                 data.lastRunAt,
+
 
             schedule:
                 data.schedule,
 
+
             shared:
-                data.shared ??
-                false,
+                data.shared ?? false,
+
 
             archived:
                 false,
 
+
             createdAt:
                 now,
+
 
             updatedAt:
                 now,
 
+
         };
+
 
         this.reports.set(
             report.id,
-            report,
+            report
         );
+
 
         return report;
 
     }
 
+
+
     update(
         id: string,
-        data: Partial<Report>,
-    ) {
+        data: Partial<Report>
+    ): Report | null {
+
 
         const existing =
             this.reports.get(id);
+
+
 
         if (!existing) {
 
@@ -126,46 +172,62 @@ class ReportsRepository {
 
         }
 
+
+
         const updated: Report = {
+
 
             ...existing,
 
             ...data,
 
+
             updatedAt:
                 new Date().toISOString(),
 
+
         };
+
+
 
         this.reports.set(
             id,
-            updated,
+            updated
         );
+
+
 
         return updated;
 
     }
 
+
+
     updateStatus(
         id: string,
-        status: ReportStatus,
+        status: ReportStatus
     ) {
 
         return this.update(
             id,
             {
                 status,
-            },
+            }
         );
 
     }
+
+
 
     delete(
-        id: string,
-    ) {
+        id: string
+    ): boolean {
+
 
         const report =
             this.reports.get(id);
+
+
 
         if (!report) {
 
@@ -173,27 +235,37 @@ class ReportsRepository {
 
         }
 
-        report.archived =
-            true;
+
+
+        report.archived = true;
 
         report.updatedAt =
             new Date().toISOString();
 
+
+
         this.reports.set(
             id,
-            report,
+            report
         );
+
+
 
         return true;
 
     }
+
+
 
     restore(
-        id: string,
-    ) {
+        id: string
+    ): boolean {
+
 
         const report =
             this.reports.get(id);
+
+
 
         if (!report) {
 
@@ -201,70 +273,88 @@ class ReportsRepository {
 
         }
 
-        report.archived =
-            false;
+
+
+        report.archived = false;
+
 
         report.updatedAt =
             new Date().toISOString();
 
+
+
         this.reports.set(
             id,
-            report,
+            report
         );
+
 
         return true;
 
     }
+
+
 
     summary() {
 
+
         const reports =
-            this.list();
+            Array.from(
+                this.reports.values()
+            );
+
+
 
         return {
+
 
             total:
                 reports.length,
 
+
             draft:
                 reports.filter(
                     report =>
-                        report.status ===
-                        'Draft',
+                        report.status === 'Draft'
                 ).length,
+
 
             published:
                 reports.filter(
                     report =>
-                        report.status ===
-                        'Published',
+                        report.status === 'Published'
                 ).length,
+
 
             archived:
                 reports.filter(
                     report =>
-                        report.status ===
-                        'Archived',
+                        report.archived
                 ).length,
+
 
             scheduled:
                 reports.filter(
                     report =>
-                        !!report.schedule,
+                        !!report.schedule
                 ).length,
+
 
             shared:
                 reports.filter(
                     report =>
-                        report.shared,
+                        report.shared
                 ).length,
+
 
         };
 
     }
 
+
 }
 
-export const
-    ReportsRepositoryInstance =
-        new ReportsRepository();
+
+
+export const ReportRepositoryInstance =
+    new ReportRepository();

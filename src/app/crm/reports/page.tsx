@@ -2,37 +2,37 @@ import {
     ReportsClient,
 } from '@/components/crm/reports';
 
-import {
-    getReports,
-    getReportsSummary,
-} from './actions';
 
-export default async function ReportsPage() {
+export const metadata = {
 
-    const [
-        reports,
-        summary,
-    ] = await Promise.all([
+    title:
+        'CRM Reports',
 
-        getReports(),
+};
 
-        getReportsSummary(),
 
-    ]);
+export default function ReportsPage() {
 
     return (
 
-        <ReportsClient
+        <div className="space-y-6">
 
-            initialReports={
-                reports
-            }
+            <div>
 
-            summary={
-                summary
-            }
+                <h1 className="text-2xl font-semibold">
+                    Reports
+                </h1>
 
-        />
+                <p className="text-sm text-muted-foreground">
+                    CRM business reports and insights.
+                </p>
+
+            </div>
+
+
+            <ReportsClient />
+
+        </div>
 
     );
 

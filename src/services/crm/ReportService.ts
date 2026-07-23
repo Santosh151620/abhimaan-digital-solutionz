@@ -1,16 +1,13 @@
 import type {
     Report,
+    ReportStatus,
 } from '@/types/crm/Reports';
-
 
 import {
     ReportRepositoryInstance,
 } from '@/repositories/crm/ReportRepository';
 
-
-
 class ReportService {
-
 
     list(): Report[] {
 
@@ -18,6 +15,21 @@ class ReportService {
 
     }
 
+    listArchived(): Report[] {
+
+        return ReportRepositoryInstance.listArchived();
+
+    }
+
+    details(
+        id: string
+    ): Report | null {
+
+        return ReportRepositoryInstance.details(
+            id
+        );
+
+    }
 
     findById(
         id: string
@@ -29,7 +41,6 @@ class ReportService {
 
     }
 
-
     create(
         data: Partial<Report>
     ): Report {
@@ -39,7 +50,6 @@ class ReportService {
         );
 
     }
-
 
     update(
         id: string,
@@ -53,6 +63,16 @@ class ReportService {
 
     }
 
+    updateStatus(
+        id: string,
+        status: ReportStatus
+    ) {
+
+        return ReportRepositoryInstance.updateStatus(
+            id,
+            status
+        );
+    }
 
     delete(
         id: string
@@ -64,13 +84,26 @@ class ReportService {
 
     }
 
-}
 
+
+    restore(
+        id: string
+    ): boolean {
+
+        return ReportRepositoryInstance.restore(
+            id
+        );
+
+    }
+    summary() {
+
+        return ReportRepositoryInstance.summary();
+
+    }
+}
 
 export const ReportServiceInstance =
     new ReportService();
 
-
-// compatibility export
 export const ReportsServiceInstance =
     ReportServiceInstance;
