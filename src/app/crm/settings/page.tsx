@@ -1,91 +1,114 @@
-export default function CRMSettingsPage(){
+import {
+    SettingsClient,
+} from '@/components/crm/settings';
 
-return(
+import {
+    getSettings,
+    getSettingsSummary,
+} from './actions';
 
-<div className="crm-card p-10">
+export default async function CRMSettingsPage() {
 
-<h1 className="crm-title">
+    const settings =
+        await getSettings();
 
-CRM Personalization
+    const summary =
+        await getSettingsSummary();
 
-</h1>
+    return (
 
-<p className="crm-subtitle mt-2">
+        <div className="space-y-8">
 
-Theme • Appearance • Accessibility • Language • Profile
+            {/* Existing Personalization Dashboard */}
 
-</p>
+            <div className="crm-card p-10">
 
-<div className="mt-10 grid gap-6 md:grid-cols-2">
+                <h1 className="crm-title">
+                    CRM Personalization
+                </h1>
 
-<div className="rounded-xl border p-6">
+                <p className="crm-subtitle mt-2">
+                    Theme • Appearance • Accessibility • Language • Profile
+                </p>
 
-<h2 className="font-semibold">
+                <div className="mt-10 grid gap-6 md:grid-cols-2">
 
-Theme
+                    <div className="rounded-xl border p-6">
 
-</h2>
+                        <h2 className="font-semibold">
+                            Theme
+                        </h2>
 
-<p className="mt-2 text-sm text-slate-500">
+                        <p className="mt-2 text-sm text-slate-500">
+                            Blue / Brown / Green Premium Theme
+                        </p>
 
-Blue / Brown / Green Premium Theme
+                    </div>
 
-</p>
+                    <div className="rounded-xl border p-6">
 
-</div>
+                        <h2 className="font-semibold">
+                            Profile Photo
+                        </h2>
 
-<div className="rounded-xl border p-6">
+                        <p className="mt-2 text-sm text-slate-500">
+                            Upload avatar
+                        </p>
 
-<h2 className="font-semibold">
+                    </div>
 
-Profile Photo
+                    <div className="rounded-xl border p-6">
 
-</h2>
+                        <h2 className="font-semibold">
+                            Language
+                        </h2>
 
-<p className="mt-2 text-sm text-slate-500">
+                        <p className="mt-2 text-sm text-slate-500">
+                            English / Hindi
+                        </p>
 
-Upload avatar
+                    </div>
 
-</p>
+                    <div className="rounded-xl border p-6">
 
-</div>
+                        <h2 className="font-semibold">
+                            Accessibility
+                        </h2>
 
-<div className="rounded-xl border p-6">
+                        <p className="mt-2 text-sm text-slate-500">
+                            Font Size / Contrast
+                        </p>
 
-<h2 className="font-semibold">
+                    </div>
 
-Language
+                </div>
 
-</h2>
+            </div>
 
-<p className="mt-2 text-sm text-slate-500">
+            {/* Existing module extension */}
 
-English / Hindi
+            <div className="space-y-4">
 
-</p>
+                <div>
 
-</div>
+                    <h2 className="text-2xl font-semibold">
+                        System Settings
+                    </h2>
 
-<div className="rounded-xl border p-6">
+                    <p className="text-sm text-muted-foreground">
+                        Configure CRM, application and organization settings.
+                    </p>
 
-<h2 className="font-semibold">
+                </div>
 
-Accessibility
+                <SettingsClient
+                    initialSettings={settings}
+                    summary={summary}
+                />
 
-</h2>
+            </div>
 
-<p className="mt-2 text-sm text-slate-500">
+        </div>
 
-Font Size / Contrast
-
-</p>
-
-</div>
-
-</div>
-
-</div>
-
-);
-
+    );
 }
