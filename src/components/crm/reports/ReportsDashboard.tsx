@@ -1,75 +1,101 @@
-import type {
-    Report,
-} from '@/types/crm/Report';
+'use client';
+
+import {
+    ReportsSummary,
+    ReportsTable,
+} from './index';
+
+
+type ReportType =
+    | 'Sales'
+    | 'Leads'
+    | 'Revenue'
+    | 'Projects'
+    | 'Tasks'
+    | 'Activities'
+    | 'Custom';
+
+
+export interface DashboardReport {
+
+    id: string;
+
+    name: string;
+
+    type: ReportType;
+
+    description?: string;
+
+    generatedAt: string;
+
+    generatedBy?: string;
+
+    totalRecords: number;
+
+}
+
 
 interface Props {
 
-    reports: Report[];
+    reports: DashboardReport[];
 
 }
+
+
 
 export default function ReportsDashboard({
     reports,
 }: Props) {
 
+
+    const summary = {
+
+        total:
+            reports.length,
+
+        published:
+            reports.length,
+
+        draft:
+            0,
+
+        archived:
+            0,
+
+        scheduled:
+            0,
+
+        shared:
+            0,
+
+    };
+
+
     return (
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="space-y-6">
 
-            <div className="rounded-lg border p-4">
+            <div>
 
-                <div className="text-sm text-muted-foreground">
-                    Total Reports
-                </div>
+                <h1 className="text-2xl font-semibold">
+                    Reports
+                </h1>
 
-                <div className="text-2xl font-semibold">
-                    {reports.length}
-                </div>
-
-            </div>
-
-
-            <div className="rounded-lg border p-4">
-
-                <div className="text-sm text-muted-foreground">
-                    Generated Records
-                </div>
-
-                <div className="text-2xl font-semibold">
-
-                    {
-                        reports.reduce(
-                            (
-                                total,
-                                report
-                            ) =>
-                                total +
-                                report.totalRecords,
-                            0
-                        )
-                    }
-
-                </div>
+                <p className="text-muted-foreground">
+                    Business reporting and intelligence dashboard.
+                </p>
 
             </div>
 
 
-            <div className="rounded-lg border p-4">
+            <ReportsSummary
+                summary={summary}
+            />
 
-                <div className="text-sm text-muted-foreground">
-                    Latest Report
-                </div>
 
-                <div className="text-sm font-medium">
-
-                    {
-                        reports.at(-1)?.name ??
-                        'No reports'
-                    }
-
-                </div>
-
-            </div>
+            <ReportsTable
+                reports={reports}
+            />
 
         </div>
 

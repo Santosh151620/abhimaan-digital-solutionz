@@ -7,17 +7,42 @@ import {
 import ReportsDashboard from './ReportsDashboard';
 
 import {
-    ReportsServiceInstance,
+    ReportServiceInstance,
 } from '@/services/crm/ReportService';
 
-import type {
-    Report as DashboardReport,
-    ReportType,
-} from '@/types/crm/Report';
+
+type ReportType =
+    | 'Sales'
+    | 'Leads'
+    | 'Revenue'
+    | 'Projects'
+    | 'Tasks'
+    | 'Activities'
+    | 'Custom';
+
+
+export interface DashboardReport {
+
+    id: string;
+
+    name: string;
+
+    type: ReportType;
+
+    description?: string;
+
+    generatedAt: string;
+
+    generatedBy?: string;
+
+    totalRecords: number;
+
+}
+
 
 
 function mapReportType(
-    category: string
+    category: string,
 ): ReportType {
 
     switch (category) {
@@ -60,8 +85,7 @@ export default function ReportsClient() {
             () => {
 
                 const source =
-                    ReportsServiceInstance.list();
-
+                    ReportServiceInstance.list();
 
 
                 return source.map(
@@ -78,7 +102,7 @@ export default function ReportsClient() {
 
                             type:
                                 mapReportType(
-                                    report.category
+                                    report.category,
                                 ),
 
 
@@ -99,12 +123,11 @@ export default function ReportsClient() {
                                 0,
 
 
-                        } satisfies DashboardReport)
+                        } satisfies DashboardReport),
                 );
 
-
             },
-            []
+            [],
         );
 
 

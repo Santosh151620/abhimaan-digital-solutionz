@@ -1,7 +1,7 @@
 'use server';
 
 import {
-    ReportsServiceInstance,
+    ReportServiceInstance,
 } from '@/services/crm/ReportService';
 
 import {
@@ -36,14 +36,14 @@ function can(
 
 export async function getReports() {
 
-    return ReportsServiceInstance.list();
+    return ReportServiceInstance.list();
 
 }
 
 
 export async function getArchivedReports() {
 
-    return ReportsServiceInstance.listArchived();
+    return ReportServiceInstance.listArchived();
 
 }
 
@@ -52,7 +52,7 @@ export async function getReport(
     id: string,
 ) {
 
-    return ReportsServiceInstance.details(
+    return ReportServiceInstance.details(
         id,
     );
 
@@ -72,7 +72,7 @@ export async function createReport(
     }
 
 
-    return ReportsServiceInstance.create(
+    return ReportServiceInstance.create(
         data,
     );
 
@@ -93,7 +93,7 @@ export async function updateReport(
     }
 
 
-    return ReportsServiceInstance.update(
+    return ReportServiceInstance.update(
         id,
         data,
     );
@@ -114,7 +114,7 @@ export async function deleteReport(
     }
 
 
-    return ReportsServiceInstance.delete(
+    return ReportServiceInstance.delete(
         id,
     );
 
@@ -134,7 +134,7 @@ export async function restoreReport(
     }
 
 
-    return ReportsServiceInstance.restore(
+    return ReportServiceInstance.restore(
         id,
     );
 
@@ -155,7 +155,7 @@ export async function updateReportStatus(
     }
 
 
-    return ReportsServiceInstance.updateStatus(
+    return ReportServiceInstance.updateStatus(
         id,
         status,
     );
@@ -165,6 +165,6 @@ export async function updateReportStatus(
 
 export async function getReportsSummary() {
 
-    return ReportsServiceInstance.summary();
+    return ReportServiceInstance.summary();
 
 }
