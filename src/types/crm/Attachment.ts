@@ -1,26 +1,71 @@
+export type AttachmentEntityType =
+    | 'Lead'
+    | 'Company'
+    | 'Contact'
+    | 'Project'
+    | 'Task'
+    | 'Activity'
+    | 'Ticket'
+    | 'Invoice'
+    | 'Quotation'
+    | 'Contract'
+    | 'Other';
+
+
+
 export interface Attachment {
 
-    id:string;
+
+    id: string;
 
 
-    entityType:string;
+    entityType: AttachmentEntityType;
 
 
-    entityId:string;
+    entityId: string;
 
 
-    fileName:string;
+    fileName: string;
 
 
-    fileUrl:string;
+    fileUrl: string;
 
 
-    fileSize?:number;
+    fileType?: string;
 
 
-    uploadedBy?:string;
+    fileSize?: number;
 
 
-    createdAt:string;
+    description?: string;
+
+
+    uploadedBy?: string;
+
+
+    archived: boolean;
+
+
+    createdAt: string;
+
+
+    updatedAt: string;
+
+
+}
+
+
+
+export interface AttachmentSummary {
+
+
+    total: number;
+
+
+    active: number;
+
+
+    archived: number;
+
 
 }

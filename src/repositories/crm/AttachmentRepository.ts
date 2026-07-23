@@ -4,7 +4,7 @@ import type {
 
 
 
-class AttachmentRepository {
+export class AttachmentRepository {
 
 
     private attachments =
@@ -13,25 +13,25 @@ class AttachmentRepository {
 
 
     list(
-        entityType:string,
-        entityId:string
+        entityType: string,
+        entityId: string
     ) {
 
 
         return Array.from(
             this.attachments.values()
         )
-        .filter(
+            .filter(
 
-            attachment =>
+                attachment =>
 
-                attachment.entityType === entityType
+                    attachment.entityType === entityType
 
-                &&
+                    &&
 
-                attachment.entityId === entityId
+                    attachment.entityId === entityId
 
-        );
+            );
 
 
     }
@@ -40,11 +40,11 @@ class AttachmentRepository {
 
 
     create(
-        data:Partial<Attachment>
+        data: Partial<Attachment>
     ) {
 
 
-        const attachment:Attachment = {
+        const attachment: Attachment = {
 
 
             id:
@@ -52,7 +52,7 @@ class AttachmentRepository {
 
 
             entityType:
-                data.entityType ?? '',
+                data.entityType || 'Other',
 
 
             entityId:
@@ -75,7 +75,15 @@ class AttachmentRepository {
                 data.uploadedBy,
 
 
+            archived:
+                false,
+
+
             createdAt:
+                new Date().toISOString(),
+
+
+            updatedAt:
                 new Date().toISOString(),
 
 
@@ -102,7 +110,7 @@ class AttachmentRepository {
 
 
     delete(
-        id:string
+        id: string
     ) {
 
 

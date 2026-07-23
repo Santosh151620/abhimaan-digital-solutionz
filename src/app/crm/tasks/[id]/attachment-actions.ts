@@ -2,53 +2,64 @@
 
 
 import {
-    AttachmentServiceInstance,
-} from '@/services/crm/AttachmentService';
+
+    AttachmentRepositoryInstance,
+
+} from '@/repositories/crm/AttachmentRepository';
 
 
 
 export async function getTaskAttachments(
-    taskId:string
+
+    taskId: string,
+
 ) {
 
-    return AttachmentServiceInstance.list(
+
+    return AttachmentRepositoryInstance.list(
 
         'Task',
 
-        taskId
+        taskId,
 
     );
+
 
 }
 
 
 
+
 export async function createTaskAttachment(
-    taskId:string,
-    data:{
-        fileName:string;
-        fileUrl:string;
-        fileSize?:number;
-    }
+
+    data: {
+
+        fileName: string;
+
+        fileUrl: string;
+
+        fileType?: string;
+
+        fileSize?: number;
+
+        taskId: string;
+
+    },
+
 ) {
 
 
-    return AttachmentServiceInstance.create({
+    return AttachmentRepositoryInstance.create({
 
-        entityType:
-            'Task',
+        entityType: 'Task',
 
-        entityId:
-            taskId,
+        entityId: data.taskId,
 
-        fileName:
-            data.fileName,
+        fileName: data.fileName,
 
-        fileUrl:
-            data.fileUrl,
+        fileUrl: data.fileUrl,
 
-        fileSize:
-            data.fileSize,
+        fileSize: data.fileSize,
 
     });
 
@@ -57,12 +68,19 @@ export async function createTaskAttachment(
 
 
 
+
 export async function deleteTaskAttachment(
-    id:string
+
+    id: string,
+
 ) {
 
-    return AttachmentServiceInstance.delete(
-        id
+
+    return AttachmentRepositoryInstance.delete(
+
+        id,
+
     );
+
 
 }
