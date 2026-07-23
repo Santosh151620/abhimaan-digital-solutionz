@@ -1,29 +1,124 @@
-import {
-    NotificationsRepository,
-} from '@/repositories/notifications.repository';
-
 import type {
+
     Notification,
-} from '@/types/notifications';
 
-export class NotificationService {
+} from '@/types/crm/Notification';
 
-    constructor(
-        private readonly repository: NotificationsRepository,
-    ) {}
 
-    findByEntity(
-        entityType: string,
-        entityId: string,
-    ): Promise<Notification[]> {
 
-        return this.repository.findByEntity(
-            entityType,
-            entityId,
-        );
+import {
+
+    NotificationRepositoryInstance,
+
+} from '@/repositories/crm/NotificationRepository';
+
+
+
+
+class NotificationService {
+
+
+
+    async list(): Promise<Notification[]> {
+
+
+        return NotificationRepositoryInstance.list();
+
 
     }
 
+
+
+
+
+    async getById(
+
+        id: string,
+
+    ): Promise<Notification | undefined> {
+
+
+        return NotificationRepositoryInstance.getById(
+
+            id,
+
+        );
+
+
+    }
+
+
+
+
+
+    async create(
+
+        data: Partial<Notification>,
+
+    ): Promise<Notification> {
+
+
+        return NotificationRepositoryInstance.create(
+
+            data,
+
+        );
+
+
+    }
+
+
+
+
+
+    async update(
+
+        id: string,
+
+        data: Partial<Notification>,
+
+    ): Promise<Notification | undefined> {
+
+
+        return NotificationRepositoryInstance.update(
+
+            id,
+
+            data,
+
+        );
+
+
+    }
+
+
+
+
+
+    async delete(
+
+        id: string,
+
+    ): Promise<boolean> {
+
+
+        return NotificationRepositoryInstance.delete(
+
+            id,
+
+        );
+
+
+    }
+
+
+
+
+
 }
 
-export default NotificationService;
+
+
+export const notificationService =
+
+    new NotificationService();
