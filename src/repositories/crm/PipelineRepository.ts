@@ -12,9 +12,11 @@ import {
     OpportunitiesRepositoryInstance,
 } from './OpportunitiesRepository';
 
+
 class PipelineRepository {
 
-    private readonly stages: PipelineStage[] = [
+
+    private readonly stages: readonly PipelineStage[] = [
 
         {
             id: 'New',
@@ -60,89 +62,220 @@ class PipelineRepository {
 
     ];
 
+
+
     async getStages(): Promise<PipelineStage[]> {
 
-        return this.stages;
+        return [
+            ...this.stages,
+        ];
 
     }
 
+
+
+
     async getPipeline(): Promise<PipelineColumn[]> {
+
 
         const opportunities =
             await OpportunitiesRepositoryInstance.list();
 
+
+
         const items: PipelineOpportunity[] =
 
-            opportunities.map(item => ({
+            opportunities.map(
+                opportunity => ({
 
-                id: item.id,
+                    id:
+                        opportunity.id,
 
-                title: item.title ?? item.name,
+                    title:
+                        opportunity.title ||
+                        opportunity.name,
 
-                companyId: item.companyId ?? '',
+                    companyId:
+                        opportunity.companyId
+                        ??
+                        '',
 
-                value: item.value,
+                    value:
+                        opportunity.value,
 
-                probability: item.probability,
+                    probability:
+                        opportunity.probability,
 
-                stage: item.stage,
+                    stage:
+                        opportunity.stage,
 
-            }));
+                })
+            );
 
-        return this.stages.map(stage => {
 
-            const stageItems =
 
-                items.filter(
+        return this.stages.map(
+            stage => {
 
-                    item => item.stage === stage.id,
 
-                );
+                const stageItems =
 
-            return {
+                    items.filter(
+                        item =>
+                            item.stage === stage.id
+                    );
 
-                stage,
 
-                opportunities: stageItems,
 
-                totalValue:
+                return {
 
-                    stageItems.reduce(
+                    stage,
 
-                        (sum, item) => sum + item.value,
+                    opportunities:
+                        stageItems,
 
-                        0,
+                    totalValue:
 
-                    ),
+                        stageItems.reduce(
 
-            };
+                            (
+                                total,
+                                item
+                            ) =>
 
-        });
+                                total +
+                                item.value,
 
-    }
+                            0
+                        ),
 
-    async findByStage(
+                };
 
-        stage: OpportunityStage,
-
-    ): Promise<PipelineColumn | undefined> {
-
-        const pipeline =
-
-            await this.getPipeline();
-
-        return pipeline.find(
-
-            column => column.stage.id === stage,
-
+            }
         );
 
     }
 
+
+
+
+
+    async findByStage(
+        stage: OpportunityStage,
+    ): Promise<PipelineColumn | undefined> {
+
+
+        const pipeline =
+            await this.getPipeline();
+
+
+
+        return pipeline.find(
+            column =>
+                column.stage.id === stage
+        );
+
+    }
+
+
+
+
+
+    async summary() {
+
+
+        const pipeline =
+            await this.getPipeline();
+
+
+
+        return {
+
+            stages:
+                pipeline.length,
+
+
+            totalOpportunities:
+
+                pipeline.reduce(
+
+                    (
+                        total,
+                        column
+                    ) =>
+                        total +
+                        column.opportunities.length,
+
+                    0
+
+                ),
+
+
+
+            totalValue:
+
+                pipeline.reduce(
+
+                    (
+                        total,
+                        column
+                    ) =>
+                        total +
+                        column.totalValue,
+
+                    0
+
+                ),
+
+
+
+            weightedValue:
+
+                pipeline.reduce(
+
+                    (
+                        total,
+                        column
+                    ) =>
+
+                        total +
+
+                        column.opportunities.reduce(
+
+                            (
+                                stageTotal,
+                                opportunity
+                            ) =>
+
+                                stageTotal +
+
+                                (
+                                    opportunity.value *
+                                    opportunity.probability /
+                                    100
+                                ),
+
+                            0
+
+                        ),
+
+                    0
+
+                ),
+
+        };
+
+    }
+
+
 }
+
+
 
 export const pipelineRepository =
     new PipelineRepository();
+
+
 
 export const PipelineRepositoryInstance =
     pipelineRepository;
