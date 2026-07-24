@@ -1,135 +1,164 @@
-import {
-    OpportunitiesRepositoryInstance,
-} from '@/repositories/crm/OpportunitiesRepository';
-
-
-import type {
+﻿import type {
     Opportunity,
+    OpportunitySummary,
 } from '@/types/crm/Opportunities';
+
+
+import {
+    opportunitiesRepository,
+} from '@/repositories/crm/OpportunitiesRepository';
 
 
 
 class OpportunitiesService {
 
 
-    async list() {
+    async list(): Promise<Opportunity[]> {
 
-        return OpportunitiesRepositoryInstance.list();
-
-    }
-
-
-
-
-    async listArchived() {
-
-        return OpportunitiesRepositoryInstance.listArchived();
+        return opportunitiesRepository.list();
 
     }
-
 
 
 
     async details(
-        id:string
-    ) {
+        id: string,
+    ): Promise<Opportunity | null> {
 
-        return OpportunitiesRepositoryInstance.details(id);
-
-    }
-
-
-
-
-    async findById(
-        id:string
-    ) {
-
-        return OpportunitiesRepositoryInstance.findById(id);
-
-    }
-
-
-
-
-    async search(
-        filters?: {
-
-            stage?: Opportunity['stage'];
-
-            companyId?: string;
-
-            search?: string;
-
-        }
-    ) {
-
-        return OpportunitiesRepositoryInstance.search(
-            filters
+        return opportunitiesRepository.details(
+            id,
         );
 
     }
 
+
+
+    async get(
+        id: string,
+    ): Promise<Opportunity | null> {
+
+        return this.details(
+            id,
+        );
+
+    }
 
 
 
     async create(
-        data:Partial<Opportunity>
-    ) {
+        data: Partial<Opportunity>,
+    ): Promise<Opportunity> {
 
-        return OpportunitiesRepositoryInstance.create(
-            data
+
+        const now =
+            new Date().toISOString();
+
+
+        const opportunity: Opportunity = {
+
+            id:
+                data.id ??
+                crypto.randomUUID(),
+
+            opportunityNumber:
+                data.opportunityNumber ??
+                `OPP-${Date.now()}`,
+
+            name:
+                data.name ??
+                data.title ??
+                'Untitled Opportunity',
+
+            title:
+                data.title ??
+                data.name ??
+                'Untitled Opportunity',
+
+            description:
+                data.description,
+
+            companyId:
+                data.companyId,
+
+            contactId:
+                data.contactId,
+
+            leadId:
+                data.leadId,
+
+            ownerId:
+                data.ownerId,
+
+            owner:
+                data.owner ??
+                data.ownerId,
+
+            stage:
+                data.stage ??
+                'New',
+
+            status:
+                data.status ??
+                'Open',
+
+            value:
+                data.value ??
+                0,
+
+            probability:
+                data.probability ??
+                0,
+
+            expectedCloseDate:
+                data.expectedCloseDate,
+
+            createdAt:
+                data.createdAt ??
+                now,
+
+            updatedAt:
+                now,
+
+        };
+
+
+        return opportunitiesRepository.create(
+            opportunity,
         );
 
     }
-
 
 
 
     async update(
-        id:string,
-        data:Partial<Opportunity>
-    ) {
+        id: string,
+        data: Partial<Opportunity>,
+    ): Promise<Opportunity | null> {
 
-        return OpportunitiesRepositoryInstance.update(
+        return opportunitiesRepository.update(
             id,
-            data
+            data,
         );
 
     }
-
 
 
 
     async delete(
-        id:string
-    ) {
+        id: string,
+    ): Promise<boolean> {
 
-        return OpportunitiesRepositoryInstance.delete(
-            id
+        return opportunitiesRepository.delete(
+            id,
         );
 
     }
 
 
 
+    async summary(): Promise<OpportunitySummary> {
 
-    async restore(
-        id:string
-    ) {
-
-        return OpportunitiesRepositoryInstance.restore(
-            id
-        );
-
-    }
-
-
-
-
-    async summary() {
-
-        return OpportunitiesRepositoryInstance.summary();
+        return opportunitiesRepository.summary();
 
     }
 
@@ -138,5 +167,13 @@ class OpportunitiesService {
 
 
 
-export const OpportunitiesServiceInstance =
+export const opportunitiesService =
     new OpportunitiesService();
+
+
+
+/**
+ * Backward compatibility alias.
+ */
+export const OpportunitiesServiceInstance =
+    opportunitiesService;

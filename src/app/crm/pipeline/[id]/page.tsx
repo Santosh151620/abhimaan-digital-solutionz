@@ -1,17 +1,14 @@
-import Link from 'next/link';
-import {
-    notFound,
-} from 'next/navigation';
+import { notFound } from 'next/navigation';
 
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
 import EntityWorkspace from '@/components/entities/EntityWorkspace';
 
 import {
-    PipelineServiceInstance,
-} from '@/services/crm/PipelineService';
-
+    OpportunitiesServiceInstance,
+} from '@/services/crm/OpportunitiesService';
 
 interface Props {
 
@@ -21,110 +18,103 @@ interface Props {
 
 }
 
-
 export default async function PipelineOpportunityPage({
     params,
 }: Props) {
 
-    const {
-        id,
-    } = await params;
-
+    const { id } = await params;
 
     const opportunity =
-        await PipelineServiceInstance.list()
-            .then(items =>
-                items
-                    .flatMap(
-                        column => column.opportunities
-                    )
-                    .find(
-                        item => item.id === id
-                    )
-            );
-
+        await OpportunitiesServiceInstance.details(id);
 
     if (!opportunity) {
-        notFound();
-    }
 
+        notFound();
+
+    }
 
     return (
 
         <CRMPageLayout>
 
-            <div className="flex items-start justify-between">
-
-                <div>
-
-                    <h1 className="text-3xl font-bold">
-                        {opportunity.title}
-                    </h1>
-
-                    <p className="text-muted-foreground">
-                        Pipeline Opportunity Details
-                    </p>
-
-                </div>
-
-
-                <div className="flex gap-2">
-
-                    <Link
-                        href="/crm/pipeline"
-                        className="rounded-lg border px-4 py-2"
-                    >
-                        Back
-                    </Link>
-
-
-                    <Link
-                        href={`/crm/pipeline/${id}/edit`}
-                        className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
-                    >
-                        Edit
-                    </Link>
-
-                </div>
-
-            </div>
-
+            <CRMHeader
+                title={
+                    opportunity.title ??
+                    opportunity.name
+                }
+                description="Pipeline opportunity workspace."
+                actions={[
+                    {
+                        label: 'Back',
+                        href: '/crm/pipeline',
+                    },
+                    {
+                        label: 'Edit',
+                        href: `/crm/pipeline/${id}/edit`,
+                    },
+                ]}
+            />
 
             <EntityWorkspace
-
                 entityType="Opportunity"
-
                 entityId={opportunity.id}
-
                 overview={
 
                     <EntityOverviewGrid
-
                         items={[
                             {
-                                title: "Stage",
+                                title: 'Stage',
                                 value: opportunity.stage,
                             },
                             {
-                                title: "Company",
-                                value: opportunity.companyId,
+                                title: 'Status',
+                                value: opportunity.status,
                             },
                             {
-                                title: "Value",
+                                title: 'Company',
+                                value:
+                                    opportunity.companyId ??
+                                    '-',
+                            },
+                            {
+                                title: 'Value',
                                 value: `₹ ${opportunity.value}`,
                             },
                             {
-                                title: "Probability",
+                                title: 'Probability',
                                 value: `${opportunity.probability}%`,
                             },
+                            {
+                                title: 'Expected Close',
+                                value:
+                                    opportunity.expectedCloseDate ??
+                                    '-',
+                            },
+                            {
+                                title: 'Owner',
+                                value:
+                                    opportunity.ownerId ??
+                                    '-',
+                            },
+                            {
+                                title: 'Created',
+                                value:
+                                    new Date(
+                                        opportunity.createdAt,
+                                    ).toLocaleDateString(),
+                            },
+                            {
+                                title: 'Updated',
+                                value:
+                                    new Date(
+                                        opportunity.updatedAt,
+                                    ).toLocaleDateString(),
+                            },
                         ]}
-
                     />
 
                 }
-
             />
-
 
         </CRMPageLayout>
 

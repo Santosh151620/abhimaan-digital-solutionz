@@ -63,7 +63,7 @@ export default async function OpportunityDetailsPage({
 
             <CRMHeader
 
-                title={opportunity.title}
+                title={opportunity.title ?? opportunity.name}
 
                 description="Opportunity details and sales workspace."
 
@@ -139,7 +139,7 @@ export default async function OpportunityDetailsPage({
                             {
                                 title:"Owner",
                                 value:
-                                    opportunity.owner
+                                    opportunity.ownerId
                                     ??
                                     "-",
                             },

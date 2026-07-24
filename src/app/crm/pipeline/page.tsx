@@ -3,9 +3,11 @@ import {
     getPipelineSummary,
 } from './actions';
 
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMPageLayout
+    from '@/components/crm/shared/layout/CRMPageLayout';
 
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMHeader
+    from '@/components/crm/shared/layout/CRMHeader';
 
 import {
     PipelineBoard,
@@ -32,9 +34,9 @@ export default async function PipelinePage() {
             />
 
             <PipelineSummary
-                stages={summary.stages}
-                opportunities={summary.opportunities}
-                value={summary.value}
+                stages={6}
+                opportunities={summary.total}
+                value={summary.pipelineValue}
             />
 
             <PipelineBoard

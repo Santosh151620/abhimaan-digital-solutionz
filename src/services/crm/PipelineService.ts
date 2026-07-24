@@ -1,31 +1,88 @@
-import { PipelineRepositoryInstance } from '@/repositories/crm/PipelineRepository';
-import type { OpportunityStage } from '@/types/crm/Opportunities';
+import {
+    pipelineRepository,
+} from '@/repositories/crm/PipelineRepository';
 
-export class PipelineService {
+import {
+    opportunitiesRepository,
+} from '@/repositories/crm/OpportunitiesRepository';
+
+import type {
+    Opportunity,
+    OpportunitySummary,
+    OpportunityStage,
+} from '@/types/crm/Opportunities';
+
+
+
+class PipelineService {
+
 
     async list() {
-        return PipelineRepositoryInstance.list();
+
+        return pipelineRepository.getPipeline();
+
     }
+
+
+
+    async getPipeline() {
+
+        return pipelineRepository.getPipeline();
+
+    }
+
+
+
+    async getStages() {
+
+        return pipelineRepository.getStages();
+
+    }
+
+
+
+    async findByStage(
+        stage: OpportunityStage,
+    ) {
+
+        return pipelineRepository.findByStage(
+            stage,
+        );
+
+    }
+
+
+
+    async summary(): Promise<OpportunitySummary> {
+
+        return opportunitiesRepository.summary();
+
+    }
+
+
 
     async moveOpportunity(
         id: string,
-        stage: OpportunityStage
-    ) {
-        return PipelineRepositoryInstance.moveOpportunity(
-            id, stage
-        
-        );
-    }
+        stage: OpportunityStage,
+    ): Promise<Opportunity | null> {
 
-    async summary() {
-        return PipelineRepositoryInstance.summary();
+        return opportunitiesRepository.update(
+            id,
+            {
+                stage,
+            },
+        );
+
     }
 
 }
 
-export const PipelineServiceInstance =
+
+
+export const pipelineService =
     new PipelineService();
 
 
 
-
+export const PipelineServiceInstance =
+    pipelineService;

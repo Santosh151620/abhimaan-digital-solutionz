@@ -1,6 +1,8 @@
-import type {
+﻿import type {
     Opportunity,
+    OpportunitySummary,
 } from '@/types/crm/Opportunities';
+
 
 
 class OpportunitiesRepository {
@@ -13,51 +15,29 @@ class OpportunitiesRepository {
 
     async list(): Promise<Opportunity[]> {
 
-        return Array.from(
-            this.opportunities.values()
-        )
-        .filter(
-            opportunity =>
-                !opportunity.isDeleted
-        );
+        return [
+            ...this.opportunities.values(),
+        ];
 
     }
-
-
-
-
-    async listArchived(): Promise<Opportunity[]> {
-
-        return Array.from(
-            this.opportunities.values()
-        )
-        .filter(
-            opportunity =>
-                opportunity.isDeleted
-        );
-
-    }
-
 
 
 
     async findById(
-        id: string
+        id: string,
     ): Promise<Opportunity | null> {
 
         return (
             this.opportunities.get(id)
-            ??
-            null
+            ?? null
         );
 
     }
 
 
 
-
     async details(
-        id: string
+        id: string,
     ): Promise<Opportunity | null> {
 
         return this.findById(id);
@@ -66,230 +46,51 @@ class OpportunitiesRepository {
 
 
 
-
-    async search(
-        filters?: {
-
-            stage?: Opportunity['stage'];
-
-            companyId?: string;
-
-            search?: string;
-
-        }
-    ): Promise<Opportunity[]> {
-
-
-        let opportunities =
-            await this.list();
-
-
-
-
-        if (
-            filters?.stage
-        ) {
-
-            opportunities =
-                opportunities.filter(
-
-                    opportunity =>
-
-                        opportunity.stage ===
-                        filters.stage
-
-                );
-
-        }
-
-
-
-
-
-        if (
-            filters?.companyId
-        ) {
-
-            opportunities =
-                opportunities.filter(
-
-                    opportunity =>
-
-                        opportunity.companyId ===
-                        filters.companyId
-
-                );
-
-        }
-
-
-
-
-
-        if (
-            filters?.search
-        ) {
-
-            const keyword =
-                filters.search.toLowerCase();
-
-
-
-            opportunities =
-                opportunities.filter(
-
-                    opportunity =>
-
-
-                        opportunity.title
-                            .toLowerCase()
-                            .includes(keyword)
-
-
-                        ||
-
-                        opportunity.description
-                            ?.toLowerCase()
-                            .includes(keyword)
-
-                );
-
-        }
-
-
-
-        return opportunities;
-
-    }
-
-
-
-
-
     async create(
-        data: Partial<Opportunity>
+        data: Opportunity,
     ): Promise<Opportunity> {
-
-
-        const now =
-            new Date().toISOString();
-
-
 
         const opportunity: Opportunity = {
 
-
-            id:
-                crypto.randomUUID(),
-
-
-
-            companyId:
-                data.companyId
-                ??
-                '',
-
-
+            ...data,
 
             title:
-                data.title
-                ??
-                '',
-
-
-
-            description:
-                data.description,
-
-
-
-            value:
-                data.value
-                ??
-                0,
-
-
-
-            probability:
-                data.probability
-                ??
-                0,
-
-
-
-            stage:
-                data.stage
-                ??
-                'LEAD',
-
-
-
-            expectedCloseDate:
-                data.expectedCloseDate,
-
-
+                data.title ||
+                data.name,
 
             owner:
-                data.owner,
-
-
-
-            isDeleted:
-                false,
-
-
-
-            deletedAt:
-                null,
-
-
-
-            deletedBy:
-                null,
-
-
+                data.owner ??
+                data.ownerId,
 
             createdAt:
-                now,
-
-
+                data.createdAt ||
+                new Date().toISOString(),
 
             updatedAt:
-                now,
-
+                new Date().toISOString(),
 
         };
 
 
-
         this.opportunities.set(
-
             opportunity.id,
-
-            opportunity
-
+            opportunity,
         );
-
 
 
         return opportunity;
 
-
     }
-
-
 
 
 
     async update(
         id: string,
-        data: Partial<Opportunity>
+        data: Partial<Opportunity>,
     ): Promise<Opportunity | null> {
-
 
         const existing =
             this.opportunities.get(id);
-
 
 
         if (!existing) {
@@ -299,217 +100,120 @@ class OpportunitiesRepository {
         }
 
 
-
-
         const updated: Opportunity = {
-
 
             ...existing,
 
-
             ...data,
 
+            id,
 
+            title:
+                data.title ??
+                data.name ??
+                existing.title,
+
+            owner:
+                data.owner ??
+                data.ownerId ??
+                existing.owner,
 
             updatedAt:
                 new Date().toISOString(),
 
-
         };
 
 
-
         this.opportunities.set(
-
             id,
-
-            updated
-
+            updated,
         );
-
 
 
         return updated;
 
-
     }
-
-
 
 
 
     async delete(
         id: string,
-        deletedBy = 'system'
     ): Promise<boolean> {
 
-
-        const opportunity =
-            this.opportunities.get(id);
-
-
-
-        if (!opportunity) {
-
-            return false;
-
-        }
-
-
-
-
-        opportunity.isDeleted =
-            true;
-
-
-
-        opportunity.deletedAt =
-            new Date().toISOString();
-
-
-
-        opportunity.deletedBy =
-            deletedBy;
-
-
-
-        opportunity.updatedAt =
-            new Date().toISOString();
-
-
-
-        this.opportunities.set(
-
-            id,
-
-            opportunity
-
-        );
-
-
-
-        return true;
-
+        return this.opportunities.delete(id);
 
     }
 
 
 
+    async summary(): Promise<OpportunitySummary> {
 
 
-    async restore(
-        id: string
-    ): Promise<boolean> {
+        const items =
+            [
+                ...this.opportunities.values(),
+            ];
 
 
-        const opportunity =
-            this.opportunities.get(id);
-
-
-
-        if (!opportunity) {
-
-            return false;
-
-        }
-
-
-
-
-        opportunity.isDeleted =
-            false;
-
-
-
-        opportunity.deletedAt =
-            null;
-
-
-
-        opportunity.deletedBy =
-            null;
-
-
-
-        opportunity.updatedAt =
-            new Date().toISOString();
-
-
-
-        this.opportunities.set(
-
-            id,
-
-            opportunity
-
-        );
-
-
-
-        return true;
-
-
-    }
-
-
-
-
-
-    async summary() {
-
-
-        const opportunities =
-            await this.list();
-
+        const totalValue =
+            items.reduce(
+                (
+                    sum,
+                    item,
+                ) =>
+                    sum +
+                    item.value,
+                0,
+            );
 
 
         return {
 
-
             total:
-                opportunities.length,
+                items.length,
 
-
-
-            pipelineValue:
-                opportunities.reduce(
-
-                    (
-                        total,
-                        opportunity
-                    ) =>
-                        total +
-                        opportunity.value,
-
-                    0
-
-                ),
-
-
+            open:
+                items.filter(
+                    item =>
+                        item.status ===
+                        'Open',
+                ).length,
 
             won:
-                opportunities.filter(
-
-                    opportunity =>
-                        opportunity.stage ===
-                        'WON'
-
+                items.filter(
+                    item =>
+                        item.status ===
+                        'Won',
                 ).length,
-
-
 
             lost:
-                opportunities.filter(
-
-                    opportunity =>
-                        opportunity.stage ===
-                        'LOST'
-
+                items.filter(
+                    item =>
+                        item.status ===
+                        'Lost',
                 ).length,
 
+            pipelineValue:
+                totalValue,
+
+            weightedValue:
+                items.reduce(
+                    (
+                        sum,
+                        item,
+                    ) =>
+                        sum +
+                        (
+                            item.value *
+                            item.probability /
+                            100
+                        ),
+                    0,
+                ),
+
+            totalValue,
 
         };
-
 
     }
 
@@ -518,5 +222,10 @@ class OpportunitiesRepository {
 
 
 
-export const OpportunitiesRepositoryInstance =
+export const opportunitiesRepository =
     new OpportunitiesRepository();
+
+
+
+export const OpportunitiesRepositoryInstance =
+    opportunitiesRepository;

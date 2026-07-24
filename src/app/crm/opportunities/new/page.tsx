@@ -1,11 +1,6 @@
-import { redirect } from 'next/navigation';
+﻿import { redirect } from 'next/navigation';
 
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
-
-import {
-    OpportunitiesForm,
-} from '@/components/crm/opportunities';
+import OpportunitiesForm from '@/components/crm/opportunities/OpportunitiesForm';
 
 import {
     createOpportunity,
@@ -15,49 +10,33 @@ import type {
     Opportunity,
 } from '@/types/crm/Opportunities';
 
-
 export default function NewOpportunityPage() {
-
 
     async function submit(
         values: Partial<Opportunity>,
     ) {
+
         'use server';
 
+        await createOpportunity(values as Opportunity);
 
-        await createOpportunity(
-            values,
-        );
-
-
-        redirect(
-            '/crm/opportunities',
-        );
+        redirect('/crm/opportunities');
 
     }
 
-
     return (
 
-        <CRMPageLayout>
+        <div className="space-y-6">
 
-            <CRMHeader
-                title="New Opportunity"
-                description="Create a new CRM opportunity."
-                actions={[
-                    {
-                        label: 'Back',
-                        href: '/crm/opportunities',
-                    },
-                ]}
-            />
-
+            <h1 className="text-2xl font-semibold">
+                New Opportunity
+            </h1>
 
             <OpportunitiesForm
                 onSubmit={submit}
             />
 
-        </CRMPageLayout>
+        </div>
 
     );
 
