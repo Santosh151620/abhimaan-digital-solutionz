@@ -60,7 +60,7 @@ export async function GET(
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {
@@ -122,7 +122,7 @@ export async function PUT(
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {
@@ -202,7 +202,7 @@ export async function PATCH(
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {
@@ -261,7 +261,7 @@ export async function DELETE(
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {

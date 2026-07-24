@@ -19,7 +19,7 @@ export async function GET() {
             activities
         );
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {
@@ -61,7 +61,7 @@ export async function POST(
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {

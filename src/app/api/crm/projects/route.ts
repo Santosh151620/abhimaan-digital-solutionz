@@ -22,7 +22,7 @@ export async function GET() {
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {
@@ -65,7 +65,7 @@ export async function POST(
         );
 
 
-    } catch (error) {
+    } catch {
 
         return NextResponse.json(
             {
