@@ -6,6 +6,7 @@ import type {
 
 class QuotationsRepository {
 
+
     private quotations =
         new Map<string, Quotation>();
 
@@ -15,331 +16,473 @@ class QuotationsRepository {
         return [
             ...this.quotations.values(),
         ]
-            .filter(
-                quotation => !quotation.archived
-            )
-            .sort(
-                (a, b) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt
-                    )
-            );
+        .filter(
+            quotation =>
+                !quotation.archived
+        )
+        .sort(
+            (a,b)=>
+                b.createdAt.localeCompare(
+                    a.createdAt
+                )
+        );
 
     }
+
 
 
     async listArchived(): Promise<Quotation[]> {
 
         return [
             ...this.quotations.values(),
-        ].filter(
-            quotation => quotation.archived
+        ]
+        .filter(
+            quotation =>
+                quotation.archived
         );
 
     }
 
 
-    async details(
-        id: string
-    ): Promise<Quotation | null> {
+
+    async findById(
+        id:string
+    ):Promise<Quotation | null>{
 
         return (
-            this.quotations.get(id) ??
+            this.quotations.get(id)
+            ??
             null
         );
 
     }
 
 
+
+    async details(
+        id:string
+    ):Promise<Quotation | null>{
+
+        return this.findById(id);
+
+    }
+
+
+
     async create(
-        data: Partial<Quotation>
-    ): Promise<Quotation> {
+        data:Partial<Quotation>
+    ):Promise<Quotation>{
+
 
         const now =
-            new Date().toISOString();
+            new Date()
+            .toISOString();
 
-        const quotation: Quotation = {
+
+        const items =
+            data.items ?? [];
+
+
+
+        const subtotal =
+            data.subtotal ??
+            items.reduce(
+                (
+                    sum,
+                    item
+                ) =>
+                    sum +
+                    (
+                        item.quantity *
+                        item.unitPrice
+                    ),
+                0
+            );
+
+
+
+        const tax =
+            data.tax ?? 0;
+
+
+        const discount =
+            data.discount ?? 0;
+
+
+
+        const quotation:Quotation = {
+
 
             id:
                 crypto.randomUUID(),
+
+
 
             quotationNumber:
                 data.quotationNumber ??
                 `QT-${Date.now()}`,
 
+
+
             companyId:
-                data.companyId ?? '',
+                data.companyId ??
+                '',
+
+
 
             opportunityId:
                 data.opportunityId,
 
+
+
             title:
-                data.title ?? '',
+                data.title ??
+                '',
+
+
 
             customerName:
-                data.customerName ?? '',
+                data.customerName ??
+                '',
+
+
 
             amount:
-                data.amount ?? 0,
+                data.amount ??
+                0,
+
+
 
             status:
-                data.status ?? 'Draft',
+                data.status ??
+                'Draft',
+
+
 
             issueDate:
                 data.issueDate ??
-                now.substring(0, 10),
+                now.substring(0,10),
+
+
 
             validUntil:
                 data.validUntil ??
-                now.substring(0, 10),
+                now.substring(0,10),
 
-            subtotal:
-                data.subtotal ?? 0,
 
-            tax:
-                data.tax ?? 0,
 
-            discount:
-                data.discount ?? 0,
+            subtotal,
+
+
+            tax,
+
+
+            discount,
+
+
 
             total:
-                data.total ?? 0,
+                data.total ??
+                (
+                    subtotal +
+                    tax -
+                    discount
+                ),
+
+
 
             currency:
-                data.currency ?? 'INR',
+                data.currency ??
+                'INR',
+
+
 
             notes:
                 data.notes,
 
-            items:
-                data.items ?? [],
 
-            archived:
-                false,
+
+            items,
+
+
+
+            archived:false,
+
+
 
             createdAt:
                 now,
+
+
 
             updatedAt:
                 now,
 
         };
+
+
 
         this.quotations.set(
             quotation.id,
             quotation
         );
 
+
         return quotation;
 
     }
 
 
+
+
     async update(
-        id: string,
-        data: Partial<Quotation>
-    ): Promise<Quotation | null> {
+        id:string,
+        data:Partial<Quotation>
+    ):Promise<Quotation | null>{
+
 
         const existing =
-            this.quotations.get(id);
+            await this.findById(id);
 
-        if (!existing) {
+
+
+        if(!existing){
+
             return null;
+
         }
 
-        const updated: Quotation = {
+
+
+        const updated:Quotation = {
 
             ...existing,
 
             ...data,
 
+
             updatedAt:
-                new Date().toISOString(),
+                new Date()
+                .toISOString(),
 
         };
+
+
 
         this.quotations.set(
             id,
             updated
         );
 
+
+
         return updated;
 
     }
 
 
+
+
     async updateStatus(
-        id: string,
-        status: QuotationStatus
-    ): Promise<Quotation | null> {
+        id:string,
+        status:QuotationStatus
+    ){
 
         return this.update(
             id,
             {
-                status,
+                status
             }
         );
 
     }
 
 
+
+
+
     async delete(
-        id: string
-    ): Promise<boolean> {
+        id:string
+    ):Promise<boolean>{
+
 
         const quotation =
             this.quotations.get(id);
 
-        if (!quotation) {
+
+
+        if(!quotation){
+
             return false;
+
         }
 
-        quotation.archived = true;
+
+
+        quotation.archived=true;
+
 
         quotation.updatedAt =
-            new Date().toISOString();
+            new Date()
+            .toISOString();
 
-        this.quotations.set(
-            id,
-            quotation
-        );
+
 
         return true;
 
     }
+
+
 
 
     async restore(
-        id: string
-    ): Promise<boolean> {
+        id:string
+    ):Promise<boolean>{
+
 
         const quotation =
             this.quotations.get(id);
 
-        if (!quotation) {
+
+
+        if(!quotation){
+
             return false;
+
         }
 
-        quotation.archived = false;
+
+
+        quotation.archived=false;
+
 
         quotation.updatedAt =
-            new Date().toISOString();
+            new Date()
+            .toISOString();
 
-        this.quotations.set(
-            id,
-            quotation
-        );
+
 
         return true;
 
     }
-async search(
-    filters?: {
-        status?: QuotationStatus;
-        search?: string;
-    }
-): Promise<Quotation[]> {
 
-    let quotations =
-        await this.list();
 
-    if (filters?.status) {
 
-        quotations =
-            quotations.filter(
-                quotation =>
-                    quotation.status ===
-                    filters.status
-            );
 
-    }
+    async search(
+        filters?:{
+            status?:QuotationStatus;
+            search?:string;
+        }
+    ):Promise<Quotation[]>{
 
-    if (filters?.search) {
 
-        const keyword =
-            filters.search
-                .toLowerCase();
+        let quotations =
+            await this.list();
 
-        quotations =
-            quotations.filter(
-                quotation =>
 
-                    quotation.title
+
+        if(filters?.status){
+
+            quotations =
+                quotations.filter(
+                    q =>
+                        q.status ===
+                        filters.status
+                );
+
+        }
+
+
+
+        if(filters?.search){
+
+            const keyword =
+                filters.search.toLowerCase();
+
+
+            quotations =
+                quotations.filter(
+                    q =>
+                        q.title
+                        .toLowerCase()
+                        .includes(keyword)
+                        ||
+
+                        q.customerName
+                        .toLowerCase()
+                        .includes(keyword)
+                        ||
+
+                        q.quotationNumber
                         .toLowerCase()
                         .includes(keyword)
 
-                    ||
+                );
 
-                    quotation.customerName
-                        .toLowerCase()
-                        .includes(keyword)
+        }
 
-                    ||
 
-                    quotation.quotationNumber
-                        .toLowerCase()
-                        .includes(keyword)
 
-            );
+        return quotations;
 
     }
 
-    return quotations;
 
-}
 
-async summary() {
 
-    const quotations =
-        await this.list();
+    async summary(){
 
-    return {
 
-        total:
-            quotations.length,
+        const quotations =
+            await this.list();
 
-        draft:
-            quotations.filter(
-                quotation =>
-                    quotation.status ===
-                    'Draft'
-            ).length,
 
-        sent:
-            quotations.filter(
-                quotation =>
-                    quotation.status ===
-                    'Sent'
-            ).length,
 
-        accepted:
-            quotations.filter(
-                quotation =>
-                    quotation.status ===
-                    'Accepted'
-            ).length,
+        return {
 
-        rejected:
-            quotations.filter(
-                quotation =>
-                    quotation.status ===
-                    'Rejected'
-            ).length,
+            total:
+                quotations.length,
 
-        value:
-            quotations.reduce(
-                (
-                    total,
-                    quotation,
-                ) =>
-                    total +
-                    quotation.total,
-                0
-            ),
 
-    };
+            draft:
+                quotations.filter(
+                    q=>q.status==='Draft'
+                ).length,
 
-}
+
+            sent:
+                quotations.filter(
+                    q=>q.status==='Sent'
+                ).length,
+
+
+            accepted:
+                quotations.filter(
+                    q=>q.status==='Accepted'
+                ).length,
+
+
+            rejected:
+                quotations.filter(
+                    q=>q.status==='Rejected'
+                ).length,
+
+
+            totalValue:
+                quotations.reduce(
+                    (
+                        sum,
+                        q
+                    )=>
+                        sum +
+                        q.total,
+                    0
+                ),
+
+        };
+
+    }
 
 }
 

@@ -1,0 +1,78 @@
+import {
+    NextRequest,
+    NextResponse,
+} from 'next/server';
+
+import {
+    ActivityServiceInstance,
+} from '@/services/crm/ActivityService';
+
+
+export async function GET() {
+
+    try {
+
+        const activities =
+            ActivityServiceInstance.list();
+
+        return NextResponse.json(
+            activities
+        );
+
+    } catch (error) {
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to fetch activities',
+            },
+            {
+                status: 500,
+            }
+        );
+
+    }
+
+}
+
+
+
+export async function POST(
+    request: NextRequest
+) {
+
+    try {
+
+        const body =
+            await request.json();
+
+
+        const activity =
+            ActivityServiceInstance.create(
+                body
+            );
+
+
+        return NextResponse.json(
+            activity,
+            {
+                status: 201,
+            }
+        );
+
+
+    } catch (error) {
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to create activity',
+            },
+            {
+                status: 500,
+            }
+        );
+
+    }
+
+}

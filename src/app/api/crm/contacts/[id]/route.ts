@@ -1,24 +1,36 @@
 import { NextResponse } from "next/server";
 
-import { ContactsServiceInstance } from "@/services/crm/ContactsService";
+import {
+    ContactsServiceInstance,
+} from "@/services/crm/ContactsService";
 
-interface RouteContext {
+
+interface Props {
+
     params: Promise<{
         id: string;
     }>;
+
 }
 
+
+
 export async function GET(
-    request: Request,
-    { params }: RouteContext,
+    _request: Request,
+    { params }: Props,
 ) {
 
     try {
 
-        const { id } = await params;
+        const { id } =
+            await params;
+
 
         const contact =
-            await ContactsServiceInstance.details(id);
+            await ContactsServiceInstance.findById(
+                id,
+            );
+
 
         if (!contact) {
 
@@ -33,7 +45,11 @@ export async function GET(
 
         }
 
-        return NextResponse.json(contact);
+
+        return NextResponse.json(
+            contact,
+        );
+
 
     } catch {
 
@@ -50,23 +66,30 @@ export async function GET(
 
 }
 
+
+
+
 export async function PUT(
     request: Request,
-    { params }: RouteContext,
+    { params }: Props,
 ) {
 
     try {
 
-        const { id } = await params;
+        const { id } =
+            await params;
+
 
         const body =
             await request.json();
+
 
         const contact =
             await ContactsServiceInstance.update(
                 id,
                 body,
             );
+
 
         if (!contact) {
 
@@ -81,7 +104,11 @@ export async function PUT(
 
         }
 
-        return NextResponse.json(contact);
+
+        return NextResponse.json(
+            contact,
+        );
+
 
     } catch {
 
@@ -98,19 +125,27 @@ export async function PUT(
 
 }
 
+
+
+
 export async function DELETE(
-    request: Request,
-    { params }: RouteContext,
+    _request: Request,
+    { params }: Props,
 ) {
 
     try {
 
-        const { id } = await params;
+        const { id } =
+            await params;
 
-        const success =
-            await ContactsServiceInstance.delete(id);
 
-        if (!success) {
+        const deleted =
+            await ContactsServiceInstance.delete(
+                id,
+            );
+
+
+        if (!deleted) {
 
             return NextResponse.json(
                 {
@@ -123,9 +158,13 @@ export async function DELETE(
 
         }
 
-        return NextResponse.json({
-            success: true,
-        });
+
+        return NextResponse.json(
+            {
+                success: true,
+            },
+        );
+
 
     } catch {
 

@@ -2,125 +2,149 @@ import {
     QuotationsRepositoryInstance,
 } from '@/repositories/crm/QuotationsRepository';
 
+
 import type {
     Quotation,
-    QuotationStatus, 
+    QuotationStatus,
 } from '@/types/crm/Quotations';
 
 
-class QuotationsService {
 
-    async list() {
+export class QuotationsService {
+
+
+    async list(){
+
         return QuotationsRepositoryInstance.list();
+
     }
 
 
-    async listArchived() {
+
+    async listArchived(){
+
         return QuotationsRepositoryInstance.listArchived();
+
     }
+
+
+
+    async findById(
+        id:string
+    ){
+
+        return QuotationsRepositoryInstance.findById(id);
+
+    }
+
 
 
     async details(
-        id: string
-    ) {
-        return QuotationsRepositoryInstance.details(id);
+        id:string
+    ){
+
+        return this.findById(id);
+
     }
+
 
 
     async create(
-        data: Partial<Quotation>
-    ) {
+        data:Partial<Quotation>
+    ){
+
         return QuotationsRepositoryInstance.create(data);
+
     }
 
 
+
     async update(
-        id: string,
-        data: Partial<Quotation>
-    ) {
+        id:string,
+        data:Partial<Quotation>
+    ){
+
         return QuotationsRepositoryInstance.update(
             id,
             data
         );
+
     }
+
 
 
     async delete(
-        id: string
-    ) {
+        id:string
+    ){
+
         return QuotationsRepositoryInstance.delete(id);
+
     }
+
 
 
     async restore(
-        id: string
-    ) {
+        id:string
+    ){
+
         return QuotationsRepositoryInstance.restore(id);
+
     }
 
 
+
     async updateStatus(
-        id: string,
-        status: QuotationStatus
-    ) {
+        id:string,
+        status:QuotationStatus
+    ){
+
         return QuotationsRepositoryInstance.updateStatus(
             id,
             status
         );
+
     }
 
 
-    async summary() {
 
-        const quotations =
-            await this.list();
+    async search(
+        filters?:{
+            status?:QuotationStatus;
+            search?:string;
+        }
+    ){
+
+        return QuotationsRepositoryInstance.search(
+            filters
+        );
+
+    }
+
+
+
+    async summary(){
+
+        const summary =
+            await QuotationsRepositoryInstance.summary();
+
 
         return {
 
-            total:
-                quotations.length,
+            ...summary,
 
-            draft:
-                quotations.filter(
-                    q => q.status === 'Draft'
-                ).length,
 
-            sent:
-                quotations.filter(
-                    q => q.status === 'Sent'
-                ).length,
-
-            accepted:
-                quotations.filter(
-                    q => q.status === 'Accepted'
-                ).length,
-
-            rejected:
-                quotations.filter(
-                    q => q.status === 'Rejected'
-                ).length,
-
+            // backward compatibility
+            // existing reports/dashboard components
             value:
-                quotations.reduce(
-                    (sum, q) => sum + q.total,
-                    0
-                ),
+                summary.totalValue,
 
         };
 
     }
-    async search(
-        filters?: {
-            status?: QuotationStatus;
-            search?: string;
-        }
-    ) {
-        return QuotationsRepositoryInstance.search(
-            filters
-        );
-    }
-    
+
+
 }
+
 
 
 export const QuotationsServiceInstance =
