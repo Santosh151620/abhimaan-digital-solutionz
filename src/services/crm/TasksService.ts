@@ -4,95 +4,122 @@ import {
 
 import type {
     Task,
+    TaskSearchFilters,
     TaskStatus,
+    TaskSummary,
 } from '@/types/crm/Tasks';
 
 class TasksService {
 
-    list() {
+    list(): Task[] {
+
         return TasksRepositoryInstance.list();
+
     }
 
-    listArchived() {
+    listArchived(): Task[] {
+
         return TasksRepositoryInstance.listArchived();
+
     }
 
     findById(
-        id: string
-    ) {
+        id: string,
+    ): Task | null {
+
         return TasksRepositoryInstance.findById(
-            id
+            id,
         );
+
     }
 
     details(
-        id: string
-    ) {
-        return this.findById(id);
+        id: string,
+    ): Task | null {
+
+        return this.findById(
+            id,
+        );
+
     }
 
     search(
-        filters?: {
-            status?: TaskStatus;
-            priority?: Task['priority'];
-            search?: string;
-        }
-    ) {
+        filters?: TaskSearchFilters,
+    ): Task[] {
+
         return TasksRepositoryInstance.search(
-            filters
+            filters,
         );
+
     }
 
     create(
-        data: Partial<Task>
-    ) {
+        data: Partial<Task>,
+    ): Task {
+
         return TasksRepositoryInstance.create(
-            data
+            data,
         );
+
     }
 
     update(
         id: string,
-        data: Partial<Task>
-    ) {
+        data: Partial<Task>,
+    ): Task | null {
+
         return TasksRepositoryInstance.update(
             id,
-            data
+            data,
         );
+
     }
 
     updateStatus(
         id: string,
-        status: TaskStatus
-    ) {
+        status: TaskStatus,
+    ): Task | null {
+
         return TasksRepositoryInstance.updateStatus(
             id,
-            status
+            status,
         );
+
     }
 
     delete(
-        id: string
-    ) {
+        id: string,
+    ): boolean {
+
         return TasksRepositoryInstance.delete(
-            id
+            id,
         );
+
     }
 
     restore(
-        id: string
-    ) {
+        id: string,
+    ): boolean {
+
         return TasksRepositoryInstance.restore(
-            id
+            id,
         );
+
     }
 
-    summary() {
+    summary(): TaskSummary {
+
         return TasksRepositoryInstance.summary();
+
     }
 
 }
 
-export const
-    TasksServiceInstance =
-        new TasksService();
+export async function createTasksService(): Promise<TasksService> {
+
+    return new TasksService();
+
+}
+
+export const TasksServiceInstance =
+    new TasksService();

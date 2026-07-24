@@ -35,15 +35,35 @@ export interface Task {
 
     dueDate?: string;
 
+    completedAt?: string;
+
     estimatedHours?: number;
 
     actualHours?: number;
+
+    completionPercentage?: number;
 
     archived: boolean;
 
     createdAt: string;
 
     updatedAt: string;
+
+}
+
+export interface TaskSearchFilters {
+
+    search?: string;
+
+    status?: TaskStatus;
+
+    priority?: TaskPriority;
+
+    companyId?: string;
+
+    projectId?: string;
+
+    assignedTo?: string;
 
 }
 
@@ -62,5 +82,13 @@ export interface TaskSummary {
     cancelled: number;
 
     critical: number;
+
+    highPriority: number;
+
+    overdue: number;
+
+    archived: number;
+
+    averageCompletion: number;
 
 }
