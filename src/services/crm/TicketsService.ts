@@ -10,23 +10,35 @@ import type {
 class TicketsService {
 
     list() {
+
         return TicketsRepositoryInstance.list();
+
     }
 
     listArchived() {
+
         return TicketsRepositoryInstance.listArchived();
+
     }
 
     findById(
-        id: string
+        id: string,
     ) {
-        return TicketsRepositoryInstance.findById(id);
+
+        return TicketsRepositoryInstance.findById(
+            id,
+        );
+
     }
 
     details(
-        id: string
+        id: string,
     ) {
-        return this.findById(id);
+
+        return this.findById(
+            id,
+        );
+
     }
 
     search(
@@ -34,62 +46,87 @@ class TicketsService {
             status?: TicketStatus;
             priority?: Ticket['priority'];
             search?: string;
-        }
+        },
     ) {
+
         return TicketsRepositoryInstance.search(
-            filters
+            filters,
         );
+
     }
 
     create(
-        data: Partial<Ticket>
+        data: Partial<Ticket>,
     ) {
+
         return TicketsRepositoryInstance.create(
-            data
+            data,
         );
+
     }
 
     update(
         id: string,
-        data: Partial<Ticket>
+        data: Partial<Ticket>,
     ) {
+
         return TicketsRepositoryInstance.update(
             id,
-            data
+            data,
         );
+
     }
 
     updateStatus(
         id: string,
-        status: TicketStatus
+        status: TicketStatus,
     ) {
+
         return TicketsRepositoryInstance.updateStatus(
             id,
-            status
+            status,
         );
+
     }
 
     delete(
-        id: string
+        id: string,
     ) {
+
         return TicketsRepositoryInstance.delete(
-            id
+            id,
         );
+
     }
 
     restore(
-        id: string
+        id: string,
     ) {
+
         return TicketsRepositoryInstance.restore(
-            id
+            id,
         );
+
     }
 
     summary() {
+
         return TicketsRepositoryInstance.summary();
+
     }
 
 }
 
-export const TicketsServiceInstance =
-    new TicketsService();
+export async function createTicketsService() {
+
+    return new TicketsService();
+
+}
+
+export const
+    TicketsServiceInstance =
+        new TicketsService();
+
+export const
+    TicketServiceInstance =
+        TicketsServiceInstance;

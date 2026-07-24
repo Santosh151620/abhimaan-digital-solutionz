@@ -99,6 +99,5 @@ export async function createKnowledgeBaseService() {
 
 }
 
-export const
-    KnowledgeBaseServiceInstance =
-        new KnowledgeBaseService();
+export const KnowledgeBaseServiceInstance =
+    new KnowledgeBaseService();
