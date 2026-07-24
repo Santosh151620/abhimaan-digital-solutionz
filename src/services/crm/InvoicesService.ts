@@ -2,90 +2,112 @@ import {
     InvoicesRepositoryInstance,
 } from '@/repositories/crm/InvoicesRepository';
 
+
 import type {
     Invoice,
     InvoiceStatus,
 } from '@/types/crm/Invoices';
 
-class InvoicesService {
 
-    list() {
+
+export class InvoicesService {
+
+
+    list(){
 
         return InvoicesRepositoryInstance.list();
 
     }
 
-    listArchived() {
+
+
+    listArchived(){
 
         return InvoicesRepositoryInstance.listArchived();
 
     }
 
-    details(
-        id: string,
-    ) {
 
-        return InvoicesRepositoryInstance.details(
-            id,
-        );
+
+    findById(
+        id:string
+    ){
+
+        return InvoicesRepositoryInstance.findById(id);
 
     }
+
+
+
+    details(
+        id:string
+    ){
+
+        return this.findById(id);
+
+    }
+
+
 
     create(
-        data: Partial<Invoice>,
-    ) {
+        data:Partial<Invoice>
+    ){
 
-        return InvoicesRepositoryInstance.create(
-            data,
-        );
+        return InvoicesRepositoryInstance.create(data);
 
     }
 
+
+
     update(
-        id: string,
-        data: Partial<Invoice>,
-    ) {
+        id:string,
+        data:Partial<Invoice>
+    ){
 
         return InvoicesRepositoryInstance.update(
             id,
-            data,
+            data
         );
 
     }
 
+
+
     updateStatus(
-        id: string,
-        status: InvoiceStatus,
-    ) {
+        id:string,
+        status:InvoiceStatus
+    ){
 
         return InvoicesRepositoryInstance.updateStatus(
             id,
-            status,
+            status
         );
 
     }
+
+
 
     delete(
-        id: string,
-    ) {
+        id:string
+    ){
 
-        return InvoicesRepositoryInstance.delete(
-            id,
-        );
+        return InvoicesRepositoryInstance.delete(id);
 
     }
+
+
 
     restore(
-        id: string,
-    ) {
+        id:string
+    ){
 
-        return InvoicesRepositoryInstance.restore(
-            id,
-        );
+        return InvoicesRepositoryInstance.restore(id);
 
     }
 
-    summary() {
+
+
+    summary(){
 
         return InvoicesRepositoryInstance.summary();
 
@@ -93,11 +115,15 @@ class InvoicesService {
 
 }
 
-export async function createInvoicesService() {
+
+
+export async function createInvoicesService(){
 
     return new InvoicesService();
 
 }
+
+
 
 export const InvoicesServiceInstance =
     new InvoicesService();
