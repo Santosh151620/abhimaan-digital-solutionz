@@ -3,6 +3,7 @@ import type {
 } from '@/types/crm/Contacts';
 
 
+
 export interface ContactSearchFilters {
 
     search?: string;
@@ -23,9 +24,14 @@ export interface ContactsSummary {
 
     inactive: number;
 
+    leads: number;
+
+    customers: number;
+
     archived: number;
 
 }
+
 
 
 
@@ -38,56 +44,58 @@ class ContactsRepository {
 
 
 
+
     async list(): Promise<ContactDetails[]> {
 
+
         return Array.from(
-            this.contacts.values()
+            this.contacts.values(),
         )
         .filter(
             contact =>
-                !contact.isDeleted
+                !contact.isDeleted,
         );
 
     }
+
 
 
 
     async listArchived(): Promise<ContactDetails[]> {
 
+
         return Array.from(
-            this.contacts.values()
+            this.contacts.values(),
         )
         .filter(
             contact =>
-                contact.isDeleted
+                contact.isDeleted === true,
         );
 
     }
+
 
 
 
     async findById(
-        id:string
-    ):Promise<ContactDetails | null> {
+        id: string,
+    ): Promise<ContactDetails | null> {
 
 
         return (
-
             this.contacts.get(id)
-
             ??
-
             null
-
         );
 
     }
 
 
 
+
     async search(
-        filters?: ContactSearchFilters
-    ):Promise<ContactDetails[]> {
+        filters?: ContactSearchFilters,
+    ): Promise<ContactDetails[]> {
 
 
         let result =
@@ -95,63 +103,52 @@ class ContactsRepository {
 
 
 
-        if(filters?.search){
+
+        if (filters?.search) {
 
 
             const keyword =
-                filters.search.toLowerCase();
+                filters.search
+                    .trim()
+                    .toLowerCase();
+
 
 
 
             result =
                 result.filter(
-                    contact =>
+                    contact => {
 
 
-                        (
-                            contact.fullName
-                            ??
-                            ''
-                        )
-                        .toLowerCase()
-                        .includes(keyword)
+                        const searchable = [
+
+                            contact.fullName,
+
+                            contact.firstName,
+
+                            contact.lastName,
+
+                            contact.email,
+
+                            contact.phone,
+
+                            contact.mobile,
+
+                            contact.companyName,
+
+                        ]
+                        .filter(Boolean)
+                        .join(' ')
+                        .toLowerCase();
 
 
-                        ||
 
 
-                        (
-                            contact.email
-                            ??
-                            ''
-                        )
-                        .toLowerCase()
-                        .includes(keyword)
+                        return searchable.includes(
+                            keyword,
+                        );
 
-
-                        ||
-
-
-                        (
-                            contact.phone
-                            ??
-                            ''
-                        )
-                        .toLowerCase()
-                        .includes(keyword)
-
-
-                        ||
-
-
-                        (
-                            contact.companyName
-                            ??
-                            ''
-                        )
-                        .toLowerCase()
-                        .includes(keyword)
-
+                    },
                 );
 
         }
@@ -159,14 +156,13 @@ class ContactsRepository {
 
 
 
-        if(filters?.status){
+        if (filters?.status) {
 
 
             result =
                 result.filter(
                     contact =>
-                        contact.status ===
-                        filters.status
+                        contact.status === filters.status,
                 );
 
         }
@@ -174,17 +170,17 @@ class ContactsRepository {
 
 
 
-        if(filters?.companyId){
+        if (filters?.companyId) {
 
 
             result =
                 result.filter(
                     contact =>
-                        contact.companyId ===
-                        filters.companyId
+                        contact.companyId === filters.companyId,
                 );
 
         }
+
 
 
 
@@ -196,12 +192,20 @@ class ContactsRepository {
 
 
 
-    async summary():Promise<ContactsSummary>{
+    async summary(): Promise<ContactsSummary> {
 
 
         const contacts =
             Array.from(
-                this.contacts.values()
+                this.contacts.values(),
+            );
+
+
+
+        const activeContacts =
+            contacts.filter(
+                contact =>
+                    !contact.isDeleted,
             );
 
 
@@ -210,41 +214,46 @@ class ContactsRepository {
 
 
             total:
-
-                contacts.filter(
-                    contact =>
-                        !contact.isDeleted
-                ).length,
+                activeContacts.length,
 
 
 
             active:
-
-                contacts.filter(
+                activeContacts.filter(
                     contact =>
-                        !contact.isDeleted
-                        &&
-                        contact.status === 'ACTIVE'
+                        contact.status === 'ACTIVE',
                 ).length,
 
 
 
             inactive:
-
-                contacts.filter(
+                activeContacts.filter(
                     contact =>
-                        !contact.isDeleted
-                        &&
-                        contact.status === 'INACTIVE'
+                        contact.status === 'INACTIVE',
+                ).length,
+
+
+
+            leads:
+                activeContacts.filter(
+                    contact =>
+                        contact.status === 'LEAD',
+                ).length,
+
+
+
+            customers:
+                activeContacts.filter(
+                    contact =>
+                        contact.status === 'CUSTOMER',
                 ).length,
 
 
 
             archived:
-
                 contacts.filter(
                     contact =>
-                        contact.isDeleted
+                        contact.isDeleted === true,
                 ).length,
 
 
@@ -257,9 +266,8 @@ class ContactsRepository {
 
 
     async create(
-        data:Partial<ContactDetails>
-    ):Promise<ContactDetails>{
-
+        data: Partial<ContactDetails>,
+    ): Promise<ContactDetails> {
 
 
         const now =
@@ -267,7 +275,8 @@ class ContactsRepository {
 
 
 
-        const contact:ContactDetails = {
+
+        const contact: ContactDetails = {
 
 
             id:
@@ -398,16 +407,15 @@ class ContactsRepository {
             updatedAt:
                 now,
 
+
         };
 
 
 
+
         this.contacts.set(
-
             contact.id,
-
-            contact
-
+            contact,
         );
 
 
@@ -421,18 +429,17 @@ class ContactsRepository {
 
 
     async update(
-        id:string,
-        data:Partial<ContactDetails>
-    ):Promise<ContactDetails | null>{
+        id: string,
+        data: Partial<ContactDetails>,
+    ): Promise<ContactDetails | null> {
 
 
-
-        const contact =
+        const existing =
             this.contacts.get(id);
 
 
 
-        if(!contact){
+        if (!existing) {
 
             return null;
 
@@ -440,39 +447,40 @@ class ContactsRepository {
 
 
 
-        Object.assign(
 
-            contact,
-
-            data
-
-        );
+        const updated: ContactDetails = {
 
 
+            ...existing,
 
-        contact.fullName =
-
-            `${contact.firstName} ${contact.lastName}`
-                .trim();
+            ...data,
 
 
 
-        contact.updatedAt =
-            new Date().toISOString();
+            fullName:
+
+                `${data.firstName ?? existing.firstName} ${data.lastName ?? existing.lastName}`
+                    .trim(),
+
+
+
+            updatedAt:
+                new Date().toISOString(),
+
+
+        };
+
 
 
 
         this.contacts.set(
-
             id,
-
-            contact
-
+            updated,
         );
 
 
 
-        return contact;
+        return updated;
 
     }
 
@@ -481,8 +489,8 @@ class ContactsRepository {
 
 
     async delete(
-        id:string
-    ):Promise<boolean>{
+        id: string,
+    ): Promise<boolean> {
 
 
         const contact =
@@ -490,7 +498,7 @@ class ContactsRepository {
 
 
 
-        if(!contact){
+        if (!contact) {
 
             return false;
 
@@ -498,7 +506,9 @@ class ContactsRepository {
 
 
 
+
         contact.isDeleted = true;
+
 
 
         contact.deletedAt =
@@ -516,6 +526,14 @@ class ContactsRepository {
 
 
 
+
+        this.contacts.set(
+            id,
+            contact,
+        );
+
+
+
         return true;
 
     }
@@ -525,8 +543,8 @@ class ContactsRepository {
 
 
     async restore(
-        id:string
-    ):Promise<boolean>{
+        id: string,
+    ): Promise<boolean> {
 
 
         const contact =
@@ -534,7 +552,7 @@ class ContactsRepository {
 
 
 
-        if(!contact){
+        if (!contact) {
 
             return false;
 
@@ -542,10 +560,13 @@ class ContactsRepository {
 
 
 
+
         contact.isDeleted = false;
 
 
+
         contact.deletedAt = null;
+
 
 
         contact.deletedBy = null;
@@ -562,12 +583,22 @@ class ContactsRepository {
 
 
 
+
+        this.contacts.set(
+            id,
+            contact,
+        );
+
+
+
         return true;
 
     }
 
 
 }
+
+
 
 
 

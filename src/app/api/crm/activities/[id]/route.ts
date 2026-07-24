@@ -1,4 +1,4 @@
-import {
+﻿import {
     NextRequest,
     NextResponse,
 } from 'next/server';
@@ -9,7 +9,7 @@ import {
 
 import type {
     ActivityStatus,
-} from '@/types/crm/Activity';
+} from '@/types/crm/Activities';
 
 
 interface Props {

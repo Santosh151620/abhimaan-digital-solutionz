@@ -9,7 +9,7 @@ import {
 import type {
     Activity,
     ActivityStatus,
-} from '@/types/crm/Activity';
+} from '@/types/crm/Activities';
 
 
 

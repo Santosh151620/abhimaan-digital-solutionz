@@ -1,4 +1,4 @@
-﻿import { redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 import OpportunitiesForm from '@/components/crm/opportunities/OpportunitiesForm';
 

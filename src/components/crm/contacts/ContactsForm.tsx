@@ -1,49 +1,88 @@
 'use client';
 
 import { useState } from 'react';
-import type { Contact } from '@/types/crm/Contacts';
+
+import type {
+    Contact,
+    ContactStatus,
+} from '@/types/crm/Contacts';
 
 interface ContactsFormProps {
+
     initialValues?: Partial<Contact>;
+
     loading?: boolean;
+
     onSubmit?: (
-        values: Partial<Contact>
+        values: Partial<Contact>,
     ) => void | Promise<void>;
+
     onCancel?: () => void;
+
 }
 
+const statuses: ContactStatus[] = [
+
+    'ACTIVE',
+    'LEAD',
+    'CUSTOMER',
+    'INACTIVE',
+
+];
+
 export function ContactsForm({
+
     initialValues,
+
     loading = false,
+
     onSubmit,
+
     onCancel,
+
 }: ContactsFormProps) {
 
     const [form, setForm] =
         useState<Partial<Contact>>({
+
             status: 'ACTIVE',
+
             ...initialValues,
+
         });
 
     function update<K extends keyof Contact>(
+
         key: K,
+
         value: Contact[K],
+
     ) {
+
         setForm(previous => ({
+
             ...previous,
+
             [key]: value,
+
         }));
+
     }
 
     async function submit(
+
         event: React.FormEvent<HTMLFormElement>,
+
     ) {
 
         event.preventDefault();
 
         if (!form.firstName?.trim()) {
+
             alert('First Name is required.');
+
             return;
+
         }
 
         await onSubmit?.(form);
@@ -58,6 +97,7 @@ export function ContactsForm({
         >
 
             <div>
+
                 <h2 className="text-xl font-semibold">
                     Contact Details
                 </h2>
@@ -65,6 +105,7 @@ export function ContactsForm({
                 <p className="text-sm text-muted-foreground">
                     Create or update contact.
                 </p>
+
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -73,10 +114,10 @@ export function ContactsForm({
                     className="rounded-lg border p-2"
                     placeholder="First Name"
                     value={form.firstName ?? ''}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'firstName',
-                            e.target.value,
+                            event.target.value,
                         )
                     }
                 />
@@ -85,10 +126,10 @@ export function ContactsForm({
                     className="rounded-lg border p-2"
                     placeholder="Last Name"
                     value={form.lastName ?? ''}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'lastName',
-                            e.target.value,
+                            event.target.value,
                         )
                     }
                 />
@@ -97,10 +138,10 @@ export function ContactsForm({
                     className="rounded-lg border p-2"
                     placeholder="Email"
                     value={form.email ?? ''}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'email',
-                            e.target.value,
+                            event.target.value,
                         )
                     }
                 />
@@ -109,10 +150,22 @@ export function ContactsForm({
                     className="rounded-lg border p-2"
                     placeholder="Phone"
                     value={form.phone ?? ''}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'phone',
-                            e.target.value,
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Mobile"
+                    value={form.mobile ?? ''}
+                    onChange={event =>
+                        update(
+                            'mobile',
+                            event.target.value,
                         )
                     }
                 />
@@ -121,10 +174,10 @@ export function ContactsForm({
                     className="rounded-lg border p-2"
                     placeholder="Company Id"
                     value={form.companyId ?? ''}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'companyId',
-                            e.target.value,
+                            event.target.value,
                         )
                     }
                 />
@@ -133,10 +186,58 @@ export function ContactsForm({
                     className="rounded-lg border p-2"
                     placeholder="Designation"
                     value={form.designation ?? ''}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'designation',
-                            e.target.value,
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Department"
+                    value={form.department ?? ''}
+                    onChange={event =>
+                        update(
+                            'department',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="City"
+                    value={form.city ?? ''}
+                    onChange={event =>
+                        update(
+                            'city',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="State"
+                    value={form.state ?? ''}
+                    onChange={event =>
+                        update(
+                            'state',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Country"
+                    value={form.country ?? ''}
+                    onChange={event =>
+                        update(
+                            'country',
+                            event.target.value,
                         )
                     }
                 />
@@ -144,18 +245,43 @@ export function ContactsForm({
                 <select
                     className="rounded-lg border p-2"
                     value={form.status}
-                    onChange={e =>
+                    onChange={event =>
                         update(
                             'status',
-                            e.target.value as Contact['status'],
+                            event.target.value as ContactStatus,
                         )
                     }
                 >
-                    <option value="ACTIVE">ACTIVE</option>
-                    <option value="LEAD">LEAD</option>
-                    <option value="CUSTOMER">CUSTOMER</option>
-                    <option value="INACTIVE">INACTIVE</option>
+
+                    {statuses.map(status => (
+
+                        <option
+                            key={status}
+                            value={status}
+                        >
+                            {status}
+                        </option>
+
+                    ))}
+
                 </select>
+
+            </div>
+
+            <div>
+
+                <textarea
+                    rows={4}
+                    className="w-full rounded-lg border p-2"
+                    placeholder="Notes"
+                    value={form.notes ?? ''}
+                    onChange={event =>
+                        update(
+                            'notes',
+                            event.target.value,
+                        )
+                    }
+                />
 
             </div>
 
@@ -163,8 +289,8 @@ export function ContactsForm({
 
                 <button
                     type="button"
-                    className="rounded-lg border px-4 py-2"
                     onClick={onCancel}
+                    className="rounded-lg border px-4 py-2"
                 >
                     Cancel
                 </button>
@@ -187,6 +313,4 @@ export function ContactsForm({
 
 }
 
-
-
-
+export default ContactsForm;

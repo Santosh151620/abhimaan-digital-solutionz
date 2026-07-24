@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import type {
     Activity,
-} from '@/types/crm/Activity';
+} from '@/types/crm/Activities';
 
 
 

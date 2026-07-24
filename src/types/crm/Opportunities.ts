@@ -1,4 +1,4 @@
-﻿export type OpportunityStage =
+export type OpportunityStage =
     | 'New'
     | 'Qualified'
     | 'Proposal'

@@ -1,4 +1,4 @@
-﻿import type {
+import type {
     Opportunity,
     OpportunitySummary,
 } from '@/types/crm/Opportunities';

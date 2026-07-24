@@ -1,4 +1,4 @@
-﻿export { default as OpportunitiesClient }
+export { default as OpportunitiesClient }
 from './OpportunitiesClient';
 
 

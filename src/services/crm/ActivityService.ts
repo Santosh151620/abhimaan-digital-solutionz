@@ -1,129 +1,138 @@
 import {
-    ActivityRepositoryInstance,
-} from '@/repositories/crm/ActivityRepository';
-
+    activitiesRepository,
+} from '@/repositories/crm/ActivitiesRepository';
 
 import type {
     Activity,
+    ActivitySearchFilters,
     ActivityStatus,
-} from '@/types/crm/Activity';
+    ActivitySummary,
+} from '@/types/crm/Activities';
 
+class ActivitiesService {
 
+    list(): Activity[] {
 
-class ActivityService {
-
-
-    list() {
-
-        return ActivityRepositoryInstance.list();
+        return activitiesRepository.list();
 
     }
 
+    listArchived(): Activity[] {
 
-
-    listArchived() {
-
-        return ActivityRepositoryInstance.listArchived();
+        return activitiesRepository.listArchived();
 
     }
 
-
-
-    details(
+    findById(
         id: string,
-    ) {
+    ): Activity | null {
 
-        return ActivityRepositoryInstance.details(
+        return activitiesRepository.findById(
             id,
         );
 
     }
 
+    details(
+        id: string,
+    ): Activity | null {
 
-
-    create(
-        data: Partial<Activity>,
-    ) {
-
-        return ActivityRepositoryInstance.create(
-            data,
+        return this.findById(
+            id,
         );
 
     }
 
+    search(
+        filters?: ActivitySearchFilters,
+    ): Activity[] {
 
+        return activitiesRepository.search(
+            filters,
+        );
+
+    }
+
+    create(
+        data: Partial<Activity>,
+    ): Activity {
+
+        return activitiesRepository.create(
+            data,
+        );
+
+    }
 
     update(
         id: string,
         data: Partial<Activity>,
-    ) {
+    ): Activity | null {
 
-        return ActivityRepositoryInstance.update(
+        return activitiesRepository.update(
             id,
             data,
         );
 
     }
 
-
-
     updateStatus(
         id: string,
         status: ActivityStatus,
-    ) {
+    ): Activity | null {
 
-        return ActivityRepositoryInstance.updateStatus(
+        return activitiesRepository.updateStatus(
             id,
             status,
         );
 
     }
 
-
-
     delete(
         id: string,
-    ) {
+    ): boolean {
 
-        return ActivityRepositoryInstance.delete(
+        return activitiesRepository.delete(
             id,
         );
 
     }
-
-
 
     restore(
         id: string,
-    ) {
+    ): boolean {
 
-        return ActivityRepositoryInstance.restore(
+        return activitiesRepository.restore(
             id,
         );
 
     }
 
+    summary(): ActivitySummary {
 
-
-    summary() {
-
-        return ActivityRepositoryInstance.summary();
+        return activitiesRepository.summary();
 
     }
 
+}
+export async function createActivitiesService():
+    Promise<ActivitiesService> {
+
+    return new ActivitiesService();
 
 }
 
+export const activitiesService =
+    new ActivitiesService();
 
+/**
+ * Preferred standardized export.
+ */
+export const ActivitiesServiceInstance =
+    activitiesService;
 
-export async function createActivityService() {
-
-    return new ActivityService();
-
-}
-
-
-
-export const
-    ActivityServiceInstance =
-        new ActivityService();
+/**
+ * Legacy compatibility.
+ * Remove during the final legacy cleanup sprint.
+ */
+export const ActivityServiceInstance =
+    activitiesService;

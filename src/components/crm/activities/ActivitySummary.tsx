@@ -1,6 +1,6 @@
 import type {
     ActivitySummary as ActivitySummaryType,
-} from '@/types/crm/Activity';
+} from '@/types/crm/Activities';
 
 
 

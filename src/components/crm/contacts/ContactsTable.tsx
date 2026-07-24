@@ -1,16 +1,23 @@
 'use client';
 
-import type { Contact } from '@/types/crm/Contacts';
+import type {
+    ContactDetails,
+} from '@/types/crm/Contacts';
 
 interface Props {
-    contacts: Contact[];
+
+    contacts: ContactDetails[];
+
 }
 
 export default function ContactsTable({
+
     contacts,
+
 }: Props) {
 
     return (
+
         <div className="overflow-x-auto rounded-xl border">
 
             <table className="w-full text-sm">
@@ -43,10 +50,9 @@ export default function ContactsTable({
 
                 </thead>
 
-
                 <tbody>
 
-                    {contacts.map((contact) => (
+                    {contacts.map(contact => (
 
                         <tr
                             key={contact.id}
@@ -54,24 +60,21 @@ export default function ContactsTable({
                         >
 
                             <td className="px-4 py-3 font-medium">
-                                {contact.firstName} {contact.lastName}
+                                {contact.fullName ??
+                                    `${contact.firstName} ${contact.lastName}`.trim()}
                             </td>
-
 
                             <td className="px-4 py-3">
                                 {contact.email ?? '-'}
                             </td>
 
-
                             <td className="px-4 py-3">
-                                {contact.phone ?? '-'}
+                                {contact.phone ?? contact.mobile ?? '-'}
                             </td>
 
-
                             <td className="px-4 py-3">
-                                {contact.companyId ?? '-'}
+                                {contact.companyName ?? '-'}
                             </td>
-
 
                             <td className="px-4 py-3">
                                 {contact.status}
@@ -80,7 +83,6 @@ export default function ContactsTable({
                         </tr>
 
                     ))}
-
 
                     {contacts.length === 0 && (
 
@@ -102,5 +104,7 @@ export default function ContactsTable({
             </table>
 
         </div>
+
     );
+
 }
