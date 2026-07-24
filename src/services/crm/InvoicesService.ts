@@ -1,4 +1,6 @@
-import { InvoicesRepositoryInstance } from '@/repositories/crm/InvoicesRepository';
+import {
+    InvoicesRepositoryInstance,
+} from '@/repositories/crm/InvoicesRepository';
 
 import type {
     Invoice,
@@ -8,52 +10,92 @@ import type {
 class InvoicesService {
 
     list() {
+
         return InvoicesRepositoryInstance.list();
+
     }
 
     listArchived() {
+
         return InvoicesRepositoryInstance.listArchived();
+
     }
 
-    details(id: string) {
-        return InvoicesRepositoryInstance.details(id);
+    details(
+        id: string,
+    ) {
+
+        return InvoicesRepositoryInstance.details(
+            id,
+        );
+
     }
 
-    create(data: Partial<Invoice>) {
-        return InvoicesRepositoryInstance.create(data);
+    create(
+        data: Partial<Invoice>,
+    ) {
+
+        return InvoicesRepositoryInstance.create(
+            data,
+        );
+
     }
 
     update(
         id: string,
         data: Partial<Invoice>,
     ) {
+
         return InvoicesRepositoryInstance.update(
             id,
             data,
         );
-    }
 
-    delete(id: string) {
-        return InvoicesRepositoryInstance.delete(id);
-    }
-
-    restore(id: string) {
-        return InvoicesRepositoryInstance.restore(id);
     }
 
     updateStatus(
         id: string,
         status: InvoiceStatus,
     ) {
-        return this.update(
+
+        return InvoicesRepositoryInstance.updateStatus(
             id,
-            { status },
+            status,
         );
+
+    }
+
+    delete(
+        id: string,
+    ) {
+
+        return InvoicesRepositoryInstance.delete(
+            id,
+        );
+
+    }
+
+    restore(
+        id: string,
+    ) {
+
+        return InvoicesRepositoryInstance.restore(
+            id,
+        );
+
     }
 
     summary() {
-    return InvoicesRepositoryInstance.summary();
+
+        return InvoicesRepositoryInstance.summary();
+
+    }
+
 }
+
+export async function createInvoicesService() {
+
+    return new InvoicesService();
 
 }
 
