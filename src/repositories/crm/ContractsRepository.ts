@@ -1,5 +1,7 @@
 import type {
     Contract,
+    ContractSearchFilters,
+    ContractSummary,
     ContractStatus,
 } from '@/types/crm/Contracts';
 
@@ -10,44 +12,150 @@ class ContractsRepository {
 
     list(): Contract[] {
 
-        return [...this.contracts.values()]
+        return Array.from(
+            this.contracts.values(),
+        )
             .filter(
-                (contract) => !contract.archived
+                contract =>
+                    !contract.archived,
             )
-            .sort((a, b) =>
-                b.createdAt.localeCompare(
-                    a.createdAt
-                )
+            .sort(
+                (a, b) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt,
+                    ),
             );
 
     }
 
     listArchived(): Contract[] {
 
-        return [...this.contracts.values()]
+        return Array.from(
+            this.contracts.values(),
+        )
             .filter(
-                (contract) => contract.archived
+                contract =>
+                    contract.archived,
+            )
+            .sort(
+                (a, b) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt,
+                    ),
             );
 
     }
 
     details(
-        id: string
+        id: string,
     ): Contract | null {
 
         return (
-            this.contracts.get(id) ??
+            this.contracts.get(id)
+            ??
             null
         );
 
     }
 
+    search(
+        filters?: ContractSearchFilters,
+    ): Contract[] {
+
+        let contracts =
+            this.list();
+
+        if (filters?.status) {
+
+            contracts =
+                contracts.filter(
+                    contract =>
+                        contract.status ===
+                        filters.status,
+                );
+
+        }
+
+        if (filters?.companyId) {
+
+            contracts =
+                contracts.filter(
+                    contract =>
+                        contract.companyId ===
+                        filters.companyId,
+                );
+
+        }
+
+        if (filters?.search) {
+
+            const keyword =
+                filters.search
+                    .toLowerCase();
+
+            contracts =
+                contracts.filter(
+                    contract =>
+
+                        contract.title
+                            .toLowerCase()
+                            .includes(keyword)
+
+                        ||
+
+                        contract.customerName
+                            .toLowerCase()
+                            .includes(keyword)
+
+                        ||
+
+                        contract.contractNumber
+                            .toLowerCase()
+                            .includes(keyword),
+
+                );
+
+        }
+
+        return contracts;
+
+    }
+
     create(
-        data: Partial<Contract>
+        data: Partial<Contract>,
     ): Contract {
 
-        const now = new Date().toISOString();
-        const today = now.split('T')[0];
+        const now =
+            new Date().toISOString();
+
+        const today =
+            now.substring(0, 10);
+
+        const subtotal =
+            data.subtotal
+            ??
+            data.value
+            ??
+            0;
+
+        const tax =
+            data.tax
+            ??
+            0;
+
+        const discount =
+            data.discount
+            ??
+            0;
+
+        const total =
+            data.total
+            ??
+            (
+                subtotal +
+                tax -
+                discount
+            );
 
         const contract: Contract = {
 
@@ -55,73 +163,148 @@ class ContractsRepository {
                 crypto.randomUUID(),
 
             contractNumber:
-                data.contractNumber ??
+                data.contractNumber
+                ??
                 `CNT-${Date.now()}`,
 
             companyId:
-                data.companyId ?? '',
+                data.companyId
+                ??
+                '',
 
             quotationId:
                 data.quotationId,
 
+            invoiceId:
+                data.invoiceId,
+
             title:
-                data.title ?? '',
+                data.title
+                ??
+                '',
 
             customerName:
-                data.customerName ?? '',
+                data.customerName
+                ??
+                '',
 
             status:
-                data.status ?? 'Draft',
+                data.status
+                ??
+                'Draft',
 
             startDate:
-                data.startDate ?? today,
+                data.startDate
+                ??
+                today,
 
             endDate:
-                data.endDate ?? today,
+                data.endDate
+                ??
+                today,
+
+            renewalDate:
+                data.renewalDate,
+
+            autoRenew:
+                data.autoRenew
+                ??
+                false,
 
             value:
-                data.value ?? 0,
+                data.value
+                ??
+                total,
 
             currency:
-                data.currency ?? 'INR',
+                data.currency
+                ??
+                'INR',
+
+            subtotal,
+
+            tax,
+
+            discount,
+
+            total,
 
             notes:
                 data.notes,
 
-            archived: false,
+            archived:
+                false,
 
-            createdAt: now,
+            createdAt:
+                now,
 
-            updatedAt: now,
+            updatedAt:
+                now,
 
         };
 
         this.contracts.set(
             contract.id,
-            contract
+            contract,
         );
 
         return contract;
 
     }
-
-    update(
+        update(
         id: string,
-        data: Partial<Contract>
+        data: Partial<Contract>,
     ): Contract | null {
 
         const existing =
             this.contracts.get(id);
 
         if (!existing) {
+
             return null;
+
         }
+
+        const subtotal =
+            data.subtotal ??
+            existing.subtotal ??
+            existing.value;
+
+        const tax =
+            data.tax ??
+            existing.tax ??
+            0;
+
+        const discount =
+            data.discount ??
+            existing.discount ??
+            0;
+
+        const total =
+            data.total ??
+            (
+                subtotal +
+                tax -
+                discount
+            );
 
         const updated: Contract = {
 
             ...existing,
 
             ...data,
+
+            subtotal,
+
+            tax,
+
+            discount,
+
+            total,
+
+            value:
+                data.value ??
+                total,
 
             updatedAt:
                 new Date().toISOString(),
@@ -130,7 +313,7 @@ class ContractsRepository {
 
         this.contracts.set(
             id,
-            updated
+            updated,
         );
 
         return updated;
@@ -139,35 +322,40 @@ class ContractsRepository {
 
     updateStatus(
         id: string,
-        status: ContractStatus
+        status: ContractStatus,
     ): Contract | null {
 
         return this.update(
             id,
-            { status }
+            {
+                status,
+            },
         );
 
     }
 
     delete(
-        id: string
+        id: string,
     ): boolean {
 
-        const existing =
+        const contract =
             this.contracts.get(id);
 
-        if (!existing) {
+        if (!contract) {
+
             return false;
+
         }
 
-        existing.archived = true;
+        contract.archived =
+            true;
 
-        existing.updatedAt =
+        contract.updatedAt =
             new Date().toISOString();
 
         this.contracts.set(
             id,
-            existing
+            contract,
         );
 
         return true;
@@ -175,34 +363,74 @@ class ContractsRepository {
     }
 
     restore(
-        id: string
+        id: string,
     ): boolean {
 
-        const existing =
+        const contract =
             this.contracts.get(id);
 
-        if (!existing) {
+        if (!contract) {
+
             return false;
+
         }
 
-        existing.archived = false;
+        contract.archived =
+            false;
 
-        existing.updatedAt =
+        contract.updatedAt =
             new Date().toISOString();
 
         this.contracts.set(
             id,
-            existing
+            contract,
         );
 
         return true;
 
     }
 
-    summary() {
+    summary(): ContractSummary {
 
         const contracts =
             this.list();
+
+        const archived =
+            this.listArchived();
+
+        const totalValue =
+            contracts.reduce(
+                (
+                    sum,
+                    contract,
+                ) =>
+                    sum +
+                    (
+                        contract.total ??
+                        contract.value
+                    ),
+                0,
+            );
+
+        const activeValue =
+            contracts
+                .filter(
+                    contract =>
+                        contract.status ===
+                        'Active',
+                )
+                .reduce(
+                    (
+                        sum,
+                        contract,
+                    ) =>
+                        sum +
+                        (
+                            contract.total ??
+                            contract.value
+                        ),
+                    0,
+                );
 
         return {
 
@@ -211,42 +439,59 @@ class ContractsRepository {
 
             draft:
                 contracts.filter(
-                    (c) =>
-                        c.status ===
-                        'Draft'
+                    contract =>
+                        contract.status ===
+                        'Draft',
+                ).length,
+
+            pending:
+                contracts.filter(
+                    contract =>
+                        contract.status ===
+                        'Pending',
                 ).length,
 
             active:
                 contracts.filter(
-                    (c) =>
-                        c.status ===
-                        'Active'
+                    contract =>
+                        contract.status ===
+                        'Active',
+                ).length,
+
+            completed:
+                contracts.filter(
+                    contract =>
+                        contract.status ===
+                        'Completed',
                 ).length,
 
             expired:
                 contracts.filter(
-                    (c) =>
-                        c.status ===
-                        'Expired'
+                    contract =>
+                        contract.status ===
+                        'Expired',
+                ).length,
+
+            terminated:
+                contracts.filter(
+                    contract =>
+                        contract.status ===
+                        'Terminated',
                 ).length,
 
             cancelled:
                 contracts.filter(
-                    (c) =>
-                        c.status ===
-                        'Cancelled'
+                    contract =>
+                        contract.status ===
+                        'Cancelled',
                 ).length,
 
-            totalValue:
-                contracts.reduce(
-                    (
-                        sum,
-                        contract
-                    ) =>
-                        sum +
-                        contract.value,
-                    0
-                ),
+            archived:
+                archived.length,
+
+            totalValue,
+
+            activeValue,
 
         };
 
@@ -254,6 +499,5 @@ class ContractsRepository {
 
 }
 
-export const
-    ContractsRepositoryInstance =
-        new ContractsRepository();
+export const ContractsRepositoryInstance =
+    new ContractsRepository();

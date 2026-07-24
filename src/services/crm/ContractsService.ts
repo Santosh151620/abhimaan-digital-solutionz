@@ -1,58 +1,123 @@
-import { ContractsRepositoryInstance } from '@/repositories/crm/ContractsRepository';
+import {
+    ContractsRepositoryInstance,
+} from '@/repositories/crm/ContractsRepository';
+
 import type {
     Contract,
+    ContractSearchFilters,
     ContractStatus,
+    ContractSummary,
 } from '@/types/crm/Contracts';
 
 class ContractsService {
 
-    list() {
+    list(): Contract[] {
+
         return ContractsRepositoryInstance.list();
+
     }
 
-    listArchived() {
+    listArchived(): Contract[] {
+
         return ContractsRepositoryInstance.listArchived();
+
     }
 
-    details(id: string) {
-        return ContractsRepositoryInstance.details(id);
+    details(
+        id: string,
+    ): Contract | null {
+
+        return ContractsRepositoryInstance.details(
+            id,
+        );
+
     }
 
-    create(data: Partial<Contract>) {
-        return ContractsRepositoryInstance.create(data);
+    findById(
+        id: string,
+    ): Contract | null {
+
+        return this.details(
+            id,
+        );
+
+    }
+
+    search(
+        filters?: ContractSearchFilters,
+    ): Contract[] {
+
+        return ContractsRepositoryInstance.search(
+            filters,
+        );
+
+    }
+
+    create(
+        data: Partial<Contract>,
+    ): Contract {
+
+        return ContractsRepositoryInstance.create(
+            data,
+        );
+
     }
 
     update(
         id: string,
         data: Partial<Contract>,
-    ) {
+    ): Contract | null {
+
         return ContractsRepositoryInstance.update(
             id,
             data,
         );
+
     }
 
     updateStatus(
         id: string,
         status: ContractStatus,
-    ) {
+    ): Contract | null {
+
         return ContractsRepositoryInstance.updateStatus(
             id,
             status,
         );
+
     }
 
-    delete(id: string) {
-        return ContractsRepositoryInstance.delete(id);
+    delete(
+        id: string,
+    ): boolean {
+
+        return ContractsRepositoryInstance.delete(
+            id,
+        );
+
     }
 
-    restore(id: string) {
-        return ContractsRepositoryInstance.restore(id);
+    restore(
+        id: string,
+    ): boolean {
+
+        return ContractsRepositoryInstance.restore(
+            id,
+        );
+
     }
 
-    summary() {
+    summary(): ContractSummary {
+
         return ContractsRepositoryInstance.summary();
+
     }
+
+}
+
+export async function createContractsService() {
+
+    return new ContractsService();
 
 }
 

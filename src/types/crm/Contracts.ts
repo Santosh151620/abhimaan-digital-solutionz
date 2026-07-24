@@ -1,5 +1,5 @@
 export type ContractStatus =
-       | 'Draft'
+    | 'Draft'
     | 'Pending'
     | 'Active'
     | 'Completed'
@@ -17,6 +17,8 @@ export interface Contract {
 
     quotationId?: string;
 
+    invoiceId?: string;
+
     title: string;
 
     customerName: string;
@@ -27,9 +29,21 @@ export interface Contract {
 
     endDate: string;
 
+    renewalDate?: string;
+
+    autoRenew?: boolean;
+
     value: number;
 
     currency: string;
+
+    subtotal?: number;
+
+    tax?: number;
+
+    discount?: number;
+
+    total?: number;
 
     notes?: string;
 
@@ -38,5 +52,41 @@ export interface Contract {
     createdAt: string;
 
     updatedAt: string;
+
+}
+
+export interface ContractSummary {
+
+    total: number;
+
+    draft: number;
+
+    pending: number;
+
+    active: number;
+
+    completed: number;
+
+    expired: number;
+
+    terminated: number;
+
+    cancelled: number;
+
+    archived: number;
+
+    totalValue: number;
+
+    activeValue: number;
+
+}
+
+export interface ContractSearchFilters {
+
+    status?: ContractStatus;
+
+    companyId?: string;
+
+    search?: string;
 
 }
