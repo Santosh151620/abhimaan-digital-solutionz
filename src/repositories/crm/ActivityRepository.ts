@@ -1,7 +1,7 @@
 import type {
     Activity,
     ActivityStatus,
-} from '@/types/crm/Activity';
+} from '@/types/crm/Activities';
 
 
 class ActivityRepository {
@@ -17,7 +17,8 @@ class ActivityRepository {
         return Array.from(
             this.activities.values(),
         ).filter(
-            activity => !activity.archived,
+            activity =>
+                !activity.archived,
         );
 
     }
@@ -29,7 +30,8 @@ class ActivityRepository {
         return Array.from(
             this.activities.values(),
         ).filter(
-            activity => activity.archived,
+            activity =>
+                activity.archived,
         );
 
     }
@@ -42,10 +44,12 @@ class ActivityRepository {
 
         return (
             this.activities.get(id)
-            ?? null
+            ??
+            null
         );
 
     }
+
 
 
 
@@ -75,12 +79,16 @@ class ActivityRepository {
 
 
             entityType:
-                data.entityType,
+                data.entityType
+                ??
+                'Activity',
 
 
 
             entityId:
-                data.entityId,
+                data.entityId
+                ??
+                crypto.randomUUID(),
 
 
 
@@ -142,11 +150,6 @@ class ActivityRepository {
 
 
 
-            endDate:
-                data.endDate,
-
-
-
             location:
                 data.location,
 
@@ -191,6 +194,7 @@ class ActivityRepository {
 
 
     }
+
 
 
 
@@ -245,6 +249,7 @@ class ActivityRepository {
 
 
 
+
     updateStatus(
         id: string,
         status: ActivityStatus,
@@ -260,6 +265,7 @@ class ActivityRepository {
 
 
     }
+
 
 
 
@@ -307,6 +313,7 @@ class ActivityRepository {
 
 
 
+
     restore(
         id: string,
     ) {
@@ -346,6 +353,7 @@ class ActivityRepository {
 
 
     }
+
 
 
 

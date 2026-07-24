@@ -10,7 +10,7 @@ import type {
     ActivityPriority,
     ActivityStatus,
     ActivityType,
-} from '@/types/crm/Activity';
+} from '@/types/crm/Activities';
 
 
 
@@ -367,41 +367,6 @@ export default function ActivityForm({
                     />
 
                 </div>
-
-
-
-
-                <div>
-
-                    <label className="mb-1 block text-sm font-medium">
-
-                        End Date
-
-                    </label>
-
-
-                    <input
-
-                        type="datetime-local"
-
-                        className="w-full rounded-lg border p-2"
-
-                        value={form.endDate ?? ''}
-
-                        onChange={
-                            event =>
-                                update(
-                                    'endDate',
-                                    event.target.value,
-                                )
-                        }
-
-                    />
-
-                </div>
-
-
-
 
                 <div className="md:col-span-2">
 
