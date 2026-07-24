@@ -1,33 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {
+    NextRequest,
+    NextResponse,
+} from 'next/server';
 
-import { QuotationsServiceInstance } from '@/services/crm/QuotationsService';
+import {
+    QuotationsServiceInstance,
+} from '@/services/crm/QuotationsService';
 
 export async function GET() {
 
+    const quotations =
+        await QuotationsServiceInstance.list();
+
     return NextResponse.json(
-        QuotationsServiceInstance.list()
+        quotations,
     );
 
 }
 
 export async function POST(
-    request: NextRequest
+    request: NextRequest,
 ) {
 
-    const body = await request.json();
+    const body =
+        await request.json();
 
     const quotation =
-        QuotationsServiceInstance.create(body);
+        await QuotationsServiceInstance.create(
+            body,
+        );
 
     return NextResponse.json(
         quotation,
         {
             status: 201,
-        }
+        },
     );
 
 }
-
-
-
-
