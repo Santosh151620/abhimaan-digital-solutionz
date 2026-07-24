@@ -1,6 +1,8 @@
 import type {
     Note,
+    NoteSummary,
 } from '@/types/crm/Notes';
+
 
 type SupabaseQueryResult<T> = Promise<{
     data: T | null;
@@ -38,246 +40,228 @@ type SupabaseClient = {
 };
 
 export class NotesRepository {
-
-
     private notes =
         new Map<string, Note>();
-
-
     private supabase?: SupabaseClient;
-
-
-
     constructor(
-        supabase?: SupabaseClient
+        supabase?: SupabaseClient,
     ) {
 
         this.supabase =
             supabase;
 
     }
-
-
-
-    list() {
+    async list(): Promise<Note[]> {
+        return Array.from(
+            this.notes.values(),
+        )
+            .filter(
+                note =>
+                    !note.archived,
+            );
+    }
+    async listArchived(): Promise<Note[]> {
 
         return Array.from(
-            this.notes.values()
+            this.notes.values(),
         )
-        .filter(
-            note =>
-                !note.archived
-        );
-
+            .filter(
+                note =>
+                    note.archived,
+            );
     }
 
-
-
-    findById(
-        id: string
-    ) {
-
+    async findById(
+        id: string,
+    ): Promise<Note | null> {
         return (
             this.notes.get(id)
-            ?? null
+            ??
+            null
         );
-
     }
-
-
 
     async findByEntity(
         entityType: string,
-        entityId: string
-    ) {
-
-
+        entityId: string,
+    ): Promise<Note[]> {
         if (!this.supabase) {
-
             return Array.from(
-                this.notes.values()
+                this.notes.values(),
             )
-            .filter(
-                note =>
-                    note.entityType === entityType
-                    &&
-                    note.entityId === entityId
-            );
-
+                .filter(
+                    note =>
+                        note.entityType === entityType
+                        &&
+                        note.entityId === entityId,
+                );
         }
-
-
-
         const {
             data,
             error,
-        } =
+        }
+            =
             await this.supabase
-                .from('notes')
+                .from<Note[]>('notes')
                 .select('*')
                 .eq(
                     'entity_type',
-                    entityType
+                    entityType,
                 )
                 .eq(
                     'entity_id',
-                    entityId
+                    entityId,
                 );
-
-
         if (error) {
-
             throw error;
-
         }
-
-
         return data ?? [];
 
     }
 
+    async create(
+        data: Partial<Note>,
+    ): Promise<Note> {
 
-
-    create(
-        data: Partial<Note>
-    ) {
-
-
+        const now =
+            new Date().toISOString();
         const note: Note = {
-
             id:
                 crypto.randomUUID(),
-
+            organizationId:
+                data.organizationId,
             entityType:
-                data.entityType ?? 'Other',
-
+                data.entityType
+                ??
+                'Other',
             entityId:
-                data.entityId ?? '',
-
+                data.entityId
+                ??
+                '',
             title:
-                data.title ?? '',
-
+                data.title
+                ??
+                '',
             content:
-                data.content ?? '',
-
+                data.content
+                ??
+                '',
             createdBy:
                 data.createdBy,
-
             archived:
                 false,
-
             createdAt:
-                new Date().toISOString(),
-
+                now,
             updatedAt:
-                new Date().toISOString(),
-
+                now,
         };
-
-
 
         this.notes.set(
             note.id,
-            note
+            note,
         );
-
 
         return note;
-
     }
 
-
-
-    update(
+    async update(
         id: string,
-        data: Partial<Note>
-    ) {
-
+        data: Partial<Note>,
+    ): Promise<Note | null> {
 
         const existing =
             this.notes.get(id);
-
-
         if (!existing) {
-
             return null;
-
         }
-
-
-        const updated = {
-
+        const updated: Note = {
             ...existing,
-
             ...data,
-
             updatedAt:
                 new Date().toISOString(),
-
         };
-
 
         this.notes.set(
             id,
-            updated
+            updated,
         );
-
-
         return updated;
 
     }
+    async delete(
+        id: string,
+    ): Promise<boolean> {
 
-
-
-    delete(
-        id: string
-    ) {
-
-        return this.notes.delete(id);
+        return this.notes.delete(
+            id,
+        );
 
     }
 
-
-
-    archive(
-        id: string
-    ) {
-
-
+    async archive(
+        id: string,
+    ): Promise<Note | null> {
         const existing =
             this.notes.get(id);
 
-
         if (!existing) {
-
             return null;
-
         }
-
-
-        const updated = {
-
+        const updated: Note = {
             ...existing,
-
-            archived: true,
-
+            archived:
+                true,
             updatedAt:
                 new Date().toISOString(),
-
         };
-
-
         this.notes.set(
             id,
-            updated
+            updated,
         );
-
-
         return updated;
-
     }
 
+    async restore(
+        id: string,
+    ): Promise<Note | null> {
+        const existing =
+            this.notes.get(id);
+        if (!existing) {
+            return null;
+        }
+        const updated: Note = {
+            ...existing,
+            archived:
+                false,
+            updatedAt:
+                new Date().toISOString(),
+        };
+        this.notes.set(
+            id,
+            updated,
+        );
+        return updated;
+    }
+    async summary(): Promise<NoteSummary> {
+        const notes =
+            Array.from(
+                this.notes.values(),
+            );
+        return {
+            total:
+                notes.length,
+            active:
+                notes.filter(
+                    note =>
+                        !note.archived,
+                ).length,
+            archived:
+                notes.filter(
+                    note =>
+                        note.archived,
+                ).length,
+        };
+    }
 }
-
 export const NotesRepositoryInstance =
     new NotesRepository();

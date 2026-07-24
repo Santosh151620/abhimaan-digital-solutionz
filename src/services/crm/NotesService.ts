@@ -2,8 +2,10 @@ import {
     NotesRepositoryInstance,
 } from '@/repositories/crm/NotesRepository';
 
+
 import type {
     Note,
+    NoteSummary,
 } from '@/types/crm/Notes';
 
 
@@ -11,76 +13,159 @@ import type {
 class NotesService {
 
 
-    list() {
+
+    async list(): Promise<Note[]> {
+
 
         return NotesRepositoryInstance.list();
 
+
     }
 
 
 
-    findById(
-        id: string
-    ) {
+
+
+    async listArchived(): Promise<Note[]> {
+
+
+        return NotesRepositoryInstance.listArchived();
+
+
+    }
+
+
+
+
+
+    async findById(
+        id: string,
+    ): Promise<Note | null> {
+
 
         return NotesRepositoryInstance.findById(
-            id
+            id,
         );
+
 
     }
 
 
 
-    create(
-        data: Partial<Note>
-    ) {
+
+
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Note[]> {
+
+
+        return NotesRepositoryInstance.findByEntity(
+            entityType,
+            entityId,
+        );
+
+
+    }
+
+
+
+
+
+    async create(
+        data: Partial<Note>,
+    ): Promise<Note> {
+
 
         return NotesRepositoryInstance.create(
-            data
+            data,
         );
+
 
     }
 
 
 
-    update(
+
+
+    async update(
         id: string,
-        data: Partial<Note>
-    ) {
+        data: Partial<Note>,
+    ): Promise<Note | null> {
+
 
         return NotesRepositoryInstance.update(
             id,
-            data
+            data,
         );
+
 
     }
 
 
 
-    delete(
-        id: string
-    ) {
+
+
+    async delete(
+        id: string,
+    ): Promise<boolean> {
+
 
         return NotesRepositoryInstance.delete(
-            id
+            id,
         );
+
 
     }
 
 
 
-    archive(
-        id: string
-    ) {
+
+
+    async archive(
+        id: string,
+    ): Promise<Note | null> {
+
 
         return NotesRepositoryInstance.archive(
-            id
+            id,
         );
+
+
+    }
+
+
+
+
+
+    async restore(
+        id: string,
+    ): Promise<Note | null> {
+
+
+        return NotesRepositoryInstance.restore(
+            id,
+        );
+
+
+    }
+
+
+
+
+
+    async summary(): Promise<NoteSummary> {
+
+
+        return NotesRepositoryInstance.summary();
+
 
     }
 
 
 }
+
+
 
 
 

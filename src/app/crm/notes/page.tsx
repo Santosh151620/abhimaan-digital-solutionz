@@ -13,9 +13,7 @@ export default async function NotesPage() {
 
 
     const notes =
-        NotesServiceInstance.list();
-
-
+    await NotesServiceInstance.list();
 
     return (
 

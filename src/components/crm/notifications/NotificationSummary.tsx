@@ -1,24 +1,12 @@
 import type {
-
     Notification,
-
 } from '@/types/crm/Notification';
-
-
-
-
 
 interface Props {
 
-
     notifications: Notification[];
 
-
 }
-
-
-
-
 
 export default function NotificationSummary({
 
@@ -26,116 +14,132 @@ export default function NotificationSummary({
 
 }: Props) {
 
-
+    const active =
+        notifications.filter(
+            notification =>
+                !notification.archived,
+        );
 
     const total =
-
-        notifications.length;
-
-
+        active.length;
 
     const unread =
-
-        notifications.filter(
-
+        active.filter(
             notification =>
-
                 !notification.read,
-
         ).length;
 
-
+    const read =
+        active.filter(
+            notification =>
+                notification.read,
+        ).length;
 
     const highPriority =
-
-        notifications.filter(
-
+        active.filter(
             notification =>
-
                 notification.priority === 'High',
-
         ).length;
 
+    const warning =
+        active.filter(
+            notification =>
+                notification.type === 'Warning',
+        ).length;
 
+    const error =
+        active.filter(
+            notification =>
+                notification.type === 'Error',
+        ).length;
 
+    const success =
+        active.filter(
+            notification =>
+                notification.type === 'Success',
+        ).length;
 
+    const info =
+        active.filter(
+            notification =>
+                notification.type === 'Info',
+        ).length;
+
+    const cards = [
+
+        {
+            title: 'Total',
+            value: total,
+        },
+
+        {
+            title: 'Unread',
+            value: unread,
+        },
+
+        {
+            title: 'Read',
+            value: read,
+        },
+
+        {
+            title: 'High Priority',
+            value: highPriority,
+        },
+
+        {
+            title: 'Warning',
+            value: warning,
+        },
+
+        {
+            title: 'Error',
+            value: error,
+        },
+
+        {
+            title: 'Success',
+            value: success,
+        },
+
+        {
+            title: 'Info',
+            value: info,
+        },
+
+    ];
 
     return (
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
 
+            {
+                cards.map(card => (
 
+                    <div
+                        key={card.title}
+                        className="crm-card p-5"
+                    >
 
-            <div className="crm-card p-5">
+                        <p className="text-sm text-slate-500">
 
+                            {card.title}
 
-                <p className="text-sm text-slate-500">
+                        </p>
 
-                    Total Notifications
+                        <p className="mt-2 text-2xl font-semibold">
 
-                </p>
+                            {card.value}
 
+                        </p>
 
-                <p className="mt-2 text-2xl font-semibold">
+                    </div>
 
-                    {total}
-
-                </p>
-
-
-            </div>
-
-
-
-
-
-            <div className="crm-card p-5">
-
-
-                <p className="text-sm text-slate-500">
-
-                    Unread
-
-                </p>
-
-
-                <p className="mt-2 text-2xl font-semibold">
-
-                    {unread}
-
-                </p>
-
-
-            </div>
-
-
-
-
-
-            <div className="crm-card p-5">
-
-
-                <p className="text-sm text-slate-500">
-
-                    High Priority
-
-                </p>
-
-
-                <p className="mt-2 text-2xl font-semibold">
-
-                    {highPriority}
-
-                </p>
-
-
-            </div>
-
-
+                ))
+            }
 
         </div>
 
     );
-
 
 }

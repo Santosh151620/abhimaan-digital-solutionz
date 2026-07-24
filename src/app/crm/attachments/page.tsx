@@ -14,13 +14,7 @@ export default async function AttachmentsPage() {
 
     const attachments =
 
-        AttachmentRepositoryInstance.list(
-
-            'Other',
-
-            '',
-
-        );
+        await AttachmentRepositoryInstance.list();
 
 
 
@@ -43,6 +37,7 @@ export default async function AttachmentsPage() {
                     Manage CRM entity attachments.
 
                 </p>
+
 
             </div>
 

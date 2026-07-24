@@ -24,7 +24,15 @@ export class ProjectsService {
             id,
         );
     }
+    findById(
+        id: string,
+    ) {
 
+        return ProjectsRepositoryInstance.findById(
+            id,
+        );
+
+    }
     create(
         data: Partial<Project>,
     ) {

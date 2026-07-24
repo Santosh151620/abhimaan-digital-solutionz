@@ -34,15 +34,8 @@ export default async function NoteDetailsPage({
 
     } = await params;
 
-
-
-    const note =
-
-        NotesServiceInstance.findById(
-            id
-        );
-
-
+const note =
+    await NotesServiceInstance.findById(id);
 
     if (!note) {
 

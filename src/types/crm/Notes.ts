@@ -7,13 +7,16 @@ export type NoteEntityType =
     | 'Task'
     | 'Activity'
     | 'Ticket'
+    | 'Quotation'
+    | 'Invoice'
+    | 'Contract'
     | 'Other';
-
-
 
 export interface Note {
 
     id: string;
+
+    organizationId?: string;
 
     entityType: NoteEntityType;
 
@@ -30,5 +33,15 @@ export interface Note {
     createdAt: string;
 
     updatedAt: string;
+
+}
+
+export interface NoteSummary {
+
+    total: number;
+
+    active: number;
+
+    archived: number;
 
 }

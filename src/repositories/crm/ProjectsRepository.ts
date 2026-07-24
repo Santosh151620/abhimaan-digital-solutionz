@@ -266,7 +266,13 @@ class ProjectsRepository {
         };
 
     }
+    async findById(
+        id: string
+    ): Promise<Project | null> {
 
+        return this.details(id);
+
+    }
 }
 
 export const

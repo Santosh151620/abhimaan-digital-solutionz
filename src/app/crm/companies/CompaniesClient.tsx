@@ -9,12 +9,11 @@ import {
 } from './actions';
 
 import type {
-    Company,
     CompanyDetails,
 } from '@/types/crm/Companies';
 
 interface Props {
-    initialCompanies: Company[];
+    initialCompanies: CompanyDetails[];
 }
 
 export default function CompaniesClient({
@@ -24,7 +23,7 @@ export default function CompaniesClient({
     const [
         companies,
         setCompanies,
-    ] = useState<Company[]>(
+    ] = useState<CompanyDetails[]>(
         initialCompanies
     );
 
