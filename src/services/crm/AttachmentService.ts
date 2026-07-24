@@ -1,8 +1,3 @@
-import {
-    AttachmentRepositoryInstance,
-} from '@/repositories/crm/AttachmentRepository';
-
-
 import type {
     Attachment,
 } from '@/types/crm/Attachment';
@@ -12,37 +7,22 @@ import type {
 class AttachmentService {
 
 
-
-    list(
-        entityType?: string,
-        entityId?: string,
-    ) {
-
-
-        if (
-            entityType &&
-            entityId
-        ) {
-
-            return AttachmentRepositoryInstance
-                .list(
-                    entityType,
-                    entityId,
-                )
-                .filter(
-                    item =>
-                        !item.archived,
-                );
-
-        }
+    private attachments =
+        new Map<string, Attachment>();
 
 
 
-        return [];
+    list() {
+
+
+        return Array.from(
+            this.attachments.values(),
+        ).filter(
+            item => !item.archived,
+        );
+
 
     }
-
-
 
 
 
@@ -55,20 +35,18 @@ class AttachmentService {
     ) {
 
 
-        return AttachmentRepositoryInstance
-            .list(
-                entityType,
-                entityId,
-            )
-            .filter(
-                item =>
-                    !item.archived,
-            );
+        return this.list().filter(
+
+            item =>
+
+                item.entityType === entityType &&
+
+                item.entityId === entityId,
+
+        );
 
 
     }
-
-
 
 
 
@@ -79,21 +57,16 @@ class AttachmentService {
     ) {
 
 
-        return AttachmentRepositoryInstance
-            .list(
-                '',
-                '',
-            )
-            .find(
-                item =>
-                    item.id === id,
-            )
-            ?? null;
+        return (
+
+            this.attachments.get(
+                id,
+            ) ?? null
+
+        );
 
 
     }
-
-
 
 
 
@@ -104,14 +77,91 @@ class AttachmentService {
     ) {
 
 
-        return AttachmentRepositoryInstance.create(
-            data,
+        const now =
+            new Date().toISOString();
+
+
+
+        const attachment: Attachment = {
+
+
+            id:
+                crypto.randomUUID(),
+
+
+
+            entityType:
+                data.entityType ?? 'Other',
+
+
+
+            entityId:
+                data.entityId ?? '',
+
+
+
+            fileName:
+                data.fileName ?? '',
+
+
+
+            fileUrl:
+                data.fileUrl ?? '',
+
+
+
+            fileType:
+                data.fileType,
+
+
+
+            fileSize:
+                data.fileSize,
+
+
+
+            description:
+                data.description,
+
+
+
+            uploadedBy:
+                data.uploadedBy,
+
+
+
+            archived:
+                false,
+
+
+
+            createdAt:
+                now,
+
+
+
+            updatedAt:
+                now,
+
+
+        };
+
+
+
+        this.attachments.set(
+
+            attachment.id,
+
+            attachment,
+
         );
 
 
+
+        return attachment;
+
+
     }
-
-
 
 
 
@@ -124,43 +174,55 @@ class AttachmentService {
     ) {
 
 
-        const attachments =
-            AttachmentRepositoryInstance
-                .list(
-                    data.entityType ?? '',
-                    data.entityId ?? '',
-                );
-
-
         const existing =
-            attachments.find(
-                item =>
-                    item.id === id,
+
+            this.attachments.get(
+                id,
             );
 
 
 
         if (!existing) {
 
+
             return null;
+
 
         }
 
 
 
-        return Object.assign(
-            existing,
-            data,
-            {
-                updatedAt:
-                    new Date().toISOString(),
-            },
+        const updated = {
+
+
+            ...existing,
+
+            ...data,
+
+
+            updatedAt:
+
+                new Date().toISOString(),
+
+
+        };
+
+
+
+        this.attachments.set(
+
+            id,
+
+            updated,
+
         );
 
 
+
+        return updated;
+
+
     }
-
-
 
 
 
@@ -171,14 +233,48 @@ class AttachmentService {
     ) {
 
 
-        return AttachmentRepositoryInstance.delete(
+        const attachment =
+
+            this.attachments.get(
+                id,
+            );
+
+
+
+        if (!attachment) {
+
+
+            return false;
+
+
+        }
+
+
+
+        attachment.archived = true;
+
+
+
+        attachment.updatedAt =
+
+            new Date().toISOString();
+
+
+
+        this.attachments.set(
+
             id,
+
+            attachment,
+
         );
 
 
+
+        return true;
+
+
     }
-
-
 
 
 
@@ -186,11 +282,10 @@ class AttachmentService {
 
 
         const attachments =
-            AttachmentRepositoryInstance
-                .list(
-                    '',
-                    '',
-                );
+
+            Array.from(
+                this.attachments.values(),
+            );
 
 
 
@@ -204,16 +299,14 @@ class AttachmentService {
 
             active:
                 attachments.filter(
-                    item =>
-                        !item.archived,
+                    item => !item.archived,
                 ).length,
 
 
 
             archived:
                 attachments.filter(
-                    item =>
-                        item.archived,
+                    item => item.archived,
                 ).length,
 
 
@@ -227,8 +320,8 @@ class AttachmentService {
 
 
 
-
-
 export const
+
     AttachmentServiceInstance =
+
         new AttachmentService();

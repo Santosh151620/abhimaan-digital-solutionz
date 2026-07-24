@@ -5,25 +5,38 @@ import {
 import type {
     Payment,
     PaymentStatus,
+    PaymentSummary,
 } from '@/types/crm/Payments';
+
+export interface PaymentSearchFilters {
+
+    search?: string;
+
+    status?: PaymentStatus;
+
+    companyId?: string;
+
+    invoiceId?: string;
+
+}
 
 class PaymentsService {
 
-    list() {
+    async list(): Promise<Payment[]> {
 
         return PaymentsRepositoryInstance.list();
 
     }
 
-    listArchived() {
+    async listArchived(): Promise<Payment[]> {
 
         return PaymentsRepositoryInstance.listArchived();
 
     }
 
-    details(
+    async details(
         id: string,
-    ) {
+    ): Promise<Payment | null> {
 
         return PaymentsRepositoryInstance.details(
             id,
@@ -31,9 +44,29 @@ class PaymentsService {
 
     }
 
-    create(
+    async findById(
+        id: string,
+    ): Promise<Payment | null> {
+
+        return PaymentsRepositoryInstance.findById(
+            id,
+        );
+
+    }
+
+    async search(
+        filters?: PaymentSearchFilters,
+    ): Promise<Payment[]> {
+
+        return PaymentsRepositoryInstance.search(
+            filters,
+        );
+
+    }
+
+    async create(
         data: Partial<Payment>,
-    ) {
+    ): Promise<Payment> {
 
         return PaymentsRepositoryInstance.create(
             data,
@@ -41,10 +74,10 @@ class PaymentsService {
 
     }
 
-    update(
+    async update(
         id: string,
         data: Partial<Payment>,
-    ) {
+    ): Promise<Payment | null> {
 
         return PaymentsRepositoryInstance.update(
             id,
@@ -53,10 +86,10 @@ class PaymentsService {
 
     }
 
-    updateStatus(
+    async updateStatus(
         id: string,
         status: PaymentStatus,
-    ) {
+    ): Promise<Payment | null> {
 
         return PaymentsRepositoryInstance.updateStatus(
             id,
@@ -65,9 +98,9 @@ class PaymentsService {
 
     }
 
-    delete(
+    async delete(
         id: string,
-    ) {
+    ): Promise<boolean> {
 
         return PaymentsRepositoryInstance.delete(
             id,
@@ -75,9 +108,9 @@ class PaymentsService {
 
     }
 
-    restore(
+    async restore(
         id: string,
-    ) {
+    ): Promise<boolean> {
 
         return PaymentsRepositoryInstance.restore(
             id,
@@ -85,7 +118,7 @@ class PaymentsService {
 
     }
 
-    summary() {
+    async summary(): Promise<PaymentSummary> {
 
         return PaymentsRepositoryInstance.summary();
 
@@ -93,7 +126,7 @@ class PaymentsService {
 
 }
 
-export async function createPaymentsService() {
+export async function createPaymentsService(): Promise<PaymentsService> {
 
     return new PaymentsService();
 
@@ -101,3 +134,7 @@ export async function createPaymentsService() {
 
 export const PaymentsServiceInstance =
     new PaymentsService();
+
+export {
+    PaymentsService,
+};

@@ -1,6 +1,8 @@
 import type {
     Payment,
+    PaymentSearchFilters,
     PaymentStatus,
+    PaymentSummary,
 } from '@/types/crm/Payments';
 
 class PaymentsRepository {
@@ -8,40 +10,204 @@ class PaymentsRepository {
     private payments =
         new Map<string, Payment>();
 
-    list() {
+    async list(): Promise<Payment[]> {
 
         return Array.from(
-            this.payments.values()
-        ).filter(
-            payment => !payment.archived
-        );
+            this.payments.values(),
+        )
+            .filter(
+                payment =>
+                    !payment.archived,
+            )
+            .sort(
+                (
+                    a,
+                    b,
+                ) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt,
+                    ),
+            );
 
     }
 
-    listArchived() {
+    async listArchived(): Promise<Payment[]> {
 
         return Array.from(
-            this.payments.values()
-        ).filter(
-            payment => payment.archived
-        );
+            this.payments.values(),
+        )
+            .filter(
+                payment =>
+                    payment.archived,
+            )
+            .sort(
+                (
+                    a,
+                    b,
+                ) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt,
+                    ),
+            );
 
     }
 
-    details(
+    async details(
         id: string,
-    ) {
+    ): Promise<Payment | null> {
 
-        return this.payments.get(id) ?? null;
+        return (
+            this.payments.get(id)
+            ??
+            null
+        );
 
     }
 
-    create(
+    async findById(
+        id: string,
+    ): Promise<Payment | null> {
+
+        return this.details(
+            id,
+        );
+
+    }
+
+    async search(
+        filters?: PaymentSearchFilters,
+    ): Promise<Payment[]> {
+
+        let payments =
+            await this.list();
+
+        if (
+            filters?.status
+        ) {
+
+            payments =
+                payments.filter(
+                    payment =>
+                        payment.status ===
+                        filters.status,
+                );
+
+        }
+
+        if (
+            filters?.companyId
+        ) {
+
+            payments =
+                payments.filter(
+                    payment =>
+                        payment.companyId ===
+                        filters.companyId,
+                );
+
+        }
+
+        if (
+            filters?.invoiceId
+        ) {
+
+            payments =
+                payments.filter(
+                    payment =>
+                        payment.invoiceId ===
+                        filters.invoiceId,
+                );
+
+        }
+
+        if (
+            filters?.paymentMethod
+        ) {
+
+            payments =
+                payments.filter(
+                    payment =>
+                        payment.paymentMethod ===
+                        filters.paymentMethod,
+                );
+
+        }
+
+        if (
+            filters?.search
+        ) {
+
+            const keyword =
+                filters.search
+                    .trim()
+                    .toLowerCase();
+
+            payments =
+                payments.filter(
+                    payment =>
+
+                        payment.paymentNumber
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            )
+
+                        ||
+
+                        payment.customerName
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            )
+
+                        ||
+
+                        (
+                            payment.referenceNumber
+                            ??
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            )
+
+                        ||
+
+                        (
+                            payment.description
+                            ??
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            ),
+                );
+
+        }
+
+        return payments;
+
+    }
+
+    async create(
         data: Partial<Payment>,
-    ): Payment {
+    ): Promise<Payment> {
 
         const now =
-            new Date().toISOString();
+            new Date()
+                .toISOString();
+
+        const amount =
+            data.amount
+            ??
+            0;
+
+        const paidAmount =
+            data.paidAmount
+            ??
+            0;
 
         const payment: Payment = {
 
@@ -49,8 +215,12 @@ class PaymentsRepository {
                 crypto.randomUUID(),
 
             paymentNumber:
-                data.paymentNumber ??
+                data.paymentNumber
+                ??
                 `PAY-${Date.now()}`,
+
+            organizationId:
+                data.organizationId,
 
             invoiceId:
                 data.invoiceId,
@@ -59,34 +229,37 @@ class PaymentsRepository {
                 data.companyId,
 
             customerName:
-                data.customerName ?? '',
+                data.customerName
+                ??
+                '',
 
             description:
                 data.description,
 
-            amount:
-                data.amount ?? 0,
+            amount,
 
-            paidAmount:
-                data.paidAmount ?? 0,
+            paidAmount,
 
             balanceAmount:
-                data.balanceAmount ??
-                (
-                    (data.amount ?? 0)
-                    -
-                    (data.paidAmount ?? 0)
+                Math.max(
+                    amount -
+                    paidAmount,
+                    0,
                 ),
 
             currency:
-                data.currency ?? 'INR',
+                data.currency
+                ??
+                'INR',
 
             paymentMethod:
-                data.paymentMethod ??
+                data.paymentMethod
+                ??
                 'Bank Transfer',
 
             status:
-                data.status ??
+                data.status
+                ??
                 'Pending',
 
             paymentDate:
@@ -120,20 +293,33 @@ class PaymentsRepository {
         return payment;
 
     }
-
-    update(
+        async update(
         id: string,
         data: Partial<Payment>,
-    ) {
+    ): Promise<Payment | null> {
 
         const existing =
-            this.payments.get(id);
+            this.payments.get(
+                id,
+            );
 
-        if (!existing) {
+        if (
+            !existing
+        ) {
 
             return null;
 
         }
+
+        const amount =
+            data.amount
+            ??
+            existing.amount;
+
+        const paidAmount =
+            data.paidAmount
+            ??
+            existing.paidAmount;
 
         const updated: Payment = {
 
@@ -141,19 +327,20 @@ class PaymentsRepository {
 
             ...data,
 
+            amount,
+
+            paidAmount,
+
             balanceAmount:
-                (
-                    data.amount ??
-                    existing.amount
-                )
-                -
-                (
-                    data.paidAmount ??
-                    existing.paidAmount
+                Math.max(
+                    amount -
+                    paidAmount,
+                    0,
                 ),
 
             updatedAt:
-                new Date().toISOString(),
+                new Date()
+                    .toISOString(),
 
         };
 
@@ -166,10 +353,10 @@ class PaymentsRepository {
 
     }
 
-    updateStatus(
+    async updateStatus(
         id: string,
         status: PaymentStatus,
-    ) {
+    ): Promise<Payment | null> {
 
         return this.update(
             id,
@@ -180,14 +367,18 @@ class PaymentsRepository {
 
     }
 
-    delete(
+    async delete(
         id: string,
-    ) {
+    ): Promise<boolean> {
 
         const payment =
-            this.payments.get(id);
+            this.payments.get(
+                id,
+            );
 
-        if (!payment) {
+        if (
+            !payment
+        ) {
 
             return false;
 
@@ -197,7 +388,8 @@ class PaymentsRepository {
             true;
 
         payment.updatedAt =
-            new Date().toISOString();
+            new Date()
+                .toISOString();
 
         this.payments.set(
             id,
@@ -208,14 +400,18 @@ class PaymentsRepository {
 
     }
 
-    restore(
+    async restore(
         id: string,
-    ) {
+    ): Promise<boolean> {
 
         const payment =
-            this.payments.get(id);
+            this.payments.get(
+                id,
+            );
 
-        if (!payment) {
+        if (
+            !payment
+        ) {
 
             return false;
 
@@ -225,7 +421,8 @@ class PaymentsRepository {
             false;
 
         payment.updatedAt =
-            new Date().toISOString();
+            new Date()
+                .toISOString();
 
         this.payments.set(
             id,
@@ -236,10 +433,10 @@ class PaymentsRepository {
 
     }
 
-    summary() {
+    async summary(): Promise<PaymentSummary> {
 
         const payments =
-            this.list();
+            await this.list();
 
         const totalAmount =
             payments.reduce(
@@ -263,55 +460,112 @@ class PaymentsRepository {
                 0,
             );
 
+        const totalOutstanding =
+            payments.reduce(
+                (
+                    sum,
+                    payment,
+                ) =>
+                    sum +
+                    payment.balanceAmount,
+                0,
+            );
+
         return {
 
-            total:
-                payments.length,
+    total:
+        payments.length,
 
-            pending:
-                payments.filter(
-                    p =>
-                        p.status ===
-                        'Pending',
-                ).length,
+    pending:
+        payments.filter(
+            payment =>
+                payment.status ===
+                'Pending',
+        ).length,
 
-            paid:
-                payments.filter(
-                    p =>
-                        p.status ===
-                        'Paid',
-                ).length,
+    paid:
+        payments.filter(
+            payment =>
+                payment.status ===
+                'Paid',
+        ).length,
 
-            overdue:
-                payments.filter(
-                    p =>
-                        p.status ===
-                        'Overdue',
-                ).length,
+    partiallyPaid:
+        payments.filter(
+            payment =>
+                payment.status ===
+                'Partially Paid',
+        ).length,
 
-            cancelled:
-                payments.filter(
-                    p =>
-                        p.status ===
-                        'Cancelled',
-                ).length,
+    overdue:
+        payments.filter(
+            payment =>
+                payment.status ===
+                'Overdue',
+        ).length,
 
-            refunded:
-                payments.filter(
-                    p =>
-                        p.status ===
-                        'Refunded',
-                ).length,
+    cancelled:
+        payments.filter(
+            payment =>
+                payment.status ===
+                'Cancelled',
+        ).length,
 
-            totalAmount,
+    refunded:
+        payments.filter(
+            payment =>
+                payment.status ===
+                'Refunded',
+        ).length,
 
-            totalReceived,
+    archived:
+        (
+            await this.listArchived()
+        ).length,
 
-            totalOutstanding:
-                totalAmount -
-                totalReceived,
+    totalAmount,
 
-        };
+    totalReceived,
+
+    totalOutstanding,
+
+    averagePayment:
+
+        payments.length === 0
+
+            ? 0
+
+            : Number(
+
+                (
+                    totalAmount /
+                    payments.length
+                ).toFixed(
+                    2,
+                ),
+
+            ),
+
+    collectionRate:
+
+        totalAmount === 0
+
+            ? 0
+
+            : Number(
+
+                (
+                    (
+                        totalReceived /
+                        totalAmount
+                    ) * 100
+                ).toFixed(
+                    2,
+                ),
+
+            ),
+
+};
 
     }
 
