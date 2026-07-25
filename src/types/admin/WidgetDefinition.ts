@@ -2,8 +2,8 @@
  * ============================================================================
  * Dashboard Widget
  * Enterprise Analytics Component Contract
- * CRM + ERP Compatible
- * Production Contract
+ * CRM + Admin Compatible
+ * Production SaaS Contract
  * ============================================================================
  */
 
@@ -22,29 +22,60 @@ export type WidgetType =
     | "AI";
 
 
+export type WidgetStatus =
+    | "Active"
+    | "Inactive"
+    | "Deprecated";
+
+
 export interface WidgetDefinition extends BaseEntity {
 
+    /**
+     * Tenant ownership.
+     * Undefined means platform widget.
+     */
     organizationId?: string;
 
 
+    /**
+     * Unique widget identifier.
+     */
     code: string;
 
 
     name: string;
 
 
+    description?: string;
+
+
+    /**
+     * Supported product modules.
+     */
     moduleCodes: string[];
 
 
     type: WidgetType;
 
 
+    status: WidgetStatus;
+
+
+    /**
+     * Data provider identifier.
+     */
     datasource: string;
 
 
+    /**
+     * Widget UI configuration.
+     */
     configuration: Record<string, unknown>;
 
 
+    /**
+     * Refresh interval in seconds.
+     */
     refreshInterval: number;
 
 
@@ -60,12 +91,12 @@ export interface WidgetDefinition extends BaseEntity {
     active: boolean;
 
 
+    metadata?: Record<string, unknown>;
+
+
     createdBy?: string;
 
 
     updatedBy?: string;
-
-
-    metadata?: Record<string, unknown>;
 
 }

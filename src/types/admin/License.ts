@@ -2,8 +2,8 @@
  * ============================================================================
  * License
  * Enterprise Subscription Contract
- * CRM + ERP Compatible
- * Production Contract
+ * CRM + Admin Compatible
+ * Production SaaS Contract
  * ============================================================================
  */
 
@@ -27,21 +27,39 @@ export type LicenseStatus =
 
 export interface License extends BaseEntity {
 
+    /**
+     * Tenant ownership.
+     */
     organizationId: string;
 
 
+    /**
+     * Subscription plan type.
+     */
     type: LicenseType;
 
 
+    /**
+     * Current license lifecycle state.
+     */
     status: LicenseStatus;
 
 
+    /**
+     * Activation date.
+     */
     activatedOn: string;
 
 
+    /**
+     * Optional expiry date.
+     */
     expiresOn?: string;
 
 
+    /**
+     * Resource limits.
+     */
     maxUsers: number;
 
 
@@ -51,15 +69,27 @@ export interface License extends BaseEntity {
     maxOrganizations: number;
 
 
+    /**
+     * Enabled product modules.
+     */
     enabledModules: string[];
 
 
+    /**
+     * Enabled feature flags.
+     */
     enabledFeatures: string[];
 
 
+    /**
+     * Quick runtime check.
+     */
     active: boolean;
 
 
+    /**
+     * Additional subscription metadata.
+     */
     metadata?: Record<string, unknown>;
 
 

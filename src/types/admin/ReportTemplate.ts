@@ -2,8 +2,8 @@
  * ============================================================================
  * Report Template
  * Enterprise Reporting Layout Contract
- * CRM + ERP Compatible
- * Production Contract
+ * CRM + Admin Compatible
+ * Production SaaS Contract
  * ============================================================================
  */
 
@@ -15,11 +15,25 @@ export type ReportTemplateVisibility =
     | "Organization";
 
 
+export type ReportTemplateType =
+    | "Table"
+    | "Chart"
+    | "Dashboard"
+    | "Export";
+
+
 export interface ReportTemplate extends BaseEntity {
 
+    /**
+     * Tenant ownership.
+     * Undefined means platform template.
+     */
     organizationId?: string;
 
 
+    /**
+     * Parent report definition.
+     */
     reportDefinitionId: string;
 
 
@@ -29,24 +43,37 @@ export interface ReportTemplate extends BaseEntity {
     description?: string;
 
 
-    isSystem: boolean;
-
-
-    isDefault: boolean;
+    type: ReportTemplateType;
 
 
     visibility: ReportTemplateVisibility;
 
 
+    /**
+     * System templates cannot be modified
+     * by organization users.
+     */
+    isSystem: boolean;
+
+
+    /**
+     * Default template selection.
+     */
+    isDefault: boolean;
+
+
+    /**
+     * UI layout configuration.
+     */
     layout: Record<string, unknown>;
+
+
+    metadata?: Record<string, unknown>;
 
 
     createdBy?: string;
 
 
     updatedBy?: string;
-
-
-    metadata?: Record<string, unknown>;
 
 }

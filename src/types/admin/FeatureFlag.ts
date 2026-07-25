@@ -1,69 +1,90 @@
 /**
  * ============================================================================
  * Feature Flag
- * Enterprise Feature Management
- * CRM + ERP Compatible
- * Production Contract
+ * Enterprise Feature Management Contract
+ * CRM + Admin Compatible
+ * Production SaaS Contract
  * ============================================================================
  */
 
 import type { BaseEntity } from "@/types/platform/BaseEntity";
 
 
-export type FeatureFlagType =
-    | "Boolean"
-    | "Configuration"
-    | "Experiment"
-    | "Rollout";
+export type FeatureFlagStatus =
+    | "Active"
+    | "Inactive"
+    | "Preview"
+    | "Deprecated";
 
 
 export type FeatureFlagScope =
-    | "System"
+    | "Platform"
     | "Organization"
-    | "User";
+    | "Module";
 
 
 export interface FeatureFlag extends BaseEntity {
 
     /**
-     * Optional organization override.
-     * System flags remain platform controlled.
+     * Optional tenant ownership.
+     * Undefined means platform level feature.
      */
     organizationId?: string;
 
 
     /**
      * Module ownership.
+     * Example:
+     * CRM, Analytics, AI
      */
     moduleCode: string;
 
 
+    /**
+     * Unique feature identifier.
+     */
     key: string;
 
 
+    /**
+     * Display name.
+     */
     name: string;
 
 
     description?: string;
 
 
-    type: FeatureFlagType;
-
-
     scope: FeatureFlagScope;
 
 
+    status: FeatureFlagStatus;
+
+
+    /**
+     * Feature enabled state.
+     */
     enabled: boolean;
 
 
     /**
      * Optional dynamic value.
-     * Supports configuration based flags.
      */
     value?: string;
 
 
+    /**
+     * Percentage rollout support.
+     * Example:
+     * 25 = enable for 25% users.
+     */
     rolloutPercentage?: number;
+
+
+    /**
+     * Protect platform controlled flags.
+     */
+    isSystem: boolean;
 
 
     metadata?: Record<string, unknown>;

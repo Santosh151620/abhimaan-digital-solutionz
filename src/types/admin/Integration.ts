@@ -2,8 +2,8 @@
  * ============================================================================
  * Integration
  * Enterprise Integration Contract
- * CRM + ERP Compatible
- * Production Contract
+ * CRM + Admin Compatible
+ * Production SaaS Contract
  * ============================================================================
  */
 
@@ -38,40 +38,67 @@ export type IntegrationAuthType =
 
 export interface Integration extends BaseEntity {
 
+    /**
+     * Tenant ownership.
+     * Optional for platform integrations.
+     */
     organizationId?: string;
 
 
+    /**
+     * Integration identity.
+     */
     name: string;
 
 
     code: string;
 
 
+    /**
+     * Connection category.
+     */
     type: IntegrationType;
 
 
+    /**
+     * External provider name.
+     * Example:
+     * Supabase, Stripe, OpenAI
+     */
     provider: string;
 
 
     status: IntegrationStatus;
 
 
+    /**
+     * External endpoint.
+     */
     endpoint?: string;
 
 
+    /**
+     * Authentication mechanism.
+     */
     authenticationType?: IntegrationAuthType;
 
 
+    /**
+     * Integration enabled state.
+     */
     enabled: boolean;
 
 
     /**
-     * Reference only.
-     * Never store secrets here.
+     * Reference to secret storage.
+     * Never store credentials here.
      */
     credentialReference?: string;
 
 
+    /**
+     * Synchronization tracking.
+     */
     lastSyncAt?: string;
 
 

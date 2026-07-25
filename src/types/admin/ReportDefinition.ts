@@ -2,8 +2,8 @@
  * ============================================================================
  * Report Definition
  * Enterprise Reporting Contract
- * CRM + ERP Compatible
- * Production Contract
+ * CRM + Admin Compatible
+ * Production SaaS Contract
  * ============================================================================
  */
 
@@ -35,9 +35,16 @@ export type ReportStatus =
 
 export interface ReportDefinition extends BaseEntity {
 
+    /**
+     * Tenant ownership.
+     * Undefined means platform report.
+     */
     organizationId?: string;
 
 
+    /**
+     * Supported modules.
+     */
     moduleCodes: string[];
 
 
@@ -56,33 +63,54 @@ export interface ReportDefinition extends BaseEntity {
     status: ReportStatus;
 
 
+    /**
+     * Data source identifier.
+     */
     datasource: string;
 
 
+    /**
+     * Runtime filtering configuration.
+     */
     filters: Record<string, unknown>;
 
 
+    /**
+     * Selected columns.
+     */
     columns: string[];
 
 
+    /**
+     * Sorting configuration.
+     */
     sorting: string[];
 
 
+    /**
+     * Grouping configuration.
+     */
     grouping: string[];
 
 
+    /**
+     * Runtime activation flag.
+     */
     active: boolean;
 
 
+    /**
+     * Report schema version.
+     */
     version: number;
+
+
+    metadata?: Record<string, unknown>;
 
 
     createdBy?: string;
 
 
     updatedBy?: string;
-
-
-    metadata?: Record<string, unknown>;
 
 }
