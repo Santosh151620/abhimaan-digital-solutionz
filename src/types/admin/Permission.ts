@@ -3,8 +3,12 @@
  * Permission
  * Enterprise Platform RBAC
  * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type PermissionScope =
     | "Global"
@@ -13,49 +17,99 @@ export type PermissionScope =
     | "Module"
     | "Entity";
 
+
 export type PermissionEffect =
     | "Allow"
     | "Deny";
 
-export interface Permission {
 
-    id: string;
+export type PermissionType =
+    | "System"
+    | "Custom"
+    | "Workflow"
+    | "Data";
 
+
+export interface Permission extends BaseEntity {
+
+    /**
+     * Organization ownership.
+     * Optional for platform-level permissions.
+     */
     organizationId?: string;
 
+
+    /**
+     * Business module ownership.
+     * Example:
+     * CRM, HRMS, Finance
+     */
     module: string;
 
+
+    /**
+     * Resource controlled.
+     * Example:
+     * Lead, Invoice, User
+     */
     resource: string;
 
+
+    /**
+     * Action allowed.
+     * Example:
+     * Create, Read, Update, Delete
+     */
     action: string;
 
+
+    /**
+     * Unique permission identifier.
+     */
     key: string;
+
 
     name: string;
 
+
     description?: string;
+
+
+    type: PermissionType;
+
 
     scope: PermissionScope;
 
+
     effect: PermissionEffect;
 
+
+    /**
+     * Protect system permissions
+     * from tenant modification.
+     */
     isSystem: boolean;
+
 
     isActive: boolean;
 
+
     metadata?: Record<string, unknown>;
 
+
+    /**
+     * Audit ownership.
+     */
     createdBy?: string;
+
 
     updatedBy?: string;
 
-    createdAt: string;
-
-    updatedAt?: string;
 
     deletedAt?: string;
 
 }
+
 
 export interface PermissionGroup {
 
@@ -65,6 +119,7 @@ export interface PermissionGroup {
 
 }
 
+
 export interface RolePermission {
 
     roleId: string;
@@ -72,6 +127,7 @@ export interface RolePermission {
     permissionId: string;
 
 }
+
 
 export interface UserPermission {
 

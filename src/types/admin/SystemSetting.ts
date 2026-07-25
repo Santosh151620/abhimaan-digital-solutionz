@@ -1,8 +1,14 @@
 /**
  * ============================================================================
  * System Settings
+ * Enterprise Configuration Management
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type SettingDataType =
     | "string"
@@ -10,32 +16,53 @@ export type SettingDataType =
     | "boolean"
     | "json";
 
-export interface SystemSetting {
 
-    id: string;
+export type SettingScope =
+    | "System"
+    | "Environment";
+
+
+export interface SystemSetting extends BaseEntity {
+
+    scope: SettingScope;
+
 
     category: string;
 
+
     key: string;
+
 
     name: string;
 
+
     description?: string;
+
 
     value: string;
 
+
     defaultValue?: string;
+
 
     dataType: SettingDataType;
 
+
     editable: boolean;
+
 
     encrypted: boolean;
 
+
     requiresRestart: boolean;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    metadata?: Record<string, unknown>;
+
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
 
 }
