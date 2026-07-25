@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 
-import type { EntityReference } from "@/types/base";
+import type { EntityReference } from "@/types/platform/Ownership";
 
 export function useEntityReference(
   entityType: string,

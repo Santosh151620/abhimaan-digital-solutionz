@@ -1,6 +1,6 @@
 "use client";
 
-import type { Notification } from "@/types/notifications";
+import type { Notification } from "@/types/crm/Notification";
 
 interface NotificationPanelProps {
   notifications: Notification[];

@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 
-import type { Activity } from "@/types/activity";
-import type { Attachment } from "@/types/attachments";
+import type { Activity } from "@/types/crm/Activity";
+import type { Attachment } from "@/types/crm/Attachment";
 import type { Note } from "@/types/notes";
-import type { Notification } from "@/types/notifications";
+import type { Notification } from "@/types/crm/Notification";
 import type { Task } from "@/types/tasks";
 
 import EntityWorkspace from "./EntityWorkspace";

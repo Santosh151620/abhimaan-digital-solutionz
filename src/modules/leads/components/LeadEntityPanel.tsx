@@ -8,11 +8,11 @@ import {
   type LeadEntity,
 } from "../types/lead.entity";
 
-import type { Activity } from "@/types/activity";
+import type { Activity } from "@/types/crm/Activity";
 import type { Note } from "@/types/notes";
 import type { Task } from "@/types/tasks";
-import type { Attachment } from "@/types/attachments";
-import type { Notification } from "@/types/notifications";
+import type { Attachment } from "@/types/crm/Attachment";
+import type { Notification } from "@/types/crm/Notification";
 
 interface LeadEntityPanelProps {
   lead: LeadEntity;

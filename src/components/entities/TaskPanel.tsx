@@ -29,7 +29,9 @@ export default function TaskPanel({
           </div>
 
           <div className="mt-1 text-sm">
-            {task.status} â€¢ {task.priority}
+            <span className="text-xs text-gray-500">
+              {task.status} · {task.priority}
+            </span>
           </div>
         </div>
       ))}

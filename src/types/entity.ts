@@ -1,4 +1,4 @@
-import type { EntityType } from "./base";
+export type EntityType = string;
 
 export interface EntityRecord {
   id: string;

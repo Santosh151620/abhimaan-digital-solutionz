@@ -1,4 +1,4 @@
-import type { EntityReference } from "./base";
+import type { EntityReference } from "@/types/platform/Ownership";
 
 export type AttachmentType =
   | "IMAGE"

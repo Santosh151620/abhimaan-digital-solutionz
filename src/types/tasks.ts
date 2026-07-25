@@ -1,4 +1,4 @@
-import type { EntityReference } from "./base";
+import type { EntityReference } from "@/types/platform/Ownership";
 
 export type TaskStatus =
   | "TODO"
@@ -12,7 +12,12 @@ export type TaskPriority =
   | "HIGH"
   | "URGENT";
 
-export interface Task extends EntityReference {
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
+export interface Task
+  extends BaseEntity,
+  EntityReference {
+  entityType: BaseEntity["entityType"] & EntityReference["entityType"];
   id: string;
 
   title: string;
@@ -25,11 +30,6 @@ export interface Task extends EntityReference {
 
   assignedTo?: string | null;
 
-  createdAt: string;
-  updatedAt: string;
-
-  createdBy?: string | null;
-  updatedBy?: string | null;
 }
 
 

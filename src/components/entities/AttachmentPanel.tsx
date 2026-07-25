@@ -1,6 +1,6 @@
 "use client";
 
-import type { Attachment } from "@/types/attachments";
+import type { Attachment } from "@/types/crm/Attachment";
 
 interface AttachmentPanelProps {
   attachments: Attachment[];

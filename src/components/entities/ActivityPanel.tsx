@@ -1,6 +1,6 @@
 "use client";
 
-import type { Activity } from "@/types/activity";
+import type { Activity } from "@/types/crm/Activity";
 
 interface ActivityPanelProps {
   activities: Activity[];

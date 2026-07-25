@@ -1,4 +1,4 @@
-import type { EntityReference } from "@/types/base";
+import type { EntityReference } from "@/types/platform/Ownership";
 
 export function createEntityReference(
   entityType: string,
