@@ -4,39 +4,36 @@
  * ============================================================================
  */
 
-export type AuditAction =
-    | 'Create'
-    | 'Update'
-    | 'Delete'
-    | 'Login'
-    | 'Logout'
-    | 'Assign'
-    | 'Approve'
-    | 'Export'
-    | 'Import';
+export type AuditSeverity =
+    | "Info"
+    | "Warning"
+    | "Error"
+    | "Critical";
 
-export interface AuditLog {
+export interface AuditRecord {
 
     id: string;
 
-    organizationId?: string;
+    organizationId: string;
 
-    entityType: string;
+    module: string;
+
+    entity: string;
 
     entityId: string;
 
-    action: AuditAction;
+    action: string;
 
-    performedBy: string;
+    severity: AuditSeverity;
 
-    performedAt: string;
+    userId: string;
 
     ipAddress?: string;
 
     userAgent?: string;
 
-    description?: string;
-
     metadata?: Record<string, unknown>;
+
+    createdAt: string;
 
 }
