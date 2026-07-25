@@ -1,36 +1,36 @@
 /**
  * ============================================================================
  * Abhimaan Digital Solutionz
- * Admin Platform
+ * Admin Platform Contract
+ * Enterprise Administration
  * ============================================================================
  */
 
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
+
 export type AdminEntityType =
-    | 'organization'
-    | 'user'
-    | 'role'
-    | 'permission'
-    | 'module'
-    | 'setting'
-    | 'audit';
+    | "organization"
+    | "user"
+    | "role"
+    | "permission"
+    | "module"
+    | "setting"
+    | "audit";
 
-export interface AdminEntity {
 
-    id: string;
+export interface AdminEntity extends BaseEntity {
 
     organizationId?: string;
 
-    createdAt: string;
-
     createdBy?: string;
-
-    updatedAt?: string;
 
     updatedBy?: string;
 
     isActive: boolean;
 
 }
+
 
 export interface AdminSummary {
 
@@ -51,6 +51,7 @@ export interface AdminSummary {
     audits: number;
 
 }
+
 
 export interface AdminDashboard {
 

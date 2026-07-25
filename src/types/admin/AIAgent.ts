@@ -1,8 +1,13 @@
 /**
  * ============================================================================
  * AI Agent
+ * Enterprise AI Automation Contract
+ * CRM + ERP Compatible
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type AgentScope =
     | "Platform"
@@ -11,11 +16,18 @@ export type AgentScope =
     | "Module"
     | "Organization";
 
-export interface AIAgent {
 
-    id: string;
+export type AgentStatus =
+    | "Draft"
+    | "Active"
+    | "Disabled"
+    | "Archived";
+
+
+export interface AIAgent extends BaseEntity {
 
     organizationId?: string;
+
 
     code: string;
 
@@ -23,22 +35,35 @@ export interface AIAgent {
 
     description?: string;
 
+
     scope: AgentScope;
+
 
     providerId: string;
 
     promptId: string;
 
+
     enabledModules: string[];
+
 
     enabled: boolean;
 
+
+    status?: AgentStatus;
+
+
     version: number;
+
+
+    capabilities?: string[];
+
 
     metadata?: Record<string, unknown>;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    createdBy?: string;
+
+    updatedBy?: string;
 
 }

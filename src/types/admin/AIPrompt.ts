@@ -1,35 +1,51 @@
 /**
  * ============================================================================
  * AI Prompt
+ * Enterprise Prompt Management Contract
  * ============================================================================
  */
 
-export interface AIPrompt {
+import type { BaseEntity } from "@/types/platform/BaseEntity";
 
-    id: string;
+
+export interface AIPrompt extends BaseEntity {
 
     organizationId?: string;
 
+
     code: string;
+
 
     name: string;
 
+
     description?: string;
+
 
     systemPrompt: string;
 
+
     userPromptTemplate: string;
+
 
     temperature: number;
 
+
     maxTokens: number;
+
 
     version: number;
 
+
     active: boolean;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    metadata?: Record<string, unknown>;
+
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
 
 }

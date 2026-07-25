@@ -1,31 +1,52 @@
 /**
  * ============================================================================
  * Dashboard Definition
+ * Enterprise Dashboard Contract
+ * CRM + ERP Compatible
  * ============================================================================
  */
 
-export interface DashboardDefinition {
+import type { BaseEntity } from "@/types/platform/BaseEntity";
 
-    id: string;
+
+export type DashboardVisibility =
+    | "Private"
+    | "Organization"
+    | "Public";
+
+
+export interface DashboardDefinition extends BaseEntity {
 
     organizationId?: string;
 
+
     name: string;
+
 
     description?: string;
 
+
     moduleCodes: string[];
+
 
     widgets: string[];
 
-    visibility: "Private" | "Organization";
+
+    visibility: DashboardVisibility;
+
 
     isDefault: boolean;
 
+
+    refreshInterval?: number;
+
+
+    supportsRealtime?: boolean;
+
+
     createdBy: string;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    metadata?: Record<string, unknown>;
 
 }

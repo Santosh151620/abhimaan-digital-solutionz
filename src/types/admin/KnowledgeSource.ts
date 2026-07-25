@@ -1,8 +1,12 @@
 /**
  * ============================================================================
  * Knowledge Source
+ * Enterprise AI Knowledge Management Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type KnowledgeSourceType =
     | "Database"
@@ -12,30 +16,56 @@ export type KnowledgeSourceType =
     | "File"
     | "Manual";
 
-export interface KnowledgeSource {
 
-    id: string;
+export type KnowledgeSourceStatus =
+    | "Pending"
+    | "Indexing"
+    | "Active"
+    | "Failed"
+    | "Disabled";
+
+
+export interface KnowledgeSource extends BaseEntity {
 
     organizationId?: string;
 
+
     moduleCode?: string;
+
 
     name: string;
 
+
     type: KnowledgeSourceType;
+
 
     location: string;
 
+
     indexingEnabled: boolean;
+
 
     embeddingEnabled: boolean;
 
+
     refreshSchedule?: string;
+
+
+    status?: KnowledgeSourceStatus;
+
+
+    lastIndexedAt?: string;
+
 
     active: boolean;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    metadata?: Record<string, unknown>;
+
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
 
 }

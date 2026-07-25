@@ -1,8 +1,12 @@
 /**
  * ============================================================================
  * External Data Source
+ * Enterprise Integration Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type DataSourceType =
     | "Database"
@@ -14,26 +18,46 @@ export type DataSourceType =
     | "SFTP"
     | "Cloud Storage";
 
-export interface DataSource {
 
-    id: string;
+export type DataSourceStatus =
+    | "Active"
+    | "Inactive"
+    | "Testing"
+    | "Failed";
+
+
+export interface DataSource extends BaseEntity {
 
     organizationId?: string;
 
+
     name: string;
+
 
     type: DataSourceType;
 
+
     connectionString?: string;
+
 
     authenticationType?: string;
 
+
     encryptedConfiguration?: string;
+
+
+    status?: DataSourceStatus;
+
 
     active: boolean;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    metadata?: Record<string, unknown>;
+
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
 
 }
