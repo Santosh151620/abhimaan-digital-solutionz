@@ -1,28 +1,48 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { BaseRepository } from "@/lib/db/base-repository";
-import type { Activity } from "@/types/activity";
+import type { Activity } from "@/types/crm/Activity";
 
 export class ActivityRepository extends BaseRepository<Activity> {
-  constructor(supabase: SupabaseClient) {
-    super(supabase, "activities");
-  }
 
-  async findByEntity(
-    entityType: string,
-    entityId: string,
-  ): Promise<Activity[]> {
-    const { data, error } = await this.tableRef()
-      .select("*")
-      .eq("entityType", entityType)
-      .eq("entityId", entityId)
-      .eq("organization_id", this.organizationId)
-      .order("createdAt", { ascending: false });
-
-    if (error) {
-      throw error;
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+        super(
+            supabase,
+            "activities",
+        );
     }
 
-    return (data ?? []) as Activity[];
-  }
+
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Activity[]> {
+
+        const { data, error } = await this.tableRef()
+            .select("*")
+            .eq("entityType", entityType)
+            .eq("entityId", entityId)
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .order(
+                "createdAt",
+                {
+                    ascending: false,
+                },
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        return (data ?? []) as Activity[];
+
+    }
+
 }
