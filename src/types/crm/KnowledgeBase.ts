@@ -66,3 +66,14 @@ export interface KnowledgeSummary {
     featured: number;
 
 }
+export interface KnowledgeSearchFilters {
+
+    search?: string;
+
+    status?: KnowledgeStatus;
+
+    category?: KnowledgeCategory;
+
+    featured?: boolean;
+
+}

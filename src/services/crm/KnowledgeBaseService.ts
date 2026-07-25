@@ -4,7 +4,9 @@ import {
 
 import type {
     KnowledgeArticle,
+    KnowledgeSearchFilters,
     KnowledgeStatus,
+    KnowledgeSummary,
 } from '@/types/crm/KnowledgeBase';
 
 class KnowledgeBaseService {
@@ -27,6 +29,25 @@ class KnowledgeBaseService {
 
         return KnowledgeBaseRepositoryInstance.details(
             id,
+        );
+
+    }
+
+    findById(
+        id: string,
+    ) {
+
+        return KnowledgeBaseRepositoryInstance.findById(
+            id,
+        );
+    }
+
+    search(
+        filters?: KnowledgeSearchFilters,
+    ) {
+
+        return KnowledgeBaseRepositoryInstance.search(
+            filters,
         );
 
     }
@@ -85,7 +106,7 @@ class KnowledgeBaseService {
 
     }
 
-    summary() {
+    summary(): KnowledgeSummary  {
 
         return KnowledgeBaseRepositoryInstance.summary();
 

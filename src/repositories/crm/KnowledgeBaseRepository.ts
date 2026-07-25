@@ -1,6 +1,8 @@
 import type {
     KnowledgeArticle,
+    KnowledgeSearchFilters,
     KnowledgeStatus,
+    KnowledgeSummary,
 } from '@/types/crm/KnowledgeBase';
 
 class KnowledgeBaseRepository {
@@ -33,6 +35,16 @@ class KnowledgeBaseRepository {
     ) {
 
         return this.articles.get(id) ?? null;
+
+    }
+
+        findById(
+        id: string,
+    ) {
+
+        return this.details(
+            id,
+        );
 
     }
 
@@ -214,9 +226,105 @@ class KnowledgeBaseRepository {
 
     }
 
-    summary() {
+    search(
+        filters?: KnowledgeSearchFilters,
+    ) {
 
-        const articles =
+        let articles =
+            this.list();
+
+        if (
+            filters?.status
+        ) {
+
+            articles =
+                articles.filter(
+                    article =>
+                        article.status ===
+                        filters.status,
+                );
+
+        }
+
+        if (
+            filters?.category
+        ) {
+
+            articles =
+                articles.filter(
+                    article =>
+                        article.category ===
+                        filters.category,
+                );
+
+        }
+
+        if (
+            filters?.featured !==
+            undefined
+        ) {
+
+            articles =
+                articles.filter(
+                    article =>
+                        article.featured ===
+                        filters.featured,
+                );
+
+        }
+
+        if (
+            filters?.search
+        ) {
+
+            const keyword =
+                filters.search
+                    .toLowerCase();
+
+            articles =
+                articles.filter(
+                    article =>
+
+                        article.title
+                            .toLowerCase()
+                            .includes(keyword)
+
+                        ||
+
+                        (
+                            article.summary
+                            ??
+                            ''
+                        )
+                            .toLowerCase()
+                            .includes(keyword)
+
+                        ||
+
+                        article.content
+                            .toLowerCase()
+                            .includes(keyword)
+
+                        ||
+
+                        article.tags.some(
+                            tag =>
+                                tag
+                                    .toLowerCase()
+                                    .includes(
+                                        keyword,
+                                    ),
+                        ),
+                );
+
+        }
+
+        return articles;
+
+    }
+
+    summary(): KnowledgeSummary {
+                const articles =
             this.list();
 
         return {
