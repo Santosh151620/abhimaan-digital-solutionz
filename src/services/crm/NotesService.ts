@@ -50,124 +50,58 @@ class NotesService {
 
     }
 
-
-
-
-
     async findByEntity(
         entityType: string,
         entityId: string,
     ): Promise<Note[]> {
-
-
         return NotesRepositoryInstance.findByEntity(
             entityType,
             entityId,
         );
-
-
     }
-
-
-
-
-
     async create(
         data: Partial<Note>,
     ): Promise<Note> {
-
-
         return NotesRepositoryInstance.create(
             data,
         );
-
-
     }
-
-
-
-
-
     async update(
         id: string,
         data: Partial<Note>,
     ): Promise<Note | null> {
-
-
         return NotesRepositoryInstance.update(
             id,
             data,
         );
-
-
     }
-
-
-
-
-
     async delete(
         id: string,
     ): Promise<boolean> {
-
-
         return NotesRepositoryInstance.delete(
             id,
         );
-
-
     }
-
-
-
-
 
     async archive(
         id: string,
     ): Promise<Note | null> {
-
-
         return NotesRepositoryInstance.archive(
             id,
         );
-
-
     }
-
-
-
-
-
     async restore(
         id: string,
     ): Promise<Note | null> {
-
-
         return NotesRepositoryInstance.restore(
             id,
         );
-
-
     }
-
-
-
-
 
     async summary(): Promise<NoteSummary> {
-
-
         return NotesRepositoryInstance.summary();
-
-
     }
-
-
 }
-
-
-
-
 
 export const NotesServiceInstance =
     new NotesService();

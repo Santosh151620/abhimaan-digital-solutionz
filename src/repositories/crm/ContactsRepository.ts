@@ -382,57 +382,34 @@ class ContactsRepository {
                 ??
                 'ACTIVE',
 
-
-
             isDeleted:
                 false,
-
-
 
             deletedAt:
                 null,
 
-
-
             deletedBy:
                 null,
-
-
 
             createdAt:
                 now,
 
-
-
             updatedAt:
                 now,
-
-
         };
-
-
-
 
         this.contacts.set(
             contact.id,
             contact,
         );
 
-
-
         return contact;
 
     }
-
-
-
-
-
     async update(
         id: string,
         data: Partial<ContactDetails>,
     ): Promise<ContactDetails | null> {
-
 
         const existing =
             this.contacts.get(id);
@@ -483,11 +460,6 @@ class ContactsRepository {
         return updated;
 
     }
-
-
-
-
-
     async delete(
         id: string,
     ): Promise<boolean> {
@@ -575,15 +547,8 @@ class ContactsRepository {
 
         contact.status =
             'ACTIVE';
-
-
-
         contact.updatedAt =
             new Date().toISOString();
-
-
-
-
         this.contacts.set(
             id,
             contact,
@@ -594,13 +559,7 @@ class ContactsRepository {
         return true;
 
     }
-
-
 }
-
-
-
-
 
 export const ContactsRepositoryInstance =
     new ContactsRepository();

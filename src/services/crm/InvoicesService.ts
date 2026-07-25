@@ -13,7 +13,7 @@ import type {
 export class InvoicesService {
 
 
-    list(){
+    list() {
 
         return InvoicesRepositoryInstance.list();
 
@@ -21,7 +21,7 @@ export class InvoicesService {
 
 
 
-    listArchived(){
+    listArchived() {
 
         return InvoicesRepositoryInstance.listArchived();
 
@@ -30,8 +30,8 @@ export class InvoicesService {
 
 
     findById(
-        id:string
-    ){
+        id: string
+    ) {
 
         return InvoicesRepositoryInstance.findById(id);
 
@@ -40,26 +40,26 @@ export class InvoicesService {
 
 
     details(
-        id:string
-    ){
+        id: string
+    ) {
 
         return this.findById(id);
 
     }
 
-search(
-    filters?: {
-        status?: InvoiceStatus;
-        companyId?: string;
-        search?: string;
-    },
-) {
-    return InvoicesRepositoryInstance.search(filters);
-}
+    search(
+        filters?: {
+            status?: InvoiceStatus;
+            companyId?: string;
+            search?: string;
+        },
+    ) {
+        return InvoicesRepositoryInstance.search(filters);
+    }
 
     create(
-        data:Partial<Invoice>
-    ){
+        data: Partial<Invoice>
+    ) {
 
         return InvoicesRepositoryInstance.create(data);
 
@@ -68,9 +68,9 @@ search(
 
 
     update(
-        id:string,
-        data:Partial<Invoice>
-    ){
+        id: string,
+        data: Partial<Invoice>
+    ) {
 
         return InvoicesRepositoryInstance.update(
             id,
@@ -82,9 +82,9 @@ search(
 
 
     updateStatus(
-        id:string,
-        status:InvoiceStatus
-    ){
+        id: string,
+        status: InvoiceStatus
+    ) {
 
         return InvoicesRepositoryInstance.updateStatus(
             id,
@@ -96,8 +96,8 @@ search(
 
 
     delete(
-        id:string
-    ){
+        id: string
+    ) {
 
         return InvoicesRepositoryInstance.delete(id);
 
@@ -106,8 +106,8 @@ search(
 
 
     restore(
-        id:string
-    ){
+        id: string
+    ) {
 
         return InvoicesRepositoryInstance.restore(id);
 
@@ -115,7 +115,7 @@ search(
 
 
 
-    summary(){
+    summary() {
 
         return InvoicesRepositoryInstance.summary();
 
@@ -125,7 +125,7 @@ search(
 
 
 
-export async function createInvoicesService(){
+export async function createInvoicesService() {
 
     return new InvoicesService();
 
