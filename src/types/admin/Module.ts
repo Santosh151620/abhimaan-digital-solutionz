@@ -1,18 +1,24 @@
 /**
  * ============================================================================
- * Module Registry
+ * Platform Module
+ * CRM + ERP + Future Enterprise
  * ============================================================================
  */
 
 export type ModuleCategory =
-    | 'Platform'
-    | 'CRM'
-    | 'ERP'
-    | 'Shared';
+    | "Platform"
+    | "CRM"
+    | "ERP"
+    | "AI"
+    | "Integration"
+    | "Reporting"
+    | "Administration";
 
 export type ModuleStatus =
-    | 'Enabled'
-    | 'Disabled';
+    | "Active"
+    | "Inactive"
+    | "Preview"
+    | "Deprecated";
 
 export interface PlatformModule {
 
@@ -32,26 +38,34 @@ export interface PlatformModule {
 
     icon?: string;
 
-    sortOrder: number;
-
-    enabled: boolean;
-
-    status: ModuleStatus;
+    displayOrder: number;
 
     dependencies: string[];
 
-}
+    featureFlags: string[];
 
-export interface OrganizationModule {
+    enabledByDefault: boolean;
 
-    organizationId: string;
+    tenantConfigurable: boolean;
 
-    moduleId: string;
+    licenseRequired: boolean;
 
-    enabled: boolean;
+    supportsCRM: boolean;
 
-    enabledAt?: string;
+    supportsERP: boolean;
 
-    enabledBy?: string;
+    supportsStandalone: boolean;
+
+    supportsEnterprise: boolean;
+
+    status: ModuleStatus;
+
+    isSystem: boolean;
+
+    metadata?: Record<string, unknown>;
+
+    createdAt: string;
+
+    updatedAt?: string;
 
 }

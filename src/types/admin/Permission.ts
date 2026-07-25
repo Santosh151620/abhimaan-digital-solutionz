@@ -1,41 +1,82 @@
 /**
  * ============================================================================
  * Permission
+ * Enterprise Platform RBAC
+ * CRM + ERP Compatible
  * ============================================================================
  */
 
-export type PermissionAction =
-    | 'View'
-    | 'Create'
-    | 'Update'
-    | 'Delete'
-    | 'Export'
-    | 'Import'
-    | 'Approve'
-    | 'Manage';
+export type PermissionScope =
+    | "Global"
+    | "Organization"
+    | "Department"
+    | "Module"
+    | "Entity";
+
+export type PermissionEffect =
+    | "Allow"
+    | "Deny";
 
 export interface Permission {
 
     id: string;
 
-    moduleId: string;
+    organizationId?: string;
+
+    module: string;
+
+    resource: string;
+
+    action: string;
+
+    key: string;
 
     name: string;
 
-    code: string;
-
-    action: PermissionAction;
-
     description?: string;
+
+    scope: PermissionScope;
+
+    effect: PermissionEffect;
+
+    isSystem: boolean;
+
+    isActive: boolean;
+
+    metadata?: Record<string, unknown>;
+
+    createdBy?: string;
+
+    updatedBy?: string;
+
+    createdAt: string;
+
+    updatedAt?: string;
+
+    deletedAt?: string;
 
 }
 
 export interface PermissionGroup {
 
-    moduleId: string;
-
-    moduleName: string;
+    module: string;
 
     permissions: Permission[];
+
+}
+
+export interface RolePermission {
+
+    roleId: string;
+
+    permissionId: string;
+
+}
+
+export interface UserPermission {
+
+    userId: string;
+
+    permissionId: string;
 
 }
