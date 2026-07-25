@@ -72,3 +72,10 @@ export interface ClientPortalSummary {
     archived:number;
 
 }
+export interface ClientPortalSearchFilters {
+
+    search?: string;
+
+    status?: ClientPortalStatus;
+
+}
