@@ -1,8 +1,14 @@
 /**
  * ============================================================================
  * Integration
+ * Enterprise Integration Contract
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type IntegrationType =
     | "REST"
@@ -13,38 +19,68 @@ export type IntegrationType =
     | "Email"
     | "Queue";
 
+
 export type IntegrationStatus =
     | "Connected"
     | "Disconnected"
     | "Pending"
-    | "Disabled";
+    | "Disabled"
+    | "Error";
 
-export interface Integration {
 
-    id: string;
+export type IntegrationAuthType =
+    | "None"
+    | "APIKey"
+    | "OAuth"
+    | "Basic"
+    | "Certificate";
+
+
+export interface Integration extends BaseEntity {
 
     organizationId?: string;
 
+
     name: string;
+
 
     code: string;
 
+
     type: IntegrationType;
+
 
     provider: string;
 
+
     status: IntegrationStatus;
+
 
     endpoint?: string;
 
-    authenticationType?: string;
+
+    authenticationType?: IntegrationAuthType;
+
 
     enabled: boolean;
 
+
+    /**
+     * Reference only.
+     * Never store secrets here.
+     */
+    credentialReference?: string;
+
+
+    lastSyncAt?: string;
+
+
     metadata?: Record<string, unknown>;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    createdBy?: string;
+
+
+    updatedBy?: string;
 
 }
