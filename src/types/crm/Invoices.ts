@@ -5,7 +5,6 @@ export type InvoiceStatus =
     | 'Overdue'
     | 'Cancelled';
 
-
 export interface Invoice {
 
     id: string;
@@ -20,14 +19,11 @@ export interface Invoice {
 
     quotationId?: string;
 
-
     status: InvoiceStatus;
-
 
     issueDate: string;
 
     dueDate: string;
-
 
     subtotal: number;
 
@@ -35,22 +31,19 @@ export interface Invoice {
 
     total: number;
 
-
     currency: string;
 
     title?: string;
 
     amount?: number;
+
     paidAmount?: number;
 
     balanceAmount?: number;
 
-
     notes?: string;
 
-
     archived: boolean;
-
 
     createdAt: string;
 
@@ -58,12 +51,17 @@ export interface Invoice {
 
 }
 
+export interface InvoiceSearchFilters {
+
+    status?: InvoiceStatus;
+
+    companyId?: string;
+
+    search?: string;
+
+}
 
 export interface InvoiceSummary {
-
-    title?: string;
-
-    amount?: number;
 
     total: number;
 
@@ -77,9 +75,12 @@ export interface InvoiceSummary {
 
     cancelled: number;
 
+    archived: number;
 
     totalValue: number;
 
     outstandingValue: number;
+
+    value?: number;
 
 }

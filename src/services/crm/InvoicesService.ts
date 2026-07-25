@@ -47,7 +47,15 @@ export class InvoicesService {
 
     }
 
-
+search(
+    filters?: {
+        status?: InvoiceStatus;
+        companyId?: string;
+        search?: string;
+    },
+) {
+    return InvoicesRepositoryInstance.search(filters);
+}
 
     create(
         data:Partial<Invoice>
