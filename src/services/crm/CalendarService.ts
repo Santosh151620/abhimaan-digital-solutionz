@@ -4,7 +4,9 @@ import {
 
 import type {
     CalendarEvent,
+    CalendarSearchFilters,
     CalendarStatus,
+    CalendarSummary,
 } from '@/types/crm/Calendar';
 
 class CalendarService {
@@ -20,7 +22,24 @@ class CalendarService {
     details(id: string) {
         return CalendarRepositoryInstance.details(id);
     }
+findById(
+    id: string,
+) {
 
+    return CalendarRepositoryInstance.findById(
+        id,
+    );
+
+}
+search(
+    filters?: CalendarSearchFilters,
+) {
+
+    return CalendarRepositoryInstance.search(
+        filters,
+    );
+
+}
     create(
         data: Partial<CalendarEvent>,
     ) {
@@ -52,7 +71,7 @@ class CalendarService {
         return CalendarRepositoryInstance.restore(id);
     }
 
-    summary() {
+    summary(): CalendarSummary {
         return CalendarRepositoryInstance.summary();
     }
 

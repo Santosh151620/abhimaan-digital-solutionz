@@ -1,6 +1,8 @@
 import type {
     CalendarEvent,
+    CalendarSearchFilters,
     CalendarStatus,
+    CalendarSummary,
 } from '@/types/crm/Calendar';
 
 class CalendarRepository {
@@ -10,23 +12,39 @@ class CalendarRepository {
 
     list() {
 
-        return Array.from(
-            this.events.values(),
-        ).filter(
-            event => !event.archived,
+    return Array.from(
+        this.events.values(),
+    )
+        .filter(
+            event =>
+                !event.archived,
+        )
+        .sort(
+            (a, b) =>
+                b.startDate.localeCompare(
+                    a.startDate,
+                ),
         );
 
-    }
+}
 
-    listArchived() {
+  listArchived() {
 
-        return Array.from(
-            this.events.values(),
-        ).filter(
-            event => event.archived,
+    return Array.from(
+        this.events.values(),
+    )
+        .filter(
+            event =>
+                event.archived,
+        )
+        .sort(
+            (a, b) =>
+                b.updatedAt.localeCompare(
+                    a.updatedAt,
+                ),
         );
 
-    }
+}
 
     details(
         id: string,
@@ -35,7 +53,15 @@ class CalendarRepository {
         return this.events.get(id) ?? null;
 
     }
+findById(
+    id: string,
+) {
 
+    return this.details(
+        id,
+    );
+
+}
     create(
         data: Partial<CalendarEvent>,
     ): CalendarEvent {
@@ -221,8 +247,113 @@ class CalendarRepository {
         return true;
 
     }
+search(
+    filters?: CalendarSearchFilters,
+) {
 
-    summary() {
+    let events =
+        this.list();
+
+    if (filters?.status) {
+
+        events =
+            events.filter(
+                event =>
+                    event.status ===
+                    filters.status,
+            );
+
+    }
+
+    if (filters?.eventType) {
+
+        events =
+            events.filter(
+                event =>
+                    event.eventType ===
+                    filters.eventType,
+            );
+
+    }
+
+    if (filters?.priority) {
+
+        events =
+            events.filter(
+                event =>
+                    event.priority ===
+                    filters.priority,
+            );
+
+    }
+
+    if (filters?.companyId) {
+
+        events =
+            events.filter(
+                event =>
+                    event.companyId ===
+                    filters.companyId,
+            );
+
+    }
+
+    if (filters?.assignedTo) {
+
+        events =
+            events.filter(
+                event =>
+                    event.assignedTo ===
+                    filters.assignedTo,
+            );
+
+    }
+
+    if (filters?.search) {
+
+        const keyword =
+            filters.search
+                .toLowerCase();
+
+        events =
+            events.filter(
+                event =>
+
+                    event.title
+                        .toLowerCase()
+                        .includes(
+                            keyword,
+                        )
+
+                    ||
+
+                    (
+                        event.description ??
+                        ''
+                    )
+                        .toLowerCase()
+                        .includes(
+                            keyword,
+                        )
+
+                    ||
+
+                    (
+                        event.customerName ??
+                        ''
+                    )
+                        .toLowerCase()
+                        .includes(
+                            keyword,
+                        ),
+            );
+
+    }
+
+    return events;
+
+}
+    summary(): CalendarSummary { 
 
         const events =
             this.list();

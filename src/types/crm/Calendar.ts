@@ -90,3 +90,18 @@ export interface CalendarSummary {
     upcoming: number;
 
 }
+export interface CalendarSearchFilters {
+
+    status?: CalendarStatus;
+
+    eventType?: CalendarEventType;
+
+    priority?: CalendarPriority;
+
+    companyId?: string;
+
+    assignedTo?: string;
+
+    search?: string;
+
+}
