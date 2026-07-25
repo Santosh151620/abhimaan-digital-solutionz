@@ -1,8 +1,14 @@
 /**
  * ============================================================================
  * Dashboard Widget
+ * Enterprise Analytics Component Contract
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type WidgetType =
     | "Chart"
@@ -15,34 +21,51 @@ export type WidgetType =
     | "Map"
     | "AI";
 
-export interface WidgetDefinition {
 
-    id: string;
+export interface WidgetDefinition extends BaseEntity {
 
     organizationId?: string;
 
+
     code: string;
+
 
     name: string;
 
+
     moduleCodes: string[];
+
 
     type: WidgetType;
 
+
     datasource: string;
+
 
     configuration: Record<string, unknown>;
 
+
     refreshInterval: number;
+
 
     supportsRealtime: boolean;
 
+
     supportsDrillDown: boolean;
+
 
     supportsExport: boolean;
 
+
     active: boolean;
 
-    createdAt: string;
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
+
+
+    metadata?: Record<string, unknown>;
 
 }

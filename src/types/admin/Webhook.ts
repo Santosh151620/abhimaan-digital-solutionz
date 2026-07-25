@@ -1,8 +1,14 @@
 /**
  * ============================================================================
  * Webhook
+ * Enterprise Event Integration Contract
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
 
 export type WebhookMethod =
     | "GET"
@@ -11,30 +17,54 @@ export type WebhookMethod =
     | "PATCH"
     | "DELETE";
 
-export interface Webhook {
 
-    id: string;
+export type WebhookStatus =
+    | "Active"
+    | "Inactive"
+    | "Failed";
+
+
+export interface Webhook extends BaseEntity {
 
     organizationId?: string;
 
+
     integrationId?: string;
+
 
     name: string;
 
+
     url: string;
+
 
     method: WebhookMethod;
 
-    secret?: string;
+
+    secretReference?: string;
+
+
+    status: WebhookStatus;
+
 
     enabled: boolean;
 
+
     retryCount: number;
+
 
     timeoutSeconds: number;
 
-    createdAt: string;
 
-    updatedAt?: string;
+    lastTriggeredAt?: string;
+
+
+    metadata?: Record<string, unknown>;
+
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
 
 }

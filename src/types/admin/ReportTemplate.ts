@@ -1,31 +1,52 @@
 /**
  * ============================================================================
  * Report Template
+ * Enterprise Reporting Layout Contract
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
 
-export interface ReportTemplate {
+import type { BaseEntity } from "@/types/platform/BaseEntity";
 
-    id: string;
+
+export type ReportTemplateVisibility =
+    | "Private"
+    | "Organization";
+
+
+export interface ReportTemplate extends BaseEntity {
 
     organizationId?: string;
 
+
     reportDefinitionId: string;
+
 
     name: string;
 
+
     description?: string;
+
 
     isSystem: boolean;
 
+
     isDefault: boolean;
 
-    visibility: "Private" | "Organization";
+
+    visibility: ReportTemplateVisibility;
+
 
     layout: Record<string, unknown>;
 
-    createdBy: string;
 
-    createdAt: string;
+    createdBy?: string;
+
+
+    updatedBy?: string;
+
+
+    metadata?: Record<string, unknown>;
 
 }

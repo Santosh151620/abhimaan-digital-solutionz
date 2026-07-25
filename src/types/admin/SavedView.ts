@@ -1,33 +1,55 @@
 /**
  * ============================================================================
  * Saved View
+ * Enterprise User Preference Contract
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
 
-export interface SavedView {
+import type { BaseEntity } from "@/types/platform/BaseEntity";
 
-    id: string;
+
+export type SavedViewVisibility =
+    | "Private"
+    | "Organization";
+
+
+export interface SavedView extends BaseEntity {
 
     organizationId: string;
 
+
     moduleCode: string;
+
 
     entity: string;
 
+
     name: string;
 
-    visibility: "Private" | "Organization";
+
+    visibility: SavedViewVisibility;
+
 
     filters: Record<string, unknown>;
 
+
     sorting: Record<string, unknown>;
+
 
     columns: string[];
 
+
     isDefault: boolean;
 
-    createdBy: string;
 
-    createdAt: string;
+    createdBy?: string;
+
+
+    updatedBy?: string;
+
+
+    metadata?: Record<string, unknown>;
 
 }

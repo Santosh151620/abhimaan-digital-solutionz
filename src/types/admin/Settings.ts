@@ -1,8 +1,12 @@
 /**
  * ============================================================================
  * Platform Settings
+ * Enterprise Configuration Contract
+ * CRM + ERP Compatible
+ * Production Contract
  * ============================================================================
  */
+
 
 export interface BrandingSettings {
 
@@ -18,6 +22,7 @@ export interface BrandingSettings {
 
 }
 
+
 export interface SecuritySettings {
 
     sessionTimeoutMinutes: number;
@@ -30,6 +35,7 @@ export interface SecuritySettings {
 
 }
 
+
 export interface EmailSettings {
 
     senderName: string;
@@ -39,6 +45,7 @@ export interface EmailSettings {
     replyToEmail?: string;
 
 }
+
 
 export interface LocalizationSettings {
 
@@ -52,6 +59,7 @@ export interface LocalizationSettings {
 
 }
 
+
 export interface PlatformSettings {
 
     branding: BrandingSettings;
@@ -61,5 +69,7 @@ export interface PlatformSettings {
     email: EmailSettings;
 
     localization: LocalizationSettings;
+
+    metadata?: Record<string, unknown>;
 
 }
