@@ -1,5 +1,6 @@
 import type {
     Ticket,
+    TicketSearchFilters,
     TicketStatus,
     TicketSummary,
 } from '@/types/crm/Tickets';
@@ -9,21 +10,40 @@ class TicketsRepository {
     private tickets = new Map<string, Ticket>();
 
     list() {
-        return Array.from(
-            this.tickets.values(),
-        ).filter(
-            ticket => !ticket.archived,
-        );
-    }
 
-    listArchived() {
-        return Array.from(
-            this.tickets.values(),
-        ).filter(
-            ticket => ticket.archived,
+    return Array.from(
+        this.tickets.values(),
+    )
+        .filter(
+            ticket =>
+                !ticket.archived,
+        )
+        .sort(
+            (a, b) =>
+                b.createdAt.localeCompare(
+                    a.createdAt,
+                ),
         );
-    }
 
+}
+
+ listArchived() {
+
+    return Array.from(
+        this.tickets.values(),
+    )
+        .filter(
+            ticket =>
+                ticket.archived,
+        )
+        .sort(
+            (a, b) =>
+                b.updatedAt.localeCompare(
+                    a.updatedAt,
+                ),
+        );
+
+}
     details(
         id: string,
     ) {
@@ -194,15 +214,7 @@ class TicketsRepository {
     }
 
     search(
-        filters?: {
-
-            status?: TicketStatus;
-
-            priority?: Ticket['priority'];
-
-            search?: string;
-
-        },
+        filters?: TicketSearchFilters,
     ) {
 
         let tickets =

@@ -57,3 +57,12 @@ export interface TicketSummary {
     critical: number;
 
 }
+export interface TicketSearchFilters {
+
+    status?: TicketStatus;
+
+    priority?: TicketPriority;
+
+    search?: string;
+
+}

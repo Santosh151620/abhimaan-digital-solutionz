@@ -6,19 +6,9 @@ import type {
     Payment,
     PaymentStatus,
     PaymentSummary,
+    PaymentSearchFilters,
 } from '@/types/crm/Payments';
 
-export interface PaymentSearchFilters {
-
-    search?: string;
-
-    status?: PaymentStatus;
-
-    companyId?: string;
-
-    invoiceId?: string;
-
-}
 
 class PaymentsService {
 

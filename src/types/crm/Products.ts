@@ -5,8 +5,6 @@ export type ProductType =
     | 'Bundle'
     | 'Other';
 
-
-
 export type ProductStatus =
     | 'Draft'
     | 'Active'
@@ -96,5 +94,14 @@ export interface ProductSummary {
 
     archived:number;
 
+
+}
+export interface ProductSearchFilters {
+
+    search?: string;
+
+    status?: ProductStatus;
+
+    type?: ProductType;
 
 }

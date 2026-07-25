@@ -4,6 +4,7 @@ import {
 
 import type {
     Ticket,
+    TicketSearchFilters,
     TicketStatus,
 } from '@/types/crm/Tickets';
 
@@ -42,11 +43,7 @@ class TicketsService {
     }
 
     search(
-        filters?: {
-            status?: TicketStatus;
-            priority?: Ticket['priority'];
-            search?: string;
-        },
+        filters?: TicketSearchFilters,
     ) {
 
         return TicketsRepositoryInstance.search(
