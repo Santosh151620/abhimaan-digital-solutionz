@@ -76,3 +76,14 @@ export interface ReportSummary {
     shared: number;
 
 }
+export interface ReportSearchFilters {
+
+    search?: string;
+
+    status?: ReportStatus;
+
+    category?: ReportCategory;
+
+    format?: ReportFormat;
+
+}

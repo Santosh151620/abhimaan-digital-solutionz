@@ -8,7 +8,7 @@ import ReportsDashboard from './ReportsDashboard';
 
 import {
     ReportServiceInstance,
-} from '@/services/crm/ReportService';
+} from '@/services/crm/ReportsService';
 
 
 type ReportType =

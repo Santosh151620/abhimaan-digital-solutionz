@@ -17,7 +17,7 @@ export * from './PipelineService';
 export * from './ProductsService';
 export * from './ProjectsService';
 export * from './QuotationsService';
-export * from './ReportService';
+export * from './ReportsService';
 export * from './SearchService';
 export * from './SettingsService';
 export * from './TasksService';

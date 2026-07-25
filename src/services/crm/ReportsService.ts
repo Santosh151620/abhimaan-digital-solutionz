@@ -5,7 +5,7 @@ import type {
 
 import {
     ReportRepositoryInstance,
-} from '@/repositories/crm/ReportRepository';
+} from '@/repositories/crm/ReportsRepository';
 
 class ReportService {
 

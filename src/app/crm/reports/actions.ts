@@ -2,7 +2,7 @@
 
 import {
     ReportServiceInstance,
-} from '@/services/crm/ReportService';
+} from '@/services/crm/ReportsService';
 
 import {
     PermissionServiceInstance,

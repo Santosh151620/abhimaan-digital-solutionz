@@ -17,7 +17,7 @@ export * from './PipelineRepository';
 export * from './ProductsRepository';
 export * from './ProjectsRepository';
 export * from './QuotationsRepository';
-export * from './ReportRepository';
+export * from './ReportsRepository';
 export * from './SearchRepository';
 export * from './SettingsRepository';
 export * from './TasksRepository';
