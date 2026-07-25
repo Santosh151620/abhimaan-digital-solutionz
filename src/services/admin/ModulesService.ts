@@ -10,7 +10,7 @@ export class ModulesService {
 
     constructor(
         private readonly repository: IModulesRepository
-    ) {}
+    ) { }
 
     list(): Promise<PlatformModule[]> {
 
@@ -38,18 +38,18 @@ export class ModulesService {
         code: string
     ): Promise<boolean> {
 
-        const module =
+        const platformModule =
             await this.repository.findByCode(code);
 
-        return module?.status === "Active";
+        return platformModule?.status === "Active";
 
     }
 
     async dependenciesSatisfied(
-        module: PlatformModule
-    ): Promise<boolean> {
+    platformModule: PlatformModule
+): Promise<boolean> {
 
-        if (!module.dependencies.length) {
+    if (!platformModule.dependencies.length) {
 
             return true;
 
@@ -58,7 +58,7 @@ export class ModulesService {
         const modules =
             await this.repository.list();
 
-        return module.dependencies.every(
+        return platformModule.dependencies.every(
             dependency =>
                 modules.some(
                     item =>
