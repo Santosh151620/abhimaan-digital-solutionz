@@ -8,6 +8,10 @@ import ActivityForm from './ActivityForm';
 import ActivityTable from './ActivityTable';
 import ActivitySummary from './ActivitySummary';
 
+import {
+    createActivity as createActivityAction,
+} from '@/app/crm/activities/actions';
+
 import type {
     Activity,
 } from '@/types/crm/Activities';
@@ -25,10 +29,21 @@ export default function ActivityClient({
 }: Props) {
 
 
-    const [activities] =
+    const [
+        activities,
+        setActivities,
+    ] =
         useState<Activity[]>(
             initialActivities,
         );
+
+
+    const [
+        loading,
+        setLoading,
+    ] =
+        useState(false);
+
 
 
     const today =
@@ -37,11 +52,11 @@ export default function ActivityClient({
             .split('T')[0];
 
 
+
     const summary = {
 
         total:
             activities.length,
-
 
         planned:
             activities.filter(
@@ -49,13 +64,11 @@ export default function ActivityClient({
                     item.status === 'Planned',
             ).length,
 
-
         scheduled:
             activities.filter(
                 item =>
                     item.status === 'Scheduled',
             ).length,
-
 
         pending:
             activities.filter(
@@ -63,13 +76,11 @@ export default function ActivityClient({
                     item.status === 'Pending',
             ).length,
 
-
         inProgress:
             activities.filter(
                 item =>
                     item.status === 'In Progress',
             ).length,
-
 
         completed:
             activities.filter(
@@ -77,20 +88,17 @@ export default function ActivityClient({
                     item.status === 'Completed',
             ).length,
 
-
         cancelled:
             activities.filter(
                 item =>
                     item.status === 'Cancelled',
             ).length,
 
-
         missed:
             activities.filter(
                 item =>
                     item.status === 'Missed',
             ).length,
-
 
         overdue:
             activities.filter(
@@ -102,13 +110,11 @@ export default function ActivityClient({
                     item.status !== 'Completed',
             ).length,
 
-
         today:
             activities.filter(
                 item =>
                     item.dueDate === today,
             ).length,
-
 
         upcoming:
             activities.filter(
@@ -118,7 +124,6 @@ export default function ActivityClient({
                     item.dueDate > today,
             ).length,
 
-
         highPriority:
             activities.filter(
                 item =>
@@ -127,10 +132,8 @@ export default function ActivityClient({
                     item.priority === 'Critical',
             ).length,
 
-
         archived:
-    0,
-
+            0,
 
         completionRate:
             activities.length === 0
@@ -159,10 +162,35 @@ export default function ActivityClient({
 
     ) {
 
-        console.log(
-            'Create Activity',
-            values,
-        );
+
+        try {
+
+            setLoading(true);
+
+
+            const created =
+                await createActivityAction(
+                    values,
+                );
+
+
+            if (created) {
+
+                setActivities(
+                    previous => [
+                        created,
+                        ...previous,
+                    ],
+                );
+
+            }
+
+
+        } finally {
+
+            setLoading(false);
+
+        }
 
     }
 
@@ -172,6 +200,7 @@ export default function ActivityClient({
 
         <div className="space-y-8">
 
+
             <ActivitySummary
 
                 summary={summary}
@@ -179,11 +208,15 @@ export default function ActivityClient({
             />
 
 
+
             <ActivityForm
 
                 onSubmit={createActivity}
 
+                loading={loading}
+
             />
+
 
 
             <ActivityTable
@@ -191,6 +224,7 @@ export default function ActivityClient({
                 activities={activities}
 
             />
+
 
         </div>
 

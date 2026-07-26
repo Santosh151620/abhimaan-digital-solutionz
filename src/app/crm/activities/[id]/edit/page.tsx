@@ -40,10 +40,10 @@ export default async function EditActivityPage({
     } = await params;
 
 
-const activity =
-    await ActivityServiceInstance.details(
-        id,
-    );
+    const activity =
+        await ActivityServiceInstance.details(
+            id,
+        );
 
     if (!activity) {
 
@@ -86,7 +86,7 @@ const activity =
                 }
 
                 onSubmit={
-                    async () => {}
+                    async () => { }
                 }
 
             />
