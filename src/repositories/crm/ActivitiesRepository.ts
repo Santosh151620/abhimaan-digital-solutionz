@@ -322,19 +322,23 @@ async delete(
     const {
         error,
     } =
-        await this.tableRef()
-            .update(
-                {
-                    archived: true,
-                    updated_at:
-                        new Date()
-                            .toISOString(),
-                },
-            )
-            .eq(
-                'id',
-                id,
-            );
+      await this.tableRef()
+    .update(
+        {
+            archived: true,
+            updated_at:
+                new Date()
+                    .toISOString(),
+        },
+    )
+    .eq(
+        'organization_id',
+        this.organizationId,
+    )
+    .eq(
+        'id',
+        id,
+    );
 
 
     if (error) {
@@ -366,18 +370,22 @@ async delete(
         error,
     } =
         await this.tableRef()
-            .update(
-                {
-                    archived: false,
-                    updated_at:
-                        new Date()
-                            .toISOString(),
-                },
-            )
-            .eq(
-                'id',
-                id,
-            );
+    .update(
+        {
+            archived: false,
+            updated_at:
+                new Date()
+                    .toISOString(),
+        },
+    )
+    .eq(
+        'organization_id',
+        this.organizationId,
+    )
+    .eq(
+        'id',
+        id,
+    );
 
 
     if (error) {
