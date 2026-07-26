@@ -1,91 +1,220 @@
 import {
-    ContactsRepositoryInstance,
+    createClient,
+} from '@/lib/supabase/server';
+
+import {
+    createContactsRepository,
 } from '@/repositories/crm/ContactsRepository';
 
-
 import type {
+    Contact,
     ContactDetails,
 } from '@/types/crm/Contacts';
 
 
-import type {
-    ContactSearchFilters,
-    ContactsSummary,
-} from '@/repositories/crm/ContactsRepository';
 
-export class ContactsService {
-    async list(): Promise<ContactDetails[]> {
-        return ContactsRepositoryInstance.list();
-    }
+interface ContactSearchFilters {
 
-    async listArchived(): Promise<ContactDetails[]> {
-        return ContactsRepositoryInstance.listArchived();
-    }
-    async details(
-        id: string,
-    ): Promise<ContactDetails | null> {
-        return ContactsRepositoryInstance.findById(
-            id,
+    search?: string;
+
+    status?: Contact['status'];
+
+    companyId?: string;
+
+}
+
+
+
+class ContactsService {
+
+
+    private async repository() {
+
+        const supabase =
+            await createClient();
+
+
+        return createContactsRepository(
+            supabase,
         );
+
     }
+
+
+
+    async list(): Promise<Contact[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.list();
+
+    }
+
+
+
+    async listArchived(): Promise<Contact[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.listArchived();
+
+    }
+
+
 
     async findById(
         id: string,
-    ): Promise<ContactDetails | null> {
-        return this.details(
+    ): Promise<Contact | null> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.findById(
             id,
         );
 
     }
+
+
+
+    async details(
+        id: string,
+    ): Promise<ContactDetails | null> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.details(
+            id,
+        );
+
+    }
+
+
+
     async search(
         filters?: ContactSearchFilters,
-    ): Promise<ContactDetails[]> {
-        return ContactsRepositoryInstance.search(
+    ): Promise<Contact[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.search(
             filters,
         );
-    }
-    async summary(): Promise<ContactsSummary> {
-        return ContactsRepositoryInstance.summary();
 
     }
+
+
+
     async create(
-        data: Partial<ContactDetails>,
-    ): Promise<ContactDetails> {
-        return ContactsRepositoryInstance.create(
-            data,
+        data: Partial<Contact>,
+    ): Promise<Contact> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.create(
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Contact',
+
+            },
+
         );
 
     }
+
+
 
     async update(
         id: string,
-        data: Partial<ContactDetails>,
-    ): Promise<ContactDetails | null> {
-        return ContactsRepositoryInstance.update(
+
+        data: Partial<Contact>,
+
+    ): Promise<Contact> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.update(
+
             id,
-            data,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Contact',
+
+            },
+
         );
 
     }
+
+
 
     async delete(
         id: string,
-    ): Promise<boolean> {
+    ): Promise<void> {
 
-        return ContactsRepositoryInstance.delete(
+        const repository =
+            await this.repository();
+
+
+        await repository.delete(
             id,
         );
 
     }
+
+
 
     async restore(
         id: string,
     ): Promise<boolean> {
-        return ContactsRepositoryInstance.restore(
+
+        const repository =
+            await this.repository();
+
+
+        return repository.restore(
             id,
         );
 
     }
+
+
+
+    async summary() {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.summary();
+
+    }
+
+
 }
+
+
+
 export const ContactsServiceInstance =
     new ContactsService();

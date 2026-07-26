@@ -1,3 +1,8 @@
+import type {
+    BaseEntity,
+} from '@/types/platform/BaseEntity';
+
+
 export type CompanyStatus =
     | 'ACTIVE'
     | 'INACTIVE'
@@ -5,11 +10,10 @@ export type CompanyStatus =
     | 'ARCHIVED';
 
 
-export interface Company {
 
-    id: string;
+export interface Company extends BaseEntity {
 
-    organizationId?: string;
+    entityType: 'Company';
 
     companyNumber?: string;
 
@@ -27,7 +31,6 @@ export interface Company {
 
     status: CompanyStatus;
 
-
     address?: string;
 
     city?: string;
@@ -36,22 +39,15 @@ export interface Company {
 
     country?: string;
 
+    postalCode?: string;
 
     employees?: number;
 
     annualRevenue?: number;
 
+    taxId?: string;
 
-    isDeleted?: boolean;
-
-    deletedAt?: string | null;
-
-    deletedBy?: string | null;
-
-
-    createdAt: string;
-
-    updatedAt: string;
+    description?: string;
 
 }
 
@@ -89,17 +85,20 @@ export interface CompanyOpportunity {
 
 
 
+export type CompanyActivityType =
+    | 'CALL'
+    | 'EMAIL'
+    | 'MEETING'
+    | 'NOTE'
+    | 'TASK';
+
+
+
 export interface CompanyActivity {
 
     id: string;
 
-    type:
-        | 'CALL'
-        | 'EMAIL'
-        | 'MEETING'
-        | 'NOTE'
-        | 'TASK';
-
+    type: CompanyActivityType;
 
     title: string;
 
@@ -111,8 +110,7 @@ export interface CompanyActivity {
 
 
 
-export interface CompanyDetails
-    extends Company {
+export interface CompanyDetails extends Company {
 
     contacts: CompanyContact[];
 

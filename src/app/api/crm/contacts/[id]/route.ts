@@ -141,23 +141,8 @@ export async function DELETE(
 
         const deleted =
             await ContactsServiceInstance.delete(
-                id,
+                id
             );
-
-
-        if (!deleted) {
-
-            return NextResponse.json(
-                {
-                    error: "Contact not found",
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
-
 
         return NextResponse.json(
             {

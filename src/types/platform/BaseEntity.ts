@@ -89,7 +89,12 @@ export interface Activatable {
  */
 export interface SoftDelete {
 
-    deletedAt?: string;
+   deletedAt?: string;
+
+deletedBy?: string;
+
+/** * Soft delete flag  */
+isDeleted?: boolean;
 
 }
 

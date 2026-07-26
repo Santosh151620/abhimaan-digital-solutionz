@@ -1,4 +1,13 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
+    Contact,
     ContactDetails,
 } from '@/types/crm/Contacts';
 
@@ -8,7 +17,7 @@ export interface ContactSearchFilters {
 
     search?: string;
 
-    status?: ContactDetails['status'];
+    status?: Contact['status'];
 
     companyId?: string;
 
@@ -34,389 +43,125 @@ export interface ContactsSummary {
 
 
 
+export class ContactsRepository
+    extends BaseRepository<Contact> {
 
 
-class ContactsRepository {
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
-
-    private contacts =
-        new Map<string, ContactDetails>();
-
-
-
-
-    async list(): Promise<ContactDetails[]> {
-
-
-        return Array.from(
-            this.contacts.values(),
-        )
-        .filter(
-            contact =>
-                !contact.isDeleted,
+        super(
+            supabase,
+            'contacts',
         );
 
     }
 
 
 
+    async list(): Promise<Contact[]> {
 
-    async listArchived(): Promise<ContactDetails[]> {
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .neq(
+                    'status',
+                    'ARCHIVED',
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
 
 
-        return Array.from(
-            this.contacts.values(),
-        )
-        .filter(
-            contact =>
-                contact.isDeleted === true,
-        );
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Contact[];
 
     }
 
+
+
+    async listArchived(): Promise<Contact[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'status',
+                    'ARCHIVED',
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Contact[];
+
+    }
 
 
 
     async findById(
         id: string,
-    ): Promise<ContactDetails | null> {
+    ): Promise<Contact | null> {
 
 
-        return (
-            this.contacts.get(id)
-            ??
-            null
+        return super.findById(
+            id,
         );
 
     }
 
 
 
-
-    async search(
-        filters?: ContactSearchFilters,
-    ): Promise<ContactDetails[]> {
-
-
-        let result =
-            await this.list();
-
-
-
-
-        if (filters?.search) {
-
-
-            const keyword =
-                filters.search
-                    .trim()
-                    .toLowerCase();
-
-
-
-
-            result =
-                result.filter(
-                    contact => {
-
-
-                        const searchable = [
-
-                            contact.fullName,
-
-                            contact.firstName,
-
-                            contact.lastName,
-
-                            contact.email,
-
-                            contact.phone,
-
-                            contact.mobile,
-
-                            contact.companyName,
-
-                        ]
-                        .filter(Boolean)
-                        .join(' ')
-                        .toLowerCase();
-
-
-
-
-                        return searchable.includes(
-                            keyword,
-                        );
-
-                    },
-                );
-
-        }
-
-
-
-
-        if (filters?.status) {
-
-
-            result =
-                result.filter(
-                    contact =>
-                        contact.status === filters.status,
-                );
-
-        }
-
-
-
-
-        if (filters?.companyId) {
-
-
-            result =
-                result.filter(
-                    contact =>
-                        contact.companyId === filters.companyId,
-                );
-
-        }
-
-
-
-
-        return result;
-
-    }
-
-
-
-
-
-    async summary(): Promise<ContactsSummary> {
-
-
-        const contacts =
-            Array.from(
-                this.contacts.values(),
-            );
-
-
-
-        const activeContacts =
-            contacts.filter(
-                contact =>
-                    !contact.isDeleted,
-            );
-
-
-
-        return {
-
-
-            total:
-                activeContacts.length,
-
-
-
-            active:
-                activeContacts.filter(
-                    contact =>
-                        contact.status === 'ACTIVE',
-                ).length,
-
-
-
-            inactive:
-                activeContacts.filter(
-                    contact =>
-                        contact.status === 'INACTIVE',
-                ).length,
-
-
-
-            leads:
-                activeContacts.filter(
-                    contact =>
-                        contact.status === 'LEAD',
-                ).length,
-
-
-
-            customers:
-                activeContacts.filter(
-                    contact =>
-                        contact.status === 'CUSTOMER',
-                ).length,
-
-
-
-            archived:
-                contacts.filter(
-                    contact =>
-                        contact.isDeleted === true,
-                ).length,
-
-
-        };
-
-    }
-
-
-
-
-
-    async create(
-        data: Partial<ContactDetails>,
-    ): Promise<ContactDetails> {
-
-
-        const now =
-            new Date().toISOString();
-
-
-
-
-        const contact: ContactDetails = {
-
-
-            id:
-                crypto.randomUUID(),
-
-
-
-            organizationId:
-                data.organizationId,
-
-
-
-            companyId:
-                data.companyId,
-
-
-
-            firstName:
-                data.firstName
-                ??
-                '',
-
-
-
-            lastName:
-                data.lastName
-                ??
-                '',
-
-
-
-            fullName:
-
-                `${data.firstName ?? ''} ${data.lastName ?? ''}`
-                    .trim(),
-
-
-
-            companyName:
-                data.companyName,
-
-
-
-            email:
-                data.email,
-
-
-
-            phone:
-                data.phone,
-
-
-
-            mobile:
-                data.mobile,
-
-
-
-            designation:
-                data.designation,
-
-
-
-            department:
-                data.department,
-
-
-
-            city:
-                data.city,
-
-
-
-            state:
-                data.state,
-
-
-
-            country:
-                data.country,
-
-
-
-            notes:
-                data.notes,
-
-
-
-            opportunities:
-                data.opportunities
-                ??
-                0,
-
-
-
-            lastActivity:
-                data.lastActivity,
-
-
-
-            status:
-                data.status
-                ??
-                'ACTIVE',
-
-            isDeleted:
-                false,
-
-            deletedAt:
-                null,
-
-            deletedBy:
-                null,
-
-            createdAt:
-                now,
-
-            updatedAt:
-                now,
-        };
-
-        this.contacts.set(
-            contact.id,
-            contact,
-        );
-
-        return contact;
-
-    }
-    async update(
+    async details(
         id: string,
-        data: Partial<ContactDetails>,
     ): Promise<ContactDetails | null> {
 
-        const existing =
-            this.contacts.get(id);
+
+        const contact =
+            await this.findById(
+                id,
+            );
 
 
 
-        if (!existing) {
+        if (!contact) {
 
             return null;
 
@@ -424,93 +169,95 @@ class ContactsRepository {
 
 
 
+        return {
 
-        const updated: ContactDetails = {
+            ...contact,
+
+        } as ContactDetails;
+
+    }
+        async create(
+        data: Partial<Contact>,
+    ): Promise<Contact> {
 
 
-            ...existing,
+        const payload: Partial<Contact> = {
 
             ...data,
 
+            id:
+                crypto.randomUUID(),
 
+            entityType:
+                'Contact',
 
-            fullName:
-
-                `${data.firstName ?? existing.firstName} ${data.lastName ?? existing.lastName}`
-                    .trim(),
-
-
-
-            updatedAt:
-                new Date().toISOString(),
-
+            status:
+                data.status
+                ??
+                'ACTIVE',
 
         };
 
 
 
-
-        this.contacts.set(
-            id,
-            updated,
+        return super.create(
+            payload,
         );
 
+    }
 
 
-        return updated;
+
+    async update(
+        id: string,
+
+        data: Partial<Contact>,
+
+    ): Promise<Contact> {
+
+
+        return super.update(
+
+            id,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Contact',
+
+            },
+
+        );
 
     }
+
+
+
     async delete(
         id: string,
-    ): Promise<boolean> {
+    ): Promise<void> {
 
 
-        const contact =
-            this.contacts.get(id);
+        await this.update(
 
-
-
-        if (!contact) {
-
-            return false;
-
-        }
-
-
-
-
-        contact.isDeleted = true;
-
-
-
-        contact.deletedAt =
-            new Date().toISOString();
-
-
-
-        contact.status =
-            'INACTIVE';
-
-
-
-        contact.updatedAt =
-            new Date().toISOString();
-
-
-
-
-        this.contacts.set(
             id,
-            contact,
+
+            {
+
+                status:
+                    'ARCHIVED',
+
+                deletedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+
         );
 
-
-
-        return true;
-
     }
-
-
 
 
 
@@ -519,47 +266,180 @@ class ContactsRepository {
     ): Promise<boolean> {
 
 
-        const contact =
-            this.contacts.get(id);
+        await this.update(
 
-
-
-        if (!contact) {
-
-            return false;
-
-        }
-
-
-
-
-        contact.isDeleted = false;
-
-
-
-        contact.deletedAt = null;
-
-
-
-        contact.deletedBy = null;
-
-
-
-        contact.status =
-            'ACTIVE';
-        contact.updatedAt =
-            new Date().toISOString();
-        this.contacts.set(
             id,
-            contact,
-        );
 
+            {
+
+                status:
+                    'ACTIVE',
+
+                deletedAt:
+                    undefined,
+
+            },
+
+        );
 
 
         return true;
 
     }
-}
 
-export const ContactsRepositoryInstance =
-    new ContactsRepository();
+
+
+    async search(
+        filters?: ContactSearchFilters,
+    ): Promise<Contact[]> {
+
+
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                );
+
+
+
+        if (filters?.status) {
+
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
+                );
+
+        }
+
+
+
+        if (filters?.companyId) {
+
+            query =
+                query.eq(
+                    'company_id',
+                    filters.companyId,
+                );
+
+        }
+
+
+
+        if (filters?.search) {
+
+            query =
+                query.or(
+
+                    [
+
+                        `first_name.ilike.%${filters.search}%`,
+
+                        `last_name.ilike.%${filters.search}%`,
+
+                        `full_name.ilike.%${filters.search}%`,
+
+                        `email.ilike.%${filters.search}%`,
+
+                        `phone.ilike.%${filters.search}%`,
+
+                    ].join(','),
+
+                );
+
+        }
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query;
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+
+            data ?? []
+
+        ) as Contact[];
+
+    }
+
+
+
+    async summary(): Promise<ContactsSummary> {
+
+
+        const contacts =
+            await this.list();
+
+
+
+        return {
+
+            total:
+                contacts.length,
+
+
+            active:
+                contacts.filter(
+                    contact =>
+                        contact.status === 'ACTIVE',
+                ).length,
+
+
+            inactive:
+                contacts.filter(
+                    contact =>
+                        contact.status === 'INACTIVE',
+                ).length,
+
+
+            leads:
+                contacts.filter(
+                    contact =>
+                        contact.status === 'LEAD',
+                ).length,
+
+
+            customers:
+                contacts.filter(
+                    contact =>
+                        contact.status === 'CUSTOMER',
+                ).length,
+
+
+            archived:
+                (
+                    await this.listArchived()
+                ).length,
+
+        };
+
+    }
+    }
+
+
+
+export function createContactsRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new ContactsRepository(
+        supabase,
+    );
+
+}
+export const ContactsRepositoryInstance = null;

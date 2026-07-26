@@ -3,7 +3,10 @@ export type ContactStatus =
     | 'ACTIVE'
     | 'INACTIVE'
     | 'LEAD'
-    | 'CUSTOMER';
+    | 'CUSTOMER'
+    | 'ARCHIVED';
+
+
 
 
 
@@ -13,10 +16,22 @@ export interface Contact {
     id: string;
 
 
+    /**
+     * Universal CRM entity discriminator
+     */
+    entityType?: 'Contact';
+
+
+
+    /**
+     * Multi tenant ownership
+     */
     organizationId?: string;
 
 
+
     companyId?: string;
+
 
 
     firstName: string;
@@ -25,6 +40,7 @@ export interface Contact {
 
 
     fullName?: string;
+
 
 
     email?: string;
