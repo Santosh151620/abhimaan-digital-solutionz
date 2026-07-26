@@ -5,11 +5,16 @@ import type {
 } from '@/types/crm/Pipeline';
 
 import type {
+    Opportunity,
     OpportunityStage,
 } from '@/types/crm/Opportunities';
 
 import {
-    OpportunitiesRepositoryInstance,
+    createClient,
+} from '@/lib/supabase/server';
+
+import {
+    createOpportunitiesRepository,
 } from './OpportunitiesRepository';
 
 
@@ -78,15 +83,23 @@ class PipelineRepository {
     async getPipeline(): Promise<PipelineColumn[]> {
 
 
+        const supabase =
+            await createClient();
+
+        const repository =
+            createOpportunitiesRepository(
+                supabase,
+            );
+
         const opportunities =
-            await OpportunitiesRepositoryInstance.list();
-
-
+            await repository.list();
 
         const items: PipelineOpportunity[] =
 
             opportunities.map(
-                opportunity => ({
+                (
+                    opportunity: Opportunity,
+                ) => ({
 
                     id:
                         opportunity.id,

@@ -1,12 +1,14 @@
 import {
-    pipelineRepository,
-} from '@/repositories/crm/PipelineRepository';
-
+    createClient,
+} from '@/lib/supabase/server';
 
 import {
-    opportunitiesRepository,
+    createOpportunitiesRepository,
 } from '@/repositories/crm/OpportunitiesRepository';
 
+import {
+    pipelineRepository,
+} from '@/repositories/crm/PipelineRepository';
 
 import type {
     Opportunity,
@@ -19,13 +21,25 @@ import type {
 class PipelineService {
 
 
+    private async repository() {
+
+        const supabase =
+            await createClient();
+
+        return createOpportunitiesRepository(
+            supabase,
+        );
+
+    }
+
+
+
 
     async list() {
 
         return pipelineRepository.getPipeline();
 
     }
-
 
 
 
@@ -39,13 +53,11 @@ class PipelineService {
 
 
 
-
     async getStages() {
 
         return pipelineRepository.getStages();
 
     }
-
 
 
 
@@ -61,59 +73,50 @@ class PipelineService {
     }
 
 
-    async summary() {
 
+
+    async summary() {
 
         const pipeline =
             await this.getPipeline();
 
-
-
         const totalOpportunities =
-
             pipeline.reduce(
 
                 (
                     total,
-                    column
+                    column,
                 ) =>
 
                     total +
                     column.opportunities.length,
 
-                0
+                0,
 
             );
 
-
-
         const totalValue =
-
             pipeline.reduce(
 
                 (
                     total,
-                    column
+                    column,
                 ) =>
 
                     total +
                     column.totalValue,
 
-                0
+                0,
 
             );
 
-
-
         const weightedValue =
-
             pipeline.reduce(
 
                 (
                     total,
-                    column
+                    column,
                 ) =>
-
 
                     total +
 
@@ -121,9 +124,8 @@ class PipelineService {
 
                         (
                             stageTotal,
-                            opportunity
+                            opportunity,
                         ) =>
-
 
                             stageTotal +
 
@@ -133,41 +135,29 @@ class PipelineService {
                                 100
                             ),
 
-
-                        0
+                        0,
 
                     ),
 
-
-                0
+                0,
 
             );
 
-
-
         return {
-
-            // New standard fields
 
             stages:
                 pipeline.length,
 
-
             totalOpportunities,
-
 
             totalValue,
 
-
             weightedValue,
-
-
 
             // Backward compatibility
 
             total:
                 totalOpportunities,
-
 
             pipelineValue:
                 totalValue,
@@ -177,76 +167,67 @@ class PipelineService {
     }
 
 
+
+
     async opportunitySummary(): Promise<OpportunitySummary> {
 
-        return opportunitiesRepository.summary();
+        const repository =
+            await this.repository();
+
+        return repository.summary();
 
     }
-
 
 
 
 
     async moveOpportunity(
-        id:string,
-        stage:OpportunityStage,
-    ):Promise<Opportunity | null>{
+        id: string,
+        stage: OpportunityStage,
+    ): Promise<Opportunity> {
 
-
+        const repository =
+            await this.repository();
 
         let status:
             'Open'
-            |
-            'Won'
-            |
-            'Lost'
-            |
-            'On Hold';
+            | 'Won'
+            | 'Lost'
+            | 'On Hold';
 
-
-
-        switch(stage){
+        switch (stage) {
 
             case 'Won':
 
-                status =
-                    'Won';
-
+                status = 'Won';
                 break;
-
-
 
             case 'Lost':
 
-                status =
-                    'Lost';
-
+                status = 'Lost';
                 break;
-
-
 
             default:
 
-                status =
-                    'Open';
+                status = 'Open';
 
         }
 
-
-
-        return opportunitiesRepository.update(
+        return repository.update(
 
             id,
 
             {
+
                 stage,
+
                 status,
-            }
+
+            },
 
         );
 
     }
-
 
 }
 
@@ -257,5 +238,8 @@ export const pipelineService =
 
 
 
+/**
+ * Backward compatibility alias.
+ */
 export const PipelineServiceInstance =
     pipelineService;

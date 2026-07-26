@@ -29,7 +29,7 @@ export default function NewPipelineOpportunityPage() {
             new Date().toISOString();
 
         const opportunity: Opportunity = {
-
+entityType: 'Opportunity',
             id:
                 crypto.randomUUID(),
 

@@ -5,19 +5,46 @@ import type {
 
 
 import {
-    opportunitiesRepository,
+    createOpportunitiesRepository,
 } from '@/repositories/crm/OpportunitiesRepository';
+
+
+import {
+    createClient,
+} from '@/lib/supabase/server';
 
 
 
 class OpportunitiesService {
 
 
-    async list(): Promise<Opportunity[]> {
+    private async repository() {
 
-        return opportunitiesRepository.list();
+
+        const supabase =
+            await createClient();
+
+
+        return createOpportunitiesRepository(
+            supabase,
+        );
 
     }
+
+
+
+
+    async list(): Promise<Opportunity[]> {
+
+
+        const repository =
+            await this.repository();
+
+
+        return repository.list();
+
+    }
+
 
 
 
@@ -25,7 +52,12 @@ class OpportunitiesService {
         id: string,
     ): Promise<Opportunity | null> {
 
-        return opportunitiesRepository.details(
+
+        const repository =
+            await this.repository();
+
+
+        return repository.details(
             id,
         );
 
@@ -33,9 +65,11 @@ class OpportunitiesService {
 
 
 
+
     async get(
         id: string,
     ): Promise<Opportunity | null> {
+
 
         return this.details(
             id,
@@ -45,76 +79,122 @@ class OpportunitiesService {
 
 
 
+
     async create(
         data: Partial<Opportunity>,
     ): Promise<Opportunity> {
 
 
+        const repository =
+            await this.repository();
+
+
+
         const now =
-            new Date().toISOString();
+            new Date()
+                .toISOString();
+
 
 
         const opportunity: Opportunity = {
+
 
             id:
                 data.id ??
                 crypto.randomUUID(),
 
+
+
+            entityType:
+                'Opportunity',
+
+
+
             opportunityNumber:
                 data.opportunityNumber ??
                 `OPP-${Date.now()}`,
+
+
 
             name:
                 data.name ??
                 data.title ??
                 'Untitled Opportunity',
 
+
+
             title:
                 data.title ??
                 data.name ??
                 'Untitled Opportunity',
 
+
+
             description:
                 data.description,
+
+
 
             companyId:
                 data.companyId,
 
+
+
             contactId:
                 data.contactId,
+
+
 
             leadId:
                 data.leadId,
 
+
+
             ownerId:
                 data.ownerId,
+
+
 
             owner:
                 data.owner ??
                 data.ownerId,
 
+
+
             stage:
                 data.stage ??
                 'New',
+
+
 
             status:
                 data.status ??
                 'Open',
 
+
+
             value:
                 data.value ??
                 0,
+
+
 
             probability:
                 data.probability ??
                 0,
 
+
+
             expectedCloseDate:
                 data.expectedCloseDate,
+
+
 
             createdAt:
                 data.createdAt ??
                 now,
+
+
 
             updatedAt:
                 now,
@@ -122,7 +202,8 @@ class OpportunitiesService {
         };
 
 
-        return opportunitiesRepository.create(
+
+        return repository.create(
             opportunity,
         );
 
@@ -130,25 +211,49 @@ class OpportunitiesService {
 
 
 
+
     async update(
         id: string,
-        data: Partial<Opportunity>,
-    ): Promise<Opportunity | null> {
 
-        return opportunitiesRepository.update(
+        data: Partial<Opportunity>,
+
+    ): Promise<Opportunity> {
+
+
+        const repository =
+            await this.repository();
+
+
+        return repository.update(
+
             id,
-            data,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Opportunity',
+
+            },
+
         );
 
     }
+
 
 
 
     async delete(
         id: string,
-    ): Promise<boolean> {
+    ): Promise<void> {
 
-        return opportunitiesRepository.delete(
+
+        const repository =
+            await this.repository();
+
+
+        await repository.delete(
             id,
         );
 
@@ -156,9 +261,15 @@ class OpportunitiesService {
 
 
 
+
     async summary(): Promise<OpportunitySummary> {
 
-        return opportunitiesRepository.summary();
+
+        const repository =
+            await this.repository();
+
+
+        return repository.summary();
 
     }
 
@@ -167,8 +278,10 @@ class OpportunitiesService {
 
 
 
+
 export const opportunitiesService =
     new OpportunitiesService();
+
 
 
 

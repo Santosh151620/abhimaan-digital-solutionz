@@ -15,7 +15,7 @@ export type OpportunityStatus =
 
 
 export interface Opportunity {
-
+   entityType?: 'Opportunity';
     id: string;
 
     opportunityNumber: string;
