@@ -1,282 +1,298 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Quotation,
     QuotationStatus,
+    QuotationSearchFilters,
+    QuotationSummary,
 } from '@/types/crm/Quotations';
 
 
-class QuotationsRepository {
+
+export class QuotationsRepository
+    extends BaseRepository<Quotation> {
 
 
-    private quotations =
-        new Map<string, Quotation>();
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        super(
+            supabase,
+            'quotations',
+        );
+
+    }
+
+
 
 
     async list(): Promise<Quotation[]> {
 
-        return [
-            ...this.quotations.values(),
-        ]
-        .filter(
-            quotation =>
-                !quotation.archived
-        )
-        .sort(
-            (a,b)=>
-                b.createdAt.localeCompare(
-                    a.createdAt
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
                 )
-        );
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ??
+            []
+        ) as Quotation[];
 
     }
+
 
 
 
     async listArchived(): Promise<Quotation[]> {
 
-        return [
-            ...this.quotations.values(),
-        ]
-        .filter(
-            quotation =>
-                quotation.archived
-        );
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ??
+            []
+        ) as Quotation[];
 
     }
+
 
 
 
     async findById(
-        id:string
-    ):Promise<Quotation | null>{
+        id: string,
+    ): Promise<Quotation | null> {
 
-        return (
-            this.quotations.get(id)
-            ??
-            null
+        return super.findById(
+            id,
         );
 
     }
 
 
 
-    async details(
-        id:string
-    ):Promise<Quotation | null>{
 
-        return this.findById(id);
+    async details(
+        id: string,
+    ): Promise<Quotation | null> {
+
+        return this.findById(
+            id,
+        );
 
     }
 
 
 
+
     async create(
-        data:Partial<Quotation>
-    ):Promise<Quotation>{
-
-
-        const now =
-            new Date()
-            .toISOString();
+        data: Partial<Quotation>,
+    ): Promise<Quotation> {
 
 
         const items =
-            data.items ?? [];
-
+            data.items ??
+            [];
 
 
         const subtotal =
             data.subtotal ??
+
             items.reduce(
+
                 (
                     sum,
-                    item
+                    item,
                 ) =>
+
                     sum +
                     (
                         item.quantity *
                         item.unitPrice
                     ),
-                0
+
+                0,
+
             );
 
 
-
         const tax =
-            data.tax ?? 0;
+            data.tax ??
+            0;
 
 
         const discount =
-            data.discount ?? 0;
+            data.discount ??
+            0;
 
 
+        return super.create(
 
-        const quotation:Quotation = {
+            {
 
+                ...data,
 
-            id:
-                crypto.randomUUID(),
+                entityType:
+                    'Quotation',
 
+                id:
+                    data.id ??
+                    crypto.randomUUID(),
 
+                quotationNumber:
+                    data.quotationNumber ??
+                    `QT-${Date.now()}`,
 
-            quotationNumber:
-                data.quotationNumber ??
-                `QT-${Date.now()}`,
+                companyId:
+                    data.companyId ??
+                    '',
 
+                title:
+                    data.title ??
+                    '',
 
+                customerName:
+                    data.customerName ??
+                    '',
 
-            companyId:
-                data.companyId ??
-                '',
+                amount:
+                    data.amount ??
+                    (
+                        subtotal +
+                        tax -
+                        discount
+                    ),
 
+                status:
+                    data.status ??
+                    'Draft',
 
+                issueDate:
+                    data.issueDate ??
+                    new Date()
+                        .toISOString()
+                        .substring(
+                            0,
+                            10,
+                        ),
 
-            opportunityId:
-                data.opportunityId,
+                validUntil:
+                    data.validUntil ??
+                    new Date()
+                        .toISOString()
+                        .substring(
+                            0,
+                            10,
+                        ),
 
+                subtotal,
 
+                tax,
 
-            title:
-                data.title ??
-                '',
+                discount,
 
+                total:
+                    data.total ??
+                    (
+                        subtotal +
+                        tax -
+                        discount
+                    ),
 
+                currency:
+                    data.currency ??
+                    'INR',
 
-            customerName:
-                data.customerName ??
-                '',
+                notes:
+                    data.notes,
 
+                items,
 
+                archived:
+                    false,
 
-            amount:
-                data.amount ??
-                0,
+            },
 
-
-
-            status:
-                data.status ??
-                'Draft',
-
-
-
-            issueDate:
-                data.issueDate ??
-                now.substring(0,10),
-
-
-
-            validUntil:
-                data.validUntil ??
-                now.substring(0,10),
-
-
-
-            subtotal,
-
-
-            tax,
-
-
-            discount,
-
-
-
-            total:
-                data.total ??
-                (
-                    subtotal +
-                    tax -
-                    discount
-                ),
-
-
-
-            currency:
-                data.currency ??
-                'INR',
-
-
-
-            notes:
-                data.notes,
-
-
-
-            items,
-
-
-
-            archived:false,
-
-
-
-            createdAt:
-                now,
-
-
-
-            updatedAt:
-                now,
-
-        };
-
-
-
-        this.quotations.set(
-            quotation.id,
-            quotation
         );
-
-
-        return quotation;
 
     }
+        async update(
+        id: string,
+        data: Partial<Quotation>,
+    ): Promise<Quotation> {
 
+        return super.update(
 
-
-
-    async update(
-        id:string,
-        data:Partial<Quotation>
-    ):Promise<Quotation | null>{
-
-
-        const existing =
-            await this.findById(id);
-
-
-
-        if(!existing){
-
-            return null;
-
-        }
-
-
-
-        const updated:Quotation = {
-
-            ...existing,
-
-            ...data,
-
-
-            updatedAt:
-                new Date()
-                .toISOString(),
-
-        };
-
-
-
-        this.quotations.set(
             id,
-            updated
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Quotation',
+
+            },
+
         );
-
-
-
-        return updated;
 
     }
 
@@ -284,15 +300,20 @@ class QuotationsRepository {
 
 
     async updateStatus(
-        id:string,
-        status:QuotationStatus
-    ){
+        id: string,
+        status: QuotationStatus,
+    ): Promise<Quotation> {
 
         return this.update(
+
             id,
+
             {
-                status
-            }
+
+                status,
+
+            },
+
         );
 
     }
@@ -300,35 +321,22 @@ class QuotationsRepository {
 
 
 
-
     async delete(
-        id:string
-    ):Promise<boolean>{
+        id: string,
+    ): Promise<void> {
 
+        await this.update(
 
-        const quotation =
-            this.quotations.get(id);
+            id,
 
+            {
 
+                archived:
+                    true,
 
-        if(!quotation){
+            },
 
-            return false;
-
-        }
-
-
-
-        quotation.archived=true;
-
-
-        quotation.updatedAt =
-            new Date()
-            .toISOString();
-
-
-
-        return true;
+        );
 
     }
 
@@ -336,33 +344,21 @@ class QuotationsRepository {
 
 
     async restore(
-        id:string
-    ):Promise<boolean>{
+        id: string,
+    ): Promise<Quotation> {
 
+        return this.update(
 
-        const quotation =
-            this.quotations.get(id);
+            id,
 
+            {
 
+                archived:
+                    false,
 
-        if(!quotation){
+            },
 
-            return false;
-
-        }
-
-
-
-        quotation.archived=false;
-
-
-        quotation.updatedAt =
-            new Date()
-            .toISOString();
-
-
-
-        return true;
+        );
 
     }
 
@@ -370,73 +366,116 @@ class QuotationsRepository {
 
 
     async search(
-        filters?:{
-            status?:QuotationStatus;
-            search?:string;
-        }
-    ):Promise<Quotation[]>{
+        filters?: QuotationSearchFilters,
+    ): Promise<Quotation[]> {
 
 
-        let quotations =
-            await this.list();
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                );
 
 
+        if (filters?.status) {
 
-        if(filters?.status){
-
-            quotations =
-                quotations.filter(
-                    q =>
-                        q.status ===
-                        filters.status
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
                 );
 
         }
 
 
+        if (filters?.companyId) {
 
-        if(filters?.search){
+            query =
+                query.eq(
+                    'company_id',
+                    filters.companyId,
+                );
 
-            const keyword =
-                filters.search.toLowerCase();
+        }
 
 
-            quotations =
-                quotations.filter(
-                    q =>
-                        q.title
-                        .toLowerCase()
-                        .includes(keyword)
-                        ||
+        if (filters?.opportunityId) {
 
-                        q.customerName
-                        .toLowerCase()
-                        .includes(keyword)
-                        ||
+            query =
+                query.eq(
+                    'opportunity_id',
+                    filters.opportunityId,
+                );
 
-                        q.quotationNumber
-                        .toLowerCase()
-                        .includes(keyword)
+        }
+
+
+        if (filters?.search) {
+
+            query =
+                query.or(
+
+                    [
+
+                        `title.ilike.%${filters.search}%`,
+
+                        `customer_name.ilike.%${filters.search}%`,
+
+                        `quotation_number.ilike.%${filters.search}%`,
+
+                    ].join(','),
 
                 );
 
         }
 
 
+        const {
+            data,
+            error,
+        } =
+            await query;
 
-        return quotations;
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ??
+            []
+        ) as Quotation[];
 
     }
-
-
-
-
-    async summary(){
-
+        async summary(): Promise<QuotationSummary> {
 
         const quotations =
             await this.list();
 
+
+        const totalValue =
+            quotations.reduce(
+
+                (
+                    sum,
+                    quotation,
+                ) =>
+
+                    sum +
+                    quotation.total,
+
+                0,
+
+            );
 
 
         return {
@@ -444,41 +483,35 @@ class QuotationsRepository {
             total:
                 quotations.length,
 
-
             draft:
                 quotations.filter(
-                    q=>q.status==='Draft'
+                    quotation =>
+                        quotation.status ===
+                        'Draft',
                 ).length,
-
 
             sent:
                 quotations.filter(
-                    q=>q.status==='Sent'
+                    quotation =>
+                        quotation.status ===
+                        'Sent',
                 ).length,
-
 
             accepted:
                 quotations.filter(
-                    q=>q.status==='Accepted'
+                    quotation =>
+                        quotation.status ===
+                        'Accepted',
                 ).length,
-
 
             rejected:
                 quotations.filter(
-                    q=>q.status==='Rejected'
+                    quotation =>
+                        quotation.status ===
+                        'Rejected',
                 ).length,
 
-
-            totalValue:
-                quotations.reduce(
-                    (
-                        sum,
-                        q
-                    )=>
-                        sum +
-                        q.total,
-                    0
-                ),
+            totalValue,
 
         };
 
@@ -487,5 +520,24 @@ class QuotationsRepository {
 }
 
 
+
+/**
+ * New architecture factory.
+ */
+export function createQuotationsRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new QuotationsRepository(
+        supabase,
+    );
+
+}
+
+
+
+/**
+ * Backward compatibility.
+ */
 export const QuotationsRepositoryInstance =
-    new QuotationsRepository();
+    createQuotationsRepository;

@@ -1,140 +1,173 @@
 import {
-    QuotationsRepositoryInstance,
-} from '@/repositories/crm/QuotationsRepository';
+    createClient,
+} from '@/lib/supabase/server';
 
+import {
+    createQuotationsRepository,
+} from '@/repositories/crm/QuotationsRepository';
 
 import type {
     Quotation,
+    QuotationSearchFilters,
     QuotationStatus,
+    QuotationSummary,
 } from '@/types/crm/Quotations';
 
 
 
-export class QuotationsService {
+class QuotationsService {
 
 
-    async list(){
+    private async repository() {
 
-        return QuotationsRepositoryInstance.list();
+        const supabase =
+            await createClient();
+
+        return createQuotationsRepository(
+            supabase,
+        );
+
+    }
+
+
+
+
+    async list() {
+
+        return (await this.repository()).list();
 
     }
 
 
 
-    async listArchived(){
 
-        return QuotationsRepositoryInstance.listArchived();
+    async listArchived() {
+
+        return (await this.repository()).listArchived();
 
     }
+
 
 
 
     async findById(
-        id:string
-    ){
+        id: string,
+    ) {
 
-        return QuotationsRepositoryInstance.findById(id);
+        return (await this.repository()).findById(
+            id,
+        );
 
     }
+
 
 
 
     async details(
-        id:string
-    ){
+        id: string,
+    ) {
 
-        return this.findById(id);
+        return this.findById(
+            id,
+        );
 
     }
+
 
 
 
     async create(
-        data:Partial<Quotation>
-    ){
+        data: Partial<Quotation>,
+    ) {
 
-        return QuotationsRepositoryInstance.create(data);
+        return (await this.repository()).create(
+            data,
+        );
 
     }
+
 
 
 
     async update(
-        id:string,
-        data:Partial<Quotation>
-    ){
+        id: string,
+        data: Partial<Quotation>,
+    ) {
 
-        return QuotationsRepositoryInstance.update(
+        return (await this.repository()).update(
             id,
-            data
+            data,
         );
 
     }
+
 
 
 
     async delete(
-        id:string
-    ){
+        id: string,
+    ) {
 
-        return QuotationsRepositoryInstance.delete(id);
+        return (await this.repository()).delete(
+            id,
+        );
 
     }
+
 
 
 
     async restore(
-        id:string
-    ){
+        id: string,
+    ) {
 
-        return QuotationsRepositoryInstance.restore(id);
+        return (await this.repository()).restore(
+            id,
+        );
 
     }
+
 
 
 
     async updateStatus(
-        id:string,
-        status:QuotationStatus
-    ){
+        id: string,
+        status: QuotationStatus,
+    ) {
 
-        return QuotationsRepositoryInstance.updateStatus(
+        return (await this.repository()).updateStatus(
             id,
-            status
+            status,
         );
 
     }
+
 
 
 
     async search(
-        filters?:{
-            status?:QuotationStatus;
-            search?:string;
-        }
-    ){
+        filters?: QuotationSearchFilters,
+    ) {
 
-        return QuotationsRepositoryInstance.search(
-            filters
+        return (await this.repository()).search(
+            filters,
         );
 
     }
 
 
 
-    async summary(){
 
-        const summary =
-            await QuotationsRepositoryInstance.summary();
+    async summary() {
 
+        const summary: QuotationSummary =
+            await (await this.repository()).summary();
 
         return {
 
             ...summary,
 
-
-            // backward compatibility
-            // existing reports/dashboard components
+            // Backward compatibility
             value:
                 summary.totalValue,
 
@@ -142,10 +175,17 @@ export class QuotationsService {
 
     }
 
-
 }
 
 
 
-export const QuotationsServiceInstance =
+export const quotationsService =
     new QuotationsService();
+
+
+
+/**
+ * Backward compatibility alias.
+ */
+export const QuotationsServiceInstance =
+    quotationsService;
