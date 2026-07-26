@@ -40,13 +40,10 @@ export default async function EditActivityPage({
     } = await params;
 
 
-
-    const activity =
-        ActivityServiceInstance.details(
-            id,
-        );
-
-
+const activity =
+    await ActivityServiceInstance.details(
+        id,
+    );
 
     if (!activity) {
 

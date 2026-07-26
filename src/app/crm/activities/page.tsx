@@ -9,14 +9,10 @@ import {
 
 
 
-export default async function ActivitiesPage() {
+export default async function Page() {
 
-
-    const activities =
-        ActivityServiceInstance.list();
-
-
-
+   const activities =
+    await ActivityServiceInstance.list();
     return (
 
         <div className="space-y-6">

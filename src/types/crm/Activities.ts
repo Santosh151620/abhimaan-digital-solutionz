@@ -68,7 +68,7 @@ export interface Activity {
     /**
      * Entity driven model
      */
-    entityType: string;
+    entityType: 'Activity';
 
     entityId: string;
 

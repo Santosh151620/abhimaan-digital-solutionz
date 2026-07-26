@@ -1,4 +1,12 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Activity,
     ActivityStatus,
     ActivitySearchFilters,
@@ -6,68 +14,103 @@ import type {
 } from '@/types/crm/Activities';
 
 
-
-class ActivitiesRepository {
-
-
-    private readonly activities =
-        new Map<string, Activity>();
+export class ActivitiesRepository
+    extends BaseRepository<Activity> {
 
 
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
-    list(): Activity[] {
-
-        return [
-            ...this.activities.values(),
-        ]
-        .filter(
-            activity =>
-                !activity.archived,
+        super(
+            supabase,
+            'activities',
         );
 
     }
+    async list(): Promise<Activity[]> {
 
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
 
+        if (error) {
 
+            throw error;
 
-
-    listArchived(): Activity[] {
-
-        return [
-            ...this.activities.values(),
-        ]
-        .filter(
-            activity =>
-                activity.archived,
-        );
-
-    }
-
-
-
-
-
-    details(
-        id: string,
-    ): Activity | null {
+        }
 
         return (
-            this.activities.get(id)
-            ??
-            null
-        );
+            data ??
+            []
+        ) as Activity[];
 
     }
 
 
 
 
+    async listArchived(): Promise<Activity[]> {
 
-    findById(
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+        if (error) {
+
+            throw error;
+
+        }
+
+        return (
+            data ??
+            []
+        ) as Activity[];
+
+    }
+
+
+
+
+    async findById(
         id: string,
-    ): Activity | null {
+    ): Promise<Activity | null> {
 
-        return this.details(
+        return super.findById(
             id,
         );
 
@@ -76,598 +119,627 @@ class ActivitiesRepository {
 
 
 
+    async details(
+        id: string,
+    ): Promise<Activity | null> {
 
-    search(
-        filters?: ActivitySearchFilters,
-    ): Activity[] {
-
-
-        let activities =
-            this.list();
-
-
-
-        if(filters?.status){
-
-            activities =
-                activities.filter(
-                    activity =>
-                        activity.status ===
-                        filters.status,
-                );
-
-        }
-
-
-
-
-        if(filters?.type){
-
-            activities =
-                activities.filter(
-                    activity =>
-                        activity.type ===
-                        filters.type,
-                );
-
-        }
-
-
-
-
-        if(filters?.priority){
-
-            activities =
-                activities.filter(
-                    activity =>
-                        activity.priority ===
-                        filters.priority,
-                );
-
-        }
-
-
-
-
-        if(filters?.entityType){
-
-            activities =
-                activities.filter(
-                    activity =>
-                        activity.entityType ===
-                        filters.entityType,
-                );
-
-        }
-
-
-
-
-        if(filters?.entityId){
-
-            activities =
-                activities.filter(
-                    activity =>
-                        activity.entityId ===
-                        filters.entityId,
-                );
-
-        }
-
-
-
-
-        if(filters?.assignedTo){
-
-            activities =
-                activities.filter(
-                    activity =>
-                        activity.assignedTo ===
-                        filters.assignedTo,
-                );
-
-        }
-
-
-
-
-        if(filters?.search){
-
-            const keyword =
-                filters.search
-                    .trim()
-                    .toLowerCase();
-
-
-
-            activities =
-                activities.filter(
-                    activity =>
-
-                        activity.title
-                            .toLowerCase()
-                            .includes(keyword)
-
-                        ||
-
-                        (
-                            activity.description
-                                ?.toLowerCase()
-                                .includes(keyword)
-                            ??
-                            false
-                        )
-
-                        ||
-
-                        activity.activityNumber
-                            .toLowerCase()
-                            .includes(keyword)
-
-                );
-
-        }
-
-
-
-        return activities;
+        return this.findById(
+            id,
+        );
 
     }
 
 
 
 
-
-    create(
+    async create(
         data: Partial<Activity>,
-    ): Activity {
-
+    ): Promise<Activity> {
 
         const now =
             new Date()
                 .toISOString();
 
-
-
-        const activity: Activity = {
-
+        return super.create({
 
             id:
-                data.id
-                ??
+                data.id ??
                 crypto.randomUUID(),
-
-
 
             activityNumber:
-
-                data.activityNumber
-                ??
+                data.activityNumber ??
                 `ACT-${Date.now()}`,
 
-
-
-
             entityType:
-
-                data.entityType
-                ??
+                data.entityType ??
                 'Activity',
 
-
-
-
             entityId:
-
-                data.entityId
-                ??
+                data.entityId ??
                 crypto.randomUUID(),
 
+            organizationId:
+                data.organizationId,
 
-
+            leadId:
+                data.leadId,
 
             companyId:
                 data.companyId,
 
-
-
             contactId:
                 data.contactId,
 
-
+            opportunityId:
+                data.opportunityId,
 
             projectId:
                 data.projectId,
 
-
+            ownerId:
+                data.ownerId,
 
             assignedTo:
                 data.assignedTo,
 
-
-
             title:
-
-                data.title
-                ??
+                data.title ??
                 '',
-
-
-
 
             description:
                 data.description,
 
-
-
             type:
-
-                data.type
-                ??
+                data.type ??
                 'Other',
 
-
-
-
             status:
-
-                data.status
-                ??
+                data.status ??
                 'Planned',
 
-
-
-
             priority:
-
-                data.priority
-                ??
+                data.priority ??
                 'Medium',
 
+            scheduledAt:
+                data.scheduledAt,
 
-
+            startedAt:
+                data.startedAt,
 
             startDate:
                 data.startDate,
 
+            dueAt:
+                data.dueAt,
 
-
-            location:
-                data.location,
-
-
-
-            reminderMinutes:
-                data.reminderMinutes,
-
-
+            dueDate:
+                data.dueDate,
 
             completedAt:
                 data.completedAt,
 
+            reminderAt:
+                data.reminderAt,
 
+            reminderMinutes:
+                data.reminderMinutes,
+
+            durationMinutes:
+                data.durationMinutes,
+
+            outcome:
+                data.outcome,
+
+            nextAction:
+                data.nextAction,
+
+            location:
+                data.location,
+
+            notes:
+                data.notes,
+
+            metadata:
+                data.metadata,
 
             archived:
                 false,
 
+            isArchived:
+                false,
 
+            deletedAt:
+                null,
 
             createdAt:
                 now,
 
-
-
             updatedAt:
                 now,
 
-
-        };
-
-
-
-        this.activities.set(
-            activity.id,
-            activity,
-        );
-
-
-
-        return activity;
+        });
 
     }
-
-
-
-
-
-    update(
+    async update(
         id: string,
         data: Partial<Activity>,
-    ): Activity | null {
+    ): Promise<Activity> {
 
+        return super.update(
 
-        const existing =
-            this.activities.get(id);
-
-
-
-        if(!existing){
-
-            return null;
-
-        }
-
-
-
-        const updated: Activity = {
-
-
-            ...existing,
-
-            ...data,
-
-
-            updatedAt:
-
-                new Date()
-                    .toISOString(),
-
-
-        };
-
-
-
-        this.activities.set(
             id,
-            updated,
+
+            {
+
+                ...data,
+
+            },
+
         );
-
-
-
-        return updated;
 
     }
 
 
 
 
-
-    updateStatus(
+    async updateStatus(
         id: string,
         status: ActivityStatus,
-    ): Activity | null {
-
+    ): Promise<Activity> {
 
         return this.update(
+
             id,
+
             {
+
                 status,
+
             },
+
         );
 
     }
 
+async delete(
+    id: string,
+): Promise<void> {
+
+    const existing =
+        await this.findById(
+            id,
+        );
+
+
+    if (!existing) {
+
+        return;
+
+    }
+
+
+    const {
+        error,
+    } =
+        await this.tableRef()
+            .update(
+                {
+                    archived: true,
+                    updated_at:
+                        new Date()
+                            .toISOString(),
+                },
+            )
+            .eq(
+                'id',
+                id,
+            );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+}
+
+    async restore(
+    id: string,
+): Promise<boolean> {
+
+    const existing =
+        await this.findById(
+            id,
+        );
+
+
+    if (!existing) {
+
+        return false;
+
+    }
+
+
+    const {
+        error,
+    } =
+        await this.tableRef()
+            .update(
+                {
+                    archived: false,
+                    updated_at:
+                        new Date()
+                            .toISOString(),
+                },
+            )
+            .eq(
+                'id',
+                id,
+            );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    return true;
+
+}
+
+    async search(
+        filters?: ActivitySearchFilters,
+    ): Promise<Activity[]> {
+
+
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                );
 
 
 
+        if (filters?.status) {
 
-    delete(
-        id: string,
-    ): boolean {
-
-
-        const activity =
-            this.activities.get(id);
-
-
-
-        if(!activity){
-
-            return false;
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
+                );
 
         }
 
 
 
-        activity.archived =
-            true;
+        if (filters?.type) {
 
-
-
-        activity.updatedAt =
-            new Date()
-                .toISOString();
-
-
-
-        this.activities.set(
-            id,
-            activity,
-        );
-
-
-
-        return true;
-
-    }
-
-
-
-
-
-    restore(
-        id: string,
-    ): boolean {
-
-
-        const activity =
-            this.activities.get(id);
-
-
-
-        if(!activity){
-
-            return false;
+            query =
+                query.eq(
+                    'type',
+                    filters.type,
+                );
 
         }
 
 
 
-        activity.archived =
-            false;
+        if (filters?.priority) {
+
+            query =
+                query.eq(
+                    'priority',
+                    filters.priority,
+                );
+
+        }
 
 
 
-        activity.updatedAt =
-            new Date()
-                .toISOString();
+        if (filters?.entityType) {
+
+            query =
+                query.eq(
+                    'entity_type',
+                    filters.entityType,
+                );
+
+        }
 
 
 
-        this.activities.set(
-            id,
-            activity,
-        );
+        if (filters?.entityId) {
+
+            query =
+                query.eq(
+                    'entity_id',
+                    filters.entityId,
+                );
+
+        }
 
 
 
-        return true;
+        if (filters?.leadId) {
+
+            query =
+                query.eq(
+                    'lead_id',
+                    filters.leadId,
+                );
+
+        }
+
+
+
+        if (filters?.companyId) {
+
+            query =
+                query.eq(
+                    'company_id',
+                    filters.companyId,
+                );
+
+        }
+
+
+
+        if (filters?.contactId) {
+
+            query =
+                query.eq(
+                    'contact_id',
+                    filters.contactId,
+                );
+
+        }
+
+
+
+        if (filters?.opportunityId) {
+
+            query =
+                query.eq(
+                    'opportunity_id',
+                    filters.opportunityId,
+                );
+
+        }
+
+
+
+        if (filters?.projectId) {
+
+            query =
+                query.eq(
+                    'project_id',
+                    filters.projectId,
+                );
+
+        }
+
+
+
+        if (filters?.ownerId) {
+
+            query =
+                query.eq(
+                    'owner_id',
+                    filters.ownerId,
+                );
+
+        }
+
+
+
+        if (filters?.assignedTo) {
+
+            query =
+                query.eq(
+                    'assigned_to',
+                    filters.assignedTo,
+                );
+
+        }
+
+
+
+        if (filters?.fromDate) {
+
+            query =
+                query.gte(
+                    'start_date',
+                    filters.fromDate,
+                );
+
+        }
+
+
+
+        if (filters?.toDate) {
+
+            query =
+                query.lte(
+                    'start_date',
+                    filters.toDate,
+                );
+
+        }
+
+
+
+        const keyword =
+            filters?.keyword
+            ??
+            filters?.search;
+
+
+
+        if (keyword) {
+
+            query =
+                query.or(
+
+                    [
+
+                        `title.ilike.%${keyword}%`,
+
+                        `description.ilike.%${keyword}%`,
+
+                        `activity_number.ilike.%${keyword}%`,
+
+                    ].join(','),
+
+                );
+
+        }
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query.order(
+                'created_at',
+                {
+                    ascending: false,
+                },
+            );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ??
+            []
+        ) as Activity[];
 
     }
-
-
-
-
-
-       summary(): ActivitySummary {
-
+    async summary(): Promise<ActivitySummary> {
 
         const activities =
-            this.list();
-
-
+            await this.list();
 
         const today =
             new Date()
                 .toISOString()
                 .substring(0, 10);
 
-
-
         return {
-
 
             total:
                 activities.length,
 
-
-
             planned:
-
                 activities.filter(
-                    item =>
-                        item.status === 'Planned',
+                    activity =>
+                        activity.status ===
+                        'Planned',
                 ).length,
-
-
 
             inProgress:
-
                 activities.filter(
-                    item =>
-                        item.status === 'In Progress',
+                    activity =>
+                        activity.status ===
+                        'In Progress',
                 ).length,
-
-
 
             completed:
-
                 activities.filter(
-                    item =>
-                        item.status === 'Completed',
+                    activity =>
+                        activity.status ===
+                        'Completed',
                 ).length,
-
-
 
             cancelled:
-
                 activities.filter(
-                    item =>
-                        item.status === 'Cancelled',
+                    activity =>
+                        activity.status ===
+                        'Cancelled',
                 ).length,
-
-
 
             missed:
-
                 activities.filter(
-                    item =>
-                        item.status === 'Missed',
+                    activity =>
+                        activity.status ===
+                        'Missed',
                 ).length,
-
-
 
             overdue:
-
                 activities.filter(
-                    item =>
+                    activity =>
 
-                        !!item.startDate
-
-                        &&
-
-                        item.startDate < today
+                        !!activity.startDate
 
                         &&
 
-                        item.status !== 'Completed'
+                        activity.startDate < today
 
                         &&
 
-                        item.status !== 'Cancelled',
+                        activity.status !==
+                        'Completed'
+
+                        &&
+
+                        activity.status !==
+                        'Cancelled',
 
                 ).length,
-
-
 
             today:
-
                 activities.filter(
-                    item =>
-
-                        item.startDate === today,
-
+                    activity =>
+                        activity.startDate ===
+                        today,
                 ).length,
 
-
-
             upcoming:
-
                 activities.filter(
-                    item =>
+                    activity =>
 
-                        !!item.startDate
+                        !!activity.startDate
 
                         &&
 
-                        item.startDate > today,
+                        activity.startDate > today,
 
                 ).length,
 
-
-
             highPriority:
-
                 activities.filter(
-                    item =>
+                    activity =>
 
-                        item.priority === 'High'
+                        activity.priority ===
+                        'High'
 
                         ||
 
-                        item.priority === 'Critical',
+                        activity.priority ===
+                        'Critical',
 
                 ).length,
+
+            archived: 0,
+
             completionRate:
 
                 activities.length === 0
@@ -678,55 +750,53 @@ class ActivitiesRepository {
 
                         (
                             activities.filter(
-                                item =>
-                                    item.status === 'Completed',
+                                activity =>
+                                    activity.status ===
+                                    'Completed',
                             ).length
+
                             /
+
                             activities.length
-                        )
-                        *
-                        100
+
+                        ) * 100,
 
                     ),
-                    
-            archived:
-
-                this.listArchived().length,
-
 
         };
 
     }
 
+}
+
+
+
+/**
+ * Production repository factory.
+ */
+export function createActivitiesRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new ActivitiesRepository(
+        supabase,
+    );
 
 }
 
 
 
-
-const activitiesRepository =
-    new ActivitiesRepository();
-
-
-
 /**
- * New architecture export
+ * Standard export.
  */
 export const ActivitiesRepositoryInstance =
-    activitiesRepository;
+    createActivitiesRepository;
 
-
-/**
- * Internal/service compatibility
- */
-export {
-    activitiesRepository,
-};
 
 
 /**
- * Temporary legacy compatibility.
- * Remove only after final audit.
+ * Temporary compatibility.
+ * Remove during final legacy cleanup.
  */
 export const ActivityRepositoryInstance =
-    activitiesRepository;
+    createActivitiesRepository;

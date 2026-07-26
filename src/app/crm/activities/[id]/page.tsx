@@ -1,11 +1,8 @@
 import Link from 'next/link';
 
-
 import {
     notFound,
 } from 'next/navigation';
-
-
 
 import {
     ActivityServiceInstance,
@@ -30,7 +27,6 @@ export default async function ActivityDetailsPage({
 }: Props) {
 
 
-
     const {
         id,
     } = await params;
@@ -38,7 +34,7 @@ export default async function ActivityDetailsPage({
 
 
     const activity =
-        ActivityServiceInstance.details(
+        await ActivityServiceInstance.details(
             id,
         );
 
@@ -149,8 +145,8 @@ export default async function ActivityDetailsPage({
                     </div>
 
 
-
                 </div>
+
 
 
 
@@ -160,11 +156,13 @@ export default async function ActivityDetailsPage({
 
                         <div className="mt-6">
 
+
                             <h2 className="font-semibold">
 
                                 Description
 
                             </h2>
+
 
 
                             <p className="mt-2 text-sm">
@@ -182,6 +180,7 @@ export default async function ActivityDetailsPage({
 
 
             </div>
+
 
 
 

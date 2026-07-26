@@ -1,5 +1,9 @@
 import {
-    activitiesRepository,
+    createClient,
+} from '@/lib/supabase/server';
+
+import {
+    createActivitiesRepository,
 } from '@/repositories/crm/ActivitiesRepository';
 
 import type {
@@ -9,130 +13,243 @@ import type {
     ActivitySummary,
 } from '@/types/crm/Activities';
 
-class ActivitiesService {
 
-    list(): Activity[] {
 
-        return activitiesRepository.list();
+class ActivityService {
+
+
+    private async repository() {
+
+        const supabase =
+            await createClient();
+
+
+        return createActivitiesRepository(
+            supabase,
+        );
 
     }
 
-    listArchived(): Activity[] {
 
-        return activitiesRepository.listArchived();
+
+
+
+    async list(): Promise<Activity[]> {
+
+        const repo =
+            await this.repository();
+
+
+        return repo.list();
 
     }
 
-    findById(
+
+
+
+
+    async listArchived(): Promise<Activity[]> {
+
+        const repo =
+            await this.repository();
+
+
+        return repo.listArchived();
+
+    }
+
+
+
+
+
+    async details(
         id: string,
-    ): Activity | null {
+    ): Promise<Activity | null> {
 
-        return activitiesRepository.findById(
+        const repo =
+            await this.repository();
+
+
+        return repo.findById(
             id,
         );
 
     }
 
-    details(
-        id: string,
-    ): Activity | null {
 
-        return this.findById(
+
+
+
+    async findById(
+        id: string,
+    ): Promise<Activity | null> {
+
+        return this.details(
             id,
         );
 
     }
 
-    search(
+
+
+
+
+    async search(
         filters?: ActivitySearchFilters,
-    ): Activity[] {
+    ): Promise<Activity[]> {
 
-        return activitiesRepository.search(
+        const repo =
+            await this.repository();
+
+
+        return repo.search(
             filters,
         );
 
     }
 
-    create(
-        data: Partial<Activity>,
-    ): Activity {
 
-        return activitiesRepository.create(
+
+
+
+    async create(
+        data: Partial<Activity>,
+    ): Promise<Activity> {
+
+        const repo =
+            await this.repository();
+
+
+        return repo.create(
             data,
         );
 
     }
 
-    update(
+
+
+
+
+    async update(
         id: string,
         data: Partial<Activity>,
-    ): Activity | null {
+    ): Promise<Activity | null> {
 
-        return activitiesRepository.update(
+        const repo =
+            await this.repository();
+
+
+        return repo.update(
             id,
             data,
         );
 
     }
 
-    updateStatus(
+
+
+
+
+    async updateStatus(
         id: string,
         status: ActivityStatus,
-    ): Activity | null {
+    ): Promise<Activity | null> {
 
-        return activitiesRepository.updateStatus(
+        const repo =
+            await this.repository();
+
+
+        return repo.updateStatus(
             id,
             status,
         );
 
     }
 
-    delete(
-        id: string,
-    ): boolean {
 
-        return activitiesRepository.delete(
+
+
+
+    async delete(
+        id: string,
+    ): Promise<boolean> {
+
+        const repo =
+            await this.repository();
+
+
+        await repo.delete(
+            id,
+        );
+
+
+        return true;
+
+    }
+
+
+
+
+
+    async restore(
+        id: string,
+    ): Promise<boolean> {
+
+        const repo =
+            await this.repository();
+
+
+        return repo.restore(
             id,
         );
 
     }
 
-    restore(
-        id: string,
-    ): boolean {
 
-        return activitiesRepository.restore(
-            id,
-        );
 
-    }
 
-    summary(): ActivitySummary {
 
-        return activitiesRepository.summary();
+    async summary(): Promise<ActivitySummary> {
+
+        const repo =
+            await this.repository();
+
+
+        return repo.summary();
 
     }
 
-}
-export async function createActivitiesService():
-    Promise<ActivitiesService> {
-
-    return new ActivitiesService();
 
 }
 
-export const activitiesService =
-    new ActivitiesService();
+
+
+
 
 /**
- * Preferred standardized export.
+ * Standard service instance.
+ */
+export const activitiesService =
+    new ActivityService();
+
+
+
+
+
+/**
+ * New architecture export.
  */
 export const ActivitiesServiceInstance =
     activitiesService;
 
+
+
+
+
 /**
- * Legacy compatibility.
- * Remove during the final legacy cleanup sprint.
+ * Existing CRM compatibility export.
+ *
+ * Existing routes/pages already consume this.
  */
 export const ActivityServiceInstance =
     activitiesService;

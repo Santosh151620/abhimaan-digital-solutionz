@@ -17,8 +17,6 @@ import type {
 
 export class QuotationsRepository
     extends BaseRepository<Quotation> {
-
-
     constructor(
         supabase: SupabaseClient,
     ) {
