@@ -118,18 +118,39 @@ class ContactsService {
         data: Partial<Contact>,
     ): Promise<Contact> {
 
+
         const repository =
             await this.repository();
+
 
 
         return repository.create(
 
             {
 
-                ...data,
+                firstName:
+                    data.firstName
+                    ??
+                    '',
+
+
+                lastName:
+                    data.lastName
+                    ??
+                    '',
+
 
                 entityType:
                     'Contact',
+
+
+                ...data,
+
+
+                status:
+                    data.status
+                    ??
+                    'ACTIVE',
 
             },
 
@@ -146,6 +167,7 @@ class ContactsService {
 
     ): Promise<Contact> {
 
+
         const repository =
             await this.repository();
 
@@ -157,6 +179,7 @@ class ContactsService {
             {
 
                 ...data,
+
 
                 entityType:
                     'Contact',

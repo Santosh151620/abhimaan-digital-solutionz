@@ -2,49 +2,27 @@ import type {
     SupabaseClient,
 } from '@supabase/supabase-js';
 
+
 import {
     BaseRepository,
 } from '@/lib/db/base-repository';
 
+
 import type {
     Contact,
     ContactDetails,
+    ContactSearchFilters,
+    ContactsSummary,
+    CreateContactInput,
+    UpdateContactInput,
 } from '@/types/crm/Contacts';
 
-
-
-export interface ContactSearchFilters {
-
-    search?: string;
-
-    status?: Contact['status'];
-
-    companyId?: string;
-
-}
-
-
-
-export interface ContactsSummary {
-
-    total: number;
-
-    active: number;
-
-    inactive: number;
-
-    leads: number;
-
-    customers: number;
-
-    archived: number;
-
-}
 
 
 
 export class ContactsRepository
     extends BaseRepository<Contact> {
+
 
 
     constructor(
@@ -60,7 +38,10 @@ export class ContactsRepository
 
 
 
+
+
     async list(): Promise<Contact[]> {
+
 
         const {
             data,
@@ -94,14 +75,20 @@ export class ContactsRepository
 
 
         return (
-            data ?? []
+            data ??
+            []
         ) as Contact[];
 
     }
 
 
 
+
+
+
+
     async listArchived(): Promise<Contact[]> {
+
 
         const {
             data,
@@ -116,6 +103,12 @@ export class ContactsRepository
                 .eq(
                     'status',
                     'ARCHIVED',
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
                 );
 
 
@@ -129,10 +122,15 @@ export class ContactsRepository
 
 
         return (
-            data ?? []
+            data ??
+            []
         ) as Contact[];
 
     }
+
+
+
+
 
 
 
@@ -146,6 +144,10 @@ export class ContactsRepository
         );
 
     }
+
+
+
+
 
 
 
@@ -173,45 +175,76 @@ export class ContactsRepository
 
             ...contact,
 
-        } as ContactDetails;
+        };
 
     }
-        async create(
-        data: Partial<Contact>,
+
+
+
+
+
+
+
+    async create(
+        data: CreateContactInput,
     ): Promise<Contact> {
 
 
-        const payload: Partial<Contact> = {
+        const now =
+            new Date()
+                .toISOString();
+
+
+
+        return super.create({
 
             ...data,
+
 
             id:
                 crypto.randomUUID(),
 
+
+
             entityType:
                 'Contact',
+
+
+
+            entityId:
+                crypto.randomUUID(),
+
+
 
             status:
                 data.status
                 ??
                 'ACTIVE',
 
-        };
 
 
+            createdAt:
+                now,
 
-        return super.create(
-            payload,
-        );
+
+            updatedAt:
+                now,
+
+
+        });
 
     }
+
+
+
+
 
 
 
     async update(
         id: string,
 
-        data: Partial<Contact>,
+        data: UpdateContactInput,
 
     ): Promise<Contact> {
 
@@ -235,6 +268,10 @@ export class ContactsRepository
 
 
 
+
+
+
+
     async delete(
         id: string,
     ): Promise<void> {
@@ -249,6 +286,11 @@ export class ContactsRepository
                 status:
                     'ARCHIVED',
 
+
+                isDeleted:
+                    true,
+
+
                 deletedAt:
                     new Date()
                         .toISOString(),
@@ -261,9 +303,28 @@ export class ContactsRepository
 
 
 
+
+
+
+
     async restore(
         id: string,
     ): Promise<boolean> {
+
+
+        const existing =
+            await this.findById(
+                id,
+            );
+
+
+
+        if (!existing) {
+
+            return false;
+
+        }
+
 
 
         await this.update(
@@ -275,17 +336,27 @@ export class ContactsRepository
                 status:
                     'ACTIVE',
 
+
+                isDeleted:
+                    false,
+
+
                 deletedAt:
-                    undefined,
+                    null,
 
             },
 
         );
 
 
+
         return true;
 
     }
+
+
+
+
 
 
 
@@ -304,6 +375,20 @@ export class ContactsRepository
 
 
 
+        if (!filters?.includeArchived) {
+
+            query =
+                query.neq(
+                    'status',
+                    'ARCHIVED',
+                );
+
+        }
+
+
+
+
+
         if (filters?.status) {
 
             query =
@@ -313,6 +398,8 @@ export class ContactsRepository
                 );
 
         }
+
+
 
 
 
@@ -328,22 +415,58 @@ export class ContactsRepository
 
 
 
+
+
+        if (filters?.ownerId) {
+
+            query =
+                query.eq(
+                    'owner_id',
+                    filters.ownerId,
+                );
+
+        }
+
+
+
+
+
+        if (filters?.assignedTo) {
+
+            query =
+                query.eq(
+                    'assigned_to',
+                    filters.assignedTo,
+                );
+
+        }
+
+
+
+
+
         if (filters?.search) {
+
+
+            const keyword =
+                filters.search.trim();
+
+
 
             query =
                 query.or(
 
                     [
 
-                        `first_name.ilike.%${filters.search}%`,
+                        `first_name.ilike.%${keyword}%`,
 
-                        `last_name.ilike.%${filters.search}%`,
+                        `last_name.ilike.%${keyword}%`,
 
-                        `full_name.ilike.%${filters.search}%`,
+                        `full_name.ilike.%${keyword}%`,
 
-                        `email.ilike.%${filters.search}%`,
+                        `email.ilike.%${keyword}%`,
 
-                        `phone.ilike.%${filters.search}%`,
+                        `phone.ilike.%${keyword}%`,
 
                     ].join(','),
 
@@ -353,11 +476,21 @@ export class ContactsRepository
 
 
 
+
+
         const {
             data,
             error,
         } =
-            await query;
+            await query.order(
+
+                'created_at',
+
+                {
+                    ascending: false,
+                },
+
+            );
 
 
 
@@ -371,11 +504,16 @@ export class ContactsRepository
 
         return (
 
-            data ?? []
+            data ??
+            []
 
         ) as Contact[];
 
     }
+
+
+
+
 
 
 
@@ -387,52 +525,74 @@ export class ContactsRepository
 
 
 
+        const archived =
+            await this.listArchived();
+
+
+
         return {
+
 
             total:
                 contacts.length,
 
 
+
             active:
+
                 contacts.filter(
-                    contact =>
-                        contact.status === 'ACTIVE',
+                    item =>
+                        item.status === 'ACTIVE',
                 ).length,
+
 
 
             inactive:
+
                 contacts.filter(
-                    contact =>
-                        contact.status === 'INACTIVE',
+                    item =>
+                        item.status === 'INACTIVE',
                 ).length,
+
 
 
             leads:
+
                 contacts.filter(
-                    contact =>
-                        contact.status === 'LEAD',
+                    item =>
+                        item.status === 'LEAD',
                 ).length,
+
 
 
             customers:
+
                 contacts.filter(
-                    contact =>
-                        contact.status === 'CUSTOMER',
+                    item =>
+                        item.status === 'CUSTOMER',
                 ).length,
+
 
 
             archived:
-                (
-                    await this.listArchived()
-                ).length,
+                archived.length,
+
 
         };
 
     }
-    }
+
+
+}
 
 
 
+
+
+
+/**
+ * Production factory
+ */
 export function createContactsRepository(
     supabase: SupabaseClient,
 ) {
@@ -442,4 +602,21 @@ export function createContactsRepository(
     );
 
 }
-export const ContactsRepositoryInstance = null;
+
+
+
+
+
+/**
+ * Standard export
+ */
+export const ContactsRepositoryInstance =
+    createContactsRepository;
+
+
+
+/**
+ * Legacy compatibility
+ */
+export const ContactRepositoryInstance =
+    createContactsRepository;
