@@ -1,7 +1,12 @@
 'use client';
 
-import Link from 'next/link';
-import { useState } from 'react';
+import {
+    useState,
+} from 'react';
+
+import {
+    useRouter,
+} from 'next/navigation';
 
 import {
     createCompany,
@@ -9,175 +14,180 @@ import {
 } from './actions';
 
 import type {
-    CompanyDetails,
+    Company,
 } from '@/types/crm/Companies';
 
+import {
+    CompaniesDataTable,
+} from '@/components/crm/companies';
+
+
 interface Props {
-    initialCompanies: CompanyDetails[];
+
+initialCompanies: Company[];
+
 }
 
+
+
 export default function CompaniesClient({
+
     initialCompanies,
+
 }: Props) {
 
-    const [
-        companies,
-        setCompanies,
-    ] = useState<CompanyDetails[]>(
-        initialCompanies
-    );
+
+    const router = useRouter();
+
 
     const [
+
         name,
+
         setName,
+
     ] = useState('');
+
+
+
+    const [
+
+        isCreating,
+
+        setIsCreating,
+
+    ] = useState(false);
+
+
 
     async function handleCreate() {
 
-        if (!name.trim()) {
+
+        const companyName =
+            name.trim();
+
+
+
+        if (!companyName) {
+
             return;
+
         }
 
-        const company =
+
+
+        try {
+
+
+            setIsCreating(true);
+
+
+
             await createCompany({
-                name,
+
+                name: companyName,
+
                 status: 'ACTIVE',
-            } as Partial<CompanyDetails>);
 
-        setCompanies(
-            previous => [
-                ...previous,
-                company,
-            ]
-        );
+            });
 
-        setName('');
+
+
+            setName('');
+
+
+
+            router.refresh();
+
+
+
+        }
+
+        finally {
+
+
+            setIsCreating(false);
+
+
+        }
+
 
     }
 
-    async function handleDelete(
+
+
+
+
+    async function handleArchive(
+
         id: string
+
     ) {
 
-        const success =
-            await deleteCompany(id);
 
-        if (!success) {
-            return;
-        }
+        await deleteCompany(id);
 
-        setCompanies(
-            previous =>
-                previous.filter(
-                    company =>
-                        company.id !== id
-                )
-        );
+
+        router.refresh();
+
 
     }
+
+
+
+
 
     return (
 
         <div className="space-y-6">
 
-            <div className="flex gap-3">
+
+            <div className="flex flex-col gap-3 rounded-lg border p-4 md:flex-row">
+
 
                 <input
+
                     value={name}
-                    onChange={
-                        e =>
-                            setName(
-                                e.target.value
-                            )
+
+                    onChange={(event) =>
+                        setName(event.target.value)
                     }
+
                     placeholder="Company name"
-                    className="flex-1 rounded border px-3 py-2"
+
+                    className="flex-1 rounded-md border px-3 py-2"
+
                 />
 
+
+
                 <button
+
+                    type="button"
+
+                    disabled={isCreating}
+
                     onClick={handleCreate}
-                    className="rounded bg-primary px-4 py-2 text-primary-foreground"
+
+                    className="rounded-md bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
+
                 >
-                    Add Company
+
+                    {isCreating
+                        ? 'Creating...'
+                        : 'Add Company'
+                    }
+
                 </button>
 
-            </div>
-
-            <div className="rounded-lg border">
-
-                {
-                    companies.map(
-                        company => (
-
-                            <div
-                                key={company.id}
-                                className="flex items-center justify-between border-b p-4 last:border-0"
-                            >
-
-                                <div>
-
-                                    <p className="font-medium">
-                                        {company.name}
-                                    </p>
-
-                                    <p className="text-sm text-muted-foreground">
-                                        {company.status}
-                                        {' • '}
-                                        {company.industry ?? '-'}
-                                    </p>
-
-                                    {
-                                        company.email && (
-
-                                            <p className="text-sm text-muted-foreground">
-                                                {company.email}
-                                            </p>
-
-                                        )
-                                    }
-
-                                </div>
-
-                                <div className="flex items-center gap-3">
-
-                                    <Link
-                                        href={`/crm/companies/${company.id}`}
-                                        className="text-sm text-primary"
-                                    >
-                                        View
-                                    </Link>
-
-                                    <button
-                                        onClick={
-                                            () =>
-                                                handleDelete(
-                                                    company.id
-                                                )
-                                        }
-                                        className="text-sm text-destructive"
-                                    >
-                                        Archive
-                                    </button>
-
-                                </div>
-
-                            </div>
-
-                        )
-                    )
-                }
-
-                {
-                    companies.length === 0 && (
-
-                        <div className="p-6 text-center text-muted-foreground">
-                            No companies available.
-                        </div>
-
-                    )
-                }
 
             </div>
+
+
+
+            <CompaniesDataTable />
+
+
 
         </div>
 

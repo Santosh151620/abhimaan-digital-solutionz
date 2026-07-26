@@ -1,7 +1,10 @@
 import {
-    CompaniesRepositoryInstance,
-} from '@/repositories/crm/CompaniesRepository';
+    createClient,
+} from '@/lib/supabase/server';
 
+import {
+    CompaniesRepository,
+} from '@/repositories/crm/CompaniesRepository';
 
 import type {
     Company,
@@ -10,30 +13,84 @@ import type {
 
 
 
+interface CompanySearchFilters {
+
+    status?: Company['status'];
+
+    industry?: string;
+
+    search?: string;
+
+}
+
+
+
+interface CompaniesSummary {
+
+    total: number;
+
+    active: number;
+
+    inactive: number;
+
+    prospect: number;
+
+    archived: number;
+
+}
+
+
+
 class CompaniesService {
 
 
-    async list(): Promise<CompanyDetails[]> {
+    private async repository() {
 
-        return CompaniesRepositoryInstance.list();
+        const supabase =
+            await createClient();
+
+
+        return new CompaniesRepository(
+            supabase
+        );
 
     }
 
 
 
-    async listArchived(): Promise<CompanyDetails[]> {
+    async list(): Promise<Company[]> {
 
-        return CompaniesRepositoryInstance.listArchived();
+        const repository =
+            await this.repository();
+
+
+        return repository.list();
+
+    }
+
+
+
+    async listArchived(): Promise<Company[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.listArchived();
 
     }
 
 
 
     async findById(
-        id:string
-    ):Promise<CompanyDetails | null>{
+        id: string
+    ): Promise<Company | null> {
 
-        return CompaniesRepositoryInstance.findById(
+        const repository =
+            await this.repository();
+
+
+        return repository.findById(
             id
         );
 
@@ -42,29 +99,30 @@ class CompaniesService {
 
 
     async details(
-        id:string
-    ):Promise<CompanyDetails | null>{
+        id: string
+    ): Promise<CompanyDetails | null> {
 
-        return this.findById(id);
+        const repository =
+            await this.repository();
+
+
+        return repository.details(
+            id
+        );
 
     }
 
 
 
     async search(
-        filters?:{
+        filters?: CompanySearchFilters
+    ): Promise<Company[]> {
 
-            status?: Company['status'];
+        const repository =
+            await this.repository();
 
-            industry?: string;
 
-            search?: string;
-
-        }
-
-    ):Promise<CompanyDetails[]>{
-
-        return CompaniesRepositoryInstance.search(
+        return repository.search(
             filters
         );
 
@@ -73,11 +131,22 @@ class CompaniesService {
 
 
     async create(
-        data:Partial<CompanyDetails>
-    ):Promise<CompanyDetails>{
+        data: Partial<Company>
+    ): Promise<Company> {
 
-        return CompaniesRepositoryInstance.create(
-            data
+        const repository =
+            await this.repository();
+
+
+        return repository.create(
+            {
+
+                ...data,
+
+                entityType:
+                    'Company',
+
+            }
         );
 
     }
@@ -85,24 +154,53 @@ class CompaniesService {
 
 
     async update(
-        id:string,
-        data:Partial<CompanyDetails>
-    ):Promise<CompanyDetails | null>{
+        id: string,
 
-        return CompaniesRepositoryInstance.update(
+        data: Partial<Company>
+
+    ): Promise<Company> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.update(
+
             id,
-            data
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Company',
+
+            }
+
+        );
+
+    }
+        async delete(
+        id: string
+    ): Promise<void> {
+
+        const repository =
+            await this.repository();
+
+
+        await repository.delete(
+            id
         );
 
     }
 
 
 
-    async delete(
-        id:string
-    ):Promise<boolean>{
+    async archive(
+        id: string
+    ): Promise<void> {
 
-        return CompaniesRepositoryInstance.delete(
+        return this.delete(
             id
         );
 
@@ -111,10 +209,14 @@ class CompaniesService {
 
 
     async restore(
-        id:string
-    ):Promise<boolean>{
+        id: string
+    ): Promise<boolean> {
 
-        return CompaniesRepositoryInstance.restore(
+        const repository =
+            await this.repository();
+
+
+        return repository.restore(
             id
         );
 
@@ -122,9 +224,13 @@ class CompaniesService {
 
 
 
-    async summary(){
+    async summary(): Promise<CompaniesSummary> {
 
-        return CompaniesRepositoryInstance.summary();
+        const repository =
+            await this.repository();
+
+
+        return repository.summary();
 
     }
 

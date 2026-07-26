@@ -1,41 +1,122 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Company,
     CompanyDetails,
+    CompanyActivity,
+    CompanyContact,
+    CompanyOpportunity,
 } from '@/types/crm/Companies';
 
 
+interface CompanySearchFilters {
 
-class CompaniesRepository {
+    status?: Company['status'];
+
+    industry?: string;
+
+    search?: string;
+
+}
 
 
-    private companies =
-        new Map<string, CompanyDetails>();
+
+export class CompaniesRepository
+    extends BaseRepository<Company> {
 
 
+    constructor(
+        supabase: SupabaseClient
+    ) {
 
-    async list(): Promise<CompanyDetails[]> {
-
-        return Array.from(
-            this.companies.values()
-        )
-        .filter(
-            company =>
-                !company.isDeleted
+        super(
+            supabase,
+            'companies'
         );
 
     }
 
 
 
-    async listArchived(): Promise<CompanyDetails[]> {
+    async list(): Promise<Company[]> {
 
-        return Array.from(
-            this.companies.values()
-        )
-        .filter(
-            company =>
-                company.isDeleted
-        );
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                )
+                .neq(
+                    'status',
+                    'ARCHIVED'
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Company[];
+
+    }
+
+
+
+    async listArchived(): Promise<Company[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                )
+                .eq(
+                    'status',
+                    'ARCHIVED'
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Company[];
 
     }
 
@@ -43,12 +124,10 @@ class CompaniesRepository {
 
     async findById(
         id: string
-    ): Promise<CompanyDetails | null> {
+    ): Promise<Company | null> {
 
-        return (
-            this.companies.get(id)
-            ??
-            null
+        return super.findById(
+            id
         );
 
     }
@@ -59,204 +138,142 @@ class CompaniesRepository {
         id: string
     ): Promise<CompanyDetails | null> {
 
-        return this.findById(id);
+        const company =
+            await this.findById(
+                id
+            );
 
-    }
 
-
-
-    async create(
-        data: Partial<CompanyDetails>
-    ): Promise<CompanyDetails> {
-
-
-        const now =
-            new Date().toISOString();
-
-
-
-        const company:CompanyDetails = {
-
-            id:
-                crypto.randomUUID(),
-
-
-            organizationId:
-                data.organizationId,
-
-
-            companyNumber:
-                data.companyNumber
-                ??
-                `CMP-${Date.now()}`,
-
-
-            name:
-                data.name
-                ??
-                '',
-
-
-            legalName:
-                data.legalName,
-
-
-            industry:
-                data.industry,
-
-
-            website:
-                data.website,
-
-
-            phone:
-                data.phone,
-
-
-            email:
-                data.email,
-
-
-            status:
-                data.status
-                ??
-                'ACTIVE',
-
-
-            address:
-                data.address,
-
-
-            city:
-                data.city,
-
-
-            state:
-                data.state,
-
-
-            country:
-                data.country,
-
-
-            employees:
-                data.employees,
-
-
-            annualRevenue:
-                data.annualRevenue,
-
-
-            isDeleted:false,
-
-
-            deletedAt:null,
-
-
-            deletedBy:null,
-
-
-            createdAt:now,
-
-
-            updatedAt:now,
-
-
-            contacts:
-                data.contacts
-                ??
-                [],
-
-
-            opportunities:
-                data.opportunities
-                ??
-                [],
-
-
-            activities:
-                data.activities
-                ??
-                [],
-
-        };
-
-
-
-        this.companies.set(
-            company.id,
-            company
-        );
-
-
-
-        return company;
-
-    }
-
-
-
-
-
-    async update(
-        id:string,
-        data:Partial<CompanyDetails>
-    ):Promise<CompanyDetails | null> {
-
-
-        const existing =
-            this.companies.get(id);
-
-
-
-        if(!existing){
+        if (!company) {
 
             return null;
 
         }
 
 
+        const [
+            contacts,
+            opportunities,
+            activities,
+        ] =
+            await Promise.all([
 
-        const updated:CompanyDetails = {
+                this.loadContacts(id),
 
-            ...existing,
+                this.loadOpportunities(id),
+
+                this.loadActivities(id),
+
+            ]);
+
+
+
+        return {
+
+            ...company,
+
+            contacts,
+
+            opportunities,
+
+            activities,
+
+        };
+
+    }
+
+
+
+    async create(
+        data: Partial<Company>
+    ): Promise<Company> {
+
+
+        const payload: Partial<Company> = {
 
             ...data,
 
+            entityType:
+                'Company',
 
-            updatedAt:
-                new Date().toISOString(),
+            status:
+                data.status
+                ??
+                'ACTIVE',
 
         };
 
 
-
-        this.companies.set(
-            id,
-            updated
+        return super.create(
+            payload
         );
-
-
-
-        return updated;
 
     }
 
 
+
+    async update(
+        id: string,
+
+        data: Partial<Company>
+
+    ): Promise<Company> {
+
+
+        return super.update(
+
+            id,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Company',
+
+            }
+
+        );
+
+    }
 
 
 
     async delete(
-        id:string
-    ):Promise<boolean>{
+        id: string
+    ): Promise<void> {
+
+
+        await this.update(
+
+            id,
+
+            {
+
+                status:
+                    'ARCHIVED',
+
+                deletedAt:
+                    new Date()
+                        .toISOString(),
+
+            }
+
+        );
+
+    }
+        async restore(
+        id: string
+    ): Promise<boolean> {
 
 
         const company =
-            this.companies.get(id);
+            await this.findById(
+                id
+            );
 
 
-
-        if(!company){
+        if (!company) {
 
             return false;
 
@@ -264,179 +281,125 @@ class CompaniesRepository {
 
 
 
-        company.isDeleted = true;
+        await this.update(
 
-
-        company.status =
-            'ARCHIVED';
-
-
-        company.deletedAt =
-            new Date().toISOString();
-
-
-        company.updatedAt =
-            new Date().toISOString();
-
-
-
-        this.companies.set(
             id,
-            company
-        );
 
+            {
+
+                status:
+                    'ACTIVE',
+
+                deletedAt:
+                    undefined,
+
+            }
+
+        );
 
 
         return true;
 
     }
-
-
-
-
-
-    async restore(
-        id:string
-    ):Promise<boolean>{
-
-
-        const company =
-            this.companies.get(id);
-
-
-
-        if(!company){
-
-            return false;
-
-        }
-
-
-
-        company.isDeleted=false;
-
-
-        company.deletedAt=null;
-
-
-        company.deletedBy=null;
-
-
-
-        if(
-            company.status ===
-            'ARCHIVED'
-        ){
-
-            company.status =
-                'ACTIVE';
-
-        }
-
-
-
-        company.updatedAt =
-            new Date().toISOString();
-
-
-
-        this.companies.set(
-            id,
-            company
-        );
-
-
-
-        return true;
-
-    }
-
-
 
 
 
     async search(
-        filters?: {
-
-            status?: Company['status'];
-
-            industry?: string;
-
-            search?: string;
-
-        }
-
-    ):Promise<CompanyDetails[]> {
+        filters?: CompanySearchFilters
+    ): Promise<Company[]> {
 
 
-        let companies =
-            await this.list();
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                );
 
 
 
-        if(filters?.status){
+        if (filters?.status) {
 
-            companies =
-                companies.filter(
-                    company =>
-                        company.status ===
-                        filters.status
+            query =
+                query.eq(
+                    'status',
+                    filters.status
                 );
 
         }
 
 
 
-        if(filters?.industry){
+        if (filters?.industry) {
 
-            companies =
-                companies.filter(
-                    company =>
-                        company.industry ===
-                        filters.industry
+            query =
+                query.eq(
+                    'industry',
+                    filters.industry
                 );
 
         }
 
 
 
-        if(filters?.search){
-
+        if (filters?.search) {
 
             const keyword =
-                filters.search.toLowerCase();
+                filters.search.trim();
 
 
 
-            companies =
-                companies.filter(
-                    company =>
+            if (keyword.length > 0) {
 
-                        company.name
-                            .toLowerCase()
-                            .includes(keyword)
+                query =
+                    query.or(
 
-                        ||
+                        [
+                            `name.ilike.%${keyword}%`,
+                            `email.ilike.%${keyword}%`,
+                            `website.ilike.%${keyword}%`,
+                            `phone.ilike.%${keyword}%`,
+                        ].join(',')
 
-                        company.email
-                            ?.toLowerCase()
-                            .includes(keyword)
+                    );
 
-                );
+            }
 
         }
 
 
 
-        return companies;
+        const {
+            data,
+            error,
+        } =
+            await query
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Company[];
 
     }
 
 
 
-
-
-    async summary(){
+    async summary() {
 
 
         const companies =
@@ -446,7 +409,6 @@ class CompaniesRepository {
 
         return {
 
-
             total:
                 companies.length,
 
@@ -454,35 +416,165 @@ class CompaniesRepository {
             active:
                 companies.filter(
                     company =>
-                        company.status ===
-                        'ACTIVE'
+                        company.status === 'ACTIVE'
                 ).length,
 
 
             inactive:
                 companies.filter(
                     company =>
-                        company.status ===
-                        'INACTIVE'
+                        company.status === 'INACTIVE'
                 ).length,
 
 
             prospect:
                 companies.filter(
                     company =>
-                        company.status ===
-                        'PROSPECT'
+                        company.status === 'PROSPECT'
                 ).length,
 
+
+            archived:
+                companies.filter(
+                    company =>
+                        company.status === 'ARCHIVED'
+                ).length,
 
         };
 
     }
 
 
+
+    private async loadContacts(
+        companyId: string
+    ): Promise<CompanyContact[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.supabase
+                .from('contacts')
+                .select('*')
+                .eq(
+                    'entityType',
+                    'Company'
+                )
+                .eq(
+                    'entityId',
+                    companyId
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as CompanyContact[];
+
+    }
+
+
+
+    private async loadOpportunities(
+        companyId: string
+    ): Promise<CompanyOpportunity[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.supabase
+                .from('opportunities')
+                .select('*')
+                .eq(
+                    'entityType',
+                    'Company'
+                )
+                .eq(
+                    'entityId',
+                    companyId
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as CompanyOpportunity[];
+
+    }
+        private async loadActivities(
+        companyId: string
+    ): Promise<CompanyActivity[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.supabase
+                .from('activities')
+                .select('*')
+                .eq(
+                    'entityType',
+                    'Company'
+                )
+                .eq(
+                    'entityId',
+                    companyId
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as CompanyActivity[];
+
+    }
+
+
 }
-
-
-
-export const CompaniesRepositoryInstance =
-    new CompaniesRepository();
