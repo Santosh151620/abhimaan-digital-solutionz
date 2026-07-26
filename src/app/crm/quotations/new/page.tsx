@@ -36,50 +36,93 @@ export default function NewQuotationPage() {
                 : 'Draft';
 
 
+
         const quotation =
             await createQuotation({
 
                 title:
                     String(
-                        formData.get('title') ?? ''
+                        formData.get('title') ?? '',
                     ),
+
 
                 customerName:
                     String(
-                        formData.get('customerName') ?? ''
+                        formData.get('customerName') ?? '',
                     ),
+
+
+                companyId:
+                    String(
+                        formData.get('companyId') ?? '',
+                    ),
+
+
+                opportunityId:
+                    String(
+                        formData.get('opportunityId') ?? '',
+                    )
+                    ||
+                    undefined,
+
 
                 amount:
                     Number(
-                        formData.get('amount') ?? 0
+                        formData.get('amount') ?? 0,
                     ),
+
 
                 currency:
                     String(
-                        formData.get('currency') ?? 'INR'
+                        formData.get('currency') ?? 'INR',
                     ),
+
 
                 status:
                     quotationStatus,
 
+
                 validUntil:
                     String(
-                        formData.get('validUntil') ?? ''
+                        formData.get('validUntil') ?? '',
                     ),
+
+
+                tax:
+                    Number(
+                        formData.get('tax') ?? 0,
+                    ),
+
+
+                discount:
+                    Number(
+                        formData.get('discount') ?? 0,
+                    ),
+
+
+                notes:
+                    String(
+                        formData.get('notes') ?? '',
+                    )
+                    ||
+                    undefined,
 
             });
 
 
+
         redirect(
-            `/crm/quotations/${quotation.id}`
+            `/crm/quotations/${quotation.id}`,
         );
 
     }
 
 
+
     return (
 
         <CRMPageLayout>
+
 
             <CRMHeader
 
