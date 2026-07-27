@@ -6,17 +6,21 @@ import type {
     ContactDetails,
 } from '@/types/crm/Contacts';
 
+
 interface Props {
 
     contacts: ContactDetails[];
 
 }
 
+
+
 export default function ContactsTable({
 
     contacts,
 
 }: Props) {
+
 
     if (contacts.length === 0) {
 
@@ -32,6 +36,8 @@ export default function ContactsTable({
 
     }
 
+
+
     return (
 
         <div className="overflow-x-auto rounded-xl border">
@@ -46,29 +52,36 @@ export default function ContactsTable({
                             Contact
                         </th>
 
+
                         <th className="px-4 py-3 text-left">
                             Company
                         </th>
+
 
                         <th className="px-4 py-3 text-left">
                             Email
                         </th>
 
+
                         <th className="px-4 py-3 text-left">
                             Phone
                         </th>
+
 
                         <th className="px-4 py-3 text-left">
                             Designation
                         </th>
 
+
                         <th className="px-4 py-3 text-left">
                             Status
                         </th>
 
+
                         <th className="px-4 py-3 text-left">
                             Last Activity
                         </th>
+
 
                         <th className="px-4 py-3 text-right">
                             Actions
@@ -78,10 +91,10 @@ export default function ContactsTable({
 
                 </thead>
 
+
                 <tbody>
 
                     {
-
                         contacts.map(contact => (
 
                             <tr
@@ -94,19 +107,15 @@ export default function ContactsTable({
                                     <div className="font-medium">
 
                                         {
-
                                             contact.fullName
-
                                             ??
-
                                             `${contact.firstName} ${contact.lastName}`.trim()
-
                                         }
 
                                     </div>
 
-                                    {
 
+                                    {
                                         contact.department && (
 
                                             <div className="text-xs text-muted-foreground">
@@ -116,10 +125,11 @@ export default function ContactsTable({
                                             </div>
 
                                         )
-
                                     }
 
                                 </td>
+
+
 
                                 <td className="px-4 py-3">
 
@@ -127,11 +137,15 @@ export default function ContactsTable({
 
                                 </td>
 
+
+
                                 <td className="px-4 py-3">
 
                                     {contact.email ?? '-'}
 
                                 </td>
+
+
 
                                 <td className="px-4 py-3">
 
@@ -139,11 +153,15 @@ export default function ContactsTable({
 
                                 </td>
 
+
+
                                 <td className="px-4 py-3">
 
                                     {contact.designation ?? '-'}
 
                                 </td>
+
+
 
                                 <td className="px-4 py-3">
 
@@ -151,11 +169,15 @@ export default function ContactsTable({
 
                                 </td>
 
+
+
                                 <td className="px-4 py-3">
 
                                     {contact.lastActivity ?? '-'}
 
                                 </td>
+
+
 
                                 <td className="px-4 py-3 text-right">
 
@@ -171,7 +193,6 @@ export default function ContactsTable({
                             </tr>
 
                         ))
-
                     }
 
                 </tbody>

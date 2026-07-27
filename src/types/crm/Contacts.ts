@@ -20,11 +20,13 @@ export type ContactStatus =
 
 
 
+/**
+ * Core Contact Entity
+ */
 export interface Contact {
 
 
     id: string;
-
 
 
     /**
@@ -44,14 +46,14 @@ export interface Contact {
 
 
     /**
-     * CRM relationships
+     * CRM relationship
      */
     companyId?: string;
 
 
 
     /**
-     * Contact information
+     * Identity
      */
     firstName: string;
 
@@ -61,6 +63,9 @@ export interface Contact {
 
 
 
+    /**
+     * Communication
+     */
     email?: string;
 
     phone?: string;
@@ -69,12 +74,18 @@ export interface Contact {
 
 
 
+    /**
+     * Professional
+     */
     designation?: string;
 
     department?: string;
 
 
 
+    /**
+     * Lifecycle
+     */
     status: ContactStatus;
 
 
@@ -109,7 +120,7 @@ export interface Contact {
 
 
     /**
-     * Lifecycle
+     * Soft delete
      */
     isDeleted?: boolean;
 
@@ -119,6 +130,9 @@ export interface Contact {
 
 
 
+    /**
+     * Audit
+     */
     createdAt: string;
 
     updatedAt: string;
@@ -127,8 +141,14 @@ export interface Contact {
 
 
 
-
-
+/**
+ * CRM Detail View Model
+ *
+ * Used by:
+ * - Contact detail page
+ * - Tables
+ * - Workspace views
+ */
 export interface ContactDetails
     extends Contact {
 
@@ -144,6 +164,19 @@ export interface ContactDetails
 
 }
 
+
+
+/**
+ * Backward compatibility alias
+ */
+export type Contacts =
+    ContactDetails;
+
+
+
+/**
+ * Create contract
+ */
 export interface CreateContactInput {
 
 
@@ -152,7 +185,9 @@ export interface CreateContactInput {
     lastName: string;
 
 
+
     companyId?: string;
+
 
 
     email?: string;
@@ -162,17 +197,21 @@ export interface CreateContactInput {
     mobile?: string;
 
 
+
     designation?: string;
 
     department?: string;
 
 
+
     status?: ContactStatus;
+
 
 
     ownerId?: string;
 
     assignedTo?: string;
+
 
 
     city?: string;
@@ -182,18 +221,18 @@ export interface CreateContactInput {
     country?: string;
 
 
+
     notes?: string;
 
 
     metadata?: Record<string, unknown>;
 
 
-    /**
-     * Entity lifecycle fields
-     */
+
     entityType?: 'Contact';
 
     entityId?: string;
+
 
 
     isDeleted?: boolean;
@@ -205,10 +244,19 @@ export interface CreateContactInput {
 }
 
 
+
+/**
+ * Update contract
+ */
 export type UpdateContactInput =
     Partial<CreateContactInput>;
 
 
+
+
+/**
+ * Search filters
+ */
 export interface ContactSearchFilters {
 
 
@@ -229,13 +277,14 @@ export interface ContactSearchFilters {
 
     includeArchived?: boolean;
 
-
 }
 
 
 
 
-
+/**
+ * Dashboard summary
+ */
 export interface ContactsSummary {
 
 
@@ -255,6 +304,5 @@ export interface ContactsSummary {
 
 
     archived: number;
-
 
 }
