@@ -1,109 +1,146 @@
+/**
+ * CRM Notes Repository
+ *
+ * Production repository layer.
+ *
+ * Responsibilities:
+ * - Supabase persistence
+ * - Organization isolation
+ * - Entity-driven notes
+ * - CRUD operations
+ */
+
+import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
 import type {
     Note,
     NoteSummary,
 } from '@/types/crm/Notes';
 
 
-type SupabaseQueryResult<T> = Promise<{
-    data: T | null;
-    error: Error | null;
-}>;
+
+export class NotesRepository
+    extends BaseRepository<Note> {
 
 
-type SupabaseQueryBuilder<T> =
-    PromiseLike<SupabaseQueryResult<T>> & {
-
-        select(
-            columns?: string
-        ): SupabaseQueryBuilder<T>;
-
-        eq(
-            column: string,
-            value: string
-        ): SupabaseQueryBuilder<T>;
-
-        insert(
-            data: unknown
-        ): SupabaseQueryBuilder<T>;
-
-        single():
-            SupabaseQueryResult<T>;
-    };
-
-
-type SupabaseClient = {
-
-    from<T>(
-        table: string
-    ): SupabaseQueryBuilder<T>;
-
-};
-
-export class NotesRepository {
-    private notes =
-        new Map<string, Note>();
-    private supabase?: SupabaseClient;
     constructor(
-        supabase?: SupabaseClient,
+        supabase: SupabaseClient,
     ) {
 
-        this.supabase =
-            supabase;
+        super(
+            supabase,
+            'notes',
+        );
 
     }
+
+
+
     async list(): Promise<Note[]> {
-        return Array.from(
-            this.notes.values(),
-        )
-            .filter(
-                note =>
-                    !note.archived,
-            );
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Note[];
+
     }
+
+
+
+
+
     async listArchived(): Promise<Note[]> {
 
-        return Array.from(
-            this.notes.values(),
-        )
-            .filter(
-                note =>
-                    note.archived,
-            );
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Note[];
+
     }
 
-    async findById(
-        id: string,
-    ): Promise<Note | null> {
-        return (
-            this.notes.get(id)
-            ??
-            null
-        );
-    }
+
+
+
 
     async findByEntity(
         entityType: string,
         entityId: string,
     ): Promise<Note[]> {
-        if (!this.supabase) {
-            return Array.from(
-                this.notes.values(),
-            )
-                .filter(
-                    note =>
-                        note.entityType === entityType
-                        &&
-                        note.entityId === entityId,
-                );
-        }
+
+
         const {
             data,
             error,
-        }
-            =
-            await this.supabase
-                .from<Note[]>('notes')
+        } =
+            await this.tableRef()
                 .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
                 .eq(
                     'entity_type',
                     entityType,
@@ -111,157 +148,254 @@ export class NotesRepository {
                 .eq(
                     'entity_id',
                     entityId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
                 );
+
+
         if (error) {
+
             throw error;
+
         }
-        return data ?? [];
+
+
+        return (
+            data ?? []
+        ) as Note[];
 
     }
+
+
+
+
+
+    async findById(
+        id: string,
+    ): Promise<Note | null> {
+
+        return super.findById(
+            id,
+        );
+
+    }
+
+
+
+
 
     async create(
         data: Partial<Note>,
     ): Promise<Note> {
 
+
         const now =
-            new Date().toISOString();
-        const note: Note = {
+            new Date()
+                .toISOString();
+
+
+        return super.create({
+
             id:
+                data.id
+                ??
                 crypto.randomUUID(),
+
+
             organizationId:
                 data.organizationId,
+
+
             entityType:
                 data.entityType
                 ??
                 'Other',
+
+
             entityId:
                 data.entityId
                 ??
                 '',
+
+
             title:
                 data.title
                 ??
                 '',
+
+
             content:
                 data.content
                 ??
                 '',
+
+
             createdBy:
                 data.createdBy,
+
+
             archived:
                 false,
+
+
             createdAt:
                 now,
+
+
             updatedAt:
                 now,
-        };
 
-        this.notes.set(
-            note.id,
-            note,
-        );
+        });
 
-        return note;
+
     }
+async update(
+    id: string,
+    data: Partial<Note>,
+): Promise<Note> {
 
-    async update(
-        id: string,
-        data: Partial<Note>,
-    ): Promise<Note | null> {
 
-        const existing =
-            this.notes.get(id);
-        if (!existing) {
-            return null;
-        }
-        const updated: Note = {
-            ...existing,
+    return super.update(
+
+        id,
+
+        {
+
             ...data,
+
             updatedAt:
-                new Date().toISOString(),
-        };
+                new Date()
+                    .toISOString(),
 
-        this.notes.set(
-            id,
-            updated,
-        );
-        return updated;
+        },
 
-    }
-    async delete(
-        id: string,
-    ): Promise<boolean> {
+    );
 
-        return this.notes.delete(
-            id,
-        );
-
-    }
-
+}
     async archive(
         id: string,
     ): Promise<Note | null> {
-        const existing =
-            this.notes.get(id);
 
-        if (!existing) {
-            return null;
-        }
-        const updated: Note = {
-            ...existing,
-            archived:
-                true,
-            updatedAt:
-                new Date().toISOString(),
-        };
-        this.notes.set(
+
+        return this.update(
+
             id,
-            updated,
+
+            {
+
+                archived:
+                    true,
+
+            },
+
         );
-        return updated;
+
     }
 
     async restore(
         id: string,
     ): Promise<Note | null> {
-        const existing =
-            this.notes.get(id);
-        if (!existing) {
-            return null;
-        }
-        const updated: Note = {
-            ...existing,
-            archived:
-                false,
-            updatedAt:
-                new Date().toISOString(),
-        };
-        this.notes.set(
+
+
+        return this.update(
+
             id,
-            updated,
+
+            {
+
+                archived:
+                    false,
+
+            },
+
         );
-        return updated;
+
     }
+
+   async delete(
+    id: string,
+): Promise<void> {
+
+
+    await this.archive(
+        id,
+    );
+
+
+}
+
+
+
+
+
     async summary(): Promise<NoteSummary> {
+
+
         const notes =
-            Array.from(
-                this.notes.values(),
-            );
+            await this.tableRef()
+                .select(
+                    'archived',
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                );
+
+
+        const rows =
+            notes.data
+            ??
+            [];
+
+
         return {
+
+
             total:
-                notes.length,
+                rows.length,
+
+
             active:
-                notes.filter(
+                rows.filter(
                     note =>
                         !note.archived,
                 ).length,
+
+
             archived:
-                notes.filter(
+                rows.filter(
                     note =>
                         note.archived,
                 ).length,
+
+
         };
+
+
     }
+
+
 }
-export const NotesRepositoryInstance =
-    new NotesRepository();
+
+
+
+/**
+ * Repository factory.
+ */
+export function createNotesRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new NotesRepository(
+        supabase,
+    );
+
+}

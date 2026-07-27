@@ -2,8 +2,9 @@ import type {
     Task,
 } from '@/types/crm/Tasks';
 
-import { TasksServiceInstance } from '@/services/crm/TasksService';
-
+import {
+    TasksServiceInstance,
+} from '@/services/crm/TasksService';
 
 
 class TaskImportExportService {
@@ -233,7 +234,6 @@ class TaskImportExportService {
     }
 
 }
-
 
 export const TaskImportExportServiceInstance =
     new TaskImportExportService();

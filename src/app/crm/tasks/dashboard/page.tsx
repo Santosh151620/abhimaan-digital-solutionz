@@ -1,3 +1,4 @@
+import type { Task } from '@/types/crm/Tasks';
 import {
     getTasks,
     getTasksSummary,
@@ -19,7 +20,7 @@ export default async function TasksDashboardPage() {
 
     const dueSoon =
         tasks.filter(
-            task =>
+            (task: Task) =>
                 task.dueDate
         ).length;
 

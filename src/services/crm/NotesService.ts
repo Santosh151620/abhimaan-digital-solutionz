@@ -1,5 +1,30 @@
+/**
+ * CRM Notes Service
+ *
+ * Application service layer.
+ *
+ * Flow:
+ *
+ * API / Server Actions
+ *          |
+ *          ↓
+ * NotesService
+ *          |
+ *          ↓
+ * NotesRepository
+ *          |
+ *          ↓
+ * Supabase
+ */
+
+
 import {
-    NotesRepositoryInstance,
+    createClient,
+} from '@/lib/supabase/server';
+
+
+import {
+    createNotesRepository,
 } from '@/repositories/crm/NotesRepository';
 
 
@@ -10,15 +35,34 @@ import type {
 
 
 
+
 class NotesService {
+
+
+    private async repository() {
+
+        const supabase =
+            await createClient();
+
+
+        return createNotesRepository(
+            supabase,
+        );
+
+    }
+
+
 
 
 
     async list(): Promise<Note[]> {
 
 
-        return NotesRepositoryInstance.list();
+        const repo =
+            await this.repository();
 
+
+        return repo.list();
 
     }
 
@@ -29,8 +73,11 @@ class NotesService {
     async listArchived(): Promise<Note[]> {
 
 
-        return NotesRepositoryInstance.listArchived();
+        const repo =
+            await this.repository();
 
+
+        return repo.listArchived();
 
     }
 
@@ -43,10 +90,13 @@ class NotesService {
     ): Promise<Note | null> {
 
 
-        return NotesRepositoryInstance.findById(
+        const repo =
+            await this.repository();
+
+
+        return repo.findById(
             id,
         );
-
 
     }
 
@@ -54,54 +104,135 @@ class NotesService {
         entityType: string,
         entityId: string,
     ): Promise<Note[]> {
-        return NotesRepositoryInstance.findByEntity(
+
+
+        const repo =
+            await this.repository();
+
+
+        return repo.findByEntity(
             entityType,
             entityId,
         );
+
     }
+
+
+
+
+
     async create(
         data: Partial<Note>,
     ): Promise<Note> {
-        return NotesRepositoryInstance.create(
+
+
+        const repo =
+            await this.repository();
+
+
+        return repo.create(
             data,
         );
+
     }
+
+
+
+
+
     async update(
         id: string,
         data: Partial<Note>,
     ): Promise<Note | null> {
-        return NotesRepositoryInstance.update(
+
+
+        const repo =
+            await this.repository();
+
+
+        return repo.update(
             id,
             data,
         );
+
     }
-    async delete(
-        id: string,
-    ): Promise<boolean> {
-        return NotesRepositoryInstance.delete(
-            id,
-        );
-    }
+async delete(
+    id: string,
+): Promise<boolean> {
+
+
+    const repo =
+        await this.repository();
+
+
+    await repo.delete(
+        id,
+    );
+
+
+    return true;
+
+}
 
     async archive(
         id: string,
     ): Promise<Note | null> {
-        return NotesRepositoryInstance.archive(
+
+
+        const repo =
+            await this.repository();
+
+
+        return repo.archive(
             id,
         );
+
     }
+
+
+
+
+
     async restore(
         id: string,
     ): Promise<Note | null> {
-        return NotesRepositoryInstance.restore(
+
+
+        const repo =
+            await this.repository();
+
+
+        return repo.restore(
             id,
         );
+
     }
+
+
+
+
 
     async summary(): Promise<NoteSummary> {
-        return NotesRepositoryInstance.summary();
+
+
+        const repo =
+            await this.repository();
+
+
+        return repo.summary();
+
     }
+
+
 }
 
-export const NotesServiceInstance =
+
+
+
+export const notesService =
     new NotesService();
+
+
+
+export const NotesServiceInstance =
+    notesService;
