@@ -1,30 +1,124 @@
 'use client';
 
 
+import {
+    useState,
+} from 'react';
+
+
 import type {
     Note,
 } from '@/types/crm/Notes';
+
+
+import {
+    createNote,
+} from '@/app/crm/notes/actions';
 
 
 import NotesTable from './NotesTable';
 
 import NotesSummary from './NotesSummary';
 
+import NotesForm from './NotesForm';
+
+
 
 
 interface Props {
 
-    notes: Note[];
+    initialNotes: Note[];
 
 }
 
 
 
+
+
 export default function NotesClient({
 
-    notes,
+    initialNotes,
 
 }: Props) {
+
+
+    const [
+        notes,
+        setNotes,
+    ] =
+        useState<Note[]>(
+            initialNotes,
+        );
+
+
+
+
+    const [
+        loading,
+        setLoading,
+    ] =
+        useState(false);
+
+
+
+
+
+    async function handleCreate(
+
+        data: Partial<Note>,
+
+    ) {
+
+
+        try {
+
+
+            setLoading(
+                true,
+            );
+
+
+            const created =
+                await createNote(
+                    data,
+                );
+
+
+
+            if (created) {
+
+
+                setNotes(
+
+                    previous => [
+
+                        created,
+
+                        ...previous,
+
+                    ],
+
+                );
+
+
+            }
+
+
+        } finally {
+
+
+            setLoading(
+                false,
+            );
+
+
+        }
+
+
+    }
+
+
+
 
 
     return (
@@ -34,14 +128,33 @@ export default function NotesClient({
 
             <NotesSummary
 
-                notes={notes}
+                notes={
+                    notes
+                }
 
             />
 
 
+
+            <NotesForm
+
+                onSubmit={
+                    handleCreate
+                }
+
+                loading={
+                    loading
+                }
+
+            />
+
+
+
             <NotesTable
 
-                notes={notes}
+                notes={
+                    notes
+                }
 
             />
 
@@ -50,5 +163,5 @@ export default function NotesClient({
 
     );
 
-}
 
+}

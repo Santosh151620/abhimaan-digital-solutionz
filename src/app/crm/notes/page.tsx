@@ -9,18 +9,25 @@ import {
 
 
 
+
+
 export default async function NotesPage() {
 
 
     const notes =
-    await NotesServiceInstance.list();
+        await NotesServiceInstance.list();
+
+
 
     return (
+
 
         <div className="space-y-6 p-6">
 
 
+
             <div>
+
 
                 <h1 className="text-2xl font-bold">
 
@@ -29,26 +36,34 @@ export default async function NotesPage() {
                 </h1>
 
 
+
                 <p className="text-sm text-gray-500">
 
                     Manage CRM notes across entities.
 
                 </p>
 
+
+
             </div>
+
 
 
 
             <NotesClient
 
-                notes={notes}
+                initialNotes={
+                    notes
+                }
 
             />
 
 
+
         </div>
+
 
     );
 
-}
 
+}

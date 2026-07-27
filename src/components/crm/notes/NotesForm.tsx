@@ -6,28 +6,77 @@ import {
 } from 'react';
 
 
-import {
-    createNote,
-} from '@/app/crm/notes/actions';
+import type {
+    Note,
+} from '@/types/crm/Notes';
 
 
 
-export default function NotesForm() {
+
+interface Props {
 
 
-    const [title, setTitle] =
+    loading?: boolean;
+
+
+    onSubmit?: (
+
+        values: Partial<Note>
+
+    ) => void | Promise<void>;
+
+
+}
+
+
+
+
+export default function NotesForm({
+
+    loading = false,
+
+    onSubmit,
+
+}: Props) {
+
+
+
+    const [
+        title,
+        setTitle,
+    ] =
         useState('');
 
 
-    const [content, setContent] =
+
+    const [
+        content,
+        setContent,
+    ] =
         useState('');
+
+
 
 
 
     async function submit() {
 
 
-        await createNote({
+
+        if (!title.trim()) {
+
+            alert(
+                'Note title is required.',
+            );
+
+            return;
+
+        }
+
+
+
+
+        await onSubmit?.({
 
             title,
 
@@ -37,9 +86,11 @@ export default function NotesForm() {
                 'Other',
 
             entityId:
-                '',
+                crypto.randomUUID(),
 
         });
+
+
 
 
 
@@ -51,67 +102,129 @@ export default function NotesForm() {
 
 
 
+
+
     return (
 
-        <div className="space-y-4">
+
+        <div className="space-y-4 rounded-xl border p-6">
+
 
 
             <input
 
-                className="border rounded px-3 py-2 w-full"
+
+                className="w-full rounded border px-3 py-2"
+
 
                 placeholder="Note title"
 
-                value={title}
 
-                onChange={
-                    e =>
-                        setTitle(
-                            e.target.value
-                        )
+                value={
+                    title
                 }
 
+
+                onChange={
+
+                    event =>
+
+                        setTitle(
+
+                            event.target.value,
+
+                        )
+
+                }
+
+
             />
+
+
 
 
 
             <textarea
 
-                className="border rounded px-3 py-2 w-full"
+
+                className="w-full rounded border px-3 py-2"
+
 
                 placeholder="Note content"
 
-                value={content}
+
+                rows={5}
+
+
+                value={
+                    content
+                }
+
 
                 onChange={
-                    e =>
+
+                    event =>
+
                         setContent(
-                            e.target.value
+
+                            event.target.value,
+
                         )
+
                 }
+
 
             />
 
 
 
+
+
             <button
+
 
                 type="button"
 
-                className="rounded bg-black text-white px-4 py-2"
 
-                onClick={submit}
+                disabled={
+                    loading
+                }
+
+
+                onClick={
+                    submit
+                }
+
+
+                className="rounded bg-primary px-4 py-2 text-primary-foreground"
+
 
             >
 
-                Save Note
+
+                {
+
+                    loading
+
+                    ?
+
+                    'Saving...'
+
+                    :
+
+                    'Save Note'
+
+                }
+
 
             </button>
 
 
+
         </div>
+
 
     );
 
-}
 
+}
