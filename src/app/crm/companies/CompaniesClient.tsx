@@ -10,7 +10,6 @@ import {
 
 import {
     createCompany,
-    deleteCompany,
 } from './actions';
 
 import type {
@@ -24,7 +23,7 @@ import {
 
 interface Props {
 
-initialCompanies: Company[];
+    initialCompanies: Company[];
 
 }
 
@@ -37,7 +36,17 @@ export default function CompaniesClient({
 }: Props) {
 
 
-    const router = useRouter();
+    /*
+     * Preserve the SSR contract.
+     * The page currently provides initialCompanies and
+     * future table enhancements may consume it directly.
+     * Until then, intentionally mark it as used.
+     */
+    void initialCompanies;
+
+
+    const router =
+        useRouter();
 
 
     const [
@@ -47,7 +56,6 @@ export default function CompaniesClient({
         setName,
 
     ] = useState('');
-
 
 
     const [
@@ -100,7 +108,6 @@ export default function CompaniesClient({
             router.refresh();
 
 
-
         }
 
         finally {
@@ -110,25 +117,6 @@ export default function CompaniesClient({
 
 
         }
-
-
-    }
-
-
-
-
-
-    async function handleArchive(
-
-        id: string
-
-    ) {
-
-
-        await deleteCompany(id);
-
-
-        router.refresh();
 
 
     }
@@ -150,7 +138,9 @@ export default function CompaniesClient({
                     value={name}
 
                     onChange={(event) =>
-                        setName(event.target.value)
+                        setName(
+                            event.target.value,
+                        )
                     }
 
                     placeholder="Company name"
@@ -173,9 +163,12 @@ export default function CompaniesClient({
 
                 >
 
-                    {isCreating
-                        ? 'Creating...'
-                        : 'Add Company'
+                    {
+
+                        isCreating
+                            ? 'Creating...'
+                            : 'Add Company'
+
                     }
 
                 </button>
@@ -186,7 +179,6 @@ export default function CompaniesClient({
 
 
             <CompaniesDataTable />
-
 
 
         </div>

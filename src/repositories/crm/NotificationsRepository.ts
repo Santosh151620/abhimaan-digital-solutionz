@@ -1,10 +1,8 @@
 import type {
     Notification,
-    NotificationPriority,
     NotificationSearchFilters,
     NotificationStatus,
     NotificationSummary,
-    NotificationType,
 } from '@/types/crm/Notifications';
 
 export class NotificationsRepository {

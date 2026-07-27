@@ -126,8 +126,6 @@ export async function PUT(
 }
 
 
-
-
 export async function DELETE(
     _request: Request,
     { params }: Props,
@@ -139,14 +137,17 @@ export async function DELETE(
             await params;
 
 
-        const deleted =
-            await ContactsServiceInstance.delete(
-                id
-            );
+        await ContactsServiceInstance.delete(
+            id,
+        );
+
 
         return NextResponse.json(
             {
-                success: true,
+                success:true,
+            },
+            {
+                status:200,
             },
         );
 
@@ -155,10 +156,11 @@ export async function DELETE(
 
         return NextResponse.json(
             {
-                error: "Failed to delete contact",
+                error:
+                    "Failed to delete contact",
             },
             {
-                status: 500,
+                status:500,
             },
         );
 
