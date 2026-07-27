@@ -51,3 +51,4 @@ class SearchService {
 export const
     SearchServiceInstance =
         new SearchService();
+

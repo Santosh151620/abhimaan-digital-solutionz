@@ -108,3 +108,4 @@ export class SearchRepository {
 export const
     SearchRepositoryInstance =
         new SearchRepository();
+

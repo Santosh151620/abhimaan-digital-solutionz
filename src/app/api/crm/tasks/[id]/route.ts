@@ -37,7 +37,7 @@ export async function GET(
 
 
         const task =
-            TasksServiceInstance.details(
+            TasksServiceInstance.findById(
                 id
             );
 
@@ -98,7 +98,7 @@ export async function PUT(
 
 
         const task =
-            TasksServiceInstance.update(
+            await TasksServiceInstance.update(
                 id,
                 body
             );
@@ -178,7 +178,7 @@ export async function PATCH(
 
 
         const task =
-            TasksServiceInstance.updateStatus(
+            await TasksServiceInstance.updateStatus(
                 id,
                 body.status
             );
@@ -236,7 +236,7 @@ export async function DELETE(
 
 
         const deleted =
-            TasksServiceInstance.delete(
+            await TasksServiceInstance.delete(
                 id
             );
 

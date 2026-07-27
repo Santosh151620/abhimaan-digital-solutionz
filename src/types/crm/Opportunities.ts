@@ -1,3 +1,15 @@
+/**
+ * CRM Opportunities Domain Contract
+ *
+ * Single source of truth for:
+ * - OpportunitiesRepository
+ * - OpportunitiesService
+ * - CRM UI
+ * - API Routes
+ *
+ * Entity-driven CRM architecture.
+ */
+
 export type OpportunityStage =
     | 'New'
     | 'Qualified'
@@ -6,18 +18,28 @@ export type OpportunityStage =
     | 'Won'
     | 'Lost';
 
-
 export type OpportunityStatus =
     | 'Open'
     | 'Won'
     | 'Lost'
     | 'On Hold';
 
-
 export interface Opportunity {
-   entityType?: 'Opportunity';
+
+    /**
+     * Entity identity
+     */
+    entityType: 'Opportunity';
+
+    entityId?: string;
+
     id: string;
 
+    organizationId?: string;
+
+    /**
+     * Business identity
+     */
     opportunityNumber: string;
 
     /**
@@ -26,9 +48,95 @@ export interface Opportunity {
     name: string;
 
     /**
-     * Backward compatibility for older pages/components.
+     * Legacy compatibility.
      */
     title: string;
+
+    description?: string;
+
+    /**
+     * CRM Relationships
+     */
+    companyId?: string;
+
+    contactId?: string;
+
+    leadId?: string;
+
+    /**
+     * Ownership
+     */
+    ownerId?: string;
+
+    /**
+     * Legacy compatibility.
+     */
+    owner?: string;
+
+    assignedTo?: string;
+
+    /**
+     * Sales
+     */
+    stage: OpportunityStage;
+
+    status: OpportunityStatus;
+
+    value: number;
+
+    probability: number;
+
+    expectedCloseDate?: string;
+
+    /**
+     * Forecast
+     */
+    forecastRevenue?: number;
+
+    recurringRevenue?: number;
+
+    currency?: string;
+
+    /**
+     * Competition
+     */
+    source?: string;
+
+    competitor?: string;
+
+    reasonWon?: string;
+
+    reasonLost?: string;
+
+    /**
+     * Extension
+     */
+    notes?: string;
+
+    metadata?: Record<string, unknown>;
+
+    /**
+     * Lifecycle
+     */
+    archived?: boolean;
+
+    isDeleted?: boolean;
+
+    deletedAt?: string | null;
+
+    createdAt: string;
+
+    updatedAt: string;
+
+}
+
+export interface CreateOpportunityInput {
+
+    opportunityNumber?: string;
+
+    name: string;
+
+    title?: string;
 
     description?: string;
 
@@ -40,27 +148,69 @@ export interface Opportunity {
 
     ownerId?: string;
 
-    /**
-     * Legacy compatibility.
-     */
-    owner?: string;
+    assignedTo?: string;
 
-    stage: OpportunityStage;
+    stage?: OpportunityStage;
 
-    status: OpportunityStatus;
+    status?: OpportunityStatus;
 
-    value: number;
+    value?: number;
 
-    probability: number;
+    probability?: number;
 
     expectedCloseDate?: string;
 
-    createdAt: string;
+    forecastRevenue?: number;
 
-    updatedAt: string;
+    recurringRevenue?: number;
+
+    currency?: string;
+
+    source?: string;
+
+    competitor?: string;
+
+    notes?: string;
+
+    metadata?: Record<string, unknown>;
 
 }
 
+export type UpdateOpportunityInput =
+    Partial<CreateOpportunityInput>;
+
+export interface OpportunityFilters {
+
+    stage?: OpportunityStage;
+
+    status?: OpportunityStatus;
+
+    companyId?: string;
+
+    contactId?: string;
+
+    leadId?: string;
+
+    ownerId?: string;
+
+    assignedTo?: string;
+
+    includeArchived?: boolean;
+
+}
+
+export interface OpportunitySearchFilters
+    extends OpportunityFilters {
+
+    search?: string;
+
+    keyword?: string;
+
+    page?: number;
+
+    limit?: number;
+
+}
 
 export interface OpportunitySummary {
 
@@ -81,8 +231,13 @@ export interface OpportunitySummary {
      */
     totalValue: number;
 
-}
+    averageDealSize?: number;
 
+    averageProbability?: number;
+
+    winRate?: number;
+
+}
 
 export interface PipelineOpportunity {
 
@@ -100,10 +255,9 @@ export interface PipelineOpportunity {
 
 }
 
-
 export interface PipelineStage {
 
-    id: OpportunityStage;
+    id?: OpportunityStage;
 
     name: string;
 

@@ -7,3 +7,4 @@ export function useQuotations() {
         error: null,
     };
 }
+

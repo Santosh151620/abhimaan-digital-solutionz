@@ -98,3 +98,4 @@ export async function updateInvoiceStatus(
 export async function getInvoicesSummary() {
     return InvoicesServiceInstance.summary();
 }
+

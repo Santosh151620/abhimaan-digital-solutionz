@@ -61,3 +61,4 @@ export interface SettingsSummary {
     encrypted: number;
 
 }
+

@@ -64,3 +64,4 @@ export async function updateAssetStatus(
 export async function assetsSummary() {
     return AssetsServiceInstance.summary();
 }
+

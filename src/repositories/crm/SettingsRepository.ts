@@ -247,3 +247,4 @@ class SettingsRepository {
 export const
     SettingsRepositoryInstance =
         new SettingsRepository();
+

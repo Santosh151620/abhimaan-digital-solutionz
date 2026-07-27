@@ -1,4 +1,4 @@
-import type { Task } from "@/types/tasks";
+import type { Task } from "@/types/crm/Tasks";
 import { TasksRepository } from "@/repositories/tasks.repository";
 
 export class TasksService {
@@ -22,6 +22,7 @@ export class TasksService {
     return this.repository.create(task);
   }
 }
+
 
 
 

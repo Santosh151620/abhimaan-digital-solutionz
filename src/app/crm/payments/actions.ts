@@ -167,3 +167,4 @@ export async function getPaymentsSummary() {
     return PaymentsServiceInstance.summary();
 
 }
+

@@ -12,3 +12,4 @@ from './OpportunitiesSummary';
 
 export { default as OpportunitiesTable }
 from './OpportunitiesTable';
+

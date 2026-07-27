@@ -78,3 +78,4 @@ export interface AssetSummary {
     totalValue: number;
 
 }
+

@@ -123,3 +123,4 @@ export async function createContractsService() {
 
 export const ContractsServiceInstance =
     new ContractsService();
+

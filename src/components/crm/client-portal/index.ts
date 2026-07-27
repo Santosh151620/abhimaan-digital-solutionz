@@ -12,3 +12,4 @@ from './ClientPortalSummary';
 
 export { default as ClientPortalTable }
 from './ClientPortalTable';
+

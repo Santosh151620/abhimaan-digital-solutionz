@@ -12,3 +12,4 @@ from './NotesTable';
 
 export { default as NotesSummary }
 from './NotesSummary';
+

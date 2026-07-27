@@ -7,3 +7,4 @@ export function useOpportunities() {
         error: null,
     };
 }
+

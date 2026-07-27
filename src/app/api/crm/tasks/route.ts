@@ -14,7 +14,7 @@ export async function GET() {
     try {
 
         const tasks =
-            TasksServiceInstance.list();
+            await await TasksServiceInstance.list();
 
 
         return NextResponse.json(
@@ -52,7 +52,7 @@ export async function POST(
 
 
         const task =
-            TasksServiceInstance.create(
+            await await TasksServiceInstance.create(
                 body
             );
 
@@ -80,3 +80,5 @@ export async function POST(
     }
 
 }   
+
+

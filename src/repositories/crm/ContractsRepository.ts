@@ -501,3 +501,4 @@ class ContractsRepository {
 
 export const ContractsRepositoryInstance =
     new ContractsRepository();
+

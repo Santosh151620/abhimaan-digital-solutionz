@@ -260,3 +260,4 @@ class AssetsRepository {
 
 export const AssetsRepositoryInstance =
     new AssetsRepository();
+

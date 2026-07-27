@@ -393,3 +393,4 @@ class ProductsRepository {
 
 export const ProductsRepositoryInstance =
     new ProductsRepository();
+

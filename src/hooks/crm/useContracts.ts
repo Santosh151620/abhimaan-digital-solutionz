@@ -7,3 +7,4 @@ export function useContracts() {
         error: null,
     };
 }
+

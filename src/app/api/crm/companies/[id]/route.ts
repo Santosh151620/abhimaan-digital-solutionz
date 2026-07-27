@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { CompaniesServiceInstance } from '@/services/crm/CompaniesService';
 
 interface RouteContext {

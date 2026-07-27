@@ -450,3 +450,4 @@ class ClientPortalRepository {
 
 export const ClientPortalRepositoryInstance =
     new ClientPortalRepository();
+

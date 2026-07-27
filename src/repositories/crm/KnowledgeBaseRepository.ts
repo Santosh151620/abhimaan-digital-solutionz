@@ -361,3 +361,4 @@ class KnowledgeBaseRepository {
 export const
     KnowledgeBaseRepositoryInstance =
         new KnowledgeBaseRepository();
+

@@ -90,3 +90,4 @@ export interface ContractSearchFilters {
     search?: string;
 
 }
+

@@ -6,7 +6,7 @@ import type { Activity } from "@/types/crm/Activity";
 import type { Attachment } from "@/types/crm/Attachment";
 import type { Note } from "@/types/notes";
 import type { Notification } from "@/types/crm/Notification";
-import type { Task } from "@/types/tasks";
+import type { Task } from "@/types/crm/Tasks";
 
 import EntityWorkspace from "./EntityWorkspace";
 
@@ -38,6 +38,7 @@ export default function EntityWorkspaceContainer({
     />
   );
 }
+
 
 
 

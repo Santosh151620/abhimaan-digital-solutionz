@@ -1,141 +1,257 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+
+import type {
     Task,
     TaskSearchFilters,
     TaskStatus,
     TaskSummary,
 } from '@/types/crm/Tasks';
 
-class TasksRepository {
 
-    private readonly tasks =
-        new Map<string, Task>();
 
-    list(): Task[] {
+class TasksRepository
+    extends BaseRepository<Task> {
 
-        return [
-            ...this.tasks.values(),
-        ]
-            .filter(
-                task => !task.archived,
-            )
-            .sort(
-                (a, b) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt,
-                    ),
-            );
 
-    }
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
-    listArchived(): Task[] {
-
-        return [
-            ...this.tasks.values(),
-        ]
-            .filter(
-                task => task.archived,
-            )
-            .sort(
-                (a, b) =>
-                    b.updatedAt.localeCompare(
-                        a.updatedAt,
-                    ),
-            );
-
-    }
-
-    details(
-        id: string,
-    ): Task | null {
-
-        return (
-            this.tasks.get(id)
-            ?? null
+        super(
+            supabase,
+            'tasks',
         );
 
     }
 
-    findById(
-        id: string,
-    ): Task | null {
 
-        return this.details(
+
+    async list(): Promise<Task[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Task[];
+
+    }
+
+
+
+    async listArchived(): Promise<Task[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Task[];
+
+    }
+
+
+
+    async details(
+        id: string,
+    ): Promise<Task | null> {
+
+
+        return this.findById(
             id,
         );
 
     }
 
-    search(
-        filters?: TaskSearchFilters,
-    ): Task[] {
 
-        let tasks =
-            this.list();
+
+    async findById(
+        id: string,
+    ): Promise<Task | null> {
+
+
+        return super.findById(
+            id,
+        );
+
+    }
+        async search(
+        filters?: TaskSearchFilters,
+    ): Promise<Task[]> {
+
+
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                );
+
+
 
         if (
             filters?.status
         ) {
 
-            tasks =
-                tasks.filter(
-                    task =>
-                        task.status ===
-                        filters.status,
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
                 );
 
         }
+
+
 
         if (
             filters?.priority
         ) {
 
-            tasks =
-                tasks.filter(
-                    task =>
-                        task.priority ===
-                        filters.priority,
+            query =
+                query.eq(
+                    'priority',
+                    filters.priority,
                 );
 
         }
+
+
 
         if (
             filters?.companyId
         ) {
 
-            tasks =
-                tasks.filter(
-                    task =>
-                        task.companyId ===
-                        filters.companyId,
+            query =
+                query.eq(
+                    'company_id',
+                    filters.companyId,
                 );
 
         }
+
+
 
         if (
             filters?.projectId
         ) {
 
-            tasks =
-                tasks.filter(
-                    task =>
-                        task.projectId ===
-                        filters.projectId,
+            query =
+                query.eq(
+                    'project_id',
+                    filters.projectId,
                 );
 
         }
+
+
 
         if (
             filters?.assignedTo
         ) {
 
-            tasks =
-                tasks.filter(
-                    task =>
-                        task.assignedTo ===
-                        filters.assignedTo,
+            query =
+                query.eq(
+                    'assigned_to',
+                    filters.assignedTo,
                 );
 
         }
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        let tasks =
+            (
+                data ?? []
+            ) as Task[];
+
+
 
         if (
             filters?.search
@@ -146,172 +262,215 @@ class TasksRepository {
                     .trim()
                     .toLowerCase();
 
+
+
             tasks =
-                tasks.filter(
-                    task =>
+                (
+                    data ?? []
+                )
+                .filter(
+                    task => {
 
-                        task.taskNumber
-                            .toLowerCase()
-                            .includes(
-                                keyword,
-                            )
 
-                        ||
+                        const item =
+                            task as Task;
 
-                        task.title
-                            .toLowerCase()
-                            .includes(
-                                keyword,
-                            )
 
-                        ||
 
-                        (
-                            task.description
+                        return (
+
+                            item.taskNumber
                                 ?.toLowerCase()
                                 .includes(
                                     keyword,
                                 )
-                            ?? false
-                        )
 
-                        ||
+                            ||
 
-                        (
-                            task.assignedTo
+                            item.title
                                 ?.toLowerCase()
                                 .includes(
                                     keyword,
                                 )
-                            ?? false
-                        ),
 
-                );
+                            ||
+
+                            item.description
+                                ?.toLowerCase()
+                                .includes(
+                                    keyword,
+                                )
+
+                        );
+
+
+                    },
+                ) as Task[];
 
         }
+
+
 
         return tasks;
 
     }
 
-    create(
+
+
+
+
+    async create(
         data: Partial<Task>,
-    ): Task {
+    ): Promise<Task> {
+
 
         const now =
             new Date()
                 .toISOString();
 
-        const task: Task = {
 
-            id:
-                data.id ??
+
+        const payload = {
+            eentityType:
+    'Task' as const,
+
+
+            entityId:
+                data.entityId ??
                 crypto.randomUUID(),
+
+
 
             taskNumber:
                 data.taskNumber ??
                 `TSK-${Date.now()}`,
 
+
+
             projectId:
                 data.projectId,
+
+
 
             companyId:
                 data.companyId,
 
+
+
             assignedTo:
                 data.assignedTo,
 
+
+
+            ownerId:
+                data.ownerId,
+
+
+
             title:
-                data.title ??
-                '',
+                data.title ?? '',
+
+
 
             description:
                 data.description,
+
+
 
             status:
                 data.status ??
                 'Todo',
 
+
+
             priority:
                 data.priority ??
                 'Medium',
 
+
+
             startDate:
                 data.startDate,
+
+
 
             dueDate:
                 data.dueDate,
 
+
+
             completedAt:
                 data.completedAt,
+
+
 
             estimatedHours:
                 data.estimatedHours,
 
+
+
             actualHours:
                 data.actualHours,
+
+
 
             completionPercentage:
                 data.completionPercentage ??
                 (
-                    data.status ===
-                    'Completed'
+                    data.status === 'Completed'
                         ? 100
                         : 0
                 ),
 
+
+
             archived:
                 false,
 
+
+
             createdAt:
                 now,
+
+
 
             updatedAt:
                 now,
 
         };
 
-        this.tasks.set(
-            task.id,
-            task,
+        return super.create(
+            payload,
         );
 
-        return task;
-
     }
-        update(
+        async update(
         id: string,
         data: Partial<Task>,
-    ): Task | null {
+    ): Promise<Task> {
 
-        const existing =
-            this.tasks.get(id);
-
-        if (!existing) {
-
-            return null;
-
-        }
 
         const status =
-            data.status ??
-            existing.status;
+            data.status;
 
-        const completionPercentage =
-            data.completionPercentage ??
-            (
-                status === 'Completed'
-                    ? 100
-                    : existing.completionPercentage ?? 0
-            );
 
-        const updated: Task = {
 
-            ...existing,
+        const payload = {
 
             ...data,
 
-            completionPercentage,
+
+            completionPercentage:
+
+                data.completionPercentage ??
+
+                (
+                    status === 'Completed'
+                        ? 100
+                        : undefined
+                ),
+
+
 
             completedAt:
 
@@ -319,31 +478,31 @@ class TasksRepository {
 
                     ? (
                         data.completedAt ??
-                        existing.completedAt ??
-                        new Date().toISOString()
+                        new Date()
+                            .toISOString()
                     )
 
-                    : data.completedAt ??
-                      existing.completedAt,
+                    : data.completedAt,
+
+
 
             updatedAt:
-                new Date().toISOString(),
+                new Date()
+                    .toISOString(),
 
         };
 
-        this.tasks.set(
+        return super.update(
             id,
-            updated,
+            payload,
         );
-
-        return updated;
-
     }
 
-    updateStatus(
+    async updateStatus(
         id: string,
         status: TaskStatus,
-    ): Task | null {
+    ): Promise<Task> {
+
 
         return this.update(
             id,
@@ -354,69 +513,110 @@ class TasksRepository {
 
     }
 
-    delete(
-        id: string,
-    ): boolean {
+async delete(
+    id: string,
+): Promise<void> {
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .update(
+                    {
+                        archived: true,
 
-        const existing =
-            this.tasks.get(id);
+                        updated_at:
+                            new Date()
+                                .toISOString(),
 
-        if (!existing) {
+                    },
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
 
-            return false;
+
+        if (error) {
+
+            throw error;
 
         }
 
-        existing.archived =
-            true;
+        return;
 
-        existing.updatedAt =
-            new Date().toISOString();
+    }
 
-        this.tasks.set(
-            id,
-            existing,
-        );
+    async restore(
+        id: string,
+    ): Promise<boolean> {
+
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .update(
+                    {
+                        archived: false,
+
+                        updated_at:
+                            new Date()
+                                .toISOString(),
+
+                    },
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
 
         return true;
 
     }
 
-    restore(
-        id: string,
-    ): boolean {
 
-        const existing =
-            this.tasks.get(id);
 
-        if (!existing) {
 
-            return false;
 
-        }
+    async summary(): Promise<TaskSummary> {
 
-        existing.archived =
-            false;
-
-        existing.updatedAt =
-            new Date().toISOString();
-
-        this.tasks.set(
-            id,
-            existing,
-        );
-
-        return true;
-
-    }
-
-    summary(): TaskSummary {
 
         const tasks =
-            this.list();
+            await this.list();
+
+
 
         const archived =
-            this.listArchived();
+            await this.listArchived();
+
+
+
+        const today =
+            new Date()
+                .toISOString()
+                .substring(
+                    0,
+                    10,
+                );
+
+
 
         const totalCompletion =
             tasks.reduce(
@@ -436,71 +636,80 @@ class TasksRepository {
                 0,
             );
 
-        const today =
-            new Date()
-                .toISOString()
-                .substring(0, 10);
+
 
         return {
+
 
             total:
                 tasks.length,
 
+
+
             todo:
                 tasks.filter(
                     task =>
-                        task.status ===
-                        'Todo',
-                ).length,
+                        task.status === 'Todo',
+                )
+                .length,
+
+
 
             inProgress:
                 tasks.filter(
                     task =>
-                        task.status ===
-                        'In Progress',
-                ).length,
+                        task.status === 'In Progress',
+                )
+                .length,
+
+
 
             blocked:
                 tasks.filter(
                     task =>
-                        task.status ===
-                        'Blocked',
-                ).length,
+                        task.status === 'Blocked',
+                )
+                .length,
+
+
 
             completed:
                 tasks.filter(
                     task =>
-                        task.status ===
-                        'Completed',
-                ).length,
+                        task.status === 'Completed',
+                )
+                .length,
+
+
 
             cancelled:
                 tasks.filter(
                     task =>
-                        task.status ===
-                        'Cancelled',
-                ).length,
+                        task.status === 'Cancelled',
+                )
+                .length,
+
+
 
             critical:
                 tasks.filter(
                     task =>
-                        task.priority ===
-                        'Critical',
-                ).length,
+                        task.priority === 'Critical',
+                )
+                .length,
+
+
 
             highPriority:
                 tasks.filter(
                     task =>
-
-                        task.priority ===
-                            'High'
-
+                        task.priority === 'High'
                         ||
+                        task.priority === 'Critical',
+                )
+                .length,
 
-                        task.priority ===
-                            'Critical',
 
-                ).length,
 
             overdue:
                 tasks.filter(
@@ -514,18 +723,21 @@ class TasksRepository {
 
                         &&
 
-                        task.status !==
-                            'Completed'
+                        task.status !== 'Completed'
 
                         &&
 
-                        task.status !==
-                            'Cancelled',
+                        task.status !== 'Cancelled',
 
-                ).length,
+                )
+                .length,
+
+
 
             archived:
                 archived.length,
+
+
 
             averageCompletion:
 
@@ -533,7 +745,9 @@ class TasksRepository {
 
                     ? 0
 
-                    : Math.round(
+                    :
+
+                    Math.round(
                         totalCompletion /
                         tasks.length,
                     ),
@@ -542,8 +756,18 @@ class TasksRepository {
 
     }
 
+
 }
 
-export const
-    TasksRepositoryInstance =
-        new TasksRepository();
+export function createTasksRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new TasksRepository(
+        supabase,
+    );
+
+}
+
+export const TasksRepositoryInstance =
+    null as unknown as TasksRepository;

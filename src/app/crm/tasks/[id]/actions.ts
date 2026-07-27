@@ -13,7 +13,7 @@ export async function getTaskDetails(
     id: string,
 ) {
 
-    return TasksServiceInstance.details(
+    return TasksServiceInstance.findById(
         id,
     );
 
@@ -24,7 +24,7 @@ export async function updateTaskDetails(
     data: Partial<Task>,
 ) {
 
-    return TasksServiceInstance.update(
+    return await TasksServiceInstance.update(
         id,
         data,
     );
@@ -36,7 +36,7 @@ export async function changeTaskStatus(
     status: TaskStatus,
 ) {
 
-    return TasksServiceInstance.updateStatus(
+    return await TasksServiceInstance.updateStatus(
         id,
         status,
     );

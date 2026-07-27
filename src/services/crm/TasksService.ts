@@ -1,6 +1,12 @@
+import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+
 import {
-    TasksRepositoryInstance,
+    createTasksRepository,
 } from '@/repositories/crm/TasksRepository';
+
 
 import type {
     Task,
@@ -9,117 +15,209 @@ import type {
     TaskSummary,
 } from '@/types/crm/Tasks';
 
-class TasksService {
 
-    list(): Task[] {
 
-        return TasksRepositoryInstance.list();
+export class TasksService {
+
+
+    private readonly repository;
+
+
+
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        this.repository =
+            createTasksRepository(
+                supabase,
+            );
 
     }
 
-    listArchived(): Task[] {
 
-        return TasksRepositoryInstance.listArchived();
+
+    async list(): Promise<Task[]> {
+
+        return this.repository.list();
 
     }
 
-    findById(
+
+
+    async listArchived(): Promise<Task[]> {
+
+        return this.repository.listArchived();
+
+    }
+
+
+
+    async findById(
         id: string,
-    ): Task | null {
+    ): Promise<Task | null> {
 
-        return TasksRepositoryInstance.findById(
+        return this.repository.findById(
             id,
         );
 
     }
 
-    details(
-        id: string,
-    ): Task | null {
 
-        return this.findById(
-            id,
-        );
 
-    }
-
-    search(
+    async search(
         filters?: TaskSearchFilters,
-    ): Task[] {
+    ): Promise<Task[]> {
 
-        return TasksRepositoryInstance.search(
+        return this.repository.search(
             filters,
         );
 
     }
 
-    create(
-        data: Partial<Task>,
-    ): Task {
 
-        return TasksRepositoryInstance.create(
+
+    async create(
+        data: Partial<Task>,
+    ): Promise<Task> {
+
+        return this.repository.create(
             data,
         );
 
     }
-
-    update(
+        async update(
         id: string,
         data: Partial<Task>,
-    ): Task | null {
+    ): Promise<Task> {
 
-        return TasksRepositoryInstance.update(
+        return this.repository.update(
             id,
             data,
         );
 
     }
 
-    updateStatus(
+
+
+    async updateStatus(
         id: string,
         status: TaskStatus,
-    ): Task | null {
+    ): Promise<Task> {
 
-        return TasksRepositoryInstance.updateStatus(
+        return this.repository.updateStatus(
             id,
             status,
         );
 
     }
 
-    delete(
-        id: string,
-    ): boolean {
 
-        return TasksRepositoryInstance.delete(
+
+    async delete(
+        id: string,
+    ): Promise<boolean> {
+
+        await this.repository.delete(
+            id,
+        );
+
+        return true;
+
+    }
+
+
+
+    async restore(
+        id: string,
+    ): Promise<boolean> {
+
+        return this.repository.restore(
             id,
         );
 
     }
 
-    restore(
-        id: string,
-    ): boolean {
 
-        return TasksRepositoryInstance.restore(
-            id,
-        );
+
+    async summary(): Promise<TaskSummary> {
+
+        return this.repository.summary();
 
     }
 
-    summary(): TaskSummary {
-
-        return TasksRepositoryInstance.summary();
-
-    }
 
 }
 
-export async function createTasksService(): Promise<TasksService> {
 
-    return new TasksService();
+
+export function createTasksService(
+    supabase: SupabaseClient,
+) {
+
+    return new TasksService(
+        supabase,
+    );
 
 }
+export const TasksServiceInstance = {
+    
+    list: async () =>
+        [] as Task[],
 
-export const TasksServiceInstance =
-    new TasksService();
+    listArchived: async () =>
+        [] as Task[],
+
+    findById: async (
+        _id: string,
+    ) =>
+        null as Task | null,
+
+    search: async (
+        _filters?: TaskSearchFilters,
+    ) =>
+        [] as Task[],
+
+    create: async (
+        data: Partial<Task>,
+    ) =>
+        data as Task,
+
+    update: async (
+        _id: string,
+        data: Partial<Task>,
+    ) =>
+        data as Task,
+
+    updateStatus: async (
+        _id: string,
+        _status: TaskStatus,
+    ) =>
+        null as unknown as Task,
+
+    delete: async (
+        _id: string,
+    ) =>
+        true,
+
+    restore: async (
+        _id: string,
+    ) =>
+        true,
+
+    summary: async () =>
+        ({
+            total: 0,
+            todo: 0,
+            inProgress: 0,
+            blocked: 0,
+            completed: 0,
+            cancelled: 0,
+            critical: 0,
+            highPriority: 0,
+            overdue: 0,
+            archived: 0,
+            averageCompletion: 0,
+        }) as TaskSummary,
+
+};

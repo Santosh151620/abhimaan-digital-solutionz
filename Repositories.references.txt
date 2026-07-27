@@ -1,0 +1,148 @@
+﻿
+src\repositories\activity.repository.ts:19:        entityType: string,
+src\repositories\activity.repository.ts:20:        entityId: string,
+src\repositories\activity.repository.ts:25:            .eq("entityType", entityType)
+src\repositories\activity.repository.ts:26:            .eq("entityId", entityId)
+src\repositories\activity.repository.ts:28:                "organization_id",
+src\repositories\admin\AdminRepository.ts:42:                    "organization_id",
+src\repositories\admin\AuditRepository.ts:11:    entityId: string;
+src\repositories\admin\UsersRepository.ts:32:                "organization_id",
+src\repositories\admin\UsersRepository.ts:58:                "organization_id",
+src\repositories\attachments.repository.ts:19:        entityType: string,
+src\repositories\attachments.repository.ts:20:        entityId: string,
+src\repositories\attachments.repository.ts:25:            .eq("entityType", entityType)
+src\repositories\attachments.repository.ts:26:            .eq("entityId", entityId)
+src\repositories\crm\ActivitiesRepository.ts:40:                    'organization_id',
+src\repositories\crm\ActivitiesRepository.ts:79:                    'organization_id',
+src\repositories\crm\ActivitiesRepository.ts:153:            entityType:
+src\repositories\crm\ActivitiesRepository.ts:154:                data.entityType ??
+src\repositories\crm\ActivitiesRepository.ts:157:            entityId:
+src\repositories\crm\ActivitiesRepository.ts:158:                data.entityId ??
+src\repositories\crm\ActivitiesRepository.ts:335:        'organization_id',
+src\repositories\crm\ActivitiesRepository.ts:382:        'organization_id',
+src\repositories\crm\ActivitiesRepository.ts:411:                    'organization_id',
+src\repositories\crm\ActivitiesRepository.ts:457:        if (filters?.entityType) {
+src\repositories\crm\ActivitiesRepository.ts:462:                    filters.entityType,
+src\repositories\crm\ActivitiesRepository.ts:469:        if (filters?.entityId) {
+src\repositories\crm\ActivitiesRepository.ts:474:                    filters.entityId,
+src\repositories\crm\ActivityRepository.ts:81:            entityType:
+src\repositories\crm\ActivityRepository.ts:82:                data.entityType
+src\repositories\crm\ActivityRepository.ts:88:            entityId:
+src\repositories\crm\ActivityRepository.ts:89:                data.entityId
+src\repositories\crm\AttachmentRepository.ts:3:    AttachmentEntityType,
+src\repositories\crm\AttachmentRepository.ts:11:    entityType?: AttachmentEntityType;
+src\repositories\crm\AttachmentRepository.ts:13:    entityId?: string;
+src\repositories\crm\AttachmentRepository.ts:35:        entityType?: AttachmentEntityType,
+src\repositories\crm\AttachmentRepository.ts:36:        entityId?: string,
+src\repositories\crm\AttachmentRepository.ts:51:        if (entityType) {
+src\repositories\crm\AttachmentRepository.ts:57:                        attachment.entityType === 
+entityType,
+src\repositories\crm\AttachmentRepository.ts:65:        if (entityId) {
+src\repositories\crm\AttachmentRepository.ts:71:                        attachment.entityId === entityId,
+src\repositories\crm\AttachmentRepository.ts:125:        entityType: AttachmentEntityType,
+src\repositories\crm\AttachmentRepository.ts:126:        entityId: string,
+src\repositories\crm\AttachmentRepository.ts:131:            entityType,
+src\repositories\crm\AttachmentRepository.ts:132:            entityId,
+src\repositories\crm\AttachmentRepository.ts:152:        if (filters?.entityType) {
+src\repositories\crm\AttachmentRepository.ts:158:                        attachment.entityType ===
+src\repositories\crm\AttachmentRepository.ts:159:                        filters.entityType,
+src\repositories\crm\AttachmentRepository.ts:167:        if (filters?.entityId) {
+src\repositories\crm\AttachmentRepository.ts:173:                        attachment.entityId ===
+src\repositories\crm\AttachmentRepository.ts:174:                        filters.entityId,
+src\repositories\crm\AttachmentRepository.ts:266:            entityType:
+src\repositories\crm\AttachmentRepository.ts:267:                data.entityType
+src\repositories\crm\AttachmentRepository.ts:273:            entityId:
+src\repositories\crm\AttachmentRepository.ts:274:                data.entityId
+src\repositories\crm\ClientPortalRepository.ts:120:            entityType:
+src\repositories\crm\ClientPortalRepository.ts:121:                data.entityType,
+src\repositories\crm\ClientPortalRepository.ts:125:            entityId:
+src\repositories\crm\ClientPortalRepository.ts:126:                data.entityId,
+src\repositories\crm\CompaniesRepository.ts:56:                    'organization_id',
+src\repositories\crm\CompaniesRepository.ts:95:                    'organization_id',
+src\repositories\crm\CompaniesRepository.ts:196:            entityType:
+src\repositories\crm\CompaniesRepository.ts:231:                entityType:
+src\repositories\crm\CompaniesRepository.ts:316:                    'organization_id',
+src\repositories\crm\CompaniesRepository.ts:462:                    'entityType',
+src\repositories\crm\CompaniesRepository.ts:466:                    'entityId',
+src\repositories\crm\CompaniesRepository.ts:470:                    'organization_id',
+src\repositories\crm\CompaniesRepository.ts:505:                    'entityType',
+src\repositories\crm\CompaniesRepository.ts:509:                    'entityId',
+src\repositories\crm\CompaniesRepository.ts:513:                    'organization_id',
+src\repositories\crm\CompaniesRepository.ts:545:                    'entityType',
+src\repositories\crm\CompaniesRepository.ts:549:                    'entityId',
+src\repositories\crm\CompaniesRepository.ts:553:                    'organization_id',
+src\repositories\crm\ContactsRepository.ts:53:                    'organization_id',
+src\repositories\crm\ContactsRepository.ts:100:                    'organization_id',
+src\repositories\crm\ContactsRepository.ts:209:            entityType:
+src\repositories\crm\ContactsRepository.ts:214:            entityId:
+src\repositories\crm\ContactsRepository.ts:260:                entityType:
+src\repositories\crm\ContactsRepository.ts:372:                    'organization_id',
+src\repositories\crm\CustomerPortalRepository.ts:122:            entityType:
+src\repositories\crm\CustomerPortalRepository.ts:123:                data.entityType,
+src\repositories\crm\CustomerPortalRepository.ts:127:            entityId:
+src\repositories\crm\CustomerPortalRepository.ts:128:                data.entityId,
+src\repositories\crm\NotesRepository.ts:85:        entityType: string,
+src\repositories\crm\NotesRepository.ts:86:        entityId: string,
+src\repositories\crm\NotesRepository.ts:94:                        note.entityType === entityType
+src\repositories\crm\NotesRepository.ts:96:                        note.entityId === entityId,
+src\repositories\crm\NotesRepository.ts:109:                    entityType,
+src\repositories\crm\NotesRepository.ts:113:                    entityId,
+src\repositories\crm\NotesRepository.ts:133:            entityType:
+src\repositories\crm\NotesRepository.ts:134:                data.entityType
+src\repositories\crm\NotesRepository.ts:137:            entityId:
+src\repositories\crm\NotesRepository.ts:138:                data.entityId
+src\repositories\crm\NotificationRepository.ts:58:        entityType: string,
+src\repositories\crm\NotificationRepository.ts:59:        entityId: string,
+src\repositories\crm\NotificationRepository.ts:67:                notification.entityType === entityType
+src\repositories\crm\NotificationRepository.ts:71:                notification.entityId === entityId,
+src\repositories\crm\NotificationRepository.ts:106:            entityType:
+src\repositories\crm\NotificationRepository.ts:107:                data.entityType,
+src\repositories\crm\NotificationRepository.ts:109:            entityId:
+src\repositories\crm\NotificationRepository.ts:110:                data.entityId,
+src\repositories\crm\NotificationsRepository.ts:110:        if (filters?.entityType) {
+src\repositories\crm\NotificationsRepository.ts:115:                        item.entityType ===
+src\repositories\crm\NotificationsRepository.ts:116:                        filters.entityType,
+src\repositories\crm\NotificationsRepository.ts:121:        if (filters?.entityId) {
+src\repositories\crm\NotificationsRepository.ts:126:                        item.entityId ===
+src\repositories\crm\NotificationsRepository.ts:127:                        filters.entityId,
+src\repositories\crm\NotificationsRepository.ts:210:            entityType:
+src\repositories\crm\NotificationsRepository.ts:211:                data.entityType,
+src\repositories\crm\NotificationsRepository.ts:213:            entityId:
+src\repositories\crm\NotificationsRepository.ts:214:                data.entityId,
+src\repositories\crm\OpportunitiesRepository.ts:58:                    'organization_id',
+src\repositories\crm\OpportunitiesRepository.ts:129:                entityType:
+src\repositories\crm\OpportunitiesRepository.ts:185:                entityType:
+src\repositories\crm\OpportunitiesRepository.ts:233:                    'organization_id',
+src\repositories\crm\ProductsRepository.ts:116:            entityType:
+src\repositories\crm\ProductsRepository.ts:117:                data.entityType,
+src\repositories\crm\ProductsRepository.ts:119:            entityId:
+src\repositories\crm\ProductsRepository.ts:120:                data.entityId,
+src\repositories\crm\QuotationsRepository.ts:44:                    'organization_id',
+src\repositories\crm\QuotationsRepository.ts:86:                    'organization_id',
+src\repositories\crm\QuotationsRepository.ts:191:                entityType:
+src\repositories\crm\QuotationsRepository.ts:288:                entityType:
+src\repositories\crm\QuotationsRepository.ts:375:                    'organization_id',
+src\repositories\crm\SearchRepository.ts:26:        if (filters.entityType) {
+src\repositories\crm\SearchRepository.ts:31:                        item.entityType ===
+src\repositories\crm\SearchRepository.ts:32:                        filters.entityType
+src\repositories\notes.repository.ts:27:        entityType: string,
+src\repositories\notes.repository.ts:28:        entityId: string
+src\repositories\notes.repository.ts:37:                    note.entityType === entityType &&
+src\repositories\notes.repository.ts:38:                    note.entityId === entityId
+src\repositories\notes.repository.ts:80:                entityType
+src\repositories\notes.repository.ts:84:                entityId
+src\repositories\notes.repository.ts:106:            entityType:
+src\repositories\notes.repository.ts:107:                data.entityType ?? '',
+src\repositories\notes.repository.ts:109:            entityId:
+src\repositories\notes.repository.ts:110:                data.entityId ?? '',
+src\repositories\notifications.repository.ts:19:        entityType: string,
+src\repositories\notifications.repository.ts:20:        entityId: string,
+src\repositories\notifications.repository.ts:25:            .eq("entityType", entityType)
+src\repositories\notifications.repository.ts:26:            .eq("entityId", entityId)
+src\repositories\projects.repository.ts:14:      .eq("organization_id", this.organizationId)
+src\repositories\tasks.repository.ts:12:    entityType: string,
+src\repositories\tasks.repository.ts:13:    entityId: string,
+src\repositories\tasks.repository.ts:17:      .eq("entityType", entityType)
+src\repositories\tasks.repository.ts:18:      .eq("entityId", entityId)
+
+

@@ -334,3 +334,4 @@ class TicketsRepository {
 export const
     TicketsRepositoryInstance =
         new TicketsRepository();
+

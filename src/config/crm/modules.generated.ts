@@ -7,3 +7,4 @@ export const crmModules = [
 export const enabledModules = crmModules;
 
 export default crmModules;
+

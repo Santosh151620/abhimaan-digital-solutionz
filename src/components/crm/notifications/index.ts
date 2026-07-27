@@ -27,3 +27,4 @@ export {
     default as NotificationSummary,
 
 } from './NotificationSummary';
+

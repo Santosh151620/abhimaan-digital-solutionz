@@ -72,3 +72,4 @@ export async function updateTicketStatus(
 export async function getTicketsSummary() {
     return TicketsServiceInstance.summary();
 }
+

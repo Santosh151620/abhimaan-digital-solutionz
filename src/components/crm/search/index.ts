@@ -6,3 +6,4 @@ export { default as SearchResults }
 
 export { default as SearchClient }
     from './SearchClient';
+

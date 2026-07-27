@@ -60,3 +60,4 @@ class AssetsService {
 
 export const AssetsServiceInstance =
     new AssetsService();
+

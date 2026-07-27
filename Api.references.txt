@@ -1,0 +1,25 @@
+﻿
+src\app\api\crm\companies\route.ts:95:                    entityType:
+src\app\api\entities\activity\route.ts:9:  const entityType =
+src\app\api\entities\activity\route.ts:10:    req.nextUrl.searchParams.get("entityType");
+src\app\api\entities\activity\route.ts:12:  const entityId =
+src\app\api\entities\activity\route.ts:13:    req.nextUrl.searchParams.get("entityId");
+src\app\api\entities\activity\route.ts:15:  if (!entityType || !entityId) {
+src\app\api\entities\activity\route.ts:17:      { error: "entityType and entityId required" },
+src\app\api\entities\activity\route.ts:23:    await repo.findByEntity(entityType, entityId)
+src\app\api\entities\notes\route.ts:9:  const entityType = req.nextUrl.searchParams.get("entityType");
+src\app\api\entities\notes\route.ts:10:  const entityId = req.nextUrl.searchParams.get("entityId");
+src\app\api\entities\notes\route.ts:12:  if (!entityType || !entityId) {
+src\app\api\entities\notes\route.ts:14:      { error: "entityType and entityId required" },
+src\app\api\entities\notes\route.ts:20:    entityType,
+src\app\api\entities\notes\route.ts:21:    entityId
+src\app\api\entities\tasks\route.ts:9:  const entityType =
+src\app\api\entities\tasks\route.ts:10:    req.nextUrl.searchParams.get("entityType");
+src\app\api\entities\tasks\route.ts:12:  const entityId =
+src\app\api\entities\tasks\route.ts:13:    req.nextUrl.searchParams.get("entityId");
+src\app\api\entities\tasks\route.ts:15:  if (!entityType || !entityId) {
+src\app\api\entities\tasks\route.ts:17:      { error: "entityType and entityId required" },
+src\app\api\entities\tasks\route.ts:23:    await repo.findByEntity(entityType, entityId)
+src\app\api\leads\[id]\notes\route.ts:33:        .eq("organization_id", getOrganizationId())
+
+

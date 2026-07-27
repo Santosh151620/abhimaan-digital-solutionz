@@ -46,7 +46,7 @@ function can(
 
 export async function getTasks() {
 
-    return TasksServiceInstance.list();
+    return await await TasksServiceInstance.list();
 
 }
 
@@ -74,7 +74,7 @@ export async function searchTasks(
 
 export async function getArchivedTasks() {
 
-    return TasksServiceInstance.listArchived();
+    return await await TasksServiceInstance.listArchived();
 
 }
 
@@ -84,7 +84,7 @@ export async function getTask(
     id:string
 ) {
 
-    return TasksServiceInstance.details(
+    return TasksServiceInstance.findById(
         id
     );
 
@@ -109,7 +109,7 @@ export async function createTask(
 
 
 
-    return TasksServiceInstance.create(
+    return await await TasksServiceInstance.create(
         data
     );
 
@@ -135,7 +135,7 @@ export async function updateTask(
 
 
 
-    return TasksServiceInstance.update(
+    return await await TasksServiceInstance.update(
         id,
         data
     );
@@ -161,7 +161,7 @@ export async function deleteTask(
 
 
 
-    return TasksServiceInstance.delete(
+    return await await TasksServiceInstance.delete(
         id
     );
 
@@ -186,7 +186,7 @@ export async function restoreTask(
 
 
 
-    return TasksServiceInstance.restore(
+    return await await TasksServiceInstance.restore(
         id
     );
 
@@ -212,7 +212,7 @@ export async function updateTaskStatus(
 
 
 
-    return TasksServiceInstance.updateStatus(
+    return await await TasksServiceInstance.updateStatus(
         id,
         status
     );
@@ -223,6 +223,8 @@ export async function updateTaskStatus(
 
 export async function getTasksSummary() {
 
-    return TasksServiceInstance.summary();
+    return await await TasksServiceInstance.summary();
 
 }
+
+

@@ -7,3 +7,4 @@ export function useAssets() {
         error: null,
     };
 }
+

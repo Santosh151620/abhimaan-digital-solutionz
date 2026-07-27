@@ -574,3 +574,4 @@ class PaymentsRepository {
 export const
     PaymentsRepositoryInstance =
         new PaymentsRepository();
+

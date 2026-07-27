@@ -149,3 +149,4 @@ export async function getCalendarSummary() {
     return CalendarServiceInstance.summary();
 
 }
+

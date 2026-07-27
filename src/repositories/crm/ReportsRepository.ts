@@ -358,3 +358,4 @@ class ReportRepository {
 
 export const ReportRepositoryInstance =
     new ReportRepository();
+

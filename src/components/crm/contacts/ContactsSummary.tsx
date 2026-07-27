@@ -1,75 +1,85 @@
 'use client';
 
-import type { Contact } from '@/types/crm/Contacts';
+import type {
+    ContactsSummary as ContactsSummaryModel,
+} from '@/types/crm/Contacts';
 
 interface Props {
-    contacts: Contact[];
+
+    summary: ContactsSummaryModel;
+
 }
 
+const cards = [
+
+    {
+        key: 'total',
+        label: 'Total',
+    },
+
+    {
+        key: 'active',
+        label: 'Active',
+    },
+
+    {
+        key: 'inactive',
+        label: 'Inactive',
+    },
+
+    {
+        key: 'leads',
+        label: 'Leads',
+    },
+
+    {
+        key: 'customers',
+        label: 'Customers',
+    },
+
+    {
+        key: 'archived',
+        label: 'Archived',
+    },
+
+] as const;
+
 export default function ContactsSummary({
-    contacts,
+
+    summary,
+
 }: Props) {
-
-    const totalContacts = contacts.length;
-
-    const activeContacts =
-        contacts.filter(
-            contact => contact.status === 'ACTIVE'
-        ).length;
-
-    const inactiveContacts =
-        contacts.filter(
-            contact => contact.status === 'INACTIVE'
-        ).length;
-
-    const primaryContacts =
-        contacts.filter(
-            contact => Boolean(contact.companyId)
-        ).length;
-
-
-    const cards = [
-        {
-            title: 'Total Contacts',
-            value: totalContacts,
-        },
-        {
-            title: 'Active',
-            value: activeContacts,
-        },
-        {
-            title: 'Inactive',
-            value: inactiveContacts,
-        },
-        {
-            title: 'Primary Contacts',
-            value: primaryContacts,
-        },
-    ];
-
 
     return (
 
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
 
-            {cards.map(card => (
+            {
 
-                <div
-                    key={card.title}
-                    className="rounded-xl border bg-card p-5"
-                >
+                cards.map(card => (
 
-                    <div className="text-sm text-muted-foreground">
-                        {card.title}
+                    <div
+                        key={card.key}
+                        className="rounded-xl border bg-card p-5"
+                    >
+
+                        <div className="text-sm text-muted-foreground">
+
+                            {card.label}
+
+                        </div>
+
+                        <div className="mt-2 text-3xl font-semibold">
+
+                            {summary[card.key]}
+
+                        </div>
+
                     </div>
 
-                    <div className="mt-2 text-3xl font-bold">
-                        {card.value}
-                    </div>
+                ))
 
-                </div>
-
-            ))}
+            }
 
         </div>
 

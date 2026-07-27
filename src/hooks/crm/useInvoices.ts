@@ -7,3 +7,4 @@ export function useInvoices() {
         error: null,
     };
 }
+

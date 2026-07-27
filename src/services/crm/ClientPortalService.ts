@@ -155,3 +155,4 @@ class ClientPortalService {
 
 export const ClientPortalServiceInstance =
     new ClientPortalService();
+

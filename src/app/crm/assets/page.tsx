@@ -81,3 +81,4 @@ export default async function AssetsPage() {
         </div>
     );
 }
+

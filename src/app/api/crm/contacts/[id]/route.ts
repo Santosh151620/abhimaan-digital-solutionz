@@ -1,11 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse } from 'next/server';
 
 import {
     ContactsServiceInstance,
-} from "@/services/crm/ContactsService";
+} from '@/services/crm/ContactsService';
 
-
-interface Props {
+interface RouteContext {
 
     params: Promise<{
         id: string;
@@ -13,11 +12,9 @@ interface Props {
 
 }
 
-
-
 export async function GET(
-    _request: Request,
-    { params }: Props,
+    request: Request,
+    { params }: RouteContext,
 ) {
 
     try {
@@ -25,18 +22,16 @@ export async function GET(
         const { id } =
             await params;
 
-
         const contact =
-            await ContactsServiceInstance.findById(
+            await ContactsServiceInstance.details(
                 id,
             );
-
 
         if (!contact) {
 
             return NextResponse.json(
                 {
-                    error: "Contact not found",
+                    message: 'Contact not found.',
                 },
                 {
                     status: 404,
@@ -45,17 +40,16 @@ export async function GET(
 
         }
 
-
         return NextResponse.json(
             contact,
         );
-
 
     } catch {
 
         return NextResponse.json(
             {
-                error: "Failed to load contact",
+                message:
+                    'Failed to load contact.',
             },
             {
                 status: 500,
@@ -66,12 +60,9 @@ export async function GET(
 
 }
 
-
-
-
 export async function PUT(
     request: Request,
-    { params }: Props,
+    { params }: RouteContext,
 ) {
 
     try {
@@ -79,10 +70,8 @@ export async function PUT(
         const { id } =
             await params;
 
-
         const body =
             await request.json();
-
 
         const contact =
             await ContactsServiceInstance.update(
@@ -90,31 +79,16 @@ export async function PUT(
                 body,
             );
 
-
-        if (!contact) {
-
-            return NextResponse.json(
-                {
-                    error: "Contact not found",
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
-
-
         return NextResponse.json(
             contact,
         );
-
 
     } catch {
 
         return NextResponse.json(
             {
-                error: "Failed to update contact",
+                message:
+                    'Failed to update contact.',
             },
             {
                 status: 500,
@@ -125,10 +99,9 @@ export async function PUT(
 
 }
 
-
 export async function DELETE(
-    _request: Request,
-    { params }: Props,
+    request: Request,
+    { params }: RouteContext,
 ) {
 
     try {
@@ -136,31 +109,78 @@ export async function DELETE(
         const { id } =
             await params;
 
-
         await ContactsServiceInstance.delete(
             id,
         );
 
-
         return NextResponse.json(
             {
-                success:true,
-            },
-            {
-                status:200,
+                success: true,
             },
         );
-
 
     } catch {
 
         return NextResponse.json(
             {
-                error:
-                    "Failed to delete contact",
+                message:
+                    'Failed to delete contact.',
             },
             {
-                status:500,
+                status: 500,
+            },
+        );
+
+    }
+
+}
+
+export async function PATCH(
+    request: Request,
+    { params }: RouteContext,
+) {
+
+    try {
+
+        const { id } =
+            await params;
+
+        const body =
+            await request.json();
+
+        if (body.restore === true) {
+
+            await ContactsServiceInstance.restore(
+                id,
+            );
+
+            return NextResponse.json(
+                {
+                    success: true,
+                },
+            );
+
+        }
+
+        return NextResponse.json(
+            {
+                message:
+                    'Unsupported patch operation.',
+            },
+            {
+                status: 400,
+            },
+        );
+
+    } catch {
+
+        return NextResponse.json(
+            {
+                message:
+                    'Failed to process request.',
+            },
+            {
+                status: 500,
             },
         );
 

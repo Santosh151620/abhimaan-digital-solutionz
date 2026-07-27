@@ -401,3 +401,4 @@ export interface ActivitySummary {
     completionRate: number;
 
 }
+

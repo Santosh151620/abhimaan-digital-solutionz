@@ -27,3 +27,4 @@ export { default as EntityWorkspaceContainer } from "./EntityWorkspaceContainer"
 export { default as NotesPanel } from "./NotesPanel";
 export { default as NotificationPanel } from "./NotificationPanel";
 export { default as TaskPanel } from "./TaskPanel";
+

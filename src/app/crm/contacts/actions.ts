@@ -70,3 +70,4 @@ export async function restoreContact(
     return ContactsServiceInstance.restore(id);
 
 }
+

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { BaseRepository } from "@/lib/db/base-repository";
-import type { Task } from "@/types/tasks";
+import type { Task } from "@/types/crm/Tasks";
 
 export class TasksRepository extends BaseRepository<Task> {
   constructor(supabase: SupabaseClient) {
@@ -23,6 +23,7 @@ export class TasksRepository extends BaseRepository<Task> {
     return (data ?? []) as Task[];
   }
 }
+
 
 
 

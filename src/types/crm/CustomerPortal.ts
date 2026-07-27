@@ -53,3 +53,4 @@ export interface CustomerPortalSummary {
     archived:number;
 
 }
+

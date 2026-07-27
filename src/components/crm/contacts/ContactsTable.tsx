@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 import type {
     ContactDetails,
 } from '@/types/crm/Contacts';
@@ -16,18 +18,36 @@ export default function ContactsTable({
 
 }: Props) {
 
+    if (contacts.length === 0) {
+
+        return (
+
+            <div className="rounded-xl border p-8 text-center text-muted-foreground">
+
+                No contacts found.
+
+            </div>
+
+        );
+
+    }
+
     return (
 
         <div className="overflow-x-auto rounded-xl border">
 
             <table className="w-full text-sm">
 
-                <thead className="border-b bg-muted">
+                <thead className="border-b bg-muted/40">
 
                     <tr>
 
                         <th className="px-4 py-3 text-left">
-                            Name
+                            Contact
+                        </th>
+
+                        <th className="px-4 py-3 text-left">
+                            Company
                         </th>
 
                         <th className="px-4 py-3 text-left">
@@ -39,11 +59,19 @@ export default function ContactsTable({
                         </th>
 
                         <th className="px-4 py-3 text-left">
-                            Company
+                            Designation
                         </th>
 
                         <th className="px-4 py-3 text-left">
                             Status
+                        </th>
+
+                        <th className="px-4 py-3 text-left">
+                            Last Activity
+                        </th>
+
+                        <th className="px-4 py-3 text-right">
+                            Actions
                         </th>
 
                     </tr>
@@ -52,52 +80,99 @@ export default function ContactsTable({
 
                 <tbody>
 
-                    {contacts.map(contact => (
+                    {
 
-                        <tr
-                            key={contact.id}
-                            className="border-b last:border-0"
-                        >
+                        contacts.map(contact => (
 
-                            <td className="px-4 py-3 font-medium">
-                                {contact.fullName ??
-                                    `${contact.firstName} ${contact.lastName}`.trim()}
-                            </td>
-
-                            <td className="px-4 py-3">
-                                {contact.email ?? '-'}
-                            </td>
-
-                            <td className="px-4 py-3">
-                                {contact.phone ?? contact.mobile ?? '-'}
-                            </td>
-
-                            <td className="px-4 py-3">
-                                {contact.companyName ?? '-'}
-                            </td>
-
-                            <td className="px-4 py-3">
-                                {contact.status}
-                            </td>
-
-                        </tr>
-
-                    ))}
-
-                    {contacts.length === 0 && (
-
-                        <tr>
-
-                            <td
-                                colSpan={5}
-                                className="px-4 py-8 text-center text-muted-foreground"
+                            <tr
+                                key={contact.id}
+                                className="border-b hover:bg-muted/30"
                             >
-                                No contacts found.
-                            </td>
 
-                        </tr>
+                                <td className="px-4 py-3">
 
-                    )}
+                                    <div className="font-medium">
+
+                                        {
+
+                                            contact.fullName
+
+                                            ??
+
+                                            `${contact.firstName} ${contact.lastName}`.trim()
+
+                                        }
+
+                                    </div>
+
+                                    {
+
+                                        contact.department && (
+
+                                            <div className="text-xs text-muted-foreground">
+
+                                                {contact.department}
+
+                                            </div>
+
+                                        )
+
+                                    }
+
+                                </td>
+
+                                <td className="px-4 py-3">
+
+                                    {contact.companyName ?? '-'}
+
+                                </td>
+
+                                <td className="px-4 py-3">
+
+                                    {contact.email ?? '-'}
+
+                                </td>
+
+                                <td className="px-4 py-3">
+
+                                    {contact.phone ?? contact.mobile ?? '-'}
+
+                                </td>
+
+                                <td className="px-4 py-3">
+
+                                    {contact.designation ?? '-'}
+
+                                </td>
+
+                                <td className="px-4 py-3">
+
+                                    {contact.status}
+
+                                </td>
+
+                                <td className="px-4 py-3">
+
+                                    {contact.lastActivity ?? '-'}
+
+                                </td>
+
+                                <td className="px-4 py-3 text-right">
+
+                                    <Link
+                                        href={`/crm/contacts/${contact.id}`}
+                                        className="rounded border px-3 py-1 text-sm"
+                                    >
+                                        View
+                                    </Link>
+
+                                </td>
+
+                            </tr>
+
+                        ))
+
+                    }
 
                 </tbody>
 

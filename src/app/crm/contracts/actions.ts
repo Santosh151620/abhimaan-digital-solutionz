@@ -73,3 +73,4 @@ export async function updateContractStatus(
 export async function getContractsSummary() {
     return ContractsServiceInstance.summary();
 }
+

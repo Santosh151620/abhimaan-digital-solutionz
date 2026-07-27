@@ -1,4 +1,4 @@
-﻿export default function DashboardLoading() {
+export default function DashboardLoading() {
   return (
     <main className="min-h-screen space-y-8 bg-slate-950 p-6 text-white">
       <div className="h-10 w-64 animate-pulse rounded-xl bg-slate-800" />

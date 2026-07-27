@@ -168,3 +168,4 @@ export async function getReportsSummary() {
     return ReportServiceInstance.summary();
 
 }
+

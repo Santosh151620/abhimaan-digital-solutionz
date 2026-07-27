@@ -232,3 +232,4 @@ export async function getCompaniesSummary(){
     return CompaniesServiceInstance.summary();
 
 }
+

@@ -125,3 +125,4 @@ export interface PaymentSummary {
     collectionRate: number;
 
 }
+

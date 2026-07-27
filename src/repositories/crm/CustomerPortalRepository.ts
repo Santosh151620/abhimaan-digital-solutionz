@@ -452,3 +452,4 @@ class CustomerPortalRepository {
 
 export const CustomerPortalRepositoryInstance =
     new CustomerPortalRepository();
+

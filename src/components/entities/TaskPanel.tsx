@@ -1,6 +1,6 @@
 "use client";
 
-import type { Task } from "@/types/tasks";
+import type { Task } from "@/types/crm/Tasks";
 
 interface TaskPanelProps {
   tasks: Task[];
@@ -38,6 +38,7 @@ export default function TaskPanel({
     </div>
   );
 }
+
 
 
 
