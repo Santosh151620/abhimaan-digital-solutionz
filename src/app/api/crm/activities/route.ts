@@ -13,22 +13,27 @@ export async function GET() {
     try {
 
         const activities =
-            ActivityServiceInstance.list();
+            await ActivityServiceInstance.list();
+
 
         return NextResponse.json(
-            activities
+            activities,
         );
+
 
     } catch {
 
         return NextResponse.json(
+
             {
                 error:
                     'Failed to fetch activities',
             },
+
             {
                 status: 500,
-            }
+            },
+
         );
 
     }
@@ -38,7 +43,7 @@ export async function GET() {
 
 
 export async function POST(
-    request: NextRequest
+    request: NextRequest,
 ) {
 
     try {
@@ -48,32 +53,37 @@ export async function POST(
 
 
         const activity =
-            ActivityServiceInstance.create(
-                body
+            await ActivityServiceInstance.create(
+                body,
             );
 
 
         return NextResponse.json(
+
             activity,
+
             {
                 status: 201,
-            }
+            },
+
         );
 
 
     } catch {
 
         return NextResponse.json(
+
             {
                 error:
                     'Failed to create activity',
             },
+
             {
                 status: 500,
-            }
+            },
+
         );
 
     }
 
 }
-

@@ -12,6 +12,7 @@ import type {
 } from '@/types/crm/Activities';
 
 
+
 interface Props {
 
     params: Promise<{
@@ -24,52 +25,61 @@ interface Props {
 
 export async function GET(
     request: NextRequest,
-    { params }: Props
+    {
+        params,
+    }: Props,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await params;
 
 
         const activity =
-            ActivityServiceInstance.details(
-                id
+            await ActivityServiceInstance.details(
+                id,
             );
 
 
         if (!activity) {
 
             return NextResponse.json(
+
                 {
                     error:
                         'Activity not found',
                 },
+
                 {
                     status: 404,
-                }
+                },
+
             );
 
         }
 
 
         return NextResponse.json(
-            activity
+            activity,
         );
 
 
     } catch {
 
         return NextResponse.json(
+
             {
                 error:
                     'Failed to fetch activity',
             },
+
             {
                 status: 500,
-            }
+            },
+
         );
 
     }
@@ -78,17 +88,19 @@ export async function GET(
 
 
 
-
 export async function PUT(
     request: NextRequest,
-    { params }: Props
+    {
+        params,
+    }: Props,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await params;
 
 
         const body =
@@ -96,42 +108,48 @@ export async function PUT(
 
 
         const activity =
-            ActivityServiceInstance.update(
+            await ActivityServiceInstance.update(
                 id,
-                body
+                body,
             );
 
 
         if (!activity) {
 
             return NextResponse.json(
+
                 {
                     error:
                         'Activity not found',
                 },
+
                 {
                     status: 404,
-                }
+                },
+
             );
 
         }
 
 
         return NextResponse.json(
-            activity
+            activity,
         );
 
 
     } catch {
 
         return NextResponse.json(
+
             {
                 error:
                     'Failed to update activity',
             },
+
             {
                 status: 500,
-            }
+            },
+
         );
 
     }
@@ -140,17 +158,19 @@ export async function PUT(
 
 
 
-
 export async function PATCH(
     request: NextRequest,
-    { params }: Props
+    {
+        params,
+    }: Props,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await params;
 
 
         const body:
@@ -163,55 +183,64 @@ export async function PATCH(
         if (!body.status) {
 
             return NextResponse.json(
+
                 {
                     error:
                         'Status is required',
                 },
+
                 {
                     status: 400,
-                }
+                },
+
             );
 
         }
 
 
         const activity =
-            ActivityServiceInstance.updateStatus(
+            await ActivityServiceInstance.updateStatus(
                 id,
-                body.status
+                body.status,
             );
 
 
         if (!activity) {
 
             return NextResponse.json(
+
                 {
                     error:
                         'Activity not found',
                 },
+
                 {
                     status: 404,
-                }
+                },
+
             );
 
         }
 
 
         return NextResponse.json(
-            activity
+            activity,
         );
 
 
     } catch {
 
         return NextResponse.json(
+
             {
                 error:
                     'Failed to update activity status',
             },
+
             {
                 status: 500,
-            }
+            },
+
         );
 
     }
@@ -220,57 +249,49 @@ export async function PATCH(
 
 
 
-
 export async function DELETE(
     request: NextRequest,
-    { params }: Props
+    {
+        params,
+    }: Props,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await params;
 
 
-        const deleted =
-            ActivityServiceInstance.delete(
-                id
-            );
-
-
-        if (!deleted) {
-
-            return NextResponse.json(
-                {
-                    error:
-                        'Activity not found',
-                },
-                {
-                    status: 404,
-                }
-            );
-
-        }
+        await ActivityServiceInstance.delete(
+            id,
+        );
 
 
         return NextResponse.json(
+
             {
-                success: true,
-            }
+                success:
+                    true,
+            },
+
         );
 
 
     } catch {
 
         return NextResponse.json(
+
             {
                 error:
                     'Failed to delete activity',
             },
+
             {
                 status: 500,
-            }
+            },
+
         );
 
     }
