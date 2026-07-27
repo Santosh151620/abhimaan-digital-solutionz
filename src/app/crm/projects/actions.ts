@@ -9,7 +9,7 @@ import type {
     ProjectStatus,
 } from '@/types/crm/Projects';
 
-async function service() {
+function service() {
 
     return createProjectsService();
 
@@ -17,13 +17,13 @@ async function service() {
 
 export async function getProjects() {
 
-    return (await service()).list();
+    return service().list();
 
 }
 
 export async function getArchivedProjects() {
 
-    return (await service()).listArchived();
+    return service().listArchived();
 
 }
 
@@ -31,7 +31,7 @@ export async function getProject(
     id: string,
 ) {
 
-    return (await service()).details(
+    return service().details(
         id,
     );
 
@@ -41,7 +41,7 @@ export async function createProject(
     data: Partial<Project>,
 ) {
 
-    return (await service()).create(
+    return service().create(
         data,
     );
 
@@ -52,7 +52,7 @@ export async function updateProject(
     data: Partial<Project>,
 ) {
 
-    return (await service()).update(
+    return service().update(
         id,
         data,
     );
@@ -64,7 +64,7 @@ export async function updateProjectStatus(
     status: ProjectStatus,
 ) {
 
-    return (await service()).updateStatus(
+    return service().updateStatus(
         id,
         status,
     );
@@ -75,7 +75,7 @@ export async function deleteProject(
     id: string,
 ) {
 
-    return (await service()).delete(
+    return service().delete(
         id,
     );
 
@@ -85,7 +85,7 @@ export async function restoreProject(
     id: string,
 ) {
 
-    return (await service()).restore(
+    return service().restore(
         id,
     );
 
@@ -93,6 +93,6 @@ export async function restoreProject(
 
 export async function getProjectsSummary() {
 
-    return (await service()).summary();
+    return service().summary();
 
 }

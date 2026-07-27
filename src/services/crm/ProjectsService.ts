@@ -83,10 +83,8 @@ export class ProjectsService {
 
 }
 
-export async function createProjectsService() {
-
+export function createProjectsService() {
     return new ProjectsService();
-
 }
 
 export const ProjectsServiceInstance =

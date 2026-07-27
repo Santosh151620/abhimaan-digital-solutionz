@@ -10,21 +10,31 @@ class ProjectsRepository {
 
     list() {
 
-        return Array.from(
-            this.projects.values()
-        ).filter(
-            project => !project.archived
-        );
+        return [
+    ...this.projects.values(),
+]
+.filter(project => !project.archived)
+.sort(
+    (a, b) =>
+        b.createdAt.localeCompare(
+            a.createdAt,
+        ),
+);
 
     }
 
     listArchived() {
 
-        return Array.from(
-            this.projects.values()
-        ).filter(
-            project => project.archived
-        );
+       return [
+    ...this.projects.values(),
+]
+.filter(project => project.archived)
+.sort(
+    (a, b) =>
+        b.updatedAt.localeCompare(
+            a.updatedAt,
+        ),
+);
 
     }
 
@@ -38,7 +48,13 @@ class ProjectsRepository {
         );
 
     }
+findById(
+    id: string,
+): Project | null {
 
+    return this.details(id);
+
+}
     create(
         data: Partial<Project>
     ): Project {
@@ -266,13 +282,7 @@ class ProjectsRepository {
         };
 
     }
-    async findById(
-        id: string
-    ): Promise<Project | null> {
-
-        return this.details(id);
-
-    }
+    
 }
 
 export const
