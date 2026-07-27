@@ -21,7 +21,7 @@ interface Props {
     loading?: boolean;
 
     onSubmit?: (
-        values: Partial<Activity>
+        values: Partial<Activity>,
     ) => void | Promise<void>;
 
     onCancel?: () => void;
@@ -35,11 +35,15 @@ const types: ActivityType[] = [
     'Call',
     'Meeting',
     'Email',
-    'Task',
-    'Follow-up',
     'Note',
+    'Task',
+    'Follow Up',
+    'SMS',
+    'WhatsApp',
+    'LinkedIn',
     'Demo',
     'Visit',
+    'Reminder',
     'Other',
 
 ];
@@ -49,6 +53,8 @@ const types: ActivityType[] = [
 const statuses: ActivityStatus[] = [
 
     'Planned',
+    'Scheduled',
+    'Pending',
     'In Progress',
     'Completed',
     'Cancelled',
@@ -82,15 +88,23 @@ export default function ActivityForm({
 }: Props) {
 
 
-
-    const [form, setForm] =
+    const [
+        form,
+        setForm,
+    ] =
         useState<Partial<Activity>>({
 
-            type: 'Meeting',
+            entityType:
+                'Activity',
 
-            status: 'Planned',
+            status:
+                'Planned',
 
-            priority: 'Medium',
+            priority:
+                'Medium',
+
+            type:
+                'Meeting',
 
             ...initialValues,
 
@@ -106,17 +120,18 @@ export default function ActivityForm({
 
     ) {
 
+        setForm(
+            previous => ({
 
-        setForm(previous => ({
+                ...previous,
 
-            ...previous,
+                [key]:
+                    value,
 
-            [key]: value,
-
-        }));
+            }),
+        );
 
     }
-
 
 
 
@@ -126,9 +141,7 @@ export default function ActivityForm({
 
     ) {
 
-
         event.preventDefault();
-
 
 
         if (!form.title?.trim()) {
@@ -142,14 +155,11 @@ export default function ActivityForm({
         }
 
 
-
         await onSubmit?.(
             form,
         );
 
-
     }
-
 
 
 
@@ -164,240 +174,328 @@ export default function ActivityForm({
         >
 
 
+            <div>
+
+                <h2 className="text-xl font-semibold">
+
+                    Activity Details
+
+                </h2>
+
+
+                <p className="text-sm text-muted-foreground">
+
+                    Create CRM activity, follow-up, meeting or task.
+
+                </p>
+
+            </div>
+
+
+
             <div className="grid gap-4 md:grid-cols-2">
 
 
 
-                <div>
+                <input
 
-                    <label className="mb-1 block text-sm font-medium">
+                    className="rounded-lg border p-2"
 
-                        Title
+                    placeholder="Activity Title"
 
-                    </label>
+                    value={
+                        form.title ?? ''
+                    }
 
+                    onChange={
+                        event =>
+                            update(
+                                'title',
+                                event.target.value,
+                            )
+                    }
 
-                    <input
+                />
 
-                        className="w-full rounded-lg border p-2"
 
-                        value={form.title ?? ''}
 
-                        onChange={
-                            event =>
-                                update(
-                                    'title',
-                                    event.target.value,
-                                )
-                        }
+                <select
 
-                    />
+                    className="rounded-lg border p-2"
 
-                </div>
+                    value={
+                        form.type
+                    }
 
+                    onChange={
+                        event =>
+                            update(
+                                'type',
+                                event.target.value as ActivityType,
+                            )
+                    }
 
+                >
 
+                    {
+                        types.map(type => (
 
-                <div>
+                            <option
 
-                    <label className="mb-1 block text-sm font-medium">
+                                key={type}
 
-                        Type
+                                value={type}
 
-                    </label>
+                            >
 
+                                {type}
 
-                    <select
+                            </option>
 
-                        className="w-full rounded-lg border p-2"
+                        ))
+                    }
 
-                        value={form.type}
+                </select>
 
-                        onChange={
-                            event =>
-                                update(
-                                    'type',
-                                    event.target.value as ActivityType,
-                                )
-                        }
 
-                    >
 
-                        {
-                            types.map(type => (
 
-                                <option
-                                    key={type}
-                                    value={type}
-                                >
+                <select
 
-                                    {type}
+                    className="rounded-lg border p-2"
 
-                                </option>
+                    value={
+                        form.status
+                    }
 
-                            ))
-                        }
+                    onChange={
+                        event =>
+                            update(
+                                'status',
+                                event.target.value as ActivityStatus,
+                            )
+                    }
 
-                    </select>
+                >
 
-                </div>
+                    {
+                        statuses.map(status => (
 
+                            <option
 
+                                key={status}
 
+                                value={status}
 
-                <div>
+                            >
 
-                    <label className="mb-1 block text-sm font-medium">
+                                {status}
 
-                        Status
+                            </option>
 
-                    </label>
+                        ))
+                    }
 
+                </select>
 
-                    <select
 
-                        className="w-full rounded-lg border p-2"
 
-                        value={form.status}
 
-                        onChange={
-                            event =>
-                                update(
-                                    'status',
-                                    event.target.value as ActivityStatus,
-                                )
-                        }
+                <select
 
-                    >
+                    className="rounded-lg border p-2"
 
-                        {
-                            statuses.map(status => (
+                    value={
+                        form.priority
+                    }
 
-                                <option
-                                    key={status}
-                                    value={status}
-                                >
+                    onChange={
+                        event =>
+                            update(
+                                'priority',
+                                event.target.value as ActivityPriority,
+                            )
+                    }
 
-                                    {status}
+                >
 
-                                </option>
+                    {
+                        priorities.map(priority => (
 
-                            ))
-                        }
+                            <option
 
-                    </select>
+                                key={priority}
 
-                </div>
+                                value={priority}
 
+                            >
 
+                                {priority}
 
+                            </option>
 
-                <div>
+                        ))
+                    }
 
-                    <label className="mb-1 block text-sm font-medium">
+                </select>
 
-                        Priority
 
-                    </label>
 
+                <input
 
-                    <select
+                    className="rounded-lg border p-2"
 
-                        className="w-full rounded-lg border p-2"
+                    placeholder="Entity Id"
 
-                        value={form.priority}
+                    value={
+                        form.entityId ?? ''
+                    }
 
-                        onChange={
-                            event =>
-                                update(
-                                    'priority',
-                                    event.target.value as ActivityPriority,
-                                )
-                        }
+                    onChange={
+                        event =>
+                            update(
+                                'entityId',
+                                event.target.value,
+                            )
+                    }
 
-                    >
+                />
 
-                        {
-                            priorities.map(priority => (
 
-                                <option
-                                    key={priority}
-                                    value={priority}
-                                >
 
-                                    {priority}
+                <input
 
-                                </option>
+                    className="rounded-lg border p-2"
 
-                            ))
-                        }
+                    placeholder="Owner Id"
 
-                    </select>
+                    value={
+                        form.ownerId ?? ''
+                    }
 
-                </div>
+                    onChange={
+                        event =>
+                            update(
+                                'ownerId',
+                                event.target.value,
+                            )
+                    }
 
+                />
 
 
 
-                <div>
+                <input
 
-                    <label className="mb-1 block text-sm font-medium">
+                    className="rounded-lg border p-2"
 
-                        Start Date
+                    placeholder="Assigned To"
 
-                    </label>
+                    value={
+                        form.assignedTo ?? ''
+                    }
 
+                    onChange={
+                        event =>
+                            update(
+                                'assignedTo',
+                                event.target.value,
+                            )
+                    }
 
-                    <input
+                />
 
-                        type="datetime-local"
 
-                        className="w-full rounded-lg border p-2"
 
-                        value={form.startDate ?? ''}
+                <input
 
-                        onChange={
-                            event =>
-                                update(
-                                    'startDate',
-                                    event.target.value,
-                                )
-                        }
+                    type="datetime-local"
 
-                    />
+                    className="rounded-lg border p-2"
 
-                </div>
+                    value={
+                        form.startDate ?? ''
+                    }
 
-                <div className="md:col-span-2">
+                    onChange={
+                        event =>
+                            update(
+                                'startDate',
+                                event.target.value,
+                            )
+                    }
 
+                />
 
-                    <label className="mb-1 block text-sm font-medium">
 
-                        Description
 
-                    </label>
+                <input
 
+                    type="datetime-local"
 
-                    <textarea
+                    className="rounded-lg border p-2"
 
-                        rows={4}
+                    placeholder="Due Date"
 
-                        className="w-full rounded-lg border p-2"
+                    value={
+                        form.dueDate ?? ''
+                    }
 
-                        value={form.description ?? ''}
+                    onChange={
+                        event =>
+                            update(
+                                'dueDate',
+                                event.target.value,
+                            )
+                    }
 
-                        onChange={
-                            event =>
-                                update(
-                                    'description',
-                                    event.target.value,
-                                )
-                        }
+                />
 
-                    />
 
-                </div>
 
+                <input
+
+                    className="rounded-lg border p-2"
+
+                    placeholder="Location"
+
+                    value={
+                        form.location ?? ''
+                    }
+
+                    onChange={
+                        event =>
+                            update(
+                                'location',
+                                event.target.value,
+                            )
+                    }
+
+                />
+
+
+
+                <input
+
+                    type="number"
+
+                    className="rounded-lg border p-2"
+
+                    placeholder="Duration Minutes"
+
+                    value={
+                        form.durationMinutes ?? ''
+                    }
+
+                    onChange={
+                        event =>
+                            update(
+                                'durationMinutes',
+                                Number(event.target.value),
+                            )
+                    }
+
+                />
 
 
             </div>
@@ -405,22 +503,76 @@ export default function ActivityForm({
 
 
 
+            <textarea
+
+                rows={4}
+
+                className="w-full rounded-lg border p-2"
+
+                placeholder="Description"
+
+                value={
+                    form.description ?? ''
+                }
+
+                onChange={
+                    event =>
+                        update(
+                            'description',
+                            event.target.value,
+                        )
+                }
+
+            />
+
+
+
+            <textarea
+
+                rows={3}
+
+                className="w-full rounded-lg border p-2"
+
+                placeholder="Notes"
+
+                value={
+                    form.notes ?? ''
+                }
+
+                onChange={
+                    event =>
+                        update(
+                            'notes',
+                            event.target.value,
+                        )
+                }
+
+            />
+
+
+
             <div className="flex justify-end gap-3">
 
 
-                <button
+                {
+                    onCancel && (
 
-                    type="button"
+                        <button
 
-                    onClick={onCancel}
+                            type="button"
 
-                    className="rounded-lg border px-4 py-2"
+                            onClick={onCancel}
 
-                >
+                            className="rounded-lg border px-4 py-2"
 
-                    Cancel
+                        >
 
-                </button>
+                            Cancel
+
+                        </button>
+
+                    )
+                }
 
 
 
@@ -443,15 +595,11 @@ export default function ActivityForm({
                 </button>
 
 
-
             </div>
-
 
 
         </form>
 
     );
 
-
 }
-

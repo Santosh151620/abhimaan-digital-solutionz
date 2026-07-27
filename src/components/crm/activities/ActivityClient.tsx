@@ -4,22 +4,165 @@ import {
     useState,
 } from 'react';
 
-import ActivityForm from './ActivityForm';
-import ActivityTable from './ActivityTable';
-import ActivitySummary from './ActivitySummary';
 
 import {
-    createActivity as createActivityAction,
-} from '@/app/crm/activities/actions';
+    ActivityForm,
+    ActivitySummary,
+    ActivityTable,
+} from './index';
+
 
 import type {
     Activity,
+    ActivitySummary as ActivitySummaryType,
 } from '@/types/crm/Activities';
 
 
+import {
+    createActivity as createActivityAction,
+    deleteActivity as deleteActivityAction,
+} from '@/app/crm/activities/actions';
+
+
+
 interface Props {
+
     initialActivities: Activity[];
+
 }
+
+
+
+function buildSummary(
+    activities: Activity[],
+): ActivitySummaryType {
+
+    const today =
+        new Date()
+            .toISOString()
+            .split('T')[0];
+
+
+    const completed =
+        activities.filter(
+            activity =>
+                activity.status === 'Completed',
+        ).length;
+
+
+    return {
+
+        total:
+            activities.length,
+
+        planned:
+            activities.filter(
+                activity =>
+                    activity.status === 'Planned',
+            ).length,
+
+        inProgress:
+            activities.filter(
+                activity =>
+                    activity.status === 'In Progress',
+            ).length,
+
+        completed,
+
+        cancelled:
+            activities.filter(
+                activity =>
+                    activity.status === 'Cancelled',
+            ).length,
+
+        missed:
+            activities.filter(
+                activity =>
+                    activity.status === 'Missed',
+            ).length,
+
+        overdue:
+            activities.filter(
+                activity =>
+
+                    !!activity.dueDate
+
+                    &&
+
+                    activity.dueDate < today
+
+                    &&
+
+                    activity.status !== 'Completed'
+
+                    &&
+
+                    activity.status !== 'Cancelled',
+
+            ).length,
+
+        today:
+            activities.filter(
+                activity =>
+                    activity.startDate === today,
+            ).length,
+
+        upcoming:
+            activities.filter(
+                activity =>
+
+                    !!activity.startDate
+
+                    &&
+
+                    activity.startDate > today,
+
+            ).length,
+
+        highPriority:
+            activities.filter(
+                activity =>
+
+                    activity.priority === 'High'
+
+                    ||
+
+                    activity.priority === 'Critical',
+
+            ).length,
+
+        archived:
+            activities.filter(
+                activity =>
+                    activity.archived,
+            ).length,
+
+        completionRate:
+
+            activities.length === 0
+
+                ? 0
+
+                :
+
+                Math.round(
+
+                    (
+                        completed
+                        /
+                        activities.length
+                    )
+
+                    *
+
+                    100,
+
+                ),
+
+    };
+
+}
+
 
 
 export default function ActivityClient({
@@ -46,113 +189,10 @@ export default function ActivityClient({
 
 
 
-    const today =
-        new Date()
-            .toISOString()
-            .split('T')[0];
-
-
-
-    const summary = {
-
-        total:
-            activities.length,
-
-        planned:
-            activities.filter(
-                item =>
-                    item.status === 'Planned',
-            ).length,
-
-        scheduled:
-            activities.filter(
-                item =>
-                    item.status === 'Scheduled',
-            ).length,
-
-        pending:
-            activities.filter(
-                item =>
-                    item.status === 'Pending',
-            ).length,
-
-        inProgress:
-            activities.filter(
-                item =>
-                    item.status === 'In Progress',
-            ).length,
-
-        completed:
-            activities.filter(
-                item =>
-                    item.status === 'Completed',
-            ).length,
-
-        cancelled:
-            activities.filter(
-                item =>
-                    item.status === 'Cancelled',
-            ).length,
-
-        missed:
-            activities.filter(
-                item =>
-                    item.status === 'Missed',
-            ).length,
-
-        overdue:
-            activities.filter(
-                item =>
-                    item.dueDate
-                    &&
-                    item.dueDate < today
-                    &&
-                    item.status !== 'Completed',
-            ).length,
-
-        today:
-            activities.filter(
-                item =>
-                    item.dueDate === today,
-            ).length,
-
-        upcoming:
-            activities.filter(
-                item =>
-                    item.dueDate
-                    &&
-                    item.dueDate > today,
-            ).length,
-
-        highPriority:
-            activities.filter(
-                item =>
-                    item.priority === 'High'
-                    ||
-                    item.priority === 'Critical',
-            ).length,
-
-        archived:
-            0,
-
-        completionRate:
-            activities.length === 0
-                ? 0
-                :
-                Math.round(
-                    (
-                        activities.filter(
-                            item =>
-                                item.status === 'Completed',
-                        ).length
-                        /
-                        activities.length
-                    )
-                    *
-                    100,
-                ),
-
-    };
+    const summary =
+        buildSummary(
+            activities,
+        );
 
 
 
@@ -178,8 +218,11 @@ export default function ActivityClient({
 
                 setActivities(
                     previous => [
+
                         created,
+
                         ...previous,
+
                     ],
                 );
 
@@ -196,6 +239,44 @@ export default function ActivityClient({
 
 
 
+
+    async function deleteActivity(
+
+        id: string,
+
+    ) {
+
+
+        try {
+
+            setLoading(true);
+
+
+            await deleteActivityAction(
+                id,
+            );
+
+
+            setActivities(
+                previous =>
+                    previous.filter(
+                        activity =>
+                            activity.id !== id,
+                    ),
+            );
+
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+
+
+
     return (
 
         <div className="space-y-8">
@@ -203,7 +284,9 @@ export default function ActivityClient({
 
             <ActivitySummary
 
-                summary={summary}
+                summary={
+                    summary
+                }
 
             />
 
@@ -211,9 +294,13 @@ export default function ActivityClient({
 
             <ActivityForm
 
-                onSubmit={createActivity}
+                onSubmit={
+                    createActivity
+                }
 
-                loading={loading}
+                loading={
+                    loading
+                }
 
             />
 
@@ -221,7 +308,13 @@ export default function ActivityClient({
 
             <ActivityTable
 
-                activities={activities}
+                activities={
+                    activities
+                }
+
+                onDelete={
+                    deleteActivity
+                }
 
             />
 

@@ -42,13 +42,23 @@ export default function ActivitySummary({
         },
 
         {
-            label: 'Cancelled',
-            value: summary.cancelled,
+            label: 'Overdue',
+            value: summary.overdue,
         },
 
         {
-            label: 'Missed',
-            value: summary.missed,
+            label: 'Upcoming',
+            value: summary.upcoming,
+        },
+
+        {
+            label: 'High Priority',
+            value: summary.highPriority,
+        },
+
+        {
+            label: 'Completion',
+            value: `${summary.completionRate}%`,
         },
 
     ];
@@ -57,7 +67,7 @@ export default function ActivitySummary({
 
     return (
 
-        <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 
 
             {
@@ -67,7 +77,7 @@ export default function ActivitySummary({
 
                         key={card.label}
 
-                        className="rounded-xl border p-4"
+                        className="rounded-xl border bg-card p-4"
 
                     >
 
@@ -87,7 +97,6 @@ export default function ActivitySummary({
 
                     </div>
 
-
                 ))
             }
 
@@ -96,6 +105,4 @@ export default function ActivitySummary({
 
     );
 
-
 }
-

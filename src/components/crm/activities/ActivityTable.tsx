@@ -13,6 +13,10 @@ interface Props {
 
     activities: Activity[];
 
+    onDelete?: (
+        id: string,
+    ) => void | Promise<void>;
+
 }
 
 
@@ -21,8 +25,9 @@ export default function ActivityTable({
 
     activities,
 
-}: Props) {
+    onDelete,
 
+}: Props) {
 
 
     if (activities.length === 0) {
@@ -46,54 +51,42 @@ export default function ActivityTable({
         <div className="overflow-x-auto rounded-xl border">
 
 
-            <table className="w-full">
+            <table className="w-full text-sm">
 
 
-                <thead>
+                <thead className="border-b bg-muted/40">
 
 
-                    <tr className="border-b bg-muted/40 text-left">
+                    <tr>
 
 
-                        <th className="p-3">
-
+                        <th className="p-3 text-left">
                             Activity
-
                         </th>
 
 
-                        <th className="p-3">
-
+                        <th className="p-3 text-left">
                             Type
-
                         </th>
 
 
-                        <th className="p-3">
-
+                        <th className="p-3 text-left">
                             Status
-
                         </th>
 
 
-                        <th className="p-3">
-
+                        <th className="p-3 text-left">
                             Priority
-
                         </th>
 
 
-                        <th className="p-3">
-
-                            Start
-
+                        <th className="p-3 text-left">
+                            Schedule
                         </th>
 
 
                         <th className="p-3 text-right">
-
                             Actions
-
                         </th>
 
 
@@ -104,13 +97,11 @@ export default function ActivityTable({
 
 
 
-
                 <tbody>
 
 
                     {
                         activities.map(activity => (
-
 
                             <tr
 
@@ -131,10 +122,11 @@ export default function ActivityTable({
                                     </div>
 
 
+
                                     {
                                         activity.description && (
 
-                                            <div className="text-sm text-muted-foreground">
+                                            <div className="text-xs text-muted-foreground">
 
                                                 {activity.description}
 
@@ -174,31 +166,67 @@ export default function ActivityTable({
 
                                 <td className="p-3">
 
-                                    {activity.startDate ?? '-'}
+                                    {
+                                        activity.startDate
+                                        ??
+                                        activity.scheduledAt
+                                        ??
+                                        '-'
+                                    }
 
                                 </td>
-
 
 
 
                                 <td className="p-3 text-right">
 
 
-                                    <Link
+                                    <div className="flex justify-end gap-2">
 
-                                        href={`/crm/activities/${activity.id}`}
 
-                                        className="rounded border px-3 py-1 text-sm"
+                                        <Link
 
-                                    >
+                                            href={`/crm/activities/${activity.id}`}
 
-                                        View
+                                            className="rounded border px-3 py-1 text-sm"
 
-                                    </Link>
+                                        >
+
+                                            View
+
+                                        </Link>
+
+
+
+                                        {
+                                            onDelete && (
+
+                                                <button
+
+                                                    type="button"
+
+                                                    onClick={() =>
+                                                        onDelete(
+                                                            activity.id,
+                                                        )
+                                                    }
+
+                                                    className="rounded border px-3 py-1 text-sm text-destructive"
+
+                                                >
+
+                                                    Delete
+
+                                                </button>
+
+                                            )
+                                        }
+
+
+                                    </div>
 
 
                                 </td>
-
 
 
                             </tr>
@@ -206,7 +234,6 @@ export default function ActivityTable({
 
                         ))
                     }
-
 
 
                 </tbody>
@@ -220,6 +247,4 @@ export default function ActivityTable({
 
     );
 
-
 }
-
