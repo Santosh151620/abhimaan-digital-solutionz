@@ -1,8 +1,7 @@
 'use server';
 
-import {
-    TasksServiceInstance,
-} from '@/services/crm/TasksService';
+import { TasksServiceInstance } from '@/services/crm/TasksService';
+
 
 import type {
     Task,

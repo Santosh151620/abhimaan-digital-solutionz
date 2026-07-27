@@ -3,9 +3,8 @@ import {
     NextResponse,
 } from 'next/server';
 
-import {
-    TasksServiceInstance,
-} from '@/services/crm/TasksService';
+import { TasksServiceInstance } from '@/services/crm/TasksService';
+
 
 import type {
     TaskStatus,
@@ -37,7 +36,7 @@ export async function GET(
 
 
         const task =
-            TasksServiceInstance.findById(
+            await TasksServiceInstance.findById(
                 id
             );
 

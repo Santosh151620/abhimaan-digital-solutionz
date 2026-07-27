@@ -1,9 +1,8 @@
 'use server';
 
 
-import {
-    TasksServiceInstance,
-} from '@/services/crm/TasksService';
+import { TasksServiceInstance } from '@/services/crm/TasksService';
+
 
 
 import {
@@ -46,7 +45,7 @@ function can(
 
 export async function getTasks() {
 
-    return await await TasksServiceInstance.list();
+    return await TasksServiceInstance.list();
 
 }
 
@@ -74,7 +73,7 @@ export async function searchTasks(
 
 export async function getArchivedTasks() {
 
-    return await await TasksServiceInstance.listArchived();
+    return await TasksServiceInstance.listArchived();
 
 }
 
@@ -109,7 +108,7 @@ export async function createTask(
 
 
 
-    return await await TasksServiceInstance.create(
+    return await TasksServiceInstance.create(
         data
     );
 
@@ -135,7 +134,7 @@ export async function updateTask(
 
 
 
-    return await await TasksServiceInstance.update(
+    return await TasksServiceInstance.update(
         id,
         data
     );
@@ -161,7 +160,7 @@ export async function deleteTask(
 
 
 
-    return await await TasksServiceInstance.delete(
+    return await TasksServiceInstance.delete(
         id
     );
 
@@ -186,7 +185,7 @@ export async function restoreTask(
 
 
 
-    return await await TasksServiceInstance.restore(
+    return await TasksServiceInstance.restore(
         id
     );
 
@@ -212,7 +211,7 @@ export async function updateTaskStatus(
 
 
 
-    return await await TasksServiceInstance.updateStatus(
+    return await TasksServiceInstance.updateStatus(
         id,
         status
     );
@@ -223,7 +222,7 @@ export async function updateTaskStatus(
 
 export async function getTasksSummary() {
 
-    return await await TasksServiceInstance.summary();
+    return await TasksServiceInstance.summary();
 
 }
 

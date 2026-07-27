@@ -3,9 +3,8 @@ import {
     NextResponse,
 } from 'next/server';
 
-import {
-    TasksServiceInstance,
-} from '@/services/crm/TasksService';
+import { TasksServiceInstance } from '@/services/crm/TasksService';
+
 
 
 
@@ -14,7 +13,7 @@ export async function GET() {
     try {
 
         const tasks =
-            await await TasksServiceInstance.list();
+            await TasksServiceInstance.list();
 
 
         return NextResponse.json(
@@ -52,7 +51,7 @@ export async function POST(
 
 
         const task =
-            await await TasksServiceInstance.create(
+            await TasksServiceInstance.create(
                 body
             );
 

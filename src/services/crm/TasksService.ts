@@ -86,7 +86,10 @@ export class TasksService {
         );
 
     }
-        async update(
+
+
+
+    async update(
         id: string,
         data: Partial<Task>,
     ): Promise<Task> {
@@ -151,6 +154,10 @@ export class TasksService {
 
 
 
+/**
+ * Factory
+ * Used where dependency injection is required
+ */
 export function createTasksService(
     supabase: SupabaseClient,
 ) {
@@ -160,64 +167,135 @@ export function createTasksService(
     );
 
 }
-export const TasksServiceInstance = {
-    
-    list: async () =>
-        [] as Task[],
 
-    listArchived: async () =>
-        [] as Task[],
+
+
+/**
+ * Backward compatible singleton
+ * Keeps CRM consumers aligned with existing modules
+ */
+export const TasksServiceInstance = {
+
+    list: async (): Promise<Task[]> => {
+
+        return [];
+
+    },
+
+
+    listArchived: async (): Promise<Task[]> => {
+
+        return [];
+
+    },
+
 
     findById: async (
-        _id: string,
-    ) =>
-        null as Task | null,
+        id: string,
+    ): Promise<Task | null> => {
+
+        void id;
+
+        return null;
+
+    },
+
 
     search: async (
-        _filters?: TaskSearchFilters,
-    ) =>
-        [] as Task[],
+        filters?: TaskSearchFilters,
+    ): Promise<Task[]> =>{
+
+        void filters;
+
+        return [];
+
+    },
+
 
     create: async (
         data: Partial<Task>,
-    ) =>
-        data as Task,
+    ): Promise<Task> => {
+
+        return data as Task;
+
+    },
+
 
     update: async (
-        _id: string,
+        id: string,
         data: Partial<Task>,
-    ) =>
-        data as Task,
+    ): Promise<Task> => {
+
+        void id;
+
+        return data as Task;
+
+    },
+
 
     updateStatus: async (
-        _id: string,
-        _status: TaskStatus,
-    ) =>
-        null as unknown as Task,
+        id: string,
+        status: TaskStatus,
+    ): Promise<Task> => {
+
+        void id;
+        void status;
+
+        return null as unknown as Task;
+
+    },
+
 
     delete: async (
-        _id: string,
-    ) =>
-        true,
+        id: string,
+    ): Promise<boolean> => {
+
+        void id;
+
+        return true;
+
+    },
+
 
     restore: async (
-        _id: string,
-    ) =>
-        true,
+        id: string,
+    ): Promise<boolean> => {
 
-    summary: async () =>
-        ({
+        void id;
+
+        return true;
+
+    },
+
+
+    summary: async (): Promise<TaskSummary> => {
+
+        return {
+
             total: 0,
+
             todo: 0,
+
             inProgress: 0,
+
             blocked: 0,
+
             completed: 0,
+
             cancelled: 0,
+
             critical: 0,
+
             highPriority: 0,
+
             overdue: 0,
+
             archived: 0,
+
             averageCompletion: 0,
-        }) as TaskSummary,
+
+        };
+
+    },
 
 };
