@@ -331,7 +331,7 @@ class TasksRepository
 
 
         const payload = {
-            eentityType:
+          entityType:
     'Task' as const,
 
 
@@ -636,70 +636,45 @@ async delete(
                 0,
             );
 
-
-
         return {
-
-
             total:
                 tasks.length,
-
-
-
             todo:
                 tasks.filter(
                     task =>
                         task.status === 'Todo',
                 )
-                .length,
-
-
-
+               .length,
             inProgress:
                 tasks.filter(
                     task =>
                         task.status === 'In Progress',
                 )
                 .length,
-
-
-
             blocked:
                 tasks.filter(
                     task =>
                         task.status === 'Blocked',
                 )
                 .length,
-
-
-
             completed:
                 tasks.filter(
                     task =>
                         task.status === 'Completed',
                 )
                 .length,
-
-
-
             cancelled:
                 tasks.filter(
                     task =>
                         task.status === 'Cancelled',
                 )
                 .length,
-
-
-
             critical:
                 tasks.filter(
                     task =>
                         task.priority === 'Critical',
                 )
                 .length,
-
-
-
             highPriority:
                 tasks.filter(
                     task =>
@@ -708,9 +683,6 @@ async delete(
                         task.priority === 'Critical',
                 )
                 .length,
-
-
-
             overdue:
                 tasks.filter(
                     task =>
@@ -731,32 +703,20 @@ async delete(
 
                 )
                 .length,
-
-
-
             archived:
                 archived.length,
-
-
-
             averageCompletion:
 
                 tasks.length === 0
-
                     ? 0
-
                     :
-
                     Math.round(
                         totalCompletion /
                         tasks.length,
                     ),
-
         };
 
     }
-
-
 }
 
 export function createTasksRepository(
@@ -768,6 +728,3 @@ export function createTasksRepository(
     );
 
 }
-
-export const TasksRepositoryInstance =
-    null as unknown as TasksRepository;

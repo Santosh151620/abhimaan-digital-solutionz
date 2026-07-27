@@ -1,6 +1,6 @@
-import type {
-    SupabaseClient,
-} from '@supabase/supabase-js';
+import {
+    createClient,
+} from '@/lib/supabase/server';
 
 
 import {
@@ -17,39 +17,63 @@ import type {
 
 
 
-export class TasksService {
 
-
-    private readonly repository;
+class TasksService {
 
 
 
-    constructor(
-        supabase: SupabaseClient,
-    ) {
+    private async repository() {
 
-        this.repository =
-            createTasksRepository(
-                supabase,
-            );
+
+        const supabase =
+            await createClient();
+
+
+
+        return createTasksRepository(
+            supabase,
+        );
+
 
     }
+
+
 
 
 
     async list(): Promise<Task[]> {
 
-        return this.repository.list();
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.list();
+
 
     }
+
+
+
 
 
 
     async listArchived(): Promise<Task[]> {
 
-        return this.repository.listArchived();
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.listArchived();
+
 
     }
+
+
+
 
 
 
@@ -57,11 +81,38 @@ export class TasksService {
         id: string,
     ): Promise<Task | null> {
 
-        return this.repository.findById(
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.findById(
             id,
         );
 
+
     }
+
+
+
+
+
+
+    async details(
+        id: string,
+    ): Promise<Task | null> {
+
+
+        return this.findById(
+            id,
+        );
+
+
+    }
+
+
+
 
 
 
@@ -69,11 +120,21 @@ export class TasksService {
         filters?: TaskSearchFilters,
     ): Promise<Task[]> {
 
-        return this.repository.search(
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.search(
             filters,
         );
 
+
     }
+
+
+
 
 
 
@@ -81,11 +142,21 @@ export class TasksService {
         data: Partial<Task>,
     ): Promise<Task> {
 
-        return this.repository.create(
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.create(
             data,
         );
 
+
     }
+
+
+
 
 
 
@@ -94,12 +165,22 @@ export class TasksService {
         data: Partial<Task>,
     ): Promise<Task> {
 
-        return this.repository.update(
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.update(
             id,
             data,
         );
 
+
     }
+
+
+
 
 
 
@@ -108,12 +189,22 @@ export class TasksService {
         status: TaskStatus,
     ): Promise<Task> {
 
-        return this.repository.updateStatus(
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.updateStatus(
             id,
             status,
         );
 
+
     }
+
+
+
 
 
 
@@ -121,13 +212,24 @@ export class TasksService {
         id: string,
     ): Promise<boolean> {
 
-        await this.repository.delete(
+
+        const repo =
+            await this.repository();
+
+
+
+        await repo.delete(
             id,
         );
 
+
         return true;
 
+
     }
+
+
+
 
 
 
@@ -135,167 +237,56 @@ export class TasksService {
         id: string,
     ): Promise<boolean> {
 
-        return this.repository.restore(
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.restore(
             id,
         );
 
+
     }
+
+
+
 
 
 
     async summary(): Promise<TaskSummary> {
 
-        return this.repository.summary();
+
+        const repo =
+            await this.repository();
+
+
+
+        return repo.summary();
+
 
     }
 
 
-}
-
-
-
-/**
- * Factory
- * Used where dependency injection is required
- */
-export function createTasksService(
-    supabase: SupabaseClient,
-) {
-
-    return new TasksService(
-        supabase,
-    );
 
 }
 
 
 
+
+
+
+export const tasksService =
+    new TasksService();
+
+
+
+
+
+
 /**
- * Backward compatible singleton
- * Keeps CRM consumers aligned with existing modules
+ * Production export
  */
-export const TasksServiceInstance = {
-
-    list: async (): Promise<Task[]> => {
-
-        return [];
-
-    },
-
-
-    listArchived: async (): Promise<Task[]> => {
-
-        return [];
-
-    },
-
-
-    findById: async (
-        id: string,
-    ): Promise<Task | null> => {
-
-        void id;
-
-        return null;
-
-    },
-
-
-    search: async (
-        filters?: TaskSearchFilters,
-    ): Promise<Task[]> =>{
-
-        void filters;
-
-        return [];
-
-    },
-
-
-    create: async (
-        data: Partial<Task>,
-    ): Promise<Task> => {
-
-        return data as Task;
-
-    },
-
-
-    update: async (
-        id: string,
-        data: Partial<Task>,
-    ): Promise<Task> => {
-
-        void id;
-
-        return data as Task;
-
-    },
-
-
-    updateStatus: async (
-        id: string,
-        status: TaskStatus,
-    ): Promise<Task> => {
-
-        void id;
-        void status;
-
-        return null as unknown as Task;
-
-    },
-
-
-    delete: async (
-        id: string,
-    ): Promise<boolean> => {
-
-        void id;
-
-        return true;
-
-    },
-
-
-    restore: async (
-        id: string,
-    ): Promise<boolean> => {
-
-        void id;
-
-        return true;
-
-    },
-
-
-    summary: async (): Promise<TaskSummary> => {
-
-        return {
-
-            total: 0,
-
-            todo: 0,
-
-            inProgress: 0,
-
-            blocked: 0,
-
-            completed: 0,
-
-            cancelled: 0,
-
-            critical: 0,
-
-            highPriority: 0,
-
-            overdue: 0,
-
-            archived: 0,
-
-            averageCompletion: 0,
-
-        };
-
-    },
-
-};
+export const TasksServiceInstance =
+    tasksService;
