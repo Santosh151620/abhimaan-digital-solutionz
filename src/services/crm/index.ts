@@ -29,3 +29,7 @@ export * from './pipeline';
 export * from './revenue-forecast';
 export * from './revenue-intelligence';
 export * from './workflow-intelligence';
+
+export {
+    ProductsService,
+} from './ProductsService';

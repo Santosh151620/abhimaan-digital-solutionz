@@ -3,7 +3,6 @@ import {
 } from '@/repositories/crm/ProductsRepository';
 
 
-
 import type {
     Product,
     ProductSummary,
@@ -11,14 +10,11 @@ import type {
 
 
 
+export class ProductsService {
 
 
-class ProductsService {
-
-
-
-    async list():Promise<Product[]> {
-
+    async list(
+    ): Promise<Product[]> {
 
         return ProductsRepositoryInstance.list();
 
@@ -26,10 +22,8 @@ class ProductsService {
 
 
 
-
-
-    async listArchived():Promise<Product[]> {
-
+    async listArchived(
+    ): Promise<Product[]> {
 
         return ProductsRepositoryInstance.listArchived();
 
@@ -37,121 +31,97 @@ class ProductsService {
 
 
 
-
-
     async findById(
-        id:string
-    ):Promise<Product | null>{
-
+        id:string,
+    ): Promise<Product | null> {
 
         return ProductsRepositoryInstance.findById(
-            id
+            id,
         );
 
     }
-
-
 
 
 
     async search(
-        filters?:{
+        filters?: {
 
-            status?:Product['status'];
+            status?: Product['status'];
 
-            type?:Product['type'];
+            type?: Product['type'];
 
-            search?:string;
+            search?: string;
 
-        }
-
-    ):Promise<Product[]> {
-
+        },
+    ): Promise<Product[]> {
 
         return ProductsRepositoryInstance.search(
-            filters
+            filters,
         );
 
     }
-
-
 
 
 
     async create(
-        data:Partial<Product>
-    ):Promise<Product>{
-
+        data:Partial<Product>,
+    ): Promise<Product> {
 
         return ProductsRepositoryInstance.create(
-            data
+            data,
         );
 
     }
-
-
 
 
 
     async update(
         id:string,
-        data:Partial<Product>
-    ):Promise<Product | null>{
-
+        data:Partial<Product>,
+    ): Promise<Product | null> {
 
         return ProductsRepositoryInstance.update(
             id,
-            data
+            data,
         );
 
     }
-
-
 
 
 
     async delete(
-        id:string
-    ):Promise<boolean>{
-
+        id:string,
+    ): Promise<boolean> {
 
         return ProductsRepositoryInstance.delete(
-            id
+            id,
         );
 
     }
-
-
 
 
 
     async restore(
-        id:string
-    ):Promise<boolean>{
-
+        id:string,
+    ): Promise<boolean> {
 
         return ProductsRepositoryInstance.restore(
-            id
+            id,
         );
 
     }
 
 
 
-
-
-    async summary():Promise<ProductSummary>{
-
+    async summary(
+    ): Promise<ProductSummary> {
 
         return ProductsRepositoryInstance.summary();
 
     }
 
 
-
 }
-
-
 
 
 

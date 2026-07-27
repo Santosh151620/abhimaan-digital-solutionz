@@ -4,82 +4,277 @@ import type {
 
 
 
-export default function ProductsTable({
-    products,
-}:{
+interface ProductsTableProps {
+
     products:Product[];
-}){
+
+}
+
+
+
+
+
+function StatusBadge(
+    {
+        status,
+    }:{
+        status:Product['status'];
+    },
+) {
 
 
     return (
 
-        <table className="w-full border">
+        <span
+            className="
+                inline-flex
+                rounded-full
+                border
+                px-2
+                py-1
+                text-xs
+                font-medium
+            "
+        >
+            {status}
+        </span>
+
+    );
+
+}
 
 
-            <thead>
-
-                <tr>
-
-                    <th className="border p-2">
-                        Product
-                    </th>
-
-                    <th className="border p-2">
-                        Type
-                    </th>
-
-                    <th className="border p-2">
-                        Status
-                    </th>
-
-                    <th className="border p-2">
-                        Price
-                    </th>
-
-                </tr>
-
-            </thead>
 
 
-            <tbody>
+
+export default function ProductsTable(
+    {
+        products,
+    }:ProductsTableProps,
+) {
 
 
-            {
-                products.map(product => (
+    if (
+        products.length === 0
+    ) {
 
-                    <tr key={product.id}>
+        return (
+
+            <div
+                className="
+                    rounded
+                    border
+                    p-8
+                    text-center
+                "
+            >
+
+                <p
+                    className="
+                        text-sm
+                        text-gray-500
+                    "
+                >
+                    No products found.
+                </p>
+
+            </div>
+
+        );
+
+    }
 
 
-                        <td className="border p-2">
-                            {product.name}
-                        </td>
 
 
-                        <td className="border p-2">
-                            {product.type}
-                        </td>
+    return (
+
+        <div
+            className="
+                overflow-x-auto
+                rounded
+                border
+            "
+        >
+
+            <table
+                className="
+                    min-w-full
+                    text-sm
+                "
+            >
+
+                <thead>
+
+                    <tr
+                        className="
+                            border-b
+                        "
+                    >
+
+                        <th
+                            className="
+                                px-4
+                                py-3
+                                text-left
+                                font-medium
+                            "
+                        >
+                            Product
+                        </th>
 
 
-                        <td className="border p-2">
-                            {product.status}
-                        </td>
+                        <th
+                            className="
+                                px-4
+                                py-3
+                                text-left
+                                font-medium
+                            "
+                        >
+                            Type
+                        </th>
 
 
-                        <td className="border p-2">
-                            {product.price}
-                        </td>
+                        <th
+                            className="
+                                px-4
+                                py-3
+                                text-left
+                                font-medium
+                            "
+                        >
+                            Status
+                        </th>
 
+
+                        <th
+                            className="
+                                px-4
+                                py-3
+                                text-right
+                                font-medium
+                            "
+                        >
+                            Price
+                        </th>
 
                     </tr>
 
-                ))
-            }
+                </thead>
 
 
-            </tbody>
+
+                <tbody>
+
+                    {
+                        products.map(
+                            product =>
+                            (
+
+                                <tr
+                                    key={
+                                        product.id
+                                    }
+                                    className="
+                                        border-b
+                                    "
+                                >
+
+                                    <td
+                                        className="
+                                            px-4
+                                            py-3
+                                        "
+                                    >
+
+                                        <div
+                                            className="
+                                                font-medium
+                                            "
+                                        >
+                                            {
+                                                product.name
+                                            }
+                                        </div>
 
 
-        </table>
+                                        {
+                                            product.description &&
+                                            (
+                                                <div
+                                                    className="
+                                                        text-xs
+                                                        text-gray-500
+                                                    "
+                                                >
+                                                    {
+                                                        product.description
+                                                    }
+                                                </div>
+                                            )
+                                        }
+
+                                    </td>
+
+
+
+                                    <td
+                                        className="
+                                            px-4
+                                            py-3
+                                        "
+                                    >
+                                        {
+                                            product.type
+                                        }
+                                    </td>
+
+
+
+
+                                    <td
+                                        className="
+                                            px-4
+                                            py-3
+                                        "
+                                    >
+
+                                        <StatusBadge
+                                            status={
+                                                product.status
+                                            }
+                                        />
+
+                                    </td>
+
+
+
+
+                                    <td
+                                        className="
+                                            px-4
+                                            py-3
+                                            text-right
+                                        "
+                                    >
+                                        {
+                                            product.price
+                                        }
+                                    </td>
+
+
+                                </tr>
+
+                            )
+                        )
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
 
     );
 
