@@ -16,10 +16,10 @@ class AttachmentService {
         return Array.from(
             this.attachments.values(),
         )
-        .filter(
-            item =>
-                !item.archived,
-        );
+            .filter(
+                item =>
+                    !item.archived,
+            );
 
     }
 
@@ -106,11 +106,8 @@ class AttachmentService {
                 '',
 
 
-
             fileType:
-                data.fileType
-                ??
-                'application/octet-stream',
+                data.fileType ?? 'application/octet-stream',
 
 
 
@@ -280,7 +277,7 @@ class AttachmentService {
                     item =>
                         !item.archived,
                 )
-                .length,
+                    .length,
 
 
 
@@ -289,7 +286,7 @@ class AttachmentService {
                     item =>
                         item.archived,
                 )
-                .length,
+                    .length,
 
         };
 

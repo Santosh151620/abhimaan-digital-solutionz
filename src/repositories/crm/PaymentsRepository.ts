@@ -1,577 +1,637 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Payment,
     PaymentSearchFilters,
     PaymentStatus,
     PaymentSummary,
 } from '@/types/crm/Payments';
 
-class PaymentsRepository {
 
-    private payments =
-        new Map<string, Payment>();
 
-    async list(): Promise<Payment[]> {
+export class PaymentsRepository
+    extends BaseRepository<Payment> {
 
-        return Array.from(
-            this.payments.values(),
-        )
-            .filter(
-                payment =>
-                    !payment.archived,
-            )
-            .sort(
-                (
-                    a,
-                    b,
-                ) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt,
-                    ),
-            );
 
-    }
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
-    async listArchived(): Promise<Payment[]> {
-
-        return Array.from(
-            this.payments.values(),
-        )
-            .filter(
-                payment =>
-                    payment.archived,
-            )
-            .sort(
-                (
-                    a,
-                    b,
-                ) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt,
-                    ),
-            );
-
-    }
-
-    async details(
-        id: string,
-    ): Promise<Payment | null> {
-
-        return (
-            this.payments.get(id)
-            ??
-            null
+        super(
+            supabase,
+            'payments',
         );
 
     }
+
+
+
+    async list(): Promise<Payment[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ??
+            []
+        ) as Payment[];
+
+    }
+
+
+
+
+    async listArchived(): Promise<Payment[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ??
+            []
+        ) as Payment[];
+
+    }
+
+
+
+
 
     async findById(
         id: string,
     ): Promise<Payment | null> {
 
-        return this.details(
+        return super.findById(
             id,
         );
 
     }
 
-    async search(
-        filters?: PaymentSearchFilters,
-    ): Promise<Payment[]> {
 
-        let payments =
-            await this.list();
 
-        if (
-            filters?.status
-        ) {
 
-            payments =
-                payments.filter(
-                    payment =>
-                        payment.status ===
-                        filters.status,
-                );
 
-        }
+    async details(
+        id: string,
+    ): Promise<Payment | null> {
 
-        if (
-            filters?.companyId
-        ) {
-
-            payments =
-                payments.filter(
-                    payment =>
-                        payment.companyId ===
-                        filters.companyId,
-                );
-
-        }
-
-        if (
-            filters?.invoiceId
-        ) {
-
-            payments =
-                payments.filter(
-                    payment =>
-                        payment.invoiceId ===
-                        filters.invoiceId,
-                );
-
-        }
-
-        if (
-            filters?.paymentMethod
-        ) {
-
-            payments =
-                payments.filter(
-                    payment =>
-                        payment.paymentMethod ===
-                        filters.paymentMethod,
-                );
-
-        }
-
-        if (
-            filters?.search
-        ) {
-
-            const keyword =
-                filters.search
-                    .trim()
-                    .toLowerCase();
-
-            payments =
-                payments.filter(
-                    payment =>
-
-                        payment.paymentNumber
-                            .toLowerCase()
-                            .includes(
-                                keyword,
-                            )
-
-                        ||
-
-                        payment.customerName
-                            .toLowerCase()
-                            .includes(
-                                keyword,
-                            )
-
-                        ||
-
-                        (
-                            payment.referenceNumber
-                            ??
-                            ''
-                        )
-                            .toLowerCase()
-                            .includes(
-                                keyword,
-                            )
-
-                        ||
-
-                        (
-                            payment.description
-                            ??
-                            ''
-                        )
-                            .toLowerCase()
-                            .includes(
-                                keyword,
-                            ),
-                );
-
-        }
-
-        return payments;
+        return this.findById(
+            id,
+        );
 
     }
+
+
+
+
 
     async create(
         data: Partial<Payment>,
     ): Promise<Payment> {
 
+
         const now =
             new Date()
                 .toISOString();
 
+
         const amount =
-            data.amount
-            ??
+            data.amount ??
             0;
+
 
         const paidAmount =
-            data.paidAmount
-            ??
+            data.paidAmount ??
             0;
 
-        const payment: Payment = {
 
-            id:
-                crypto.randomUUID(),
 
-            paymentNumber:
-                data.paymentNumber
-                ??
-                `PAY-${Date.now()}`,
+        return super.create(
 
-            organizationId:
-                data.organizationId,
+            {
 
-            invoiceId:
-                data.invoiceId,
+                ...data,
 
-            companyId:
-                data.companyId,
 
-            customerName:
-                data.customerName
-                ??
-                '',
+                id:
+                    data.id ??
+                    crypto.randomUUID(),
 
-            description:
-                data.description,
 
-            amount,
+                paymentNumber:
+                    data.paymentNumber ??
+                    `PAY-${Date.now()}`,
 
-            paidAmount,
 
-            balanceAmount:
-                Math.max(
-                    amount -
-                    paidAmount,
-                    0,
-                ),
+                customerName:
+                    data.customerName ??
+                    '',
 
-            currency:
-                data.currency
-                ??
-                'INR',
 
-            paymentMethod:
-                data.paymentMethod
-                ??
-                'Bank Transfer',
+                amount,
 
-            status:
-                data.status
-                ??
-                'Pending',
 
-            paymentDate:
-                data.paymentDate,
+                paidAmount,
 
-            dueDate:
-                data.dueDate,
 
-            referenceNumber:
-                data.referenceNumber,
+                balanceAmount:
 
-            notes:
-                data.notes,
+                    Math.max(
+                        amount -
+                        paidAmount,
+                        0,
+                    ),
 
-            archived:
-                false,
 
-            createdAt:
-                now,
+                currency:
+                    data.currency ??
+                    'INR',
 
-            updatedAt:
-                now,
 
-        };
+                paymentMethod:
+                    data.paymentMethod ??
+                    'Bank Transfer',
 
-        this.payments.set(
-            payment.id,
-            payment,
+
+                status:
+                    data.status ??
+                    'Pending',
+
+
+                archived:
+                    false,
+
+
+                createdAt:
+                    now,
+
+
+                updatedAt:
+                    now,
+
+            },
+
         );
 
-        return payment;
-
     }
-        async update(
+
+
+
+
+
+
+    async update(
         id: string,
+
         data: Partial<Payment>,
-    ): Promise<Payment | null> {
 
-        const existing =
-            this.payments.get(
-                id,
-            );
+    ): Promise<Payment> {
 
-        if (
-            !existing
-        ) {
 
-            return null;
+        return super.update(
 
-        }
-
-        const amount =
-            data.amount
-            ??
-            existing.amount;
-
-        const paidAmount =
-            data.paidAmount
-            ??
-            existing.paidAmount;
-
-        const updated: Payment = {
-
-            ...existing,
-
-            ...data,
-
-            amount,
-
-            paidAmount,
-
-            balanceAmount:
-                Math.max(
-                    amount -
-                    paidAmount,
-                    0,
-                ),
-
-            updatedAt:
-                new Date()
-                    .toISOString(),
-
-        };
-
-        this.payments.set(
             id,
-            updated,
+
+            {
+
+                ...data,
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+
         );
 
-        return updated;
-
     }
+
+
+
+
 
     async updateStatus(
         id: string,
+
         status: PaymentStatus,
-    ): Promise<Payment | null> {
+
+    ): Promise<Payment> {
+
 
         return this.update(
+
             id,
+
             {
                 status,
             },
+
         );
 
     }
 
     async delete(
-        id: string,
-    ): Promise<boolean> {
+    id: string,
+): Promise<void> {
 
-        const payment =
-            this.payments.get(
-                id,
-            );
 
-        if (
-            !payment
-        ) {
+    await this.update(
 
-            return false;
+        id,
 
-        }
+        {
 
-        payment.archived =
-            true;
+            archived:
+                true,
 
-        payment.updatedAt =
-            new Date()
-                .toISOString();
+        },
 
-        this.payments.set(
-            id,
-            payment,
-        );
+    );
 
-        return true;
-
-    }
+}
 
     async restore(
         id: string,
     ): Promise<boolean> {
 
-        const payment =
-            this.payments.get(
+        try {
+
+            await this.update(
+
                 id,
+
+                {
+
+                    archived:
+                        false,
+
+                },
+
             );
 
-        if (
-            !payment
-        ) {
+
+            return true;
+
+        } catch {
 
             return false;
 
         }
 
-        payment.archived =
-            false;
+    }
 
-        payment.updatedAt =
-            new Date()
-                .toISOString();
 
-        this.payments.set(
-            id,
-            payment,
-        );
+    async search(
+        filters?: PaymentSearchFilters,
+    ): Promise<Payment[]> {
 
-        return true;
+
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                );
+
+
+
+        if (filters?.status) {
+
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
+                );
+
+        }
+
+
+
+        if (filters?.companyId) {
+
+            query =
+                query.eq(
+                    'company_id',
+                    filters.companyId,
+                );
+
+        }
+
+
+
+        if (filters?.invoiceId) {
+
+            query =
+                query.eq(
+                    'invoice_id',
+                    filters.invoiceId,
+                );
+
+        }
+
+
+
+        if (filters?.paymentMethod) {
+
+            query =
+                query.eq(
+                    'payment_method',
+                    filters.paymentMethod,
+                );
+
+        }
+
+
+
+        if (filters?.search) {
+
+
+            query =
+                query.or(
+
+                    [
+
+                        `payment_number.ilike.%${filters.search}%`,
+
+                        `customer_name.ilike.%${filters.search}%`,
+
+                        `reference_number.ilike.%${filters.search}%`,
+
+                    ]
+                        .join(','),
+
+                );
+
+        }
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query;
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ??
+            []
+        ) as Payment[];
 
     }
 
+
+
+
+
     async summary(): Promise<PaymentSummary> {
 
-        const payments =
+
+        const active =
             await this.list();
 
+
+        const archived =
+            await this.listArchived();
+
+
+
         const totalAmount =
-            payments.reduce(
+            active.reduce(
+
                 (
                     sum,
-                    payment,
+                    item,
                 ) =>
                     sum +
-                    payment.amount,
+                    item.amount,
+
                 0,
+
             );
+
+
 
         const totalReceived =
-            payments.reduce(
+            active.reduce(
+
                 (
                     sum,
-                    payment,
+                    item,
                 ) =>
                     sum +
-                    payment.paidAmount,
+                    item.paidAmount,
+
                 0,
+
             );
 
-        const totalOutstanding =
-            payments.reduce(
-                (
-                    sum,
-                    payment,
-                ) =>
-                    sum +
-                    payment.balanceAmount,
-                0,
-            );
+
 
         return {
 
-    total:
-        payments.length,
 
-    pending:
-        payments.filter(
-            payment =>
-                payment.status ===
-                'Pending',
-        ).length,
+            total:
+                active.length,
 
-    paid:
-        payments.filter(
-            payment =>
-                payment.status ===
-                'Paid',
-        ).length,
 
-    partiallyPaid:
-        payments.filter(
-            payment =>
-                payment.status ===
-                'Partially Paid',
-        ).length,
+            archived:
+                archived.length,
 
-    overdue:
-        payments.filter(
-            payment =>
-                payment.status ===
-                'Overdue',
-        ).length,
 
-    cancelled:
-        payments.filter(
-            payment =>
-                payment.status ===
-                'Cancelled',
-        ).length,
+            pending:
+                active.filter(
+                    item =>
+                        item.status === 'Pending',
+                ).length,
 
-    refunded:
-        payments.filter(
-            payment =>
-                payment.status ===
-                'Refunded',
-        ).length,
 
-    archived:
-        (
-            await this.listArchived()
-        ).length,
+            partiallyPaid:
+                active.filter(
+                    item =>
+                        item.status === 'Partially Paid',
+                ).length,
 
-    totalAmount,
 
-    totalReceived,
+            paid:
+                active.filter(
+                    item =>
+                        item.status === 'Paid',
+                ).length,
 
-    totalOutstanding,
 
-    averagePayment:
+            overdue:
+                active.filter(
+                    item =>
+                        item.status === 'Overdue',
+                ).length,
 
-        payments.length === 0
 
-            ? 0
+            cancelled:
+                active.filter(
+                    item =>
+                        item.status === 'Cancelled',
+                ).length,
 
-            : Number(
 
-                (
-                    totalAmount /
-                    payments.length
-                ).toFixed(
-                    2,
+            refunded:
+                active.filter(
+                    item =>
+                        item.status === 'Refunded',
+                ).length,
+
+
+            totalAmount,
+
+
+            totalReceived,
+
+
+            totalOutstanding:
+
+                Math.max(
+                    totalAmount -
+                    totalReceived,
+                    0,
                 ),
 
-            ),
 
-    collectionRate:
+            averagePayment:
 
-        totalAmount === 0
+                active.length === 0
 
-            ? 0
+                    ? 0
 
-            : Number(
+                    :
 
-                (
-                    (
-                        totalReceived /
-                        totalAmount
-                    ) * 100
-                ).toFixed(
-                    2,
-                ),
+                    Number(
 
-            ),
+                        (
+                            totalAmount /
+                            active.length
+                        )
+                            .toFixed(2),
 
-};
+                    ),
+
+
+
+            collectionRate:
+
+                totalAmount === 0
+
+                    ? 0
+
+                    :
+
+                    Number(
+
+                        (
+                            (
+                                totalReceived /
+                                totalAmount
+                            )
+                            *
+                            100
+                        )
+                            .toFixed(2),
+
+                    ),
+
+        };
 
     }
 
 }
 
-export const
-    PaymentsRepositoryInstance =
-        new PaymentsRepository();
 
+
+
+
+export function createPaymentsRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new PaymentsRepository(
+        supabase,
+    );
+
+}
+
+
+
+export const PaymentsRepositoryInstance =
+    createPaymentsRepository;
