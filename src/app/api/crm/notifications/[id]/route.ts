@@ -1,8 +1,15 @@
-import { NextResponse } from 'next/server';
+import {
+    NextResponse,
+} from 'next/server';
 
 import {
-    NotificationsServiceInstance,
+    createClient,
+} from '@/lib/supabase/server';
+
+import {
+    createNotificationsService,
 } from '@/services/crm/NotificationsService';
+
 
 interface Context {
 
@@ -11,6 +18,8 @@ interface Context {
     }>;
 
 }
+
+
 
 export async function GET(
     request: Request,
@@ -22,33 +31,46 @@ export async function GET(
     } =
         await context.params;
 
+
+    const supabase =
+        await createClient();
+
+
+    const service =
+        createNotificationsService(
+            supabase,
+        );
+
+
     const notification =
-        NotificationsServiceInstance.details(
+        await service.details(
             id,
         );
+
 
     if (!notification) {
 
         return NextResponse.json(
-
             {
                 error:
                     'Notification not found',
             },
-
             {
                 status: 404,
             },
-
         );
 
     }
+
 
     return NextResponse.json(
         notification,
     );
 
 }
+
+
+
 
 export async function PUT(
     request: Request,
@@ -60,40 +82,51 @@ export async function PUT(
     } =
         await context.params;
 
+
     const body =
         await request.json();
 
-    const notification =
-        NotificationsServiceInstance.update(
 
-            id,
+    const supabase =
+        await createClient();
 
-            body,
 
+    const service =
+        createNotificationsService(
+            supabase,
         );
+
+
+    const notification =
+        await service.update(
+            id,
+            body,
+        );
+
 
     if (!notification) {
 
         return NextResponse.json(
-
             {
                 error:
                     'Notification not found',
             },
-
             {
                 status: 404,
             },
-
         );
 
     }
+
 
     return NextResponse.json(
         notification,
     );
 
 }
+
+
+
 
 export async function DELETE(
     request: Request,
@@ -105,32 +138,42 @@ export async function DELETE(
     } =
         await context.params;
 
+
+    const supabase =
+        await createClient();
+
+
+    const service =
+        createNotificationsService(
+            supabase,
+        );
+
+
     const deleted =
-        NotificationsServiceInstance.delete(
+        await service.delete(
             id,
         );
+
 
     if (!deleted) {
 
         return NextResponse.json(
-
             {
                 error:
                     'Notification not found',
             },
-
             {
                 status: 404,
             },
-
         );
 
     }
 
-    return NextResponse.json({
 
-        success: true,
-
-    });
+    return NextResponse.json(
+        {
+            success: true,
+        },
+    );
 
 }

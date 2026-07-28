@@ -1,17 +1,41 @@
-import type { Notification } from "@/types/crm/Notification";
+import type {
+    Notification,
+} from '@/types/crm/Notification';
 
-import { NotificationsRepository } from "@/repositories/notifications.repository";
+import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    createNotificationRepository,
+} from '@/repositories/notifications.repository';
+
 
 
 export class NotificationsService {
 
 
+    private readonly repository:
+        ReturnType<
+            typeof createNotificationRepository
+        >;
+
+
+
     constructor(
-        private readonly repository: NotificationsRepository,
-    ) {}
+        supabase: SupabaseClient,
+    ) {
+
+        this.repository =
+            createNotificationRepository(
+                supabase,
+            );
+
+    }
 
 
-    getByEntity(
+
+    async getByEntity(
         entityType: string,
         entityId: string,
     ): Promise<Notification[]> {
@@ -24,7 +48,8 @@ export class NotificationsService {
     }
 
 
-    create(
+
+    async create(
         notification: Partial<Notification>,
     ): Promise<Notification> {
 
@@ -33,5 +58,19 @@ export class NotificationsService {
         );
 
     }
+
+
+
+}
+
+
+
+export function createNotificationsService(
+    supabase: SupabaseClient,
+) {
+
+    return new NotificationsService(
+        supabase,
+    );
 
 }

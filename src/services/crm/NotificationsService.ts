@@ -1,6 +1,10 @@
 import {
-    NotificationsRepositoryInstance,
+    createNotificationsRepository,
 } from '@/repositories/crm/NotificationsRepository';
+
+import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
 
 import type {
     Notification,
@@ -9,118 +13,138 @@ import type {
     NotificationSummary,
 } from '@/types/crm/Notifications';
 
+
 class NotificationsService {
 
-    list(): Notification[] {
 
-        return NotificationsRepositoryInstance.list();
+    private readonly repository;
+
+
+    constructor(
+    private readonly supabase: SupabaseClient,
+) {
+
+    this.repository =
+        createNotificationsRepository(
+            supabase,
+        );
+
+}
+
+
+    async list(): Promise<Notification[]> {
+
+        return this.repository.list();
 
     }
 
-    listArchived(): Notification[] {
 
-        return NotificationsRepositoryInstance.listArchived();
+    async listArchived(): Promise<Notification[]> {
+
+        return this.repository.listArchived();
 
     }
 
-    details(
+
+    async details(
         id: string,
-    ): Notification | null {
+    ): Promise<Notification | null> {
 
-        return NotificationsRepositoryInstance.details(
+        return this.repository.details(
             id,
         );
 
     }
 
-    findById(
-        id: string,
-    ): Notification | null {
 
-        return NotificationsRepositoryInstance.findById(
+    async findById(
+        id: string,
+    ): Promise<Notification | null> {
+
+        return this.repository.findById(
             id,
         );
 
     }
 
-    search(
+
+    async search(
         filters?: NotificationSearchFilters,
-    ): Notification[] {
+    ): Promise<Notification[]> {
 
-        return NotificationsRepositoryInstance.search(
+        return this.repository.search(
             filters,
         );
 
     }
 
-    create(
-        data: Partial<Notification>,
-    ): Notification {
 
-        return NotificationsRepositoryInstance.create(
+    async create(
+        data: Partial<Notification>,
+    ): Promise<Notification> {
+
+        return this.repository.create(
             data,
         );
 
     }
 
-    update(
+
+    async update(
         id: string,
         data: Partial<Notification>,
-    ): Notification | null {
+    ): Promise<Notification | null> {
 
-        return NotificationsRepositoryInstance.update(
+        return this.repository.update(
             id,
             data,
         );
 
     }
 
-    updateStatus(
+
+    async updateStatus(
         id: string,
         status: NotificationStatus,
-    ): Notification | null {
+    ): Promise<Notification | null> {
 
-        return NotificationsRepositoryInstance.updateStatus(
+        return this.repository.updateStatus(
             id,
             status,
         );
 
     }
 
-    markAsRead(
-        id: string,
-    ): Notification | null {
 
-        return this.updateStatus(
+    async markAsRead(
+        id: string,
+    ): Promise<Notification | null> {
+
+        return this.repository.updateStatus(
             id,
             'Read',
         );
 
     }
 
-    archive(
-        id: string,
-    ): boolean {
 
-        return NotificationsRepositoryInstance.delete(
+    async archive(
+        id: string,
+    ): Promise<boolean> {
+
+        return this.repository.delete(
             id,
+        )
+        .then(
+            () => true,
         );
 
     }
 
-    restore(
+
+    async delete(
         id: string,
-    ): boolean {
-
-        return NotificationsRepositoryInstance.restore(
-            id,
-        );
-
-    }
-
-    delete(
-        id: string,
-    ): boolean {
+    ): Promise<boolean> {
 
         return this.archive(
             id,
@@ -128,14 +152,36 @@ class NotificationsService {
 
     }
 
-    summary(): NotificationSummary {
 
-        return NotificationsRepositoryInstance.summary();
+    async restore(
+        id: string,
+    ): Promise<boolean> {
+
+        return this.repository.restore(
+            id,
+        );
 
     }
 
-}
 
-export const
-    NotificationsServiceInstance =
-        new NotificationsService();
+    async summary(): Promise<NotificationSummary> {
+
+        return this.repository.summary();
+
+    }
+
+
+}
+/** * Backward compatibility export.
+ * * Existing API routes/components consume * NotificationServiceInstance.
+ * * New CRM architecture uses: * NotificationsServiceInstance
+ */
+export function createNotificationsService(
+    supabase: SupabaseClient,
+) {
+
+    return new NotificationsService(
+        supabase,
+    );
+
+}

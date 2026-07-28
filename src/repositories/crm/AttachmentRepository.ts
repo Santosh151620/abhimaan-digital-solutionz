@@ -1,105 +1,96 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Attachment,
-    AttachmentEntityType,
+    AttachmentSearchFilters,
     AttachmentSummary,
 } from '@/types/crm/Attachment';
 
 
-
-export interface AttachmentSearchFilters {
-
-    entityType?: AttachmentEntityType;
-
-    entityId?: string;
-
-    uploadedBy?: string;
-
-}
+class AttachmentRepository
+    extends BaseRepository<Attachment> {
 
 
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
+        super(
+            supabase,
+            'attachments',
+        );
 
-
-class AttachmentRepository {
-
-
-
-    private attachments =
-        new Map<string, Attachment>();
-
-
+    }
 
 
 
     async list(
-        entityType?: AttachmentEntityType,
+        entityType?: string,
         entityId?: string,
     ): Promise<Attachment[]> {
 
 
-        let attachments =
-            Array.from(
-                this.attachments.values(),
-            )
-            .filter(
-                attachment =>
-                    !attachment.archived,
-            );
-
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                );
 
 
         if (entityType) {
 
-
-            attachments =
-                attachments.filter(
-                    attachment =>
-                        attachment.entityType === entityType,
+            query =
+                query.eq(
+                    'entity_type',
+                    entityType,
                 );
 
-
         }
-
 
 
         if (entityId) {
 
-
-            attachments =
-                attachments.filter(
-                    attachment =>
-                        attachment.entityId === entityId,
+            query =
+                query.eq(
+                    'entity_id',
+                    entityId,
                 );
-
 
         }
 
 
+        const {
+            data,
+            error,
+        } =
+            await query.order(
+                'uploaded_at',
+                {
+                    ascending: false,
+                },
+            );
 
-        return attachments;
 
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (
+            data ?? []
+        ) as Attachment[];
 
     }
-
-
-
-
-
-    async listArchived(): Promise<Attachment[]> {
-
-
-        return Array.from(
-            this.attachments.values(),
-        )
-        .filter(
-            attachment =>
-                attachment.archived,
-        );
-
-
-    }
-
-
 
 
 
@@ -107,35 +98,37 @@ class AttachmentRepository {
         id: string,
     ): Promise<Attachment | null> {
 
-
-        return (
-            this.attachments.get(id)
-            ??
-            null
+        return super.findById(
+            id,
         );
-
 
     }
 
 
 
+    async details(
+        id: string,
+    ): Promise<Attachment | null> {
+
+        return this.findById(
+            id,
+        );
+
+    }
+
 
 
     async listByEntity(
-        entityType: AttachmentEntityType,
+        entityType: string,
         entityId: string,
     ): Promise<Attachment[]> {
-
 
         return this.list(
             entityType,
             entityId,
         );
 
-
     }
-
-
 
 
 
@@ -144,62 +137,203 @@ class AttachmentRepository {
     ): Promise<Attachment[]> {
 
 
-        let result =
-            await this.list();
-
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                );
 
 
         if (filters?.entityType) {
 
-
-            result =
-                result.filter(
-                    attachment =>
-                        attachment.entityType ===
-                        filters.entityType,
+            query =
+                query.eq(
+                    'entity_type',
+                    filters.entityType,
                 );
 
-
         }
-
 
 
         if (filters?.entityId) {
 
-
-            result =
-                result.filter(
-                    attachment =>
-                        attachment.entityId ===
-                        filters.entityId,
+            query =
+                query.eq(
+                    'entity_id',
+                    filters.entityId,
                 );
 
-
         }
-
 
 
         if (filters?.uploadedBy) {
 
-
-            result =
-                result.filter(
-                    attachment =>
-                        attachment.uploadedBy ===
-                        filters.uploadedBy,
+            query =
+                query.eq(
+                    'uploaded_by',
+                    filters.uploadedBy,
                 );
-
 
         }
 
 
+        if (filters?.fileType) {
 
-        return result;
+            query =
+                query.eq(
+                    'file_type',
+                    filters.fileType,
+                );
 
+        }
+
+
+        const {
+            data,
+            error,
+        } =
+            await query.order(
+                'uploaded_at',
+                {
+                    ascending: false,
+                },
+            );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        let attachments =
+            (
+                data ?? []
+            ) as Attachment[];
+
+
+        if (filters?.search) {
+
+            const keyword =
+                filters.search
+                    .trim()
+                    .toLowerCase();
+
+
+            attachments =
+                attachments.filter(
+                    attachment =>
+
+                        attachment.fileName
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            )
+
+                        ||
+
+                        attachment.fileType
+                            .toLowerCase()
+                            .includes(
+                                keyword,
+                            ),
+                );
+
+        }
+
+
+        return attachments;
+
+    }
+        async create(
+        data: Partial<Attachment>,
+    ): Promise<Attachment> {
+
+
+        const now =
+            new Date()
+                .toISOString();
+
+
+        return super.create(
+            {
+
+                ...data,
+
+                uploadedAt:
+                    data.uploadedAt
+                    ??
+                    now,
+
+
+                createdAt:
+                    now,
+
+
+                updatedAt:
+                    now,
+
+            },
+        );
 
     }
 
 
+
+    async update(
+        id: string,
+        data: Partial<Attachment>,
+    ): Promise<Attachment> {
+
+
+        return super.update(
+            id,
+            {
+
+                ...data,
+
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+        );
+
+    }
+
+
+
+    async delete(
+        id: string,
+    ): Promise<void> {
+
+
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .delete()
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+    }
 
 
 
@@ -207,285 +341,91 @@ class AttachmentRepository {
 
 
         const attachments =
-            Array.from(
-                this.attachments.values(),
-            );
-
+            await this.list();
 
 
         return {
-
 
             total:
                 attachments.length,
 
 
-
             active:
-                attachments.filter(
-                    item =>
-                        !item.archived,
-                ).length,
-
+                attachments.length,
 
 
             archived:
-                attachments.filter(
-                    item =>
-                        item.archived,
-                ).length,
-
+                0,
 
         };
 
-
     }
-
-
-
-
-
-    async create(
-        data: Partial<Attachment>,
-    ): Promise<Attachment> {
-
-
-        const now =
-            new Date().toISOString();
-
-
-
-        const attachment: Attachment = {
-
-
-            id:
-                crypto.randomUUID(),
-
-
-
-            entityType:
-                data.entityType
-                ??
-                'Other',
-
-
-
-            entityId:
-                data.entityId
-                ??
-                '',
-
-
-
-            fileName:
-                data.fileName
-                ??
-                '',
-
-
-
-            fileUrl:
-                data.fileUrl
-                ??
-                '',
-
-
-
-            fileType:
-                data.fileType,
-
-
-
-            fileSize:
-                data.fileSize,
-
-
-
-            description:
-                data.description,
-
-
-
-            uploadedBy:
-                data.uploadedBy,
-
-
-
-            archived:
-                false,
-
-
-
-            createdAt:
-                now,
-
-
-
-            updatedAt:
-                now,
-
-
-        };
-
-
-
-        this.attachments.set(
-            attachment.id,
-            attachment,
-        );
-
-
-
-        return attachment;
-
-
-    }
-
-
-
-
-
-    async update(
-        id: string,
-        data: Partial<Attachment>,
-    ): Promise<Attachment | null> {
-
-
-        const existing =
-            this.attachments.get(id);
-
-
-
-        if (!existing) {
-
-            return null;
-
-        }
-
-
-
-        const updated: Attachment = {
-
-
-            ...existing,
-
-            ...data,
-
-
-            updatedAt:
-                new Date().toISOString(),
-
-
-        };
-
-
-
-        this.attachments.set(
-            id,
-            updated,
-        );
-
-
-
-        return updated;
-
-
-    }
-
-
-
-
-
-    async delete(
-        id: string,
-    ): Promise<boolean> {
-
-
-        const attachment =
-            this.attachments.get(id);
-
-
-
-        if (!attachment) {
-
-            return false;
-
-        }
-
-
-
-        attachment.archived =
-            true;
-
-
-
-        attachment.updatedAt =
-            new Date().toISOString();
-
-
-
-        this.attachments.set(
-            id,
-            attachment,
-        );
-
-
-
-        return true;
-
-
-    }
-
-
-
-
-
-    async restore(
-        id: string,
-    ): Promise<boolean> {
-
-
-        const attachment =
-            this.attachments.get(id);
-
-
-
-        if (!attachment) {
-
-            return false;
-
-        }
-
-
-
-        attachment.archived =
-            false;
-
-
-
-        attachment.updatedAt =
-            new Date().toISOString();
-
-
-
-        this.attachments.set(
-            id,
-            attachment,
-        );
-
-
-
-        return true;
-
-
-    }
-
 
 }
 
 
 
+export function createAttachmentRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new AttachmentRepository(
+        supabase,
+    );
+
+}
+
+export const AttachmentRepositoryInstance = {
+
+    list(
+        ...args: unknown[]
+    ) {
+
+        void args;
+
+        throw new Error(
+            'AttachmentRepositoryInstance requires Supabase context. Use createAttachmentRepository(supabase).list().',
+        );
+
+    },
 
 
-export const AttachmentRepositoryInstance =
-    new AttachmentRepository();
+    listByEntity(
+        ...args: unknown[]
+    ) {
+
+        void args;
+
+        throw new Error(
+            'AttachmentRepositoryInstance requires Supabase context. Use createAttachmentRepository(supabase).listByEntity().',
+        );
+
+    },
+
+
+    create(
+        ...args: unknown[]
+    ) {
+
+        void args;
+
+        throw new Error(
+            'AttachmentRepositoryInstance requires Supabase context. Use createAttachmentRepository(supabase).create().',
+        );
+
+    },
+
+
+    delete(
+        ...args: unknown[]
+    ) {
+
+        void args;
+
+        throw new Error(
+            'AttachmentRepositoryInstance requires Supabase context. Use createAttachmentRepository(supabase).delete().',
+        );
+
+    },
+
+};

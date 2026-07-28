@@ -3,7 +3,6 @@ import type {
 } from '@/types/crm/Attachment';
 
 
-
 class AttachmentService {
 
 
@@ -12,73 +11,63 @@ class AttachmentService {
 
 
 
-    list() {
-
+    list(): Attachment[] {
 
         return Array.from(
             this.attachments.values(),
-        ).filter(
-            item => !item.archived,
+        )
+        .filter(
+            item =>
+                !item.archived,
         );
-
 
     }
 
 
 
     listByEntity(
-
         entityType: string,
-
         entityId: string,
+    ): Attachment[] {
 
-    ) {
+        return this.list()
+            .filter(
+                item =>
 
+                    item.entityType === entityType
 
-        return this.list().filter(
+                    &&
 
-            item =>
+                    item.entityId === entityId,
 
-                item.entityType === entityType &&
-
-                item.entityId === entityId,
-
-        );
-
+            );
 
     }
 
 
 
     details(
-
         id: string,
-
-    ) {
-
+    ): Attachment | null {
 
         return (
-
-            this.attachments.get(
-                id,
-            ) ?? null
-
+            this.attachments.get(id)
+            ??
+            null
         );
-
 
     }
 
 
 
     create(
-
         data: Partial<Attachment>,
-
-    ) {
+    ): Attachment {
 
 
         const now =
-            new Date().toISOString();
+            new Date()
+                .toISOString();
 
 
 
@@ -91,27 +80,37 @@ class AttachmentService {
 
 
             entityType:
-                data.entityType ?? 'Other',
+                data.entityType
+                ??
+                'Other' as Attachment['entityType'],
 
 
 
             entityId:
-                data.entityId ?? '',
+                data.entityId
+                ??
+                '',
 
 
 
             fileName:
-                data.fileName ?? '',
+                data.fileName
+                ??
+                '',
 
 
 
             fileUrl:
-                data.fileUrl ?? '',
+                data.fileUrl
+                ??
+                '',
 
 
 
             fileType:
-                data.fileType,
+                data.fileType
+                ??
+                'application/octet-stream',
 
 
 
@@ -130,6 +129,13 @@ class AttachmentService {
 
 
 
+            uploadedAt:
+                data.uploadedAt
+                ??
+                now,
+
+
+
             archived:
                 false,
 
@@ -143,57 +149,44 @@ class AttachmentService {
             updatedAt:
                 now,
 
-
         };
 
 
 
         this.attachments.set(
-
             attachment.id,
-
             attachment,
-
         );
 
 
 
         return attachment;
 
-
     }
 
 
 
     update(
-
         id: string,
-
         data: Partial<Attachment>,
-
-    ) {
+    ): Attachment | null {
 
 
         const existing =
-
             this.attachments.get(
                 id,
             );
 
 
-
         if (!existing) {
 
-
             return null;
-
 
         }
 
 
 
-        const updated = {
-
+        const updated: Attachment = {
 
             ...existing,
 
@@ -201,78 +194,64 @@ class AttachmentService {
 
 
             updatedAt:
-
-                new Date().toISOString(),
-
+                new Date()
+                    .toISOString(),
 
         };
 
 
 
         this.attachments.set(
-
             id,
-
             updated,
-
         );
 
 
 
         return updated;
 
-
     }
 
 
 
     delete(
-
         id: string,
-
-    ) {
+    ): boolean {
 
 
         const attachment =
-
             this.attachments.get(
                 id,
             );
 
 
-
         if (!attachment) {
 
-
             return false;
-
 
         }
 
 
 
-        attachment.archived = true;
+        attachment.archived =
+            true;
 
 
 
         attachment.updatedAt =
-
-            new Date().toISOString();
+            new Date()
+                .toISOString();
 
 
 
         this.attachments.set(
-
             id,
-
             attachment,
-
         );
 
 
 
         return true;
-
 
     }
 
@@ -282,7 +261,6 @@ class AttachmentService {
 
 
         const attachments =
-
             Array.from(
                 this.attachments.values(),
             );
@@ -299,19 +277,21 @@ class AttachmentService {
 
             active:
                 attachments.filter(
-                    item => !item.archived,
-                ).length,
+                    item =>
+                        !item.archived,
+                )
+                .length,
 
 
 
             archived:
                 attachments.filter(
-                    item => item.archived,
-                ).length,
-
+                    item =>
+                        item.archived,
+                )
+                .length,
 
         };
-
 
     }
 
@@ -320,9 +300,5 @@ class AttachmentService {
 
 
 
-export const
-
-    AttachmentServiceInstance =
-
-        new AttachmentService();
-
+export const AttachmentServiceInstance =
+    new AttachmentService();

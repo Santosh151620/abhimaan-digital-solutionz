@@ -1,56 +1,114 @@
+import type {
+    BaseEntity,
+} from '@/types/platform/BaseEntity';
+
+import type {
+    EntityType,
+} from '@/types/entity';
+
+
+
+/**
+ * ============================================================================
+ * Attachment Entity
+ * ============================================================================
+ *
+ * Universal attachment contract.
+ *
+ * Used across:
+ * - CRM
+ * - Tasks
+ * - Activities
+ * - Notes
+ * - Entity Engine
+ * - Future modules
+ *
+ * Database:
+ * public.attachments
+ *
+ * ============================================================================ 
+ */
+
+
 export type AttachmentEntityType =
-    | 'Lead'
-    | 'Company'
-    | 'Contact'
-    | 'Project'
-    | 'Task'
-    | 'Activity'
-    | 'Ticket'
-    | 'Invoice'
-    | 'Quotation'
-    | 'Contract'
-    | 'Other';
+    EntityType;
 
 
 
-export interface Attachment {
+export interface Attachment
+    extends BaseEntity {
 
 
-    id: string;
-
-
+    /**
+     * Universal entity reference
+     */
     entityType: AttachmentEntityType;
-
 
     entityId: string;
 
 
-    fileName: string;
 
+    /**
+     * File information
+     */
+    fileName: string;
 
     fileUrl: string;
 
-
-    fileType?: string;
-
+    fileType: string;
 
     fileSize?: number;
 
 
+
+    /**
+     * Optional description
+     */
     description?: string;
+
+
+
+    /**
+     * Ownership
+     */
+    uploadedBy?: string;
+
+
+
+    /**
+     * Audit fields
+     */
+    uploadedAt: string;
+
+
+
+    /**
+     * Soft delete/archive support
+     *
+     * Kept for CRM compatibility
+     */
+    archived: boolean;
+
+}
+
+
+
+export interface AttachmentSearchFilters {
+
+
+    entityType?: AttachmentEntityType;
+
+
+    entityId?: string;
 
 
     uploadedBy?: string;
 
 
-    archived: boolean;
+    fileType?: string;
 
 
-    createdAt: string;
-
-
-    updatedAt: string;
-
+    search?: string;
 
 }
 
@@ -67,6 +125,52 @@ export interface AttachmentSummary {
 
     archived: number;
 
+}
+
+
+
+export interface CreateAttachmentRequest {
+
+
+    entityType: AttachmentEntityType;
+
+
+    entityId: string;
+
+
+    fileName: string;
+
+
+    fileUrl: string;
+
+
+    fileType: string;
+
+
+    fileSize?: number;
+
+
+    description?: string;
 
 }
 
+
+
+export interface UpdateAttachmentRequest {
+
+
+    fileName?: string;
+
+
+    fileUrl?: string;
+
+
+    fileType?: string;
+
+
+    fileSize?: number;
+
+
+    description?: string;
+
+}

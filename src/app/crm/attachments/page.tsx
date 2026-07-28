@@ -4,17 +4,31 @@ import {
 
 
 import {
-    AttachmentRepositoryInstance,
+    createAttachmentRepository,
 } from '@/repositories/crm/AttachmentRepository';
+
+
+import {
+    createClient,
+} from '@/lib/supabase/server';
 
 
 
 export default async function AttachmentsPage() {
 
 
-    const attachments =
+    const supabase =
+        await createClient();
 
-        await AttachmentRepositoryInstance.list();
+
+    const repository =
+        createAttachmentRepository(
+            supabase,
+        );
+
+
+    const attachments =
+        await repository.list();
 
 
 
@@ -38,14 +52,15 @@ export default async function AttachmentsPage() {
 
                 </p>
 
-
             </div>
 
 
 
             <AttachmentClient
 
-                initialAttachments={attachments}
+                initialAttachments={
+                    attachments
+                }
 
             />
 
@@ -53,6 +68,5 @@ export default async function AttachmentsPage() {
         </div>
 
     );
-
 
 }

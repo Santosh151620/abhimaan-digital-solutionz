@@ -1,447 +1,700 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+
+import type {
     Notification,
     NotificationSearchFilters,
     NotificationStatus,
     NotificationSummary,
 } from '@/types/crm/Notifications';
 
-export class NotificationsRepository {
 
-    private readonly notifications =
-        new Map<string, Notification>();
 
-    list(): Notification[] {
+class NotificationsRepository
+    extends BaseRepository<Notification> {
 
-        return [
-            ...this.notifications.values(),
-        ]
-            .filter(
-                notification =>
-                    !notification.archived,
-            )
-            .sort(
-                (a, b) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt,
-                    ),
-            );
 
-    }
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
-    listArchived(): Notification[] {
-
-        return [
-            ...this.notifications.values(),
-        ]
-            .filter(
-                notification =>
-                    notification.archived,
-            )
-            .sort(
-                (a, b) =>
-                    b.updatedAt.localeCompare(
-                        a.updatedAt,
-                    ),
-            );
-
-    }
-
-    details(
-        id: string,
-    ): Notification | null {
-
-        return (
-            this.notifications.get(id)
-            ?? null
+        super(
+            supabase,
+            'notifications',
         );
 
     }
 
-    findById(
-        id: string,
-    ): Notification | null {
 
-        return this.details(
+
+    async list(): Promise<Notification[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Notification[];
+
+    }
+
+
+
+
+
+    async listArchived(): Promise<Notification[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Notification[];
+
+    }
+
+
+
+
+
+    async details(
+        id: string,
+    ): Promise<Notification | null> {
+
+        return this.findById(
             id,
         );
 
     }
 
-    search(
+
+
+
+
+    async findById(
+        id: string,
+    ): Promise<Notification | null> {
+
+        return super.findById(
+            id,
+        );
+
+    }
+
+
+
+
+
+    async search(
         filters?: NotificationSearchFilters,
-    ): Notification[] {
+    ): Promise<Notification[]> {
+
+
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                );
+
+
+
+        if (
+            filters?.status
+        ) {
+
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
+                );
+
+        }
+
+
+
+        if (
+            filters?.priority
+        ) {
+
+            query =
+                query.eq(
+                    'priority',
+                    filters.priority,
+                );
+
+        }
+
+
+
+        if (
+            filters?.type
+        ) {
+
+            query =
+                query.eq(
+                    'notification_type',
+                    filters.type,
+                );
+
+        }
+
+
+
+        if (
+            filters?.entityType
+        ) {
+
+            query =
+                query.eq(
+                    'entity_type',
+                    filters.entityType,
+                );
+
+        }
+
+
+
+        if (
+            filters?.entityId
+        ) {
+
+            query =
+                query.eq(
+                    'entity_id',
+                    filters.entityId,
+                );
+
+        }
+
+
+
+        if (
+            filters?.ownerId
+        ) {
+
+            query =
+                query.eq(
+                    'owner_id',
+                    filters.ownerId,
+                );
+
+        }
+
+
+
+        if (
+            filters?.userId
+        ) {
+
+            query =
+                query.eq(
+                    'user_id',
+                    filters.userId,
+                );
+
+        }
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query.order(
+                'created_at',
+                {
+                    ascending: false,
+                },
+            );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
 
         let notifications =
-            this.list();
+            (
+                data ?? []
+            ) as Notification[];
 
-        if (filters?.status) {
 
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.status ===
-                        filters.status,
-                );
 
-        }
-
-        if (filters?.priority) {
-
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.priority ===
-                        filters.priority,
-                );
-
-        }
-
-        if (filters?.type) {
-
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.type ===
-                        filters.type,
-                );
-
-        }
-
-        if (filters?.entityType) {
-
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.entityType ===
-                        filters.entityType,
-                );
-
-        }
-
-        if (filters?.entityId) {
-
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.entityId ===
-                        filters.entityId,
-                );
-
-        }
-
-        if (filters?.ownerId) {
-
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.ownerId ===
-                        filters.ownerId,
-                );
-
-        }
-
-        if (filters?.userId) {
-
-            notifications =
-                notifications.filter(
-                    item =>
-                        item.userId ===
-                        filters.userId,
-                );
-
-        }
-
-        if (filters?.search) {
+        if (
+            filters?.search
+        ) {
 
             const keyword =
                 filters.search
                     .trim()
                     .toLowerCase();
 
+
+
             notifications =
                 notifications.filter(
                     item =>
 
                         item.notificationNumber
-                            .toLowerCase()
-                            .includes(keyword)
+                            ?.toLowerCase()
+                            .includes(
+                                keyword,
+                            )
 
                         ||
 
                         item.title
-                            .toLowerCase()
-                            .includes(keyword)
+                            ?.toLowerCase()
+                            .includes(
+                                keyword,
+                            )
 
                         ||
 
                         item.message
-                            .toLowerCase()
-                            .includes(keyword),
-
+                            ?.toLowerCase()
+                            .includes(
+                                keyword,
+                            ),
                 );
 
         }
+
+
 
         return notifications;
 
     }
 
-    create(
+
+
+
+
+    async create(
         data: Partial<Notification>,
-    ): Notification {
+    ): Promise<Notification> {
+
 
         const now =
             new Date()
                 .toISOString();
 
-        const notification: Notification = {
 
-            id:
-                data.id ??
-                crypto.randomUUID(),
+
+        const payload = {
+
 
             notificationNumber:
+
                 data.notificationNumber ??
+
                 `NTF-${Date.now()}`,
 
-            organizationId:
-                data.organizationId,
+
 
             entityType:
+
                 data.entityType,
 
+
+
             entityId:
+
                 data.entityId,
 
+
+
             ownerId:
+
                 data.ownerId,
 
+
+
             userId:
+
                 data.userId,
 
+
+
             title:
+
                 data.title ?? '',
 
+
+
             message:
+
                 data.message ?? '',
 
-            type:
-                data.type ??
-                'System',
+
+
+            notificationType:
+
+                data.type ?? 'System',
+
+
 
             priority:
-                data.priority ??
-                'Medium',
+
+                data.priority ?? 'Medium',
+
+
 
             status:
-                data.status ??
-                'Unread',
+
+                data.status ?? 'Unread',
+
+
 
             actionUrl:
+
                 data.actionUrl,
 
+
+
             actionLabel:
+
                 data.actionLabel,
 
+
+
             icon:
+
                 data.icon,
 
+
+
             metadata:
-                data.metadata,
+
+                data.metadata ?? {},
+
+
 
             readAt:
+
                 data.readAt,
 
-            archived: false,
 
-            createdAt: now,
 
-            updatedAt: now,
+            archived:
 
-        };
+                false,
 
-        this.notifications.set(
-            notification.id,
-            notification,
-        );
 
-        return notification;
 
-    }
+            createdAt:
 
-    update(
-        id: string,
-        data: Partial<Notification>,
-    ): Notification | null {
+                now,
 
-        const existing =
-            this.notifications.get(id);
 
-        if (!existing) {
-
-            return null;
-
-        }
-
-        const updated: Notification = {
-
-            ...existing,
-
-            ...data,
 
             updatedAt:
-                new Date()
-                    .toISOString(),
+
+                now,
 
         };
 
-        this.notifications.set(
-            id,
-            updated,
-        );
 
-        return updated;
+
+        return super.create(
+            payload,
+        );
 
     }
 
-    updateStatus(
+
+
+
+
+    async update(
+        id: string,
+        data: Partial<Notification>,
+    ): Promise<Notification> {
+
+
+        return super.update(
+            id,
+            {
+
+                ...data,
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+        );
+
+    }
+
+
+
+
+
+    async updateStatus(
         id: string,
         status: NotificationStatus,
-    ): Notification | null {
+    ): Promise<Notification> {
 
-        const update: Partial<Notification> = {
-
-            status,
-
-        };
-
-        if (status === 'Read') {
-
-            update.readAt =
-                new Date()
-                    .toISOString();
-
-        }
 
         return this.update(
             id,
-            update,
+            {
+
+                status,
+
+
+                readAt:
+
+                    status === 'Read'
+
+                        ? new Date()
+                            .toISOString()
+
+                        : undefined,
+
+            },
         );
 
     }
 
-    delete(
+    async delete(
         id: string,
-    ): boolean {
+    ): Promise<void> {
 
-        const existing =
-            this.notifications.get(id);
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .update(
+                    {
+                        archived: true,
 
-        if (!existing) {
+                        status:
+                            'Archived',
 
-            return false;
+                        updated_at:
+                            new Date()
+                                .toISOString(),
+                    },
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
+
+
+        if (error) {
+
+            throw error;
 
         }
 
-        existing.archived = true;
+    }
 
-        existing.updatedAt =
-            new Date()
-                .toISOString();
+    async restore(
+        id: string,
+    ): Promise<boolean> {
 
-        this.notifications.set(
-            id,
-            existing,
-        );
+
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .update(
+                    {
+
+                        archived:
+                            false,
+
+                        status:
+                            'Unread',
+
+                        updated_at:
+                            new Date()
+                                .toISOString(),
+
+                    },
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
 
         return true;
 
     }
 
-    restore(
-        id: string,
-    ): boolean {
 
-        const existing =
-            this.notifications.get(id);
 
-        if (!existing) {
 
-            return false;
 
-        }
+    async summary(): Promise<NotificationSummary> {
 
-        existing.archived = false;
 
-        existing.updatedAt =
-            new Date()
-                .toISOString();
+        const active =
+            await this.list();
 
-        this.notifications.set(
-            id,
-            existing,
-        );
-
-        return true;
-
-    }
-
-    summary(): NotificationSummary {
-
-        const notifications =
-            this.list();
 
         const archived =
-            this.listArchived();
+            await this.listArchived();
+
+
 
         return {
 
+
             total:
-                notifications.length,
+
+                active.length,
+
+
 
             unread:
-                notifications.filter(
-                    n =>
-                        n.status ===
-                        'Unread',
+
+                active.filter(
+                    item =>
+                        item.status === 'Unread',
                 ).length,
+
+
 
             read:
-                notifications.filter(
-                    n =>
-                        n.status ===
-                        'Read',
+
+                active.filter(
+                    item =>
+                        item.status === 'Read',
                 ).length,
+
+
 
             archived:
+
                 archived.length,
 
+
+
             lowPriority:
-                notifications.filter(
-                    n =>
-                        n.priority ===
-                        'Low',
+
+                active.filter(
+                    item =>
+                        item.priority === 'Low',
                 ).length,
+
+
 
             mediumPriority:
-                notifications.filter(
-                    n =>
-                        n.priority ===
-                        'Medium',
+
+                active.filter(
+                    item =>
+                        item.priority === 'Medium',
                 ).length,
+
+
 
             highPriority:
-                notifications.filter(
-                    n =>
-                        n.priority ===
-                        'High',
+
+                active.filter(
+                    item =>
+                        item.priority === 'High',
                 ).length,
 
+
+
             criticalPriority:
-                notifications.filter(
-                    n =>
-                        n.priority ===
-                        'Critical',
+
+                active.filter(
+                    item =>
+                        item.priority === 'Critical',
                 ).length,
 
         };
@@ -450,6 +703,14 @@ export class NotificationsRepository {
 
 }
 
-export const
-    NotificationsRepositoryInstance =
-        new NotificationsRepository();
+
+
+export function createNotificationsRepository(
+    supabase: SupabaseClient,
+) {
+
+    return new NotificationsRepository(
+        supabase,
+    );
+
+}
