@@ -118,9 +118,6 @@ class NotesService {
     }
 
 
-
-
-
     async create(
         data: Partial<Note>,
     ): Promise<Note> {

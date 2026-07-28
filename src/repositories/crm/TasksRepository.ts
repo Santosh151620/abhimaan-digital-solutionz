@@ -135,7 +135,7 @@ class TasksRepository
         );
 
     }
-        async search(
+    async search(
         filters?: TaskSearchFilters,
     ): Promise<Task[]> {
 
@@ -268,44 +268,44 @@ class TasksRepository
                 (
                     data ?? []
                 )
-                .filter(
-                    task => {
+                    .filter(
+                        task => {
 
 
-                        const item =
-                            task as Task;
+                            const item =
+                                task as Task;
 
 
 
-                        return (
+                            return (
 
-                            item.taskNumber
-                                ?.toLowerCase()
-                                .includes(
-                                    keyword,
-                                )
+                                item.taskNumber
+                                    ?.toLowerCase()
+                                    .includes(
+                                        keyword,
+                                    )
 
-                            ||
+                                ||
 
-                            item.title
-                                ?.toLowerCase()
-                                .includes(
-                                    keyword,
-                                )
+                                item.title
+                                    ?.toLowerCase()
+                                    .includes(
+                                        keyword,
+                                    )
 
-                            ||
+                                ||
 
-                            item.description
-                                ?.toLowerCase()
-                                .includes(
-                                    keyword,
-                                )
+                                item.description
+                                    ?.toLowerCase()
+                                    .includes(
+                                        keyword,
+                                    )
 
-                        );
+                            );
 
 
-                    },
-                ) as Task[];
+                        },
+                    ) as Task[];
 
         }
 
@@ -331,8 +331,8 @@ class TasksRepository
 
 
         const payload = {
-          entityType:
-    'Task' as const,
+            entityType:
+                'Task' as const,
 
 
             entityId:
@@ -444,7 +444,7 @@ class TasksRepository
         );
 
     }
-        async update(
+    async update(
         id: string,
         data: Partial<Task>,
     ): Promise<Task> {
@@ -513,9 +513,9 @@ class TasksRepository
 
     }
 
-async delete(
-    id: string,
-): Promise<void> {
+    async delete(
+        id: string,
+    ): Promise<void> {
         const {
             error,
         } =
@@ -644,37 +644,37 @@ async delete(
                     task =>
                         task.status === 'Todo',
                 )
-               .length,
+                    .length,
             inProgress:
                 tasks.filter(
                     task =>
                         task.status === 'In Progress',
                 )
-                .length,
+                    .length,
             blocked:
                 tasks.filter(
                     task =>
                         task.status === 'Blocked',
                 )
-                .length,
+                    .length,
             completed:
                 tasks.filter(
                     task =>
                         task.status === 'Completed',
                 )
-                .length,
+                    .length,
             cancelled:
                 tasks.filter(
                     task =>
                         task.status === 'Cancelled',
                 )
-                .length,
+                    .length,
             critical:
                 tasks.filter(
                     task =>
                         task.priority === 'Critical',
                 )
-                .length,
+                    .length,
             highPriority:
                 tasks.filter(
                     task =>
@@ -682,7 +682,7 @@ async delete(
                         ||
                         task.priority === 'Critical',
                 )
-                .length,
+                    .length,
             overdue:
                 tasks.filter(
                     task =>
@@ -702,7 +702,7 @@ async delete(
                         task.status !== 'Cancelled',
 
                 )
-                .length,
+                    .length,
             archived:
                 archived.length,
             averageCompletion:

@@ -1,0 +1,47 @@
+import type { ReactNode } from "react";
+
+import AdminHeader from "./AdminHeader";
+import AdminSidebar from "./AdminSidebar";
+
+
+interface AdminLayoutProps {
+
+    children: ReactNode;
+
+}
+
+
+export default function AdminLayout({
+
+    children,
+
+}: AdminLayoutProps) {
+
+    return (
+
+        <div className="flex min-h-screen bg-muted/20">
+
+            <AdminSidebar />
+
+
+            <div className="flex min-w-0 flex-1 flex-col">
+
+
+                <AdminHeader />
+
+
+                <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+
+                    {children}
+
+                </main>
+
+
+            </div>
+
+
+        </div>
+
+    );
+
+}

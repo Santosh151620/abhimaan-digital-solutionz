@@ -1,4 +1,3 @@
-export * from './ActivityRepository';
 export * from './AssetsRepository';
 export * from './AttachmentRepository';
 export * from './CalendarRepository';
