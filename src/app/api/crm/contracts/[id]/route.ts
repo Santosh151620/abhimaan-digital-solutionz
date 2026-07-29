@@ -12,101 +12,172 @@ interface RouteContext {
 
 export async function GET(
     request: Request,
-    { params }: RouteContext
+    { params }: RouteContext,
 ) {
 
-    const { id } =
-        await params;
+    try {
 
-    const contract =
-        ContractsServiceInstance.details(id);
+        const { id } =
+            await params;
 
-    if (!contract) {
+        const contract =
+            await ContractsServiceInstance.details(
+                id,
+            );
+
+        if (!contract) {
+
+            return NextResponse.json(
+                {
+                    error:
+                        'Contract not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
 
         return NextResponse.json(
             {
-                message:
-                    'Contract not found',
+                data: contract,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Contracts GET by ID error:',
+            error,
+        );
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to load contract',
             },
             {
-                status: 404,
-            }
+                status: 500,
+            },
         );
 
     }
-
-    return NextResponse.json(
-        contract
-    );
 
 }
 
 export async function PUT(
     request: Request,
-    { params }: RouteContext
+    { params }: RouteContext,
 ) {
 
-    const { id } =
-        await params;
+    try {
 
-    const body =
-        await request.json();
+        const { id } =
+            await params;
 
-    const updated =
-        ContractsServiceInstance.update(
-            id,
-            body
-        );
+        const body =
+            await request.json();
 
-    if (!updated) {
+        const updated =
+            await ContractsServiceInstance.update(
+                id,
+                body,
+            );
+
+        if (!updated) {
+
+            return NextResponse.json(
+                {
+                    error:
+                        'Contract not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
 
         return NextResponse.json(
             {
-                message:
-                    'Contract not found',
+                data: updated,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Contracts PUT error:',
+            error,
+        );
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to update contract',
             },
             {
-                status: 404,
-            }
+                status: 500,
+            },
         );
 
     }
-
-    return NextResponse.json(
-        updated
-    );
 
 }
 
 export async function DELETE(
     request: Request,
-    { params }: RouteContext
+    { params }: RouteContext,
 ) {
 
-    const { id } =
-        await params;
+    try {
 
-    const deleted =
-        ContractsServiceInstance.delete(
-            id
-        );
+        const { id } =
+            await params;
 
-    if (!deleted) {
+        const deleted =
+            await ContractsServiceInstance.delete(
+                id,
+            );
+
+        if (!deleted) {
+
+            return NextResponse.json(
+                {
+                    error:
+                        'Contract not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
 
         return NextResponse.json(
             {
-                message:
-                    'Contract not found',
+                success: true,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'Contracts DELETE error:',
+            error,
+        );
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to delete contract',
             },
             {
-                status: 404,
-            }
+                status: 500,
+            },
         );
 
     }
-
-    return NextResponse.json({
-        success: true,
-    });
 
 }
