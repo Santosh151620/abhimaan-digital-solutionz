@@ -1,0 +1,242 @@
+[
+    {
+        "File":  "001_platform_core.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "002_business_extensions.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "003_workflow_reporting_ai.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "004_security_rls_seed.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "005_data_migration.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "updated_at without trigger"
+    },
+    {
+        "File":  "006_validation.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "007_rollback.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "008_notifications_alignment.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "009_attachments_alignment.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "010_admin_foundation.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "011_admin_rbac.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "012_admin_delegation.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "013_admin_audit.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "014_crm_foundation.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "015_crm_sales.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "016_crm_projects.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "017_crm_finance.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "018_crm_marketing.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "019_crm_service.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "020_crm_ai.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "021_website_cms.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "022_website_seo.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "023_website_blog.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "024_reporting.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "025_dashboard.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "026_indexes.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "027_functions.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "028_triggers.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "029_views.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "030_seed_master_data.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "CREATE TABLE without schema guard"
+    },
+    {
+        "File":  "031_lookup_tables.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "032_country_region.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "033_industries.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "034_business_taxonomy.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "035_notifications.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "036_attachments.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "037_security_hardening.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "038_storage.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    },
+    {
+        "File":  "039_final_validation.sql",
+        "Status":  "WARNING",
+        "Issues":  "",
+        "Warnings":  "INSERT without ON CONFLICT"
+    },
+    {
+        "File":  "040_post_deployment.sql",
+        "Status":  "PASS",
+        "Issues":  "",
+        "Warnings":  ""
+    }
+]

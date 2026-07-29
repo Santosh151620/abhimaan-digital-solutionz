@@ -1,0 +1,53 @@
+
+# ADS Migration QA Report
+
+Generated:
+07/30/2026 00:17:23
+
+Total migrations:
+40
+
+
+| Migration | Status | Issues | Warnings |
+|---|---|---|---|
+| 001_platform_core.sql | PASS |  |  |
+| 002_business_extensions.sql | PASS |  |  |
+| 003_workflow_reporting_ai.sql | PASS |  |  |
+| 004_security_rls_seed.sql | PASS |  |  |
+| 005_data_migration.sql | WARNING |  | updated_at without trigger |
+| 006_validation.sql | WARNING |  | INSERT without ON CONFLICT |
+| 007_rollback.sql | PASS |  |  |
+| 008_notifications_alignment.sql | PASS |  |  |
+| 009_attachments_alignment.sql | PASS |  |  |
+| 010_admin_foundation.sql | PASS |  |  |
+| 011_admin_rbac.sql | PASS |  |  |
+| 012_admin_delegation.sql | PASS |  |  |
+| 013_admin_audit.sql | PASS |  |  |
+| 014_crm_foundation.sql | PASS |  |  |
+| 015_crm_sales.sql | PASS |  |  |
+| 016_crm_projects.sql | PASS |  |  |
+| 017_crm_finance.sql | WARNING |  | INSERT without ON CONFLICT |
+| 018_crm_marketing.sql | PASS |  |  |
+| 019_crm_service.sql | PASS |  |  |
+| 020_crm_ai.sql | PASS |  |  |
+| 021_website_cms.sql | WARNING |  | INSERT without ON CONFLICT |
+| 022_website_seo.sql | WARNING |  | INSERT without ON CONFLICT |
+| 023_website_blog.sql | WARNING |  | INSERT without ON CONFLICT |
+| 024_reporting.sql | PASS |  |  |
+| 025_dashboard.sql | PASS |  |  |
+| 026_indexes.sql | WARNING |  | INSERT without ON CONFLICT |
+| 027_functions.sql | WARNING |  | INSERT without ON CONFLICT |
+| 028_triggers.sql | WARNING |  | INSERT without ON CONFLICT |
+| 029_views.sql | WARNING |  | INSERT without ON CONFLICT |
+| 030_seed_master_data.sql | WARNING |  | CREATE TABLE without schema guard |
+| 031_lookup_tables.sql | PASS |  |  |
+| 032_country_region.sql | PASS |  |  |
+| 033_industries.sql | PASS |  |  |
+| 034_business_taxonomy.sql | PASS |  |  |
+| 035_notifications.sql | PASS |  |  |
+| 036_attachments.sql | PASS |  |  |
+| 037_security_hardening.sql | PASS |  |  |
+| 038_storage.sql | PASS |  |  |
+| 039_final_validation.sql | WARNING |  | INSERT without ON CONFLICT |
+| 040_post_deployment.sql | PASS |  |  |
+
