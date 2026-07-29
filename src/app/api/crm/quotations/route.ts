@@ -9,12 +9,36 @@ import {
 
 export async function GET() {
 
-    const quotations =
-        await QuotationsServiceInstance.list();
+    try {
 
-    return NextResponse.json(
-        quotations,
-    );
+        const quotations =
+            await QuotationsServiceInstance.list();
+
+        return NextResponse.json(
+            quotations,
+            {
+                status: 200,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'QUOTATIONS_GET_ERROR',
+            error,
+        );
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to load quotations',
+            },
+            {
+                status: 500,
+            },
+        );
+
+    }
 
 }
 
@@ -22,20 +46,40 @@ export async function POST(
     request: NextRequest,
 ) {
 
-    const body =
-        await request.json();
+    try {
 
-    const quotation =
-        await QuotationsServiceInstance.create(
-            body,
+        const body =
+            await request.json();
+
+        const quotation =
+            await QuotationsServiceInstance.create(
+                body,
+            );
+
+        return NextResponse.json(
+            quotation,
+            {
+                status: 201,
+            },
         );
 
-    return NextResponse.json(
-        quotation,
-        {
-            status: 201,
-        },
-    );
+    } catch (error) {
+
+        console.error(
+            'QUOTATIONS_POST_ERROR',
+            error,
+        );
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to create quotation',
+            },
+            {
+                status: 500,
+            },
+        );
+
+    }
 
 }
-

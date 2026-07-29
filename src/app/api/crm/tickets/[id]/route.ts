@@ -4,8 +4,8 @@ import {
 } from 'next/server';
 
 import {
-    PaymentsServiceInstance,
-} from '@/services/crm/PaymentsService';
+    TicketsServiceInstance,
+} from '@/services/crm/TicketsService';
 
 interface RouteContext {
 
@@ -17,26 +17,26 @@ interface RouteContext {
 
 export async function GET(
     _request: NextRequest,
-    context: RouteContext,
+    { params }: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } = await context.params;
+        } = await params;
 
-        const payment =
-            await PaymentsServiceInstance.findById(
+        const ticket =
+            await TicketsServiceInstance.details(
                 id,
             );
 
-        if (!payment) {
+        if (!ticket) {
 
             return NextResponse.json(
                 {
-                    success: false,
-                    message: 'Payment not found',
+                    message:
+                        'Ticket not found',
                 },
                 {
                     status: 404,
@@ -46,9 +46,7 @@ export async function GET(
         }
 
         return NextResponse.json(
-            {
-                data: payment,
-            },
+            ticket,
             {
                 status: 200,
             },
@@ -57,15 +55,14 @@ export async function GET(
     } catch (error) {
 
         console.error(
-            'PAYMENT_GET_ERROR',
+            'TICKET_GET_ERROR',
             error,
         );
 
         return NextResponse.json(
             {
-                success: false,
-                message:
-                    'Unable to fetch payment',
+                error:
+                    'Failed to load ticket',
             },
             {
                 status: 500,
@@ -78,29 +75,30 @@ export async function GET(
 
 export async function PUT(
     request: NextRequest,
-    context: RouteContext,
+    { params }: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } = await context.params;
+        } = await params;
 
         const body =
             await request.json();
 
-        const payment =
-            await PaymentsServiceInstance.update(
+        const ticket =
+            await TicketsServiceInstance.update(
                 id,
                 body,
             );
 
-        if (!payment) {
+        if (!ticket) {
 
             return NextResponse.json(
                 {
-                    error: 'Payment not found',
+                    message:
+                        'Ticket not found',
                 },
                 {
                     status: 404,
@@ -110,10 +108,7 @@ export async function PUT(
         }
 
         return NextResponse.json(
-            {
-                success: true,
-                data: payment,
-            },
+            ticket,
             {
                 status: 200,
             },
@@ -122,15 +117,14 @@ export async function PUT(
     } catch (error) {
 
         console.error(
-            'PAYMENT_UPDATE_ERROR',
+            'TICKET_UPDATE_ERROR',
             error,
         );
 
         return NextResponse.json(
             {
-                success: false,
-                message:
-                    'Unable to update payment',
+                error:
+                    'Failed to update ticket',
             },
             {
                 status: 500,
@@ -143,17 +137,17 @@ export async function PUT(
 
 export async function DELETE(
     _request: NextRequest,
-    context: RouteContext,
+    { params }: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } = await context.params;
+        } = await params;
 
         const deleted =
-            await PaymentsServiceInstance.delete(
+            await TicketsServiceInstance.delete(
                 id,
             );
 
@@ -161,8 +155,8 @@ export async function DELETE(
 
             return NextResponse.json(
                 {
-                    success: false,
-                    message: 'Payment not found',
+                    message:
+                        'Ticket not found',
                 },
                 {
                     status: 404,
@@ -174,8 +168,6 @@ export async function DELETE(
         return NextResponse.json(
             {
                 success: true,
-                message:
-                    'Payment archived successfully',
             },
             {
                 status: 200,
@@ -185,15 +177,14 @@ export async function DELETE(
     } catch (error) {
 
         console.error(
-            'PAYMENT_DELETE_ERROR',
+            'TICKET_DELETE_ERROR',
             error,
         );
 
         return NextResponse.json(
             {
-                success: false,
-                message:
-                    'Unable to delete payment',
+                error:
+                    'Failed to delete ticket',
             },
             {
                 status: 500,

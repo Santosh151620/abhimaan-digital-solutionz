@@ -1,101 +1,181 @@
-import { NextRequest, NextResponse } from 'next/server';
+import {
+    NextRequest,
+    NextResponse,
+} from 'next/server';
 
-import { QuotationsServiceInstance } from '@/services/crm/QuotationsService';
+import {
+    QuotationsServiceInstance,
+} from '@/services/crm/QuotationsService';
 
-interface Props {
+interface RouteContext {
+
     params: Promise<{
         id: string;
     }>;
+
 }
 
 export async function GET(
-    request: NextRequest,
-    { params }: Props
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
-    const { id } = await params;
+    try {
 
-    const quotation =
-        QuotationsServiceInstance.details(id);
+        const {
+            id,
+        } = await params;
 
-    if (!quotation) {
+        const quotation =
+            await QuotationsServiceInstance.details(
+                id,
+            );
+
+        if (!quotation) {
+
+            return NextResponse.json(
+                {
+                    message:
+                        'Quotation not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
+
+        return NextResponse.json(
+            quotation,
+            {
+                status: 200,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'QUOTATION_GET_ERROR',
+            error,
+        );
 
         return NextResponse.json(
             {
-                message: 'Quotation not found',
+                error:
+                    'Failed to load quotation',
             },
             {
-                status: 404,
-            }
+                status: 500,
+            },
         );
 
     }
-
-    return NextResponse.json(
-        quotation
-    );
 
 }
 
 export async function PUT(
     request: NextRequest,
-    { params }: Props
+    { params }: RouteContext,
 ) {
 
-    const { id } = await params;
+    try {
 
-    const body = await request.json();
-
-    const quotation =
-        QuotationsServiceInstance.update(
+        const {
             id,
-            body
+        } = await params;
+
+        const body =
+            await request.json();
+
+        const quotation =
+            await QuotationsServiceInstance.update(
+                id,
+                body,
+            );
+
+        if (!quotation) {
+
+            return NextResponse.json(
+                {
+                    message:
+                        'Quotation not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
+
+        return NextResponse.json(
+            quotation,
+            {
+                status: 200,
+            },
         );
 
-    if (!quotation) {
+    } catch (error) {
+
+        console.error(
+            'QUOTATION_UPDATE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
             {
-                message: 'Quotation not found',
+                error:
+                    'Failed to update quotation',
             },
             {
-                status: 404,
-            }
+                status: 500,
+            },
         );
 
     }
-
-    return NextResponse.json(
-        quotation
-    );
 
 }
 
 export async function DELETE(
-    request: NextRequest,
-    { params }: Props
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
-    const { id } = await params;
+    try {
 
-    const deleted =
-        QuotationsServiceInstance.delete(id);
+        const {
+            id,
+        } = await params;
 
-    if (!deleted) {
+        await QuotationsServiceInstance.delete(
+            id,
+        );
 
         return NextResponse.json(
             {
-                message: 'Quotation not found',
+                success: true,
             },
             {
-                status: 404,
-            }
+                status: 200,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'QUOTATION_DELETE_ERROR',
+            error,
+        );
+
+        return NextResponse.json(
+            {
+                error:
+                    'Failed to delete quotation',
+            },
+            {
+                status: 500,
+            },
         );
 
     }
-
-    return NextResponse.json({
-        success: true,
-    });
 
 }
