@@ -65,8 +65,11 @@ class TicketsRepository {
 
         const ticket: Ticket = {
 
-            id:
-                crypto.randomUUID(),
+    entityType:
+        'Ticket',
+
+    id:
+        crypto.randomUUID(),
 
             ticketNumber:
                 data.ticketNumber ??
