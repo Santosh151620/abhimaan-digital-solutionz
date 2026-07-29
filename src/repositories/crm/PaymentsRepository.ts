@@ -248,22 +248,42 @@ export class PaymentsRepository
     ): Promise<Payment> {
 
 
-        return super.update(
+       const existing =
+    await this.findById(id);
 
-            id,
+if (!existing) {
+    throw new Error('Payment not found');
+}
 
-            {
+const amount =
+    data.amount ??
+    existing.amount;
 
-                ...data,
+const paidAmount =
+    data.paidAmount ??
+    existing.paidAmount;
 
-                updatedAt:
-                    new Date()
-                        .toISOString(),
+return super.update(
 
-            },
+    id,
 
-        );
+    {
 
+        ...data,
+
+        balanceAmount:
+            Math.max(
+                amount - paidAmount,
+                0,
+            ),
+
+        updatedAt:
+            new Date()
+                .toISOString(),
+
+    },
+
+);
     }
 
 
@@ -295,18 +315,21 @@ export class PaymentsRepository
 ): Promise<void> {
 
 
-    await this.update(
+   await this.update(
 
-        id,
+    id,
 
-        {
+    {
 
-            archived:
-                true,
+        archived: true,
 
-        },
+        updatedAt:
+            new Date()
+                .toISOString(),
 
-    );
+    },
+
+);
 
 }
 
