@@ -2,31 +2,41 @@ import {
     createClient,
 } from '@/lib/supabase/server';
 
-import {
-    createOpportunitiesRepository,
-} from '@/repositories/crm/OpportunitiesRepository';
 
 import {
-    pipelineRepository,
+    createPipelineRepository,
 } from '@/repositories/crm/PipelineRepository';
+
 
 import type {
     Opportunity,
-    OpportunitySummary,
     OpportunityStage,
+    OpportunitySummary,
 } from '@/types/crm/Opportunities';
+
+
+import type {
+    PipelineStageCode,
+    PipelineSummary,
+} from '@/types/crm/Pipeline';
+
+
 
 
 
 class PipelineService {
 
 
+
     private async repository() {
+
 
         const supabase =
             await createClient();
 
-        return createOpportunitiesRepository(
+
+
+        return createPipelineRepository(
             supabase,
         );
 
@@ -35,148 +45,69 @@ class PipelineService {
 
 
 
+
+
+
     async list() {
 
-        return pipelineRepository.getPipeline();
+
+        const repository =
+            await this.repository();
+
+
+        return repository.getPipeline();
 
     }
+
+
 
 
 
 
     async getPipeline() {
 
-        return pipelineRepository.getPipeline();
+
+        return this.list();
 
     }
+
+
 
 
 
 
     async getStages() {
 
-        return pipelineRepository.getStages();
-
-    }
-
-
-
-
-    async findByStage(
-        stage: OpportunityStage,
-    ) {
-
-        return pipelineRepository.findByStage(
-            stage,
-        );
-
-    }
-
-
-
-
-    async summary() {
-
-        const pipeline =
-            await this.getPipeline();
-
-        const totalOpportunities =
-            pipeline.reduce(
-
-                (
-                    total,
-                    column,
-                ) =>
-
-                    total +
-                    column.opportunities.length,
-
-                0,
-
-            );
-
-        const totalValue =
-            pipeline.reduce(
-
-                (
-                    total,
-                    column,
-                ) =>
-
-                    total +
-                    column.totalValue,
-
-                0,
-
-            );
-
-        const weightedValue =
-            pipeline.reduce(
-
-                (
-                    total,
-                    column,
-                ) =>
-
-                    total +
-
-                    column.opportunities.reduce(
-
-                        (
-                            stageTotal,
-                            opportunity,
-                        ) =>
-
-                            stageTotal +
-
-                            (
-                                opportunity.value *
-                                opportunity.probability /
-                                100
-                            ),
-
-                        0,
-
-                    ),
-
-                0,
-
-            );
-
-        return {
-
-            stages:
-                pipeline.length,
-
-            totalOpportunities,
-
-            totalValue,
-
-            weightedValue,
-
-            // Backward compatibility
-
-            total:
-                totalOpportunities,
-
-            pipelineValue:
-                totalValue,
-
-        };
-
-    }
-
-
-
-
-    async opportunitySummary(): Promise<OpportunitySummary> {
 
         const repository =
             await this.repository();
 
+
+
+        return repository.getStages();
+
+    }
+
+
+
+
+
+
+
+    async summary(): Promise<PipelineSummary> {
+
+
+        const repository =
+            await this.repository();
+
+
+
         return repository.summary();
 
     }
+
+
+
 
 
 
@@ -186,55 +117,160 @@ class PipelineService {
         stage: OpportunityStage,
     ): Promise<Opportunity> {
 
-        const repository =
-            await this.repository();
+
+
+        const supabase =
+            await createClient();
+
+
 
         let status:
-            'Open'
+            | 'Open'
             | 'Won'
             | 'Lost'
             | 'On Hold';
 
-        switch (stage) {
+
+
+        switch(stage) {
+
 
             case 'Won':
 
-                status = 'Won';
+                status =
+                    'Won';
+
                 break;
+
+
 
             case 'Lost':
 
-                status = 'Lost';
+                status =
+                    'Lost';
+
                 break;
+
+
 
             default:
 
-                status = 'Open';
+                status =
+                    'Open';
 
         }
 
-        return repository.update(
 
-            id,
 
-            {
+        const {
+            data,
+            error,
+        } =
+            await supabase
+                .from('opportunities')
+                .update({
 
-                stage,
+                    stage,
 
-                status,
+                    status,
 
-            },
+                    updated_at:
+                        new Date()
+                            .toISOString(),
 
-        );
+                })
+                .eq(
+                    'id',
+                    id,
+                )
+                .select()
+                .single();
+
+
+
+
+        if(error) {
+
+            throw error;
+
+        }
+
+
+
+        return data as Opportunity;
 
     }
+
+
+
+
+
+
+
+    async opportunitySummary(): Promise<OpportunitySummary> {
+
+
+        const supabase =
+            await createClient();
+
+
+
+        const repository =
+            createPipelineRepository(
+                supabase,
+            );
+
+
+
+        const pipeline =
+            await repository.summary();
+
+
+
+        return {
+
+            total:
+                pipeline.totalOpportunities,
+
+
+            open:
+                pipeline.totalOpportunities,
+
+
+            won:
+                0,
+
+
+            lost:
+                0,
+
+
+            pipelineValue:
+                pipeline.totalValue,
+
+
+            weightedValue:
+                pipeline.weightedValue,
+
+
+            totalValue:
+                pipeline.totalValue,
+
+        };
+
+    }
+
+
+
 
 }
 
 
 
+
 export const pipelineService =
     new PipelineService();
+
 
 
 

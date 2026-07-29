@@ -1,81 +1,115 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+
+import type {
     PipelineColumn,
-    PipelineOpportunity,
     PipelineStage,
+    PipelineSummary,
+    PipelineStageCode,
 } from '@/types/crm/Pipeline';
+
 
 import type {
     Opportunity,
-    OpportunityStage,
 } from '@/types/crm/Opportunities';
 
-import {
-    createClient,
-} from '@/lib/supabase/server';
-
-import {
-    createOpportunitiesRepository,
-} from './OpportunitiesRepository';
 
 
-class PipelineRepository {
+
+export class PipelineRepository
+    extends BaseRepository<Opportunity> {
 
 
-    private readonly stages: readonly PipelineStage[] = [
 
-        {
-            id: 'New',
-            name: 'New',
-            color: '#3B82F6',
-            order: 1,
-        },
+    constructor(
+        supabase: SupabaseClient,
+    ) {
 
-        {
-            id: 'Qualified',
-            name: 'Qualified',
-            color: '#06B6D4',
-            order: 2,
-        },
+        super(
+            supabase,
+            'opportunities',
+        );
 
-        {
-            id: 'Proposal',
-            name: 'Proposal',
-            color: '#F59E0B',
-            order: 3,
-        },
+    }
 
-        {
-            id: 'Negotiation',
-            name: 'Negotiation',
-            color: '#8B5CF6',
-            order: 4,
-        },
 
-        {
-            id: 'Won',
-            name: 'Won',
-            color: '#22C55E',
-            order: 5,
-        },
-
-        {
-            id: 'Lost',
-            name: 'Lost',
-            color: '#EF4444',
-            order: 6,
-        },
-
-    ];
 
 
 
     async getStages(): Promise<PipelineStage[]> {
 
-        return [
-            ...this.stages,
-        ];
+
+        const {
+            data,
+            error,
+        } =
+            await this.supabase
+                .from('pipeline_stages')
+                .select('*')
+                .order(
+                    'display_order',
+                    {
+                        ascending: true,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ).map(
+            stage => ({
+
+                id:
+                    stage.id,
+
+                pipelineId:
+                    stage.pipeline_id,
+
+                code:
+                    stage.stage_code
+                        ?.toUpperCase() as PipelineStageCode,
+
+                name:
+                    stage.stage_name,
+
+                description:
+                    stage.description,
+
+                order:
+                    stage.display_order,
+
+                probability:
+                    stage.probability,
+
+                isActive:
+                    stage.is_active,
+
+                metadata:
+                    stage.metadata,
+
+            }),
+        );
 
     }
+
+
+
 
 
 
@@ -83,60 +117,87 @@ class PipelineRepository {
     async getPipeline(): Promise<PipelineColumn[]> {
 
 
-        const supabase =
-            await createClient();
 
-        const repository =
-            createOpportunitiesRepository(
-                supabase,
-            );
+        const stages =
+            await this.getStages();
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
 
         const opportunities =
-            await repository.list();
-
-        const items: PipelineOpportunity[] =
-
-            opportunities.map(
-                (
-                    opportunity: Opportunity,
-                ) => ({
-
-                    id:
-                        opportunity.id,
-
-                    title:
-                        opportunity.title ||
-                        opportunity.name,
-
-                    companyId:
-                        opportunity.companyId
-                        ??
-                        '',
-
-                    value:
-                        opportunity.value,
-
-                    probability:
-                        opportunity.probability,
-
-                    stage:
-                        opportunity.stage,
-
-                })
-            );
+            (
+                data ?? []
+            ) as Opportunity[];
 
 
 
-        return this.stages.map(
+
+        return stages.map(
             stage => {
 
 
-                const stageItems =
+                const items =
+                    opportunities
+                        .filter(
+                            opportunity =>
+                                opportunity.stage
+                                    ?.toUpperCase()
+                                === stage.code,
+                        )
+                        .map(
+                            opportunity => ({
 
-                    items.filter(
-                        item =>
-                            item.stage === stage.id
-                    );
+                                id:
+                                    opportunity.id,
+
+                                entityType:
+                                    'Opportunity' as const,
+
+                                title:
+                                    opportunity.title
+                                    ??
+                                    opportunity.name,
+
+                                companyId:
+                                    opportunity.companyId,
+
+                                value:
+                                    opportunity.value,
+
+                                probability:
+                                    opportunity.probability,
+
+                                stage:
+                                    stage.code,
+
+                            }),
+                        );
 
 
 
@@ -145,26 +206,25 @@ class PipelineRepository {
                     stage,
 
                     opportunities:
-                        stageItems,
+                        items,
 
                     totalValue:
-
-                        stageItems.reduce(
+                        items.reduce(
 
                             (
                                 total,
-                                item
+                                item,
                             ) =>
-
                                 total +
                                 item.value,
 
-                            0
+                            0,
+
                         ),
 
                 };
 
-            }
+            },
         );
 
     }
@@ -173,36 +233,13 @@ class PipelineRepository {
 
 
 
-    async findByStage(
-        stage: OpportunityStage,
-    ): Promise<PipelineColumn | undefined> {
 
 
+    async summary(): Promise<PipelineSummary> {
         const pipeline =
             await this.getPipeline();
-
-
-
-        return pipeline.find(
-            column =>
-                column.stage.id === stage
-        );
-
-    }
-
-
-
-
-
-    async summary() {
-
-
-        const pipeline =
-            await this.getPipeline();
-
-
-
         return {
+
 
             stages:
                 pipeline.length,
@@ -214,16 +251,41 @@ class PipelineRepository {
 
                     (
                         total,
-                        column
+                        item,
                     ) =>
                         total +
-                        column.opportunities.length,
+                        item.opportunities.length,
 
-                    0
+                    0,
+
+                ),
+            total:
+                pipeline.reduce(
+
+                    (
+                        total,
+                        item,
+                    ) =>
+                        total +
+                        item.opportunities.length,
+
+                    0,
 
                 ),
 
+            pipelineValue:
+                pipeline.reduce(
 
+                    (
+                        total,
+                        item,
+                    ) =>
+                        total +
+                        item.totalValue,
+
+                    0,
+
+                ),
 
             totalValue:
 
@@ -231,12 +293,12 @@ class PipelineRepository {
 
                     (
                         total,
-                        column
+                        item,
                     ) =>
                         total +
-                        column.totalValue,
+                        item.totalValue,
 
-                    0
+                    0,
 
                 ),
 
@@ -248,31 +310,30 @@ class PipelineRepository {
 
                     (
                         total,
-                        column
+                        item,
                     ) =>
 
                         total +
 
-                        column.opportunities.reduce(
+                        item.opportunities.reduce(
 
                             (
-                                stageTotal,
-                                opportunity
+                                sum,
+                                opportunity,
                             ) =>
 
-                                stageTotal +
-
+                                sum +
                                 (
                                     opportunity.value *
                                     opportunity.probability /
                                     100
                                 ),
 
-                            0
+                            0,
 
                         ),
 
-                    0
+                    0,
 
                 ),
 
@@ -281,15 +342,23 @@ class PipelineRepository {
     }
 
 
+
 }
 
 
 
-export const pipelineRepository =
-    new PipelineRepository();
 
 
+export function createPipelineRepository(
+    supabase: SupabaseClient,
+) {
+
+
+    return new PipelineRepository(
+        supabase,
+    );
+
+}
 
 export const PipelineRepositoryInstance =
-    pipelineRepository;
-
+    createPipelineRepository;
