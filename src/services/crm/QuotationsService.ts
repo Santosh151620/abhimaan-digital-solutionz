@@ -20,8 +20,10 @@ class QuotationsService {
 
     private async repository() {
 
+
         const supabase =
             await createClient();
+
 
         return createQuotationsRepository(
             supabase,
@@ -32,18 +34,24 @@ class QuotationsService {
 
 
 
-    async list() {
+    async list(): Promise<Quotation[]> {
 
-        return (await this.repository()).list();
+
+        return (
+            await this.repository()
+        ).list();
 
     }
 
 
 
 
-    async listArchived() {
+    async listArchived(): Promise<Quotation[]> {
 
-        return (await this.repository()).listArchived();
+
+        return (
+            await this.repository()
+        ).listArchived();
 
     }
 
@@ -52,9 +60,12 @@ class QuotationsService {
 
     async findById(
         id: string,
-    ) {
+    ): Promise<Quotation | null> {
 
-        return (await this.repository()).findById(
+
+        return (
+            await this.repository()
+        ).findById(
             id,
         );
 
@@ -65,7 +76,8 @@ class QuotationsService {
 
     async details(
         id: string,
-    ) {
+    ): Promise<Quotation | null> {
+
 
         return this.findById(
             id,
@@ -78,9 +90,12 @@ class QuotationsService {
 
     async create(
         data: Partial<Quotation>,
-    ) {
+    ): Promise<Quotation> {
 
-        return (await this.repository()).create(
+
+        return (
+            await this.repository()
+        ).create(
             data,
         );
 
@@ -91,12 +106,27 @@ class QuotationsService {
 
     async update(
         id: string,
-        data: Partial<Quotation>,
-    ) {
 
-        return (await this.repository()).update(
+        data: Partial<Quotation>,
+
+    ): Promise<Quotation> {
+
+
+        return (
+            await this.repository()
+        ).update(
+
             id,
-            data,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Quotation',
+
+            },
+
         );
 
     }
@@ -106,9 +136,12 @@ class QuotationsService {
 
     async delete(
         id: string,
-    ) {
+    ): Promise<void> {
 
-        return (await this.repository()).delete(
+
+        await (
+            await this.repository()
+        ).delete(
             id,
         );
 
@@ -119,9 +152,12 @@ class QuotationsService {
 
     async restore(
         id: string,
-    ) {
+    ): Promise<Quotation> {
 
-        return (await this.repository()).restore(
+
+        return (
+            await this.repository()
+        ).restore(
             id,
         );
 
@@ -132,12 +168,20 @@ class QuotationsService {
 
     async updateStatus(
         id: string,
-        status: QuotationStatus,
-    ) {
 
-        return (await this.repository()).updateStatus(
+        status: QuotationStatus,
+
+    ): Promise<Quotation> {
+
+
+        return (
+            await this.repository()
+        ).updateStatus(
+
             id,
+
             status,
+
         );
 
     }
@@ -147,9 +191,12 @@ class QuotationsService {
 
     async search(
         filters?: QuotationSearchFilters,
-    ) {
+    ): Promise<Quotation[]> {
 
-        return (await this.repository()).search(
+
+        return (
+            await this.repository()
+        ).search(
             filters,
         );
 
@@ -158,16 +205,28 @@ class QuotationsService {
 
 
 
-    async summary() {
+    async summary(): Promise<
+        QuotationSummary & {
+            value: number;
+        }
+    > {
 
-        const summary: QuotationSummary =
-            await (await this.repository()).summary();
+
+        const summary =
+            await (
+                await this.repository()
+            ).summary();
+
+
 
         return {
 
             ...summary,
 
-            // Backward compatibility
+
+            /**
+             * Backward compatibility.
+             */
             value:
                 summary.totalValue,
 
@@ -179,8 +238,10 @@ class QuotationsService {
 
 
 
+
 export const quotationsService =
     new QuotationsService();
+
 
 
 
@@ -188,4 +249,9 @@ export const quotationsService =
  * Backward compatibility alias.
  */
 export const QuotationsServiceInstance =
+    quotationsService;
+
+
+
+export const quotationService =
     quotationsService;

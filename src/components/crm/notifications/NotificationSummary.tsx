@@ -19,51 +19,68 @@ export default function NotificationSummary({
             notification => !notification.archived,
         );
 
+    const total = active.length;
+
+    const unread =
+        active.filter(
+            notification =>
+                notification.status === 'Unread',
+        ).length;
+
+    const read =
+        active.filter(
+            notification =>
+                notification.status === 'Read',
+        ).length;
+
+    const archived =
+        notifications.filter(
+            notification =>
+                notification.archived,
+        ).length;
+
+    const highPriority =
+        active.filter(
+            notification =>
+                notification.priority === 'High',
+        ).length;
+
+    const criticalPriority =
+        active.filter(
+            notification =>
+                notification.priority === 'Critical',
+        ).length;
+
     const cards = [
 
         {
             title: 'Total',
-            value: active.length,
+            value: total,
         },
 
         {
             title: 'Unread',
-            value:
-                active.filter(
-                    n => n.status === 'Unread',
-                ).length,
+            value: unread,
         },
 
         {
             title: 'Read',
-            value:
-                active.filter(
-                    n => n.status === 'Read',
-                ).length,
+            value: read,
         },
 
         {
             title: 'Archived',
-            value:
-                notifications.filter(
-                    n => n.archived,
-                ).length,
+            value: archived,
         },
 
         {
             title: 'High Priority',
-            value:
-                active.filter(
-                    n => n.priority === 'High',
-                ).length,
+            value: highPriority,
         },
 
         {
             title: 'Critical Priority',
-            value:
-                active.filter(
-                    n => n.priority === 'Critical',
-                ).length,
+            value: criticalPriority,
         },
 
     ];

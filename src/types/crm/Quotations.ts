@@ -1,8 +1,23 @@
+/**
+ * CRM Quotations Domain Contract
+ *
+ * Single source of truth for:
+ * - QuotationsRepository
+ * - QuotationsService
+ * - CRM UI
+ * - API routes
+ *
+ * Entity-driven CRM architecture.
+ */
+
+
 export type QuotationStatus =
     | 'Draft'
     | 'Sent'
     | 'Accepted'
     | 'Rejected';
+
+
 
 export interface QuotationItem {
 
@@ -18,34 +33,53 @@ export interface QuotationItem {
 
 }
 
+
+
 export interface Quotation {
 
+
     /**
-     * New standardized entity identifier.
+     * Entity identity
      */
     entityType: 'Quotation';
 
-    id: string;
+    entityId?: string;
 
-    quotationNumber: string;
+    id: string;
 
     organizationId?: string;
 
-    companyId: string;
+
+
+    /**
+     * Business identity
+     */
+    quotationNumber: string;
+
+
+
+    /**
+     * Relationships
+     */
+    companyId?: string;
 
     opportunityId?: string;
 
+
+
+    /**
+     * Display
+     */
     title: string;
 
     customerName: string;
 
+
+
+    /**
+     * Financial
+     */
     amount: number;
-
-    status: QuotationStatus;
-
-    issueDate: string;
-
-    validUntil: string;
 
     subtotal: number;
 
@@ -57,17 +91,47 @@ export interface Quotation {
 
     currency: string;
 
+
+
+    /**
+     * Lifecycle
+     */
+    status: QuotationStatus;
+
+    issueDate: string;
+
+    validUntil: string;
+
+
+
+    /**
+     * Content
+     */
     notes?: string;
 
     items: QuotationItem[];
 
+
+
+    /**
+     * Extension
+     */
+    metadata?: Record<string, unknown>;
+
     archived: boolean;
 
+
+
+    /**
+     * Audit
+     */
     createdAt: string;
 
     updatedAt: string;
 
 }
+
+
 
 export interface QuotationSearchFilters {
 
@@ -79,7 +143,11 @@ export interface QuotationSearchFilters {
 
     search?: string;
 
+    keyword?: string;
+
 }
+
+
 
 export interface QuotationSummary {
 

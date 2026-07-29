@@ -1,491 +1,373 @@
-import type {SupabaseClient,} from '@supabase/supabase-js';
-import {BaseRepository,} from '@/lib/db/base-repository';
-import type {Notification,NotificationSummary,NotificationType,
-    NotificationPriority,
+import type {
+    Notification,
+    NotificationSummary,
 } from '@/types/crm/Notifications';
 
+class NotificationRepository {
 
-export interface NotificationSearchFilters {
-    userId?: string;
-    entityType?: string;
-    entityId?: string;
-    type?: NotificationType;
-    priority?: NotificationPriority;
-    status?: 'Unread' | 'Read' | 'Archived';
-    archived?: boolean;
-    search?: string;
-}
-
-
-
-class NotificationRepository
-    extends BaseRepository<Notification> {
-    constructor(
-        supabase: SupabaseClient,
-    ) {
-        super(
-            supabase,
-            'notifications',
-        );
-    }
+    private notifications =
+        new Map<string, Notification>();
 
     async list(): Promise<Notification[]> {
 
-        const {
-            data,
-            error,
-        } =
-            await this.tableRef()
-                .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                )
-                .eq(
-                    'archived',
-                    false,
-                )
-                .order(
-                    'created_at',
-                    {
-                        ascending: false,
-                    },
-                );
-        if (error) {
-            throw error;
-        }
-        return (
-            data ?? []
-        ) as Notification[];
+        return Array.from(
+            this.notifications.values(),
+        ).filter(
+            notification =>
+                !notification.archived,
+        );
+
     }
 
     async listArchived(): Promise<Notification[]> {
-        const {
-            data,
-            error,
-        } =
-            await this.tableRef()
-                .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                )
-                .eq(
-                    'archived',
-                    true,
-                )
-                .order(
-                    'updated_at',
-                    {
-                        ascending: false,
-                    },
-                );
-        if (error) {
-            throw error;
-        }
 
-        return (
-            data ?? []
-        ) as Notification[];
+        return Array.from(
+            this.notifications.values(),
+        ).filter(
+            notification =>
+                notification.archived,
+        );
+
     }
 
     async listUnread(): Promise<Notification[]> {
-        const {
-            data,
-            error,
-        } =
-            await this.tableRef()
-                .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                )
-                .eq(
-                    'archived',
-                    false,
-                )
-                .eq(
-                    'status',
-                    'Unread',
-                )
-                .order(
-                    'created_at',
-                    {
-                        ascending: false,
-                    },
-                );
-        if (error) {
-            throw error;
-        }
-       return (
-            data ?? []
-        ) as Notification[];
-    }
 
-    async details(
-        id: string,
-    ): Promise<Notification | null> {
-        return super.findById(
-            id,
+        return (
+            await this.list()
+        ).filter(
+            notification =>
+                notification.status === 'Unread',
         );
-    }
 
-    async findById(
-        id: string,
-    ): Promise<Notification | null> {
-        return super.findById(
-            id,
-        );
     }
 
     async listByUser(
         userId: string,
     ): Promise<Notification[]> {
-        const {
-            data,
-            error,
-        } =
-            await this.tableRef()
-                .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                )
-                .eq(
-                    'user_id',
-                    userId,
-                )
-                .eq(
-                    'archived',
-                    false,
-                )
-                .order(
-                    'created_at',
-                    {
-                        ascending: false,
-                    },
-                );
-        if (error) {
-            throw error;
-        }
 
         return (
-            data ?? []
-        ) as Notification[];
+            await this.list()
+        ).filter(
+            notification =>
+                notification.userId === userId,
+        );
+
     }
 
     async listByEntity(
         entityType: string,
         entityId: string,
     ): Promise<Notification[]> {
-        const {
-            data,
-            error,
-        } =
-            await this.tableRef()
-                .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                )
-                .eq(
-                    'entity_type',
-                    entityType,
-                )
-                .eq(
-                    'entity_id',
-                    entityId,
-                )
-                .eq(
-                    'archived',
-                    false,
-                );
-        if (error) {
-            throw error;
-        }
 
         return (
-            data ?? []
-        ) as Notification[];
-    }
+            await this.list()
+        ).filter(
+            notification =>
 
-    async findByEntity(
-        entityType: string,
-        entityId: string,
-    ): Promise<Notification[]> {
-        return this.listByEntity(
-            entityType,
-            entityId,
+                notification.entityType === entityType &&
+
+                notification.entityId === entityId,
         );
+
     }
 
-    async search(
-        filters?: NotificationSearchFilters,
-    ): Promise<Notification[]> {
-        let query =
-            this.tableRef()
-                .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                );
-        if (filters?.userId) {
-            query =
-                query.eq(
-                    'user_id',
-                    filters.userId,
-                );
-        }
+    async findById(
+        id: string,
+    ): Promise<Notification | null> {
 
-        if (filters?.entityType) {
-            query =
-                query.eq(
-                    'entity_type',
-                    filters.entityType,
-                );
-        }
+        return this.notifications.get(id) ?? null;
 
-        if (filters?.entityId) {
-            query =
-                query.eq(
-                    'entity_id',
-                    filters.entityId,
-                );
-        }
-
-        if (filters?.type) {
-            query =
-                query.eq(
-                    'type',
-                    filters.type,
-                );
-        }
-
-        if (filters?.priority) {
-            query =
-                query.eq(
-                    'priority',
-                    filters.priority,
-                );
-        }
-
-        if (
-            filters?.status
-        ) {
-            query =
-                query.eq(
-                    'status',
-                    filters.status,
-                );
-        }
-
-        if (
-            filters?.archived !== undefined
-        ) {
-
-            query =
-                query.eq(
-                    'archived',
-                    filters.archived,
-                );
-
-        }
-
-        const {
-            data,
-            error,
-        } =
-            await query.order(
-                'created_at',
-                {
-                    ascending: false,
-                },
-            );
-
-        if (error) {
-
-            throw error;
-
-        }
-
-        let notifications =
-            (
-                data ?? []
-            ) as Notification[];
-
-        if (filters?.search) {
-
-            const keyword =
-                filters.search
-                    .trim()
-                    .toLowerCase();
-
-            notifications =
-                notifications.filter(
-                    notification =>
-
-                        notification.title
-                            ?.toLowerCase()
-                            .includes(
-                                keyword,
-                            )
-                        ||
-                        notification.message
-                            ?.toLowerCase()
-                            .includes(
-                                keyword,
-                            ),
-                );
-
-        }
-        return notifications;
     }
-
 
     async create(
         data: Partial<Notification>,
     ): Promise<Notification> {
 
         const now =
-            new Date()
-                .toISOString();
+            new Date().toISOString();
 
-        return super.create({
-            ...data,
+        const notification: Notification = {
+
+            id: crypto.randomUUID(),
+
+            notificationNumber:
+                data.notificationNumber ??
+                `NTF-${Date.now()}`,
+
+            organizationId:
+                data.organizationId,
+
+            ownerId:
+                data.ownerId,
+
+            userId:
+                data.userId,
+
+            entityType:
+                data.entityType,
+
+            entityId:
+                data.entityId,
+
+            title:
+                data.title ?? '',
+
+            message:
+                data.message ?? '',
+
+            type:
+                data.type ?? 'System',
+
+            priority:
+                data.priority ?? 'Medium',
+
             status:
                 data.status ?? 'Unread',
+
+            actionUrl:
+                data.actionUrl,
+
+            actionLabel:
+                data.actionLabel,
+
+            icon:
+                data.icon,
+
+            metadata:
+                data.metadata ?? {},
+
+            readAt:
+                data.readAt,
+
             archived:
                 false,
+
             createdAt:
                 now,
+
             updatedAt:
                 now,
-        });
+
+        };
+
+        this.notifications.set(
+            notification.id,
+            notification,
+        );
+
+        return notification;
+
     }
 
     async update(
         id: string,
         data: Partial<Notification>,
-    ): Promise<Notification> {
-        return super.update(
+    ): Promise<Notification | null> {
+
+        const existing =
+            this.notifications.get(id);
+
+        if (!existing) {
+
+            return null;
+
+        }
+
+        const updated: Notification = {
+
+            ...existing,
+
+            ...data,
+
+            updatedAt:
+                new Date().toISOString(),
+
+        };
+
+        this.notifications.set(
             id,
-            {
-                ...data,
-                updatedAt:
-                    new Date()
-                        .toISOString(),
-            },
+            updated,
         );
+
+        return updated;
+
     }
 
     async markAsRead(
         id: string,
-    ): Promise<Notification> {
-        return this.update(
-            id,
-            {
-                status: 'Read',
-                readAt:
-                    new Date()
-                        .toISOString(),
-            },
-        );
+    ): Promise<boolean> {
+
+        const notification =
+            this.notifications.get(id);
+
+        if (!notification) {
+
+            return false;
+
+        }
+
+        notification.status = 'Read';
+
+        notification.readAt =
+            new Date().toISOString();
+
+        notification.updatedAt =
+            notification.readAt;
+
+        return true;
+
     }
 
     async markAsUnread(
         id: string,
-    ): Promise<Notification> {
-        return this.update(
-            id,
-            {
-                status: 'Unread',
-                readAt: undefined,
-            },
-        );
-    }
+    ): Promise<boolean> {
 
+        const notification =
+            this.notifications.get(id);
+
+        if (!notification) {
+
+            return false;
+
+        }
+
+        notification.status = 'Unread';
+
+        notification.readAt = undefined;
+
+        notification.updatedAt =
+            new Date().toISOString();
+
+        return true;
+
+    }
 
     async archive(
         id: string,
-    ): Promise<Notification> {
-        return this.update(
-            id,
-            {
-                archived: true,
-            },
-        );
+    ): Promise<boolean> {
+
+        const notification =
+            this.notifications.get(id);
+
+        if (!notification) {
+
+            return false;
+
+        }
+
+        notification.archived = true;
+
+        notification.status = 'Archived';
+
+        notification.updatedAt =
+            new Date().toISOString();
+
+        return true;
+
     }
 
     async restore(
         id: string,
-    ): Promise<Notification> {
-        return this.update(
-            id,
-            {
-                archived: false,
-            },
-        );
-    }
+    ): Promise<boolean> {
 
-    async delete(
-        id: string,
-    ): Promise<void> {
-        await this.archive(
-            id,
-        );
-    }
+        const notification =
+            this.notifications.get(id);
 
+        if (!notification) {
+
+            return false;
+
+        }
+
+        notification.archived = false;
+
+        notification.status = 'Unread';
+
+        notification.updatedAt =
+            new Date().toISOString();
+
+        return true;
+
+    }
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Notification[]> {
+
+        return this.listByEntity(
+            entityType,
+            entityId,
+        );
+
+    }
     async summary(): Promise<NotificationSummary> {
+
         const notifications =
-            await this.list();
-        const archived =
-            await this.listArchived();
+            Array.from(
+                this.notifications.values(),
+            );
+
+        const active =
+            notifications.filter(
+                notification =>
+                    !notification.archived,
+            );
+
         return {
+
             total:
-                notifications.length,
+                active.length,
+
             unread:
-                notifications.filter(
-                    n =>
-                        n.status === 'Unread',
+                active.filter(
+                    n => n.status === 'Unread',
                 ).length,
+
             read:
-                notifications.filter(
-                    n =>
-                        n.status === 'Read',
+                active.filter(
+                    n => n.status === 'Read',
                 ).length,
+
             archived:
-                archived.length,
+                notifications.filter(
+                    n => n.archived,
+                ).length,
+
             lowPriority:
-                notifications.filter(
-                    n =>
-                        n.priority === 'Low',
+                active.filter(
+                    n => n.priority === 'Low',
                 ).length,
+
             mediumPriority:
-                notifications.filter(
-                    n =>
-                        n.priority === 'Medium',
+                active.filter(
+                    n => n.priority === 'Medium',
                 ).length,
+
             highPriority:
-                notifications.filter(
-                    n =>
-                        n.priority === 'High',
+                active.filter(
+                    n => n.priority === 'High',
                 ).length,
+
             criticalPriority:
-                notifications.filter(
-                    n =>
-                        n.priority === 'Critical',
+                active.filter(
+                    n => n.priority === 'Critical',
                 ).length,
+
         };
+
     }
+
 }
 
 export function createNotificationRepository(
-    supabase: SupabaseClient,
+    supabase?: unknown,
 ) {
-    return new NotificationRepository(
-        supabase,
-    );
+
+    void supabase;
+
+    return new NotificationRepository();
+
 }
-export {
-    createNotificationRepository as NotificationsRepository,
-};
+
+export const NotificationRepositoryInstance =
+    createNotificationRepository();

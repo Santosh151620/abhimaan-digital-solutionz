@@ -17,6 +17,8 @@ import type {
 
 export class QuotationsRepository
     extends BaseRepository<Quotation> {
+
+
     constructor(
         supabase: SupabaseClient,
     ) {
@@ -56,11 +58,13 @@ export class QuotationsRepository
                 );
 
 
+
         if (error) {
 
             throw error;
 
         }
+
 
 
         return (
@@ -98,11 +102,13 @@ export class QuotationsRepository
                 );
 
 
+
         if (error) {
 
             throw error;
 
         }
+
 
 
         return (
@@ -119,6 +125,7 @@ export class QuotationsRepository
         id: string,
     ): Promise<Quotation | null> {
 
+
         return super.findById(
             id,
         );
@@ -131,6 +138,7 @@ export class QuotationsRepository
     async details(
         id: string,
     ): Promise<Quotation | null> {
+
 
         return this.findById(
             id,
@@ -151,9 +159,9 @@ export class QuotationsRepository
             [];
 
 
+
         const subtotal =
             data.subtotal ??
-
             items.reduce(
 
                 (
@@ -172,14 +180,33 @@ export class QuotationsRepository
             );
 
 
+
         const tax =
             data.tax ??
             0;
 
 
+
         const discount =
             data.discount ??
             0;
+
+
+
+        const total =
+            data.total ??
+            (
+                subtotal +
+                tax -
+                discount
+            );
+
+
+
+        const now =
+            new Date()
+                .toISOString();
+
 
 
         return super.create(
@@ -188,84 +215,86 @@ export class QuotationsRepository
 
                 ...data,
 
-                entityType:
-                    'Quotation',
 
                 id:
                     data.id ??
                     crypto.randomUUID(),
 
+
+                entityType:
+                    'Quotation',
+
+
                 quotationNumber:
                     data.quotationNumber ??
                     `QT-${Date.now()}`,
 
-                companyId:
-                    data.companyId ??
-                    '',
 
                 title:
                     data.title ??
-                    '',
+                    'Untitled Quotation',
+
 
                 customerName:
                     data.customerName ??
                     '',
 
+
                 amount:
-                    data.amount ??
-                    (
-                        subtotal +
-                        tax -
-                        discount
-                    ),
+                    total,
+
+
+                subtotal,
+
+
+                tax,
+
+
+                discount,
+
+
+                total,
+
 
                 status:
                     data.status ??
                     'Draft',
 
+
                 issueDate:
                     data.issueDate ??
-                    new Date()
-                        .toISOString()
-                        .substring(
-                            0,
-                            10,
-                        ),
+                    now.substring(
+                        0,
+                        10,
+                    ),
+
 
                 validUntil:
                     data.validUntil ??
-                    new Date()
-                        .toISOString()
-                        .substring(
-                            0,
-                            10,
-                        ),
-
-                subtotal,
-
-                tax,
-
-                discount,
-
-                total:
-                    data.total ??
-                    (
-                        subtotal +
-                        tax -
-                        discount
+                    now.substring(
+                        0,
+                        10,
                     ),
+
 
                 currency:
                     data.currency ??
                     'INR',
 
-                notes:
-                    data.notes,
 
                 items,
 
+
                 archived:
                     false,
+
+
+                createdAt:
+                    now,
+
+
+                updatedAt:
+                    now,
 
             },
 
@@ -277,6 +306,7 @@ export class QuotationsRepository
         data: Partial<Quotation>,
     ): Promise<Quotation> {
 
+
         return super.update(
 
             id,
@@ -287,6 +317,10 @@ export class QuotationsRepository
 
                 entityType:
                     'Quotation',
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
 
             },
 
@@ -301,6 +335,7 @@ export class QuotationsRepository
         id: string,
         status: QuotationStatus,
     ): Promise<Quotation> {
+
 
         return this.update(
 
@@ -323,6 +358,7 @@ export class QuotationsRepository
         id: string,
     ): Promise<void> {
 
+
         await this.update(
 
             id,
@@ -344,6 +380,7 @@ export class QuotationsRepository
     async restore(
         id: string,
     ): Promise<Quotation> {
+
 
         return this.update(
 
@@ -381,6 +418,13 @@ export class QuotationsRepository
                 );
 
 
+
+        const searchValue =
+            filters?.search ??
+            filters?.keyword;
+
+
+
         if (filters?.status) {
 
             query =
@@ -390,6 +434,7 @@ export class QuotationsRepository
                 );
 
         }
+
 
 
         if (filters?.companyId) {
@@ -403,6 +448,7 @@ export class QuotationsRepository
         }
 
 
+
         if (filters?.opportunityId) {
 
             query =
@@ -414,24 +460,26 @@ export class QuotationsRepository
         }
 
 
-        if (filters?.search) {
+
+        if (searchValue) {
 
             query =
                 query.or(
 
                     [
 
-                        `title.ilike.%${filters.search}%`,
+                        `title.ilike.%${searchValue}%`,
 
-                        `customer_name.ilike.%${filters.search}%`,
+                        `customer_name.ilike.%${searchValue}%`,
 
-                        `quotation_number.ilike.%${filters.search}%`,
+                        `quotation_number.ilike.%${searchValue}%`,
 
                     ].join(','),
 
                 );
 
         }
+
 
 
         const {
@@ -441,11 +489,13 @@ export class QuotationsRepository
             await query;
 
 
+
         if (error) {
 
             throw error;
 
         }
+
 
 
         return (
@@ -456,8 +506,10 @@ export class QuotationsRepository
     }
         async summary(): Promise<QuotationSummary> {
 
+
         const quotations =
             await this.list();
+
 
 
         const totalValue =
@@ -476,10 +528,12 @@ export class QuotationsRepository
             );
 
 
+
         return {
 
             total:
                 quotations.length,
+
 
             draft:
                 quotations.filter(
@@ -488,12 +542,14 @@ export class QuotationsRepository
                         'Draft',
                 ).length,
 
+
             sent:
                 quotations.filter(
                     quotation =>
                         quotation.status ===
                         'Sent',
                 ).length,
+
 
             accepted:
                 quotations.filter(
@@ -502,6 +558,7 @@ export class QuotationsRepository
                         'Accepted',
                 ).length,
 
+
             rejected:
                 quotations.filter(
                     quotation =>
@@ -509,18 +566,20 @@ export class QuotationsRepository
                         'Rejected',
                 ).length,
 
+
             totalValue,
 
         };
 
     }
 
+
 }
 
 
 
 /**
- * New architecture factory.
+ * Factory
  */
 export function createQuotationsRepository(
     supabase: SupabaseClient,
@@ -535,7 +594,11 @@ export function createQuotationsRepository(
 
 
 /**
- * Backward compatibility.
+ * Backward compatibility aliases.
  */
 export const QuotationsRepositoryInstance =
+    createQuotationsRepository;
+
+
+export const quotationsRepository =
     createQuotationsRepository;
