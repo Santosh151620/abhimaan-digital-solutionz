@@ -39,8 +39,8 @@ class ContractsRepository {
             )
             .sort(
                 (a, b) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt,
+                    b.updatedAt.localeCompare(
+                        a.updatedAt,
                     ),
             );
 
@@ -91,8 +91,8 @@ class ContractsRepository {
 
             const keyword =
                 filters.search
+                    .trim()
                     .toLowerCase();
-
             contracts =
                 contracts.filter(
                     contract =>
@@ -293,12 +293,12 @@ class ContractsRepository {
 
         const updated: Contract = {
 
-    ...existing,
+            ...existing,
 
-    ...data,
+            ...data,
 
-    entityType:
-        'Contract',
+            entityType:
+                'Contract',
 
             subtotal,
 
