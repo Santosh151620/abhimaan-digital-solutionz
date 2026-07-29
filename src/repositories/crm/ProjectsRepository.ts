@@ -1,6 +1,8 @@
 import type {
     Project,
     ProjectStatus,
+    ProjectSummary,
+    ProjectSearchFilters,
 } from '@/types/crm/Projects';
 
 class ProjectsRepository {
@@ -11,30 +13,30 @@ class ProjectsRepository {
     list() {
 
         return [
-    ...this.projects.values(),
-]
-.filter(project => !project.archived)
-.sort(
-    (a, b) =>
-        b.createdAt.localeCompare(
-            a.createdAt,
-        ),
-);
+            ...this.projects.values(),
+        ]
+            .filter(project => !project.archived)
+            .sort(
+                (a, b) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt,
+                    ),
+            );
 
     }
 
     listArchived() {
 
-       return [
-    ...this.projects.values(),
-]
-.filter(project => project.archived)
-.sort(
-    (a, b) =>
-        b.updatedAt.localeCompare(
-            a.updatedAt,
-        ),
-);
+        return [
+            ...this.projects.values(),
+        ]
+            .filter(project => project.archived)
+            .sort(
+                (a, b) =>
+                    b.updatedAt.localeCompare(
+                        a.updatedAt,
+                    ),
+            );
 
     }
 
@@ -48,72 +50,51 @@ class ProjectsRepository {
         );
 
     }
-findById(
-    id: string,
-): Project | null {
+    findById(
+        id: string,
+    ): Project | null {
 
-    return this.details(id);
+        return this.details(id);
 
-}
+    }
     create(
         data: Partial<Project>
     ): Project {
 
         const now =
             new Date().toISOString();
-
         const project: Project = {
-
-            id:
-                crypto.randomUUID(),
-
+            id: crypto.randomUUID(),
             projectNumber:
                 data.projectNumber ??
                 `PRJ-${Date.now()}`,
-
-            companyId:
-                data.companyId ?? '',
-
-            contractId:
-                data.contractId,
-
+            companyId: data.companyId ?? '',
+            contractId: data.contractId,
             customerName:
                 data.customerName ?? '',
-
             name:
                 data.name ?? '',
-
             description:
                 data.description,
-
             status:
                 data.status ??
                 'Planning',
-
             startDate:
                 data.startDate ?? '',
-
             endDate:
                 data.endDate ?? '',
-
             budget:
                 data.budget ?? 0,
-
             currency:
                 data.currency ?? 'INR',
-
             manager:
                 data.manager,
-
             archived:
                 false,
-
             createdAt:
                 now,
-
             updatedAt:
                 now,
-
         };
 
         this.projects.set(
@@ -124,7 +105,15 @@ findById(
         return project;
 
     }
+    search(
+        filters?: ProjectSearchFilters,
+    ): Project[] {
 
+        return ProjectsRepositoryInstance.search(
+            filters,
+        );
+
+    }
     update(
         id: string,
         data: Partial<Project>
@@ -223,7 +212,7 @@ findById(
 
     }
 
-    summary() {
+    summary(): ProjectSummary {
 
         const projects =
             this.list();
@@ -267,7 +256,6 @@ findById(
                         p.status ===
                         'Cancelled'
                 ).length,
-
             totalBudget:
                 projects.reduce(
                     (
@@ -279,10 +267,13 @@ findById(
                     0
                 ),
 
+            archived:
+                this.listArchived().length,
+
         };
 
     }
-    
+
 }
 
 export const

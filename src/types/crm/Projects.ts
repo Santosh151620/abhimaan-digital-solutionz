@@ -40,22 +40,23 @@ export interface Project {
     updatedAt: string;
 
 }
+export interface ProjectSearchFilters {
 
+    status?: ProjectStatus;
+
+    companyId?: string;
+
+    search?: string;
+
+}
 export interface ProjectSummary {
 
     total: number;
-
     planning: number;
-
     active: number;
-
     onHold: number;
-
     completed: number;
-
     cancelled: number;
-
     totalBudget: number;
-
+    archived: number;
 }
-
