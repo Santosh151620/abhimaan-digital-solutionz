@@ -10,7 +10,7 @@ export type ContractStatus =
 export interface Contract {
 
     id: string;
-
+    entityType: 'Contract';
     contractNumber: string;
 
     companyId: string;

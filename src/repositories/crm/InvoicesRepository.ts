@@ -110,7 +110,7 @@ class InvoicesRepository {
             0;
 
         const invoice: Invoice = {
-
+            entityType: 'Invoice',
             id:
                 crypto.randomUUID(),
 
@@ -241,7 +241,8 @@ class InvoicesRepository {
             ...existing,
 
             ...data,
-
+            
+            entityType: 'Invoice',
             subtotal,
 
             tax,
@@ -435,40 +436,40 @@ class InvoicesRepository {
         };
 
     }
-search(filters?: {
-    status?: InvoiceStatus;
-    companyId?: string;
-    search?: string;
-}): Invoice[] {
+    search(filters?: {
+        status?: InvoiceStatus;
+        companyId?: string;
+        search?: string;
+    }): Invoice[] {
 
-    let invoices = this.list();
+        let invoices = this.list();
 
-    if (filters?.status) {
-        invoices = invoices.filter(
-            invoice => invoice.status === filters.status,
-        );
+        if (filters?.status) {
+            invoices = invoices.filter(
+                invoice => invoice.status === filters.status,
+            );
+        }
+
+        if (filters?.companyId) {
+            invoices = invoices.filter(
+                invoice => invoice.companyId === filters.companyId,
+            );
+        }
+
+        if (filters?.search) {
+
+            const keyword = filters.search.toLowerCase();
+
+            invoices = invoices.filter(
+                invoice =>
+                    invoice.invoiceNumber.toLowerCase().includes(keyword) ||
+                    invoice.customerName.toLowerCase().includes(keyword) ||
+                    (invoice.title ?? '').toLowerCase().includes(keyword),
+            );
+        }
+
+        return invoices;
     }
-
-    if (filters?.companyId) {
-        invoices = invoices.filter(
-            invoice => invoice.companyId === filters.companyId,
-        );
-    }
-
-    if (filters?.search) {
-
-        const keyword = filters.search.toLowerCase();
-
-        invoices = invoices.filter(
-            invoice =>
-                invoice.invoiceNumber.toLowerCase().includes(keyword) ||
-                invoice.customerName.toLowerCase().includes(keyword) ||
-                (invoice.title ?? '').toLowerCase().includes(keyword),
-        );
-    }
-
-    return invoices;
-}
 }
 
 export const InvoicesRepositoryInstance =

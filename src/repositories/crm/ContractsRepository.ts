@@ -159,6 +159,9 @@ class ContractsRepository {
 
         const contract: Contract = {
 
+            entityType:
+                'Contract',
+
             id:
                 crypto.randomUUID(),
 
@@ -251,7 +254,7 @@ class ContractsRepository {
         return contract;
 
     }
-        update(
+    update(
         id: string,
         data: Partial<Contract>,
     ): Contract | null {
@@ -290,9 +293,12 @@ class ContractsRepository {
 
         const updated: Contract = {
 
-            ...existing,
+    ...existing,
 
-            ...data,
+    ...data,
+
+    entityType:
+        'Contract',
 
             subtotal,
 
@@ -499,6 +505,12 @@ class ContractsRepository {
 
 }
 
-export const ContractsRepositoryInstance =
-    new ContractsRepository();
+export function createContractsRepository() {
 
+    return new ContractsRepository();
+
+}
+
+
+export const ContractsRepositoryInstance =
+    createContractsRepository();

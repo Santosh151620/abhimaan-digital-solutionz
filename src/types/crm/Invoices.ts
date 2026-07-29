@@ -6,7 +6,7 @@ export type InvoiceStatus =
     | 'Cancelled';
 
 export interface Invoice {
-
+entityType: 'Invoice';
     id: string;
 
     invoiceNumber: string;
