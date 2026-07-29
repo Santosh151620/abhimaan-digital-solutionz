@@ -5,7 +5,7 @@ import type {
 
     Notification,
 
-} from '@/types/crm/Notification';
+} from '@/types/crm/Notifications';
 
 
 
@@ -199,15 +199,7 @@ export default function NotificationTable({
 
                                     <td className="p-2">
 
-                                        {
-
-                                            notification.read
-
-                                                ? 'Read'
-
-                                                : 'Unread'
-
-                                        }
+                                    {notification.status}
 
                                     </td>
 

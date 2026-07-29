@@ -22,11 +22,11 @@ export class OrganizationsService {
 
     }
 
-    async archived(): Promise<Organization[]> {
+   async inactive(): Promise<Organization[]> {
 
-        return this.repository.archived();
+    return this.repository.inactive();
 
-    }
+}
 
     async get(
         id: string,

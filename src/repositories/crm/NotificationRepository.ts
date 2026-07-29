@@ -1,7 +1,7 @@
 import type {
     Notification,
     NotificationSummary,
-} from '@/types/crm/Notification';
+} from '@/types/crm/Notifications';
 
 class NotificationRepository {
 
@@ -36,7 +36,7 @@ class NotificationRepository {
             await this.list()
         ).filter(
             notification =>
-                !notification.read,
+                notification.status === 'Unread',
         );
 
     }
@@ -116,13 +116,16 @@ class NotificationRepository {
                 data.message ?? '',
 
             type:
-                data.type ?? 'Info',
+                data.type ?? 'System',
 
             priority:
                 data.priority ?? 'Medium',
 
-            read:
-                false,
+           status:
+    data.status ?? 'Unread',
+
+            notificationNumber:
+                data.notificationNumber ?? '',
 
             archived:
                 false,
@@ -194,7 +197,7 @@ class NotificationRepository {
 
         }
 
-        notification.read = true;
+        notification.status = 'Read';
 
         notification.readAt =
             new Date().toISOString();
@@ -224,7 +227,7 @@ class NotificationRepository {
 
         }
 
-        notification.read = false;
+        notification.status = 'Unread';
 
         notification.readAt =
             undefined;
@@ -297,74 +300,67 @@ class NotificationRepository {
 
     async summary(): Promise<NotificationSummary> {
 
-        const notifications =
-            Array.from(
-                this.notifications.values(),
-            );
+    const notifications =
+        Array.from(
+            this.notifications.values(),
+        );
 
-        const active =
+    const active =
+        notifications.filter(
+            notification =>
+                !notification.archived,
+        );
+
+    return {
+
+        total:
+            active.length,
+
+        unread:
+            active.filter(
+                notification =>
+                    notification.status === 'Unread',
+            ).length,
+
+        read:
+            active.filter(
+                notification =>
+                    notification.status === 'Read',
+            ).length,
+
+        archived:
             notifications.filter(
                 notification =>
-                    !notification.archived,
-            );
+                    notification.archived,
+            ).length,
 
-        return {
+        lowPriority:
+            active.filter(
+                notification =>
+                    notification.priority === 'Low',
+            ).length,
 
-            total:
-                active.length,
+        mediumPriority:
+            active.filter(
+                notification =>
+                    notification.priority === 'Medium',
+            ).length,
 
-            unread:
-                active.filter(
-                    notification =>
-                        !notification.read,
-                ).length,
+        highPriority:
+            active.filter(
+                notification =>
+                    notification.priority === 'High',
+            ).length,
 
-            read:
-                active.filter(
-                    notification =>
-                        notification.read,
-                ).length,
+        criticalPriority:
+            active.filter(
+                notification =>
+                    notification.priority === 'Critical',
+            ).length,
 
-            highPriority:
-                active.filter(
-                    notification =>
-                        notification.priority === 'High',
-                ).length,
+    };
 
-            warning:
-                active.filter(
-                    notification =>
-                        notification.type === 'Warning',
-                ).length,
-
-            error:
-                active.filter(
-                    notification =>
-                        notification.type === 'Error',
-                ).length,
-
-            success:
-                active.filter(
-                    notification =>
-                        notification.type === 'Success',
-                ).length,
-
-            info:
-                active.filter(
-                    notification =>
-                        notification.type === 'Info',
-                ).length,
-
-            archived:
-                notifications.filter(
-                    notification =>
-                        notification.archived,
-                ).length,
-
-        };
-
-    }
-
+}
 }
 
 export const NotificationRepositoryInstance =

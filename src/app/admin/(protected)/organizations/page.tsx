@@ -2,7 +2,7 @@ import { OrganizationsRepository } from "@/repositories/admin/OrganizationsRepos
 import { OrganizationsService } from "@/services/admin/OrganizationsService";
 
 import { createClient } from "@/lib/supabase/server";
-
+import OrganizationsTable from "@/components/admin/organizations/OrganizationsTable";
 
 export const dynamic = "force-dynamic";
 
@@ -62,81 +62,11 @@ export default async function OrganizationsPage() {
                     overflow-x-auto
                 "
             >
+                <OrganizationsTable
 
+                    organizations={organizations}
 
-                <table className="min-w-full">
-
-
-                    <thead>
-
-                        <tr className="border-b">
-
-                            <th className="p-3 text-left">
-                                Name
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Code
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Type
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-
-                    <tbody>
-
-
-                    {
-                        organizations.map(
-                            (organization) => (
-
-                                <tr
-                                    key={organization.id}
-                                    className="border-b"
-                                >
-
-                                    <td className="p-3">
-                                        {organization.name}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {organization.code}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {organization.type}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {organization.status}
-                                    </td>
-
-
-                                </tr>
-
-                            )
-                        )
-                    }
-
-
-                    </tbody>
-
-
-                </table>
-
+                />
 
             </section>
 

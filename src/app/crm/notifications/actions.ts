@@ -1,19 +1,33 @@
 'use server';
 
+import type {
+    NotificationPriority,
+    NotificationType,
+} from '@/types/crm/Notifications';
 
 import {
-
     revalidatePath,
-
 } from 'next/cache';
 
-
+import {
+    createClient,
+} from '@/lib/supabase/server';
 
 import {
+    createNotificationsService,
+} from '@/services/crm/NotificationsService';
 
-    notificationService,
+async function getNotificationService() {
 
-} from '@/services/crm/NotificationService';
+    const supabase =
+        await createClient();
+
+
+    return createNotificationsService(
+        supabase,
+    );
+
+}
 
 
 
@@ -21,9 +35,11 @@ import {
 
 export async function getNotifications() {
 
+    const service =
+        await getNotificationService();
 
-    return notificationService.list();
 
+    return service.list();
 
 }
 
@@ -39,9 +55,9 @@ export async function createNotification(
 
         message: string;
 
-        type: 'Info' | 'Success' | 'Warning' | 'Error';
+        type: NotificationType;
 
-        priority: 'Low' | 'Medium' | 'High';
+        priority: NotificationPriority;
 
         entityType?: string;
 
@@ -52,38 +68,42 @@ export async function createNotification(
 ) {
 
 
+    const service =
+        await getNotificationService();
+
+
+
     const notification =
+        await service.create({
 
-        await notificationService.create({
+            title:
+                data.title,
 
-            title: data.title,
+            message:
+                data.message,
 
-            message: data.message,
+            type:
+                data.type,
 
-            type: data.type,
+            priority:
+                data.priority,
 
-            priority: data.priority,
+            entityType:
+                data.entityType,
 
-            entityType: data.entityType,
-
-            entityId: data.entityId,
-
-            read: false,
+            entityId:
+                data.entityId,
 
         });
 
 
 
     revalidatePath(
-
         '/crm/notifications',
-
     );
 
 
-
     return notification;
-
 
 }
 
@@ -98,32 +118,28 @@ export async function markNotificationRead(
 ) {
 
 
-    const notification =
+    const service =
+        await getNotificationService();
 
-        await notificationService.update(
+
+
+    const notification =
+        await service.updateStatus(
 
             id,
 
-            {
-
-                read: true,
-
-            },
+            'Read',
 
         );
 
 
 
     revalidatePath(
-
         '/crm/notifications',
-
     );
 
 
-
     return notification;
-
 
 }
 
@@ -146,9 +162,13 @@ export async function updateNotification(
 ) {
 
 
-    const notification =
+    const service =
+        await getNotificationService();
 
-        await notificationService.update(
+
+
+    const notification =
+        await service.update(
 
             id,
 
@@ -159,23 +179,16 @@ export async function updateNotification(
 
 
     revalidatePath(
-
         `/crm/notifications/${id}`,
-
     );
-
 
 
     revalidatePath(
-
         '/crm/notifications',
-
     );
 
 
-
     return notification;
-
 
 }
 
@@ -190,26 +203,23 @@ export async function deleteNotification(
 ) {
 
 
+    const service =
+        await getNotificationService();
+
+
+
     const result =
-
-        await notificationService.delete(
-
+        await service.delete(
             id,
-
         );
 
 
 
     revalidatePath(
-
         '/crm/notifications',
-
     );
-
 
 
     return result;
 
-
 }
-

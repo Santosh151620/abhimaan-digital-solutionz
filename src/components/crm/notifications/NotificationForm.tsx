@@ -15,15 +15,9 @@ import {
 
 } from '@/app/crm/notifications/actions';
 
-
-
 import type {
-
     Notification,
-
-} from '@/types/crm/Notification';
-
-
+} from '@/types/crm/Notifications';
 
 
 
@@ -105,81 +99,38 @@ export default function NotificationForm({
                 title,
 
                 message,
-
-                type: 'Info',
-
+                type: 'System',
                 priority: 'Medium',
-
             });
-
-
-
-
-
         onCreated?.(
-
             notification,
-
         );
 
-
-
         setTitle('');
-
         setMessage('');
-
         setLoading(false);
-
-
     }
 
-
-
-
-
     return (
-
         <form
-
             onSubmit={handleSubmit}
-
             className="crm-card space-y-4 p-6"
-
         >
-
-
-
             <h2 className="crm-title">
-
                 Create Notification
-
             </h2>
-
-
-
-
             <input
 
                 className="w-full rounded border p-2"
-
                 placeholder="Title"
-
                 value={title}
-
                 onChange={
-
                     event =>
-
                         setTitle(
-
                             event.target.value,
-
                         )
-
                 }
-
                 required
-
             />
 
 

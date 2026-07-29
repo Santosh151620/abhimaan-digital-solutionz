@@ -2,7 +2,7 @@ import { UsersRepository } from "@/repositories/admin/UsersRepository";
 import { UsersService } from "@/services/admin/UsersService";
 
 import { createClient } from "@/lib/supabase/server";
-
+import UsersTable from "@/components/admin/users/UsersTable";
 
 export const dynamic = "force-dynamic";
 
@@ -53,71 +53,9 @@ export default async function UsersPage() {
 
             <section className="rounded-xl border overflow-x-auto">
 
-
-                <table className="min-w-full">
-
-
-                    <thead>
-
-                        <tr className="border-b">
-
-                            <th className="p-3 text-left">
-                                Name
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Email
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Status
-                            </th>
-
-
-                        </tr>
-
-                    </thead>
-
-
-
-                    <tbody>
-
-
-                    {
-                        users.map(
-                            (user) => (
-
-                                <tr
-                                    key={user.id}
-                                    className="border-b"
-                                >
-
-                                    <td className="p-3">
-                                        {user.fullName}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {user.email}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {user.status}
-                                    </td>
-
-
-                                </tr>
-
-                            )
-                        )
-                    }
-
-
-                    </tbody>
-
-
-                </table>
+<UsersTable
+    users={users}
+/>
 
 
             </section>

@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { Activity } from "@/types/crm/Activity";
 import type { Attachment } from "@/types/crm/Attachment";
 import type { Note } from "@/types/notes";
-import type { Notification } from "@/types/crm/Notification";
+import type { Notification } from "@/types/crm/Notifications";
 import type { Task } from "@/types/crm/Tasks";
 
 import EntityWorkspace from "./EntityWorkspace";

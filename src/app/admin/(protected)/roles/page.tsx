@@ -1,6 +1,6 @@
 import { RolesRepository } from "@/repositories/admin/RolesRepository";
 import { RolesService } from "@/services/admin/RolesService";
-
+import RolesTable from "@/components/admin/roles/RolesTable";
 import { createClient } from "@/lib/supabase/server";
 
 
@@ -53,79 +53,9 @@ export default async function RolesPage() {
 
             <section className="rounded-xl border overflow-x-auto">
 
-
-                <table className="min-w-full">
-
-
-                    <thead>
-
-                        <tr className="border-b">
-
-                            <th className="p-3 text-left">
-                                Name
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Code
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Level
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Status
-                            </th>
-
-
-                        </tr>
-
-                    </thead>
-
-
-
-                    <tbody>
-
-                    {
-                        roles.map(
-                            (role) => (
-
-                                <tr
-                                    key={role.id}
-                                    className="border-b"
-                                >
-
-                                    <td className="p-3">
-                                        {role.name}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {role.code}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {role.level}
-                                    </td>
-
-
-                                    <td className="p-3">
-                                        {role.status}
-                                    </td>
-
-
-                                </tr>
-
-                            )
-                        )
-                    }
-
-
-                    </tbody>
-
-
-                </table>
+                <RolesTable
+                    roles={roles}
+                />
 
 
             </section>

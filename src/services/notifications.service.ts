@@ -1,6 +1,6 @@
 import type {
     Notification,
-} from '@/types/crm/Notification';
+} from '@/types/crm/Notifications';
 
 import type {
     SupabaseClient,

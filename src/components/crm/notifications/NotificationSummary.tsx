@@ -1,6 +1,6 @@
 import type {
     Notification,
-} from '@/types/crm/Notification';
+} from '@/types/crm/Notifications';
 
 interface Props {
 
@@ -16,127 +16,80 @@ export default function NotificationSummary({
 
     const active =
         notifications.filter(
-            notification =>
-                !notification.archived,
+            notification => !notification.archived,
         );
-
-    const total =
-        active.length;
-
-    const unread =
-        active.filter(
-            notification =>
-                !notification.read,
-        ).length;
-
-    const read =
-        active.filter(
-            notification =>
-                notification.read,
-        ).length;
-
-    const highPriority =
-        active.filter(
-            notification =>
-                notification.priority === 'High',
-        ).length;
-
-    const warning =
-        active.filter(
-            notification =>
-                notification.type === 'Warning',
-        ).length;
-
-    const error =
-        active.filter(
-            notification =>
-                notification.type === 'Error',
-        ).length;
-
-    const success =
-        active.filter(
-            notification =>
-                notification.type === 'Success',
-        ).length;
-
-    const info =
-        active.filter(
-            notification =>
-                notification.type === 'Info',
-        ).length;
 
     const cards = [
 
         {
             title: 'Total',
-            value: total,
+            value: active.length,
         },
 
         {
             title: 'Unread',
-            value: unread,
+            value:
+                active.filter(
+                    n => n.status === 'Unread',
+                ).length,
         },
 
         {
             title: 'Read',
-            value: read,
+            value:
+                active.filter(
+                    n => n.status === 'Read',
+                ).length,
+        },
+
+        {
+            title: 'Archived',
+            value:
+                notifications.filter(
+                    n => n.archived,
+                ).length,
         },
 
         {
             title: 'High Priority',
-            value: highPriority,
+            value:
+                active.filter(
+                    n => n.priority === 'High',
+                ).length,
         },
 
         {
-            title: 'Warning',
-            value: warning,
-        },
-
-        {
-            title: 'Error',
-            value: error,
-        },
-
-        {
-            title: 'Success',
-            value: success,
-        },
-
-        {
-            title: 'Info',
-            value: info,
+            title: 'Critical Priority',
+            value:
+                active.filter(
+                    n => n.priority === 'Critical',
+                ).length,
         },
 
     ];
 
     return (
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 
-            {
-                cards.map(card => (
+            {cards.map(card => (
 
-                    <div
-                        key={card.title}
-                        className="crm-card p-5"
-                    >
+                <div
+                    key={card.title}
+                    className="crm-card p-5"
+                >
 
-                        <p className="text-sm text-slate-500">
+                    <p className="text-sm text-slate-500">
+                        {card.title}
+                    </p>
 
-                            {card.title}
+                    <p className="mt-2 text-2xl font-semibold">
+                        {card.value}
+                    </p>
 
-                        </p>
+                </div>
 
-                        <p className="mt-2 text-2xl font-semibold">
-
-                            {card.value}
-
-                        </p>
-
-                    </div>
-
-                ))
-            }
+            ))}
 
         </div>
 

@@ -12,7 +12,7 @@ import type { Activity } from "@/types/crm/Activity";
 import type { Note } from "@/types/notes";
 import type { Task } from "@/types/crm/Tasks";
 import type { Attachment } from "@/types/crm/Attachment";
-import type { Notification } from "@/types/crm/Notification";
+import type { Notification } from "@/types/crm/Notifications";
 
 interface LeadEntityPanelProps {
   lead: LeadEntity;

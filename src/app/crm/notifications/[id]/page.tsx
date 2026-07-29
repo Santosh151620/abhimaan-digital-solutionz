@@ -5,16 +5,21 @@ import {
 } from 'next/navigation';
 
 
-
 import Link from 'next/link';
-
 
 
 import {
 
-    notificationService,
+    createClient,
 
-} from '@/services/crm/NotificationService';
+} from '@/lib/supabase/server';
+
+
+import {
+
+    createNotificationsService,
+
+} from '@/services/crm/NotificationsService';
 
 
 
@@ -22,13 +27,11 @@ import {
 
 interface Props {
 
-
     params: Promise<{
 
         id: string;
 
     }>;
-
 
 }
 
@@ -43,7 +46,6 @@ export default async function NotificationDetailsPage({
 }: Props) {
 
 
-
     const {
 
         id,
@@ -52,25 +54,28 @@ export default async function NotificationDetailsPage({
 
 
 
+    const supabase =
+        await createClient();
 
 
-    const notification =
 
-        await notificationService.getById(
-
-            id,
-
+    const service =
+        createNotificationsService(
+            supabase,
         );
 
 
+
+    const notification =
+        await service.findById(
+            id,
+        );
 
 
 
     if (!notification) {
 
-
         notFound();
-
 
     }
 
@@ -83,9 +88,7 @@ export default async function NotificationDetailsPage({
         <div className="space-y-6">
 
 
-
             <div className="crm-card p-8">
-
 
 
                 <h1 className="crm-title">
@@ -102,7 +105,6 @@ export default async function NotificationDetailsPage({
 
 
                     <div>
-
 
                         <p className="text-sm text-slate-500">
 
@@ -123,8 +125,8 @@ export default async function NotificationDetailsPage({
 
 
 
-                    <div>
 
+                    <div>
 
                         <p className="text-sm text-slate-500">
 
@@ -148,7 +150,6 @@ export default async function NotificationDetailsPage({
 
                     <div>
 
-
                         <p className="text-sm text-slate-500">
 
                             Priority
@@ -171,7 +172,6 @@ export default async function NotificationDetailsPage({
 
                     <div>
 
-
                         <p className="text-sm text-slate-500">
 
                             Status
@@ -181,15 +181,7 @@ export default async function NotificationDetailsPage({
 
                         <p>
 
-                            {
-
-                                notification.read
-
-                                    ? 'Read'
-
-                                    : 'Unread'
-
-                            }
+                            {notification.status}
 
                         </p>
 
@@ -199,7 +191,6 @@ export default async function NotificationDetailsPage({
 
 
                 </div>
-
 
 
             </div>

@@ -12,15 +12,86 @@ export class OrganizationsRepository
     constructor(
         supabase: SupabaseClient,
     ) {
-
         super(
             supabase,
             "organizations",
         );
+    }
 
+    async list(): Promise<Organization[]> {
+        const {
+            data,
+            error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []) as Organization[];
     }
 
     async active(): Promise<Organization[]> {
+        const {
+            data,
+            error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "is_active",
+                true,
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []) as Organization[];
+    }
+
+    async inactive(): Promise<Organization[]> {
+        const {
+            data,
+            error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "is_active",
+                false,
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []) as Organization[];
+    }
+
+    async findBySlug(
+        slug: string,
+    ): Promise<Organization | null> {
 
         const {
             data,
@@ -29,39 +100,15 @@ export class OrganizationsRepository
             .tableRef()
             .select("*")
             .eq(
-                "status",
-                "Active",
-            );
+                "slug",
+                slug,
+            )
+            .maybeSingle();
 
-        if (error)
+        if (error) {
             throw error;
+        }
 
-        return (
-            data ?? []
-        ) as Organization[];
-
+        return (data as Organization) ?? null;
     }
-
-    async archived(): Promise<Organization[]> {
-
-        const {
-            data,
-            error,
-        } = await this
-            .tableRef()
-            .select("*")
-            .eq(
-                "status",
-                "Archived",
-            );
-
-        if (error)
-            throw error;
-
-        return (
-            data ?? []
-        ) as Organization[];
-
-    }
-
 }

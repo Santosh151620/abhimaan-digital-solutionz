@@ -9,7 +9,7 @@ export * from './ContractsService';
 export * from './InvoicesService';
 export * from './KnowledgeBaseService';
 export * from './NotesService';
-export * from './NotificationService';
+export * from './NotificationsService';
 export * from './OpportunitiesService';
 export * from './PaymentsService';
 export * from './PermissionService';
