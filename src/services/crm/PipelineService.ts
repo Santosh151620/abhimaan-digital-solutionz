@@ -16,8 +16,7 @@ import type {
 
 
 import type {
-    PipelineStageCode,
-    PipelineSummary,
+        PipelineSummary,
 } from '@/types/crm/Pipeline';
 
 
