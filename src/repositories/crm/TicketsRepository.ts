@@ -9,41 +9,41 @@ class TicketsRepository {
 
     private tickets = new Map<string, Ticket>();
 
-    list() {
+    list(): Ticket[] {
 
-    return Array.from(
-        this.tickets.values(),
-    )
-        .filter(
-            ticket =>
-                !ticket.archived,
+        return Array.from(
+            this.tickets.values(),
         )
-        .sort(
-            (a, b) =>
-                b.createdAt.localeCompare(
-                    a.createdAt,
-                ),
-        );
+            .filter(
+                ticket =>
+                    !ticket.archived,
+            )
+            .sort(
+                (a, b) =>
+                    b.createdAt.localeCompare(
+                        a.createdAt,
+                    ),
+            );
 
-}
+    }
 
- listArchived() {
+    listArchived() {
 
-    return Array.from(
-        this.tickets.values(),
-    )
-        .filter(
-            ticket =>
-                ticket.archived,
+        return Array.from(
+            this.tickets.values(),
         )
-        .sort(
-            (a, b) =>
-                b.updatedAt.localeCompare(
-                    a.updatedAt,
-                ),
-        );
+            .filter(
+                ticket =>
+                    ticket.archived,
+            )
+            .sort(
+                (a, b) =>
+                    b.updatedAt.localeCompare(
+                        a.updatedAt,
+                    ),
+            );
 
-}
+    }
     details(
         id: string,
     ) {
@@ -65,11 +65,11 @@ class TicketsRepository {
 
         const ticket: Ticket = {
 
-    entityType:
-        'Ticket',
+            entityType:
+                'Ticket',
 
-    id:
-        crypto.randomUUID(),
+            id:
+                crypto.randomUUID(),
 
             ticketNumber:
                 data.ticketNumber ??
@@ -80,6 +80,9 @@ class TicketsRepository {
 
             contactId:
                 data.contactId,
+
+            entityId:
+                data.entityId,
 
             subject:
                 data.subject ?? '',
@@ -140,11 +143,12 @@ class TicketsRepository {
 
             ...data,
 
+            entityType: 'Ticket',
+
             updatedAt:
                 new Date().toISOString(),
 
         };
-
         this.tickets.set(
             id,
             updated,
@@ -249,6 +253,18 @@ class TicketsRepository {
 
         }
 
+        if (
+            filters?.companyId
+        ) {
+
+            tickets =
+                tickets.filter(
+                    ticket =>
+                        ticket.companyId ===
+                        filters.companyId,
+                );
+
+        }
         if (
             filters?.search
         ) {
