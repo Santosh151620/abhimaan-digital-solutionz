@@ -1,5 +1,6 @@
 import type {
     Invoice,
+    InvoiceSearchFilters,
     InvoiceStatus,
     InvoiceSummary,
 } from '@/types/crm/Invoices';
@@ -436,11 +437,9 @@ class InvoicesRepository {
         };
 
     }
-    search(filters?: {
-        status?: InvoiceStatus;
-        companyId?: string;
-        search?: string;
-    }): Invoice[] {
+    search(
+    filters?: InvoiceSearchFilters,
+): Invoice[] {
 
         let invoices = this.list();
 
@@ -458,7 +457,10 @@ class InvoicesRepository {
 
         if (filters?.search) {
 
-            const keyword = filters.search.toLowerCase();
+            const keyword =
+    filters.search
+        .trim()
+        .toLowerCase();
 
             invoices = invoices.filter(
                 invoice =>
