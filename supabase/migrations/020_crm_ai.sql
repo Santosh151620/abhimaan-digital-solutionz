@@ -386,8 +386,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- CRM AI FOUNDATION
@@ -899,3 +897,4 @@ VALUES
 
 
 COMMIT;
+

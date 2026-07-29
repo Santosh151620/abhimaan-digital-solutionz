@@ -353,8 +353,6 @@ environment_name = EXCLUDED.environment_name,
 
 status = EXCLUDED.status;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- POST DEPLOYMENT FOUNDATION
@@ -913,3 +911,4 @@ VALUES
 
 
 COMMIT;
+

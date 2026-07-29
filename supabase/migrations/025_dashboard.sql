@@ -405,8 +405,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE DASHBOARD FOUNDATION
@@ -874,3 +872,4 @@ VALUES
 
 
 COMMIT;
+

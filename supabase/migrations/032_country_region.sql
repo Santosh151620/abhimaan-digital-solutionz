@@ -464,8 +464,6 @@ VALUES
 
 );
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- COUNTRY & REGION MASTER FOUNDATION
@@ -867,3 +865,4 @@ timezone_code = EXCLUDED.timezone_code;
 
 
 COMMIT;
+

@@ -498,8 +498,6 @@ END;
 
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE DATABASE TRIGGER FOUNDATION
@@ -1067,3 +1065,4 @@ VALUES
 
 
 COMMIT;
+

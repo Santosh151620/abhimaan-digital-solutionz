@@ -507,8 +507,6 @@ ON CONFLICT(
 
 DO NOTHING;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE LOOKUP TABLE FOUNDATION
@@ -1122,3 +1120,4 @@ DO NOTHING;
 
 
 COMMIT;
+

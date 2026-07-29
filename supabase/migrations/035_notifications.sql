@@ -510,8 +510,6 @@ DO UPDATE SET
 
 event_name = EXCLUDED.event_name;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE NOTIFICATION ENGINE
@@ -1050,3 +1048,4 @@ VALUES
 
 
 COMMIT;
+

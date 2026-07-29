@@ -520,8 +520,6 @@ DO UPDATE SET
 
 category_name = EXCLUDED.category_name;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- BUSINESS TAXONOMY FOUNDATION
@@ -1210,3 +1208,4 @@ VALUES
 
 
 COMMIT;
+

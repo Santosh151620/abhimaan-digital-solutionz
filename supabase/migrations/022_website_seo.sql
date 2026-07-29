@@ -381,8 +381,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- WEBSITE SEO FOUNDATION
@@ -821,3 +819,4 @@ VALUES
 
 
 COMMIT;
+

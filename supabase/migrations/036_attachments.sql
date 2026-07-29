@@ -470,8 +470,6 @@ DO UPDATE SET
 
 category_name = EXCLUDED.category_name;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE ATTACHMENT MANAGEMENT FOUNDATION
@@ -906,3 +904,4 @@ VALUES
 
 
 COMMIT;
+

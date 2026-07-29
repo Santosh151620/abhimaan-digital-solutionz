@@ -429,8 +429,6 @@ ON CONFLICT(status_code)
 
 DO NOTHING;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE MASTER DATA SEED
@@ -976,3 +974,4 @@ VALUES
 
 
 COMMIT;
+

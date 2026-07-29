@@ -393,8 +393,6 @@ DO UPDATE SET
 
 policy_value = EXCLUDED.policy_value;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE SECURITY HARDENING
@@ -893,3 +891,4 @@ VALUES
 
 
 COMMIT;
+

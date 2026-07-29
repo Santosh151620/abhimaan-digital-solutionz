@@ -481,8 +481,6 @@ END;
 
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE DATABASE FUNCTIONS FOUNDATION
@@ -1096,3 +1094,4 @@ VALUES
 
 
 COMMIT; 
+

@@ -372,8 +372,6 @@ idx_dashboard_snapshot_dashboard
 
 ON dashboard.dashboard_snapshots(dashboard_id);
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE DATABASE INDEX OPTIMIZATION
@@ -813,3 +811,4 @@ VALUES
 
 
 COMMIT;
+

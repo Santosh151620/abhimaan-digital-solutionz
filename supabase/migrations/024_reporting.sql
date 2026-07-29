@@ -422,8 +422,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE REPORTING FOUNDATION
@@ -927,3 +925,4 @@ VALUES
 
 
 COMMIT;
+

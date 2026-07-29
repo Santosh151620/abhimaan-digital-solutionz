@@ -480,8 +480,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- CRM SERVICE FOUNDATION
@@ -946,3 +944,4 @@ VALUES
 
 
 COMMIT;
+

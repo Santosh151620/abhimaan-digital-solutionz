@@ -428,8 +428,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- WEBSITE BLOG FOUNDATION
@@ -967,3 +965,4 @@ VALUES
 
 
 COMMIT;
+

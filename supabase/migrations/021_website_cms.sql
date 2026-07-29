@@ -422,8 +422,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- WEBSITE CMS FOUNDATION
@@ -910,3 +908,4 @@ VALUES
 
 
 COMMIT;
+

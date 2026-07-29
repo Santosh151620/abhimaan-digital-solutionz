@@ -410,7 +410,6 @@ BEGIN
 
 END;
 $$;
-BEGIN;
 
 -- ============================================================================
 -- DEFAULT ENTERPRISE PERMISSIONS
@@ -934,3 +933,4 @@ VALUES
 
 
 COMMIT;
+

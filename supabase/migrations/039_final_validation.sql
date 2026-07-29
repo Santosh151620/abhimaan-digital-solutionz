@@ -524,8 +524,6 @@ END,
 
 FROM storage_management.buckets;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- FINAL DEPLOYMENT VALIDATION
@@ -1045,3 +1043,4 @@ VALUES
 
 
 COMMIT;
+

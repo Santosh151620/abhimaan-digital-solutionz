@@ -488,8 +488,6 @@ DO UPDATE SET
 
 industry_name = EXCLUDED.industry_name;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- INDUSTRY TAXONOMY FOUNDATION
@@ -1061,3 +1059,4 @@ VALUES
 
 
 COMMIT;
+

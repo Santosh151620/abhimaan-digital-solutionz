@@ -469,8 +469,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- CRM PROJECT MANAGEMENT FOUNDATION
@@ -949,3 +947,4 @@ VALUES
 
 
 COMMIT;
+

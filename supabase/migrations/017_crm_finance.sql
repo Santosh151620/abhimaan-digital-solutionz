@@ -410,8 +410,6 @@ BEGIN
 END;
 $$;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- CRM FINANCE FOUNDATION
@@ -855,3 +853,4 @@ VALUES
 
 
 COMMIT;
+

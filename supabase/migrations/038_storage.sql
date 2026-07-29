@@ -431,8 +431,6 @@ ON CONFLICT(policy_code)
 
 DO NOTHING;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE STORAGE MANAGEMENT FOUNDATION
@@ -900,3 +898,4 @@ VALUES
 
 
 COMMIT;
+

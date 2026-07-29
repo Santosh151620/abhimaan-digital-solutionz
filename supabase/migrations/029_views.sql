@@ -440,8 +440,6 @@ entity_type,
 
 entity_id;
 
-BEGIN;
-
 -- ============================================================================
 -- ADS ENTERPRISE PLATFORM
 -- ENTERPRISE DATABASE VIEW FOUNDATION
@@ -982,3 +980,4 @@ VALUES
 
 
 COMMIT;
+
