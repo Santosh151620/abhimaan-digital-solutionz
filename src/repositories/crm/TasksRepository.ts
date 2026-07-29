@@ -110,20 +110,15 @@ class TasksRepository
 
     }
 
+async details(
+    id: string,
+): Promise<Task | null> {
 
+    return super.findById(
+        id,
+    );
 
-    async details(
-        id: string,
-    ): Promise<Task | null> {
-
-
-        return this.findById(
-            id,
-        );
-
-    }
-
-
+}
 
     async findById(
         id: string,
@@ -453,8 +448,6 @@ class TasksRepository
         const status =
             data.status;
 
-
-
         const payload = {
 
             ...data,
@@ -483,9 +476,7 @@ class TasksRepository
                     )
 
                     : data.completedAt,
-
-
-
+                
             updatedAt:
                 new Date()
                     .toISOString(),
