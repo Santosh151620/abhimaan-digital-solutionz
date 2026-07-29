@@ -357,8 +357,6 @@ export class QuotationsRepository
     async delete(
         id: string,
     ): Promise<void> {
-
-
         await this.update(
 
             id,
@@ -418,10 +416,12 @@ export class QuotationsRepository
                 );
 
 
-
-        const searchValue =
-            filters?.search ??
-            filters?.keyword;
+const searchValue =
+    (
+        filters?.search ??
+        filters?.keyword
+    )
+        ?.trim();
 
 
 
