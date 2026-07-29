@@ -341,16 +341,19 @@ return super.update(
 
             await this.update(
 
-                id,
+    id,
 
-                {
+    {
 
-                    archived:
-                        false,
+        archived: false,
 
-                },
+        updatedAt:
+            new Date()
+                .toISOString(),
 
-            );
+    },
+
+);
 
 
             return true;

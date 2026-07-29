@@ -242,7 +242,7 @@ class InvoicesRepository {
             ...existing,
 
             ...data,
-            
+
             entityType: 'Invoice',
             subtotal,
 
@@ -438,8 +438,8 @@ class InvoicesRepository {
 
     }
     search(
-    filters?: InvoiceSearchFilters,
-): Invoice[] {
+        filters?: InvoiceSearchFilters,
+    ): Invoice[] {
 
         let invoices = this.list();
 
@@ -458,9 +458,9 @@ class InvoicesRepository {
         if (filters?.search) {
 
             const keyword =
-    filters.search
-        .trim()
-        .toLowerCase();
+                filters.search
+                    .trim()
+                    .toLowerCase();
 
             invoices = invoices.filter(
                 invoice =>
