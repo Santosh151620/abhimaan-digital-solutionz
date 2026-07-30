@@ -9,12 +9,12 @@ export * from './CustomerPortalRepository';
 export * from './InvoicesRepository';
 export * from './KnowledgeBaseRepository';
 export * from './NotesRepository';
-export * from './NotificationRepository';
+
 export * from './OpportunitiesRepository';
 export * from './PaymentsRepository';
 export * from './PipelineRepository';
 export * from './ProductsRepository';
-export * from './ProjectsRepository';
+
 export * from './QuotationsRepository';
 export * from './ReportsRepository';
 export * from './SearchRepository';

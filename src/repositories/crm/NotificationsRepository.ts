@@ -20,7 +20,6 @@ import type {
 class NotificationsRepository
     extends BaseRepository<Notification> {
 
-
     constructor(
         supabase: SupabaseClient,
     ) {
@@ -628,83 +627,82 @@ class NotificationsRepository
         const archived =
             await this.listArchived();
 
-
-
         return {
 
-
             total:
-
                 active.length,
-
-
-
             unread:
-
                 active.filter(
                     item =>
                         item.status === 'Unread',
                 ).length,
-
-
-
             read:
-
                 active.filter(
                     item =>
                         item.status === 'Read',
                 ).length,
-
-
-
             archived:
-
                 archived.length,
-
-
-
             lowPriority:
-
                 active.filter(
                     item =>
                         item.priority === 'Low',
                 ).length,
-
-
-
             mediumPriority:
-
                 active.filter(
                     item =>
                         item.priority === 'Medium',
                 ).length,
-
-
-
             highPriority:
-
                 active.filter(
                     item =>
                         item.priority === 'High',
                 ).length,
-
-
-
             criticalPriority:
-
                 active.filter(
                     item =>
                         item.priority === 'Critical',
                 ).length,
-
         };
-
     }
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Notification[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'entity_type',
+                    entityType,
+                )
+                .eq(
+                    'entity_id',
+                    entityId,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending:false,
+                    },
+                );
+        if(error){
+            throw error;
+        }
+        return (
+            data ?? []
+        ) as Notification[];
+        }
 
 }
-
-
-
 export function createNotificationsRepository(
     supabase: SupabaseClient,
 ) {

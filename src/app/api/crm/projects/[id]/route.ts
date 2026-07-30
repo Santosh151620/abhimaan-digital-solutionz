@@ -227,25 +227,7 @@ export async function DELETE(
             id,
         } = await params;
 
-        const deleted =
-            await ProjectsServiceInstance.delete(
-                id,
-            );
-
-        if (!deleted) {
-
-            return NextResponse.json(
-                {
-                    error:
-                        'Project not found',
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
-
+        await ProjectsServiceInstance.delete(id);
         return NextResponse.json(
             {
                 success: true,

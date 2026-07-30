@@ -1,92 +1,131 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 import {
-    ProjectsRepositoryInstance,
-} from '@/repositories/crm/ProjectsRepository';
+    ProjectsRepository,
+} from "@/repositories/projects.repository";
 
 import type {
     Project,
     ProjectStatus,
-} from '@/types/crm/Projects';
+} from "@/types/crm/Projects";
+
 
 export class ProjectsService {
 
+    constructor(
+        private readonly repository: ProjectsRepository,
+    ) {}
+
+
     list() {
-        return ProjectsRepositoryInstance.list();
+        return this.repository.findAll();
     }
 
+
     listArchived() {
-        return ProjectsRepositoryInstance.listArchived();
+        return this.repository.listArchived();
     }
+
 
     details(
         id: string,
     ) {
-        return ProjectsRepositoryInstance.details(
-            id,
-        );
+        return this.repository.findById(id);
     }
-    findById(
-        id: string,
-    ) {
 
-        return ProjectsRepositoryInstance.findById(
-            id,
-        );
 
-    }
     create(
         data: Partial<Project>,
     ) {
-        return ProjectsRepositoryInstance.create(
-            data,
-        );
+        return this.repository.create(data);
     }
+
 
     update(
         id: string,
         data: Partial<Project>,
     ) {
-        return ProjectsRepositoryInstance.update(
+        return this.repository.update(
             id,
             data,
         );
     }
 
+
     updateStatus(
         id: string,
         status: ProjectStatus,
     ) {
-        return ProjectsRepositoryInstance.updateStatus(
+        return this.repository.update(
             id,
-            status,
+            {
+                status,
+            },
         );
     }
+
 
     delete(
         id: string,
     ) {
-        return ProjectsRepositoryInstance.delete(
-            id,
-        );
+        return this.repository.delete(id);
     }
+
 
     restore(
         id: string,
     ) {
-        return ProjectsRepositoryInstance.restore(
-            id,
-        );
+
+        if (
+            typeof this.repository.restore === "function"
+        ) {
+
+            return this.repository.restore(id);
+
+        }
+
+
+        return Promise.resolve(false);
+
     }
+
 
     summary() {
-        return ProjectsRepositoryInstance.summary();
+        return this.repository.summary();
     }
 
 }
 
-export function createProjectsService() {
-    return new ProjectsService();
+
+
+export function createProjectsService(
+    supabase: SupabaseClient,
+) {
+
+    return new ProjectsService(
+        new ProjectsRepository(
+            supabase,
+        ),
+    );
+
 }
 
-export const ProjectsServiceInstance =
-    new ProjectsService();
 
+
+export let ProjectsServiceInstance: ProjectsService;
+
+
+
+export function initializeProjectsService(
+    supabase: SupabaseClient,
+) {
+
+    ProjectsServiceInstance =
+        createProjectsService(
+            supabase,
+        );
+
+
+    return ProjectsServiceInstance;
+
+}

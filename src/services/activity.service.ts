@@ -1,13 +1,12 @@
-import type { Activity } from "@/types/crm/Activity";
-
-import { ActivityRepository } from "@/repositories/activity.repository";
+import type { Activity } from "@/types/crm/Activities";
+import { ActivitiesRepository } from "@/repositories/crm/ActivitiesRepository";
 
 
 export class ActivityService {
 
 
     constructor(
-        private readonly repository: ActivityRepository,
+        private readonly repository: ActivitiesRepository,
     ) {}
 
 
@@ -35,3 +34,4 @@ export class ActivityService {
     }
 
 }
+

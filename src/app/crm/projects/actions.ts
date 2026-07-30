@@ -1,98 +1,141 @@
 'use server';
 
+
 import {
     createProjectsService,
-} from '@/services/crm/ProjectsService';
+} from "@/services/crm/ProjectsService";
+
+
+import {
+    createClient,
+} from "@/lib/supabase/server";
+
 
 import type {
     Project,
     ProjectStatus,
-} from '@/types/crm/Projects';
+} from "@/types/crm/Projects";
 
-function service() {
 
-    return createProjectsService();
+
+async function service() {
+
+    const supabase =
+        await createClient();
+
+
+    return createProjectsService(
+        supabase,
+    );
 
 }
+
+
 
 export async function getProjects() {
 
-    return service().list();
+    return (
+        await service()
+    ).list();
 
 }
+
+
 
 export async function getArchivedProjects() {
 
-    return service().listArchived();
+    return (
+        await service()
+    ).listArchived();
 
 }
+
+
 
 export async function getProject(
-    id: string,
+    id:string,
 ) {
 
-    return service().details(
-        id,
-    );
+    return (
+        await service()
+    ).details(id);
 
 }
+
+
 
 export async function createProject(
-    data: Partial<Project>,
+    data:Partial<Project>,
 ) {
 
-    return service().create(
-        data,
-    );
+    return (
+        await service()
+    ).create(data);
 
 }
 
+
+
 export async function updateProject(
-    id: string,
-    data: Partial<Project>,
+    id:string,
+    data:Partial<Project>,
 ) {
 
-    return service().update(
+    return (
+        await service()
+    ).update(
         id,
         data,
     );
 
 }
 
+
+
 export async function updateProjectStatus(
-    id: string,
-    status: ProjectStatus,
+    id:string,
+    status:ProjectStatus,
 ) {
 
-    return service().updateStatus(
+    return (
+        await service()
+    ).updateStatus(
         id,
         status,
     );
 
 }
 
+
+
 export async function deleteProject(
-    id: string,
+    id:string,
 ) {
 
-    return service().delete(
-        id,
-    );
+    return (
+        await service()
+    ).delete(id);
 
 }
+
+
 
 export async function restoreProject(
-    id: string,
+    id:string,
 ) {
 
-    return service().restore(
-        id,
-    );
+    return (
+        await service()
+    ).restore(id);
 
 }
 
-export async function getProjectsSummary() {
 
-    return service().summary();
+
+export async function getProjectsSummary(){
+
+    return (
+        await service()
+    ).summary();
 
 }

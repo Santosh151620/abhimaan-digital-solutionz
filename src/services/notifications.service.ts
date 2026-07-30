@@ -7,8 +7,8 @@ import type {
 } from '@supabase/supabase-js';
 
 import {
-    createNotificationRepository,
-} from '@/repositories/notifications.repository';
+    createNotificationsRepository,
+} from '@/repositories/crm/NotificationsRepository';
 
 
 
@@ -17,7 +17,7 @@ export class NotificationsService {
 
     private readonly repository:
         ReturnType<
-            typeof createNotificationRepository
+            typeof createNotificationsRepository
         >;
 
 
@@ -27,7 +27,7 @@ export class NotificationsService {
     ) {
 
         this.repository =
-            createNotificationRepository(
+            createNotificationsRepository(
                 supabase,
             );
 
@@ -74,3 +74,4 @@ export function createNotificationsService(
     );
 
 }
+

@@ -2,7 +2,6 @@ import type {
     SupabaseClient,
 } from '@supabase/supabase-js';
 
-
 import {
     BaseRepository,
 } from '@/lib/db/base-repository';
@@ -179,12 +178,6 @@ export class ContactsRepository
 
     }
 
-
-
-
-
-
-
     async create(
         data: CreateContactInput,
     ): Promise<Contact> {
@@ -195,32 +188,31 @@ export class ContactsRepository
                 .toISOString();
 
 
+        const id =
+            crypto.randomUUID();
+
+
 
         return super.create({
 
             ...data,
 
 
-            id:
-                crypto.randomUUID(),
-
+            id,
 
 
             entityType:
                 'Contact',
 
 
-
             entityId:
-                crypto.randomUUID(),
-
+                id,
 
 
             status:
                 data.status
                 ??
                 'ACTIVE',
-
 
 
             createdAt:
@@ -230,16 +222,9 @@ export class ContactsRepository
             updatedAt:
                 now,
 
-
         });
 
     }
-
-
-
-
-
-
 
     async update(
         id: string,

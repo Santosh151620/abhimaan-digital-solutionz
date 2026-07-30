@@ -302,102 +302,102 @@ export class ActivitiesRepository
 
     }
 
-async delete(
-    id: string,
-): Promise<void> {
+    async delete(
+        id: string,
+    ): Promise<void> {
 
-    const existing =
-        await this.findById(
-            id,
-        );
+        const existing =
+            await this.findById(
+                id,
+            );
 
 
-    if (!existing) {
+        if (!existing) {
 
-        return;
+            return;
+
+        }
+
+
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .update(
+                    {
+                        archived: true,
+                        updated_at:
+                            new Date()
+                                .toISOString(),
+                    },
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
 
     }
-
-
-    const {
-        error,
-    } =
-      await this.tableRef()
-    .update(
-        {
-            archived: true,
-            updated_at:
-                new Date()
-                    .toISOString(),
-        },
-    )
-    .eq(
-        'organization_id',
-        this.organizationId,
-    )
-    .eq(
-        'id',
-        id,
-    );
-
-
-    if (error) {
-
-        throw error;
-
-    }
-
-}
 
     async restore(
-    id: string,
-): Promise<boolean> {
+        id: string,
+    ): Promise<boolean> {
 
-    const existing =
-        await this.findById(
-            id,
-        );
+        const existing =
+            await this.findById(
+                id,
+            );
 
 
-    if (!existing) {
+        if (!existing) {
 
-        return false;
+            return false;
+
+        }
+
+
+        const {
+            error,
+        } =
+            await this.tableRef()
+                .update(
+                    {
+                        archived: false,
+                        updated_at:
+                            new Date()
+                                .toISOString(),
+                    },
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return true;
 
     }
-
-
-    const {
-        error,
-    } =
-        await this.tableRef()
-    .update(
-        {
-            archived: false,
-            updated_at:
-                new Date()
-                    .toISOString(),
-        },
-    )
-    .eq(
-        'organization_id',
-        this.organizationId,
-    )
-    .eq(
-        'id',
-        id,
-    );
-
-
-    if (error) {
-
-        throw error;
-
-    }
-
-
-    return true;
-
-}
 
     async search(
         filters?: ActivitySearchFilters,
@@ -659,91 +659,60 @@ async delete(
             planned:
                 activities.filter(
                     activity =>
-                        activity.status ===
-                        'Planned',
+                        activity.status === 'Planned',
                 ).length,
 
             inProgress:
                 activities.filter(
                     activity =>
-                        activity.status ===
-                        'In Progress',
+                        activity.status === 'In Progress',
                 ).length,
 
             completed:
                 activities.filter(
                     activity =>
-                        activity.status ===
-                        'Completed',
+                        activity.status === 'Completed',
                 ).length,
 
             cancelled:
                 activities.filter(
                     activity =>
-                        activity.status ===
-                        'Cancelled',
+                        activity.status === 'Cancelled',
                 ).length,
 
             missed:
                 activities.filter(
                     activity =>
-                        activity.status ===
-                        'Missed',
+                        activity.status === 'Missed',
                 ).length,
 
             overdue:
                 activities.filter(
                     activity =>
-
-                        !!activity.startDate
-
-                        &&
-
-                        activity.startDate < today
-
-                        &&
-
-                        activity.status !==
-                        'Completed'
-
-                        &&
-
-                        activity.status !==
-                        'Cancelled',
-
+                        !!activity.startDate &&
+                        activity.startDate < today &&
+                        activity.status !== 'Completed' &&
+                        activity.status !== 'Cancelled',
                 ).length,
 
             today:
                 activities.filter(
                     activity =>
-                        activity.startDate ===
-                        today,
+                        activity.startDate === today,
                 ).length,
 
             upcoming:
                 activities.filter(
                     activity =>
-
-                        !!activity.startDate
-
-                        &&
-
+                        !!activity.startDate &&
                         activity.startDate > today,
-
                 ).length,
 
             highPriority:
                 activities.filter(
                     activity =>
-
-                        activity.priority ===
-                        'High'
-
-                        ||
-
-                        activity.priority ===
-                        'Critical',
-
+                        activity.priority === 'High' ||
+                        activity.priority === 'Critical',
                 ).length,
 
             archived: 0,
@@ -751,37 +720,65 @@ async delete(
             completionRate:
 
                 activities.length === 0
-
                     ? 0
-
-                    : Math.round(
-
+                    :
+                    Math.round(
                         (
                             activities.filter(
                                 activity =>
-                                    activity.status ===
-                                    'Completed',
+                                    activity.status === 'Completed',
                             ).length
-
                             /
-
                             activities.length
-
                         ) * 100,
-
                     ),
 
         };
 
     }
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Activity[]> {
 
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'entity_type',
+                    entityType,
+                )
+                .eq(
+                    'entity_id',
+                    entityId,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        return (
+            data ?? []
+        ) as Activity[];
+
+    }
 }
 
-
-
-/**
- * Production repository factory.
- */
 export function createActivitiesRepository(
     supabase: SupabaseClient,
 ) {
@@ -791,20 +788,5 @@ export function createActivitiesRepository(
     );
 
 }
-
-
-
-/**
- * Standard export.
- */
 export const ActivitiesRepositoryInstance =
-    createActivitiesRepository;
-
-
-
-/**
- * Temporary compatibility.
- * Remove during final legacy cleanup.
- */
-export const ActivityRepositoryInstance =
     createActivitiesRepository;
