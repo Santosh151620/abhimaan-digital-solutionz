@@ -6,3 +6,4 @@ export * from "./PermissionsRepository";
 export * from "./RolesRepository";
 export * from "./SettingsRepository";
 export * from "./UsersRepository";
+export * from "./SupabaseAuditRepository";

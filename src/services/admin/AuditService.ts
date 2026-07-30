@@ -1,27 +1,71 @@
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Audit Service
+ *
+ * Application layer for:
+ * - Admin
+ * - CRM
+ * - Workflow
+ * - Security events
+ * ============================================================================
+ */
+
+
 import type {
+    AuditRecord,
+} from "@/types/admin/Audit";
 
-    AuditEntry,
 
+import type {
     IAuditRepository,
-
 } from "@/repositories/admin/AuditRepository";
+
+
 
 export class AuditService {
 
+
     constructor(
-
         private readonly repository: IAuditRepository
-
     ) {}
 
-    log(
 
-        entry: AuditEntry
 
+    async log(
+        entry: AuditRecord
     ): Promise<void> {
 
-        return this.repository.log(entry);
+
+        await this.repository.log(
+            entry
+        );
 
     }
+
+
+
+
+    async getLogs(
+        options?: {
+
+            entityType?: string;
+
+            entityId?: string;
+
+            limit?: number;
+
+        }
+
+    ): Promise<AuditRecord[]> {
+
+
+        return this.repository.getLogs(
+            options
+        );
+
+    }
+
 
 }

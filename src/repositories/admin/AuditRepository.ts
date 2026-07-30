@@ -1,29 +1,33 @@
-export interface AuditEntry {
+import type {
+    AuditRecord,
+} from "@/types/admin/Audit";
 
-    id: string;
 
-    organizationId: string;
-
-    module: string;
-
-    entity: string;
-
-    entityId: string;
-
-    action: string;
-
-    userId: string;
-
-    createdAt: string;
-
-}
 
 export interface IAuditRepository {
 
+
+    /**
+     * Create immutable audit entry
+     */
     log(
-
-        entry: AuditEntry
-
+        entry: AuditRecord
     ): Promise<void>;
+
+
+
+    /**
+     * Retrieve audit history
+     */
+    getLogs(
+        options?: {
+            entityType?: string;
+
+            entityId?: string;
+
+            limit?: number;
+        }
+    ): Promise<AuditRecord[]>;
+
 
 }
