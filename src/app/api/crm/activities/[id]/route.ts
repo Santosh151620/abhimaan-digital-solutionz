@@ -11,9 +11,7 @@ import type {
     ActivityStatus,
 } from '@/types/crm/Activities';
 
-
-
-interface Props {
+interface RouteContext {
 
     params: Promise<{
         id: string;
@@ -21,91 +19,75 @@ interface Props {
 
 }
 
-
-
 export async function GET(
-    request: NextRequest,
-    {
-        params,
-    }: Props,
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
     try {
 
-        const {
-            id,
-        } =
+        const { id } =
             await params;
-
 
         const activity =
             await ActivityServiceInstance.details(
                 id,
             );
 
-
         if (!activity) {
 
             return NextResponse.json(
-
                 {
                     error:
                         'Activity not found',
                 },
-
                 {
                     status: 404,
                 },
-
             );
 
         }
 
-
         return NextResponse.json(
             activity,
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'ACTIVITY_GET_ERROR',
+            error,
+        );
 
         return NextResponse.json(
-
             {
                 error:
                     'Failed to fetch activity',
             },
-
             {
                 status: 500,
             },
-
         );
 
     }
 
 }
 
-
-
 export async function PUT(
     request: NextRequest,
-    {
-        params,
-    }: Props,
+    { params }: RouteContext,
 ) {
 
     try {
 
-        const {
-            id,
-        } =
+        const { id } =
             await params;
-
 
         const body =
             await request.json();
-
 
         const activity =
             await ActivityServiceInstance.update(
@@ -113,90 +95,75 @@ export async function PUT(
                 body,
             );
 
-
         if (!activity) {
 
             return NextResponse.json(
-
                 {
                     error:
                         'Activity not found',
                 },
-
                 {
                     status: 404,
                 },
-
             );
 
         }
 
-
         return NextResponse.json(
             activity,
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'ACTIVITY_UPDATE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
-
             {
                 error:
                     'Failed to update activity',
             },
-
             {
                 status: 500,
             },
-
         );
 
     }
 
 }
 
-
-
 export async function PATCH(
     request: NextRequest,
-    {
-        params,
-    }: Props,
+    { params }: RouteContext,
 ) {
 
     try {
 
-        const {
-            id,
-        } =
+        const { id } =
             await params;
 
-
-        const body:
-            {
-                status?: ActivityStatus;
-            } =
-            await request.json();
-
+        const body: {
+            status?: ActivityStatus;
+        } = await request.json();
 
         if (!body.status) {
 
             return NextResponse.json(
-
                 {
                     error:
                         'Status is required',
                 },
-
                 {
                     status: 400,
                 },
-
             );
 
         }
-
 
         const activity =
             await ActivityServiceInstance.updateStatus(
@@ -204,94 +171,101 @@ export async function PATCH(
                 body.status,
             );
 
-
         if (!activity) {
 
             return NextResponse.json(
-
                 {
                     error:
                         'Activity not found',
                 },
-
                 {
                     status: 404,
                 },
-
             );
 
         }
 
-
         return NextResponse.json(
             activity,
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'ACTIVITY_STATUS_UPDATE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
-
             {
                 error:
                     'Failed to update activity status',
             },
-
             {
                 status: 500,
             },
-
         );
 
     }
 
 }
 
-
-
 export async function DELETE(
-    request: NextRequest,
-    {
-        params,
-    }: Props,
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
     try {
 
-        const {
-            id,
-        } =
+        const { id } =
             await params;
 
+        const deleted =
+            await ActivityServiceInstance.delete(
+                id,
+            );
 
-        await ActivityServiceInstance.delete(
-            id,
-        );
+        if (!deleted) {
 
+            return NextResponse.json(
+                {
+                    error:
+                        'Activity not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
 
         return NextResponse.json(
-
             {
-                success:
-                    true,
+                success: true,
             },
-
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'ACTIVITY_DELETE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
-
             {
                 error:
                     'Failed to delete activity',
             },
-
             {
                 status: 500,
             },
-
         );
 
     }

@@ -11,8 +11,7 @@ import type {
     ProjectStatus,
 } from '@/types/crm/Projects';
 
-
-interface Props {
+interface RouteContext {
 
     params: Promise<{
         id: string;
@@ -20,12 +19,9 @@ interface Props {
 
 }
 
-
-
-
 export async function GET(
-    request: NextRequest,
-    { params }: Props
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
     try {
@@ -34,12 +30,10 @@ export async function GET(
             id,
         } = await params;
 
-
         const project =
-            ProjectsServiceInstance.details(
-                id
+            await ProjectsServiceInstance.details(
+                id,
             );
-
 
         if (!project) {
 
@@ -50,18 +44,24 @@ export async function GET(
                 },
                 {
                     status: 404,
-                }
+                },
             );
 
         }
 
-
         return NextResponse.json(
-            project
+            project,
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'PROJECT_GET_ERROR',
+            error,
+        );
 
         return NextResponse.json(
             {
@@ -70,19 +70,16 @@ export async function GET(
             },
             {
                 status: 500,
-            }
+            },
         );
 
     }
 
 }
 
-
-
-
 export async function PUT(
     request: NextRequest,
-    { params }: Props
+    { params }: RouteContext,
 ) {
 
     try {
@@ -91,17 +88,14 @@ export async function PUT(
             id,
         } = await params;
 
-
         const body =
             await request.json();
 
-
         const project =
-            ProjectsServiceInstance.update(
+            await ProjectsServiceInstance.update(
                 id,
-                body
+                body,
             );
-
 
         if (!project) {
 
@@ -112,18 +106,24 @@ export async function PUT(
                 },
                 {
                     status: 404,
-                }
+                },
             );
 
         }
 
-
         return NextResponse.json(
-            project
+            project,
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'PROJECT_UPDATE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
             {
@@ -132,19 +132,16 @@ export async function PUT(
             },
             {
                 status: 500,
-            }
+            },
         );
 
     }
 
 }
 
-
-
-
 export async function PATCH(
     request: NextRequest,
-    { params }: Props
+    { params }: RouteContext,
 ) {
 
     try {
@@ -153,13 +150,9 @@ export async function PATCH(
             id,
         } = await params;
 
-
-        const body:
-            {
-                status?: ProjectStatus;
-            } =
-            await request.json();
-
+        const body: {
+            status?: ProjectStatus;
+        } = await request.json();
 
         if (!body.status) {
 
@@ -170,18 +163,16 @@ export async function PATCH(
                 },
                 {
                     status: 400,
-                }
+                },
             );
 
         }
 
-
         const project =
-            ProjectsServiceInstance.updateStatus(
+            await ProjectsServiceInstance.updateStatus(
                 id,
-                body.status
+                body.status,
             );
-
 
         if (!project) {
 
@@ -192,18 +183,24 @@ export async function PATCH(
                 },
                 {
                     status: 404,
-                }
+                },
             );
 
         }
 
-
         return NextResponse.json(
-            project
+            project,
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'PROJECT_STATUS_UPDATE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
             {
@@ -212,19 +209,16 @@ export async function PATCH(
             },
             {
                 status: 500,
-            }
+            },
         );
 
     }
 
 }
 
-
-
-
 export async function DELETE(
-    request: NextRequest,
-    { params }: Props
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
     try {
@@ -233,12 +227,10 @@ export async function DELETE(
             id,
         } = await params;
 
-
         const deleted =
-            ProjectsServiceInstance.delete(
-                id
+            await ProjectsServiceInstance.delete(
+                id,
             );
-
 
         if (!deleted) {
 
@@ -249,20 +241,26 @@ export async function DELETE(
                 },
                 {
                     status: 404,
-                }
+                },
             );
 
         }
 
-
         return NextResponse.json(
             {
                 success: true,
-            }
+            },
+            {
+                status: 200,
+            },
         );
 
+    } catch (error) {
 
-    } catch {
+        console.error(
+            'PROJECT_DELETE_ERROR',
+            error,
+        );
 
         return NextResponse.json(
             {
@@ -271,7 +269,7 @@ export async function DELETE(
             },
             {
                 status: 500,
-            }
+            },
         );
 
     }
