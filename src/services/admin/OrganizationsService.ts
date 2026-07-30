@@ -1,20 +1,44 @@
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ * Organizations Service
+ *
+ * Enterprise Organization Management
+ * Application Layer
+ *
+ * Responsibilities
+ * - Organization lifecycle
+ * - Tenant administration
+ * - Organization lookup
+ * - Organization management
+ * ============================================================================
+ */
+
 import type {
     Organization,
 } from "@/types/admin/Organization";
 
-import { OrganizationsRepository } from "@/repositories/admin/OrganizationsRepository";
+import type {
+    IOrganizationsRepository,
+} from "@/repositories/admin/OrganizationsRepository";
+
+
 
 export class OrganizationsService {
 
     constructor(
-        private readonly repository: OrganizationsRepository,
+        private readonly repository: IOrganizationsRepository,
     ) {}
+
+
 
     async list(): Promise<Organization[]> {
 
-        return this.repository.findAll();
+        return this.repository.list();
 
     }
+
+
 
     async active(): Promise<Organization[]> {
 
@@ -22,49 +46,45 @@ export class OrganizationsService {
 
     }
 
-   async inactive(): Promise<Organization[]> {
 
-    return this.repository.inactive();
 
-}
-
-    async get(
+    async findById(
         id: string,
     ): Promise<Organization | null> {
 
-        return this.repository.findById(
-            id,
-        );
+        return this.repository.findById(id);
 
     }
 
-    async create(
-        organization: Partial<Organization>,
-    ): Promise<Organization> {
 
-        return this.repository.create(
+
+    async findByCode(
+        code: string,
+    ): Promise<Organization | null> {
+
+        return this.repository.findByCode(code);
+
+    }
+
+
+
+    async save(
+        organization: Organization,
+    ): Promise<void> {
+
+        await this.repository.save(
             organization,
         );
 
     }
 
-    async update(
-        id: string,
-        organization: Partial<Organization>,
-    ): Promise<Organization> {
 
-        return this.repository.update(
-            id,
-            organization,
-        );
-
-    }
 
     async delete(
         id: string,
     ): Promise<void> {
 
-        return this.repository.delete(
+        await this.repository.delete(
             id,
         );
 

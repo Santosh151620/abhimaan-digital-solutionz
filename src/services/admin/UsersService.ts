@@ -1,72 +1,93 @@
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ * Users Service
+ *
+ * Application service for:
+ * - User Management
+ * - Organization Users
+ * - Identity Administration
+ * - RBAC integration
+ * ============================================================================
+ */
+
 import type {
     AdminUser,
 } from "@/types/admin/User";
 
-import { UsersRepository } from "@/repositories/admin/UsersRepository";
+import type {
+    IUsersRepository,
+} from "@/repositories/admin/UsersRepository";
+
+
 
 export class UsersService {
 
     constructor(
-        private readonly repository: UsersRepository,
+        private readonly repository: IUsersRepository,
     ) {}
 
-    async list(): Promise<AdminUser[]> {
 
-        return this.repository.findAll();
+
+    list(): Promise<AdminUser[]> {
+
+        return this.repository.list();
 
     }
 
-    async active(): Promise<AdminUser[]> {
+
+
+    active(): Promise<AdminUser[]> {
 
         return this.repository.active();
 
     }
 
-    async pending(): Promise<AdminUser[]> {
+
+
+    pending(): Promise<AdminUser[]> {
 
         return this.repository.pending();
 
     }
 
-    async get(
+
+
+    findById(
         id: string,
     ): Promise<AdminUser | null> {
 
-        return this.repository.findById(
-            id,
-        );
+        return this.repository.findById(id);
 
     }
 
-    async create(
-        user: Partial<AdminUser>,
-    ): Promise<AdminUser> {
 
-        return this.repository.create(
-            user,
-        );
+
+    findByEmail(
+        email: string,
+    ): Promise<AdminUser | null> {
+
+        return this.repository.findByEmail(email);
+
+    }
+
+
+
+    async save(
+        user: AdminUser,
+    ): Promise<void> {
+
+        await this.repository.save(user);
 
     }
 
-    async update(
-        id: string,
-        user: Partial<AdminUser>,
-    ): Promise<AdminUser> {
 
-        return this.repository.update(
-            id,
-            user,
-        );
-
-    }
 
     async delete(
         id: string,
     ): Promise<void> {
 
-        return this.repository.delete(
-            id,
-        );
+        await this.repository.delete(id);
 
     }
 

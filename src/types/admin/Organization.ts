@@ -1,91 +1,197 @@
 /**
  * ============================================================================
- * Organization
- * Enterprise Tenant Contract
- * CRM + Admin Compatible
- * Production Contract
+ * ADS ENTERPRISE PLATFORM
+ * Organization Contract
+ *
+ * Enterprise Multi-Tenant
+ * SaaS / On-Prem Ready
+ * CRM + Admin Shared
  * ============================================================================
  */
 
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
+
 
 
 export type OrganizationStatus =
     | "Active"
+    | "Inactive"
     | "Suspended"
-    | "Archived";
+    | "Archived"
+    | "Pending";
+
 
 
 export type OrganizationType =
-    | "Trial"
     | "Customer"
-    | "Enterprise"
-    | "Internal";
+    | "Partner"
+    | "Internal"
+    | "Vendor"
+    | "Demo";
 
 
-export interface Organization extends BaseEntity {
 
+export interface Organization
+    extends BaseEntity {
+
+    /**
+     * Business Identity
+     */
     name: string;
-
 
     code: string;
 
+    legalName?: string;
 
-    email?: string;
+    displayName?: string;
 
-
-    phone?: string;
-
-
-    website?: string;
-
-
-    logoUrl?: string;
-
-
-    timezone?: string;
-
-
-    currency?: string;
-
+    description?: string;
 
     type: OrganizationType;
 
-
     status: OrganizationStatus;
 
+    /**
+     * Contact
+     */
+    email?: string;
 
-    metadata?: Record<string, unknown>;
+    phone?: string;
 
+    website?: string;
 
+    /**
+     * Address
+     */
+    addressLine1?: string;
+
+    addressLine2?: string;
+
+    city?: string;
+
+    state?: string;
+
+    postalCode?: string;
+
+    country?: string;
+
+    /**
+     * Business
+     */
+    taxId?: string;
+
+    registrationNumber?: string;
+
+    industry?: string;
+
+    timezone?: string;
+
+    locale?: string;
+
+    currency?: string;
+
+    /**
+     * Subscription
+     */
+    planId?: string;
+
+    subscriptionStatus?: string;
+
+    trialEndsAt?: string;
+
+    subscriptionEndsAt?: string;
+
+    /**
+     * Limits
+     */
+    maxUsers?: number;
+
+    maxStorageGb?: number;
+
+    maxApiRequestsPerDay?: number;
+
+    /**
+     * Lifecycle
+     */
+    isActive: boolean;
+
+    isSystem: boolean;
+
+    /**
+     * Audit
+     */
     createdBy?: string;
 
-
     updatedBy?: string;
+
+    /**
+     * Extension
+     */
+    metadata?: Record<string, unknown>;
 
 }
 
 
-export interface OrganizationStatistics {
 
-    users: number;
+/**
+ * ============================================================================
+ * Organization Member
+ *
+ * Mirrors organization membership assignments.
+ * ============================================================================
+ */
+
+export interface OrganizationMember
+    extends BaseEntity {
+
+    organizationId: string;
+
+    userId: string;
+
+    roleId?: string;
+
+    joinedAt: string;
+
+    invitedBy?: string;
+
+    invitationAcceptedAt?: string;
+
+    isActive: boolean;
+
+    metadata?: Record<string, unknown>;
+
+}
 
 
-    projects: number;
 
+/**
+ * ============================================================================
+ * Organization Summary
+ *
+ * Dashboard / Admin listing
+ * ============================================================================
+ */
 
-    leads: number;
+export interface OrganizationSummary {
 
+    id: string;
 
-    opportunities: number;
+    name: string;
 
+    code: string;
 
-    quotations: number;
+    status: OrganizationStatus;
 
+    activeUsers: number;
 
-    invoices: number;
+    totalUsers: number;
 
+    totalRoles: number;
 
-    revenue: number;
+    plan?: string;
+
+    createdAt: string;
 
 }

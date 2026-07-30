@@ -5,22 +5,21 @@ export type {
     AdminEntityType,
 } from "./Admin";
 
-
 export type {
     Organization,
     OrganizationStatus,
     OrganizationType,
-    OrganizationStatistics,
+    OrganizationMember,
+    OrganizationSummary,
 } from "./Organization";
-
 
 export type {
     AdminUser,
     UserStatus,
     UserType,
     UserSession,
+    UserRoleAssignment,
 } from "./User";
-
 
 export type {
     Role,
@@ -30,7 +29,6 @@ export type {
     RoleAssignment,
     RoleHierarchy,
 } from "./Role";
-
 
 export type {
     Permission,
@@ -42,7 +40,6 @@ export type {
     UserPermission,
 } from "./Permission";
 
-
 export type {
     PlatformModule,
     ModuleCategory,
@@ -50,18 +47,18 @@ export type {
     ModuleDeploymentType,
 } from "./Module";
 
-
 export type {
     AuditRecord,
     AuditActionType,
     AuditSeverity,
+    AuditActorType,
 } from "./Audit";
 
-
 export type {
-    PlatformSettings,
-    BrandingSettings,
-    SecuritySettings,
-    EmailSettings,
-    LocalizationSettings,
+    PlatformSetting,
+    SettingScope,
+    SettingCategory,
+    SettingValueType,
+    SettingGroup,
+    OrganizationSettings,
 } from "./Settings";
