@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function ModulesPage() {
 
     const repository =
-        new ModulesRepository();
+       await ModulesRepository.create();
 
     const service =
         new ModulesService(
