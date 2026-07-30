@@ -1,3 +1,6 @@
+import { createNotificationsService } from "@/services/crm/NotificationsService";
+import { withTenantGuard } from "@/lib/auth/api-guard";
+import { NextRequest } from "next/server";
 import {
     NextResponse,
 } from 'next/server';
@@ -6,27 +9,18 @@ import {
     createClient,
 } from '@/lib/supabase/server';
 
-import {
-    createNotificationsRepository,
-} from '@/repositories/crm/NotificationsRepository';
-
 import type {
     NotificationSearchFilters,
 } from '@/types/crm/Notifications';
 
 
 
-export async function GET(
-    request: Request,
-) {
+export const GET = withTenantGuard(async (request: NextRequest) => {
 
     const supabase =
         await createClient();
 
-    const repository =
-        createNotificationsRepository(
-            supabase,
-        );
+    const service = createNotificationsService(supabase);
 
     const {
         searchParams,
@@ -91,39 +85,28 @@ export async function GET(
     const notifications =
         hasFilters
 
-            ? await repository.search(
-                filters,
-            )
+            ? await service.search(filters)
 
-            : await repository.list();
+            : await service.list()
 
     return NextResponse.json(
         notifications,
     );
 
 }
-
-
-
-export async function POST(
-    request: Request,
-) {
+);
+export const POST = withTenantGuard(async (request: NextRequest) => {
 
     const supabase =
         await createClient();
 
-    const repository =
-        createNotificationsRepository(
-            supabase,
-        );
+    const service = createNotificationsService(supabase);
 
     const body =
         await request.json();
 
     const notification =
-        await repository.create(
-            body,
-        );
+        await service.create(body);
 
     return NextResponse.json(
 
@@ -134,5 +117,5 @@ export async function POST(
         },
 
     );
+})
 
-}
