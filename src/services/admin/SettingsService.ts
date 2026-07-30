@@ -1,9 +1,9 @@
 import type {
-
     PlatformSetting,
+} from "@/types/admin/Settings";
 
+import type {
     ISettingsRepository,
-
 } from "@/repositories/admin/SettingsRepository";
 
 export class SettingsService {

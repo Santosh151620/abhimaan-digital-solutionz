@@ -1,22 +1,15 @@
 /**
  * ============================================================================
+ * ADS ENTERPRISE PLATFORM
  * Settings Repository
  *
- * Admin Organization Settings
- *
- * Database:
+ * Database
  * admin.organization_settings
  *
- * Architecture:
- *
- * SettingsService
- *        ↓
- * SettingsRepository
- *        ↓
- * BaseRepository
- *        ↓
- * admin.organization_settings
- *
+ * Enterprise
+ * - Organization aware
+ * - BaseRepository aligned
+ * - Uses shared PlatformSetting contract
  * ============================================================================
  */
 
@@ -25,20 +18,10 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { BaseRepository } from "@/lib/db/base-repository";
 import { createSupabaseServerClient } from "@/lib/supabase/server-client";
 
+import type {
+    PlatformSetting,
+} from "@/types/admin/Settings";
 
-export interface PlatformSetting {
-
-    id: string;
-
-    organizationId?: string;
-
-    category: string;
-
-    key: string;
-
-    value: string;
-
-}
 
 
 export interface ISettingsRepository {
@@ -47,15 +30,15 @@ export interface ISettingsRepository {
 
     find(
         category: string,
-        key: string
+        key: string,
     ): Promise<PlatformSetting | null>;
 
-
     save(
-        setting: PlatformSetting
+        setting: PlatformSetting,
     ): Promise<void>;
 
 }
+
 
 
 type OrganizationSettingRow = {
@@ -76,27 +59,26 @@ export class SettingsRepository
     extends BaseRepository<PlatformSetting>
     implements ISettingsRepository {
 
-
     constructor(
-        supabase: SupabaseClient
+        supabase: SupabaseClient,
     ) {
 
         super(
             supabase,
-            "organization_settings"
+            "organization_settings",
         );
 
     }
 
 
-    static async create() {
+
+    static async create(): Promise<SettingsRepository> {
 
         const supabase =
             await createSupabaseServerClient();
 
-
         return new SettingsRepository(
-            supabase
+            supabase,
         );
 
     }
@@ -105,227 +87,232 @@ export class SettingsRepository
 
     async list(): Promise<PlatformSetting[]> {
 
-
-        const { data, error } =
-            await this.tableRef()
-                .select("*");
-
+        const {
+            data,
+            error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .order(
+                "setting_category",
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         const rows =
             (data ?? []) as OrganizationSettingRow[];
 
+        return rows.flatMap((row) =>
+            Object.entries(
+                row.settings ?? {},
+            ).map(([key, value]) => ({
 
-        return rows.flatMap(
-            (row) => {
+                id: row.id,
 
-                return Object.entries(
-                    row.settings ?? {}
-                )
-                .map(
-                    ([key,value]) => ({
-                        
-                        id:
-                            row.id,
+                organizationId:
+                    row.organization_id,
 
-                        organizationId:
-                            row.organization_id,
+                scope: "Organization",
 
-                        category:
-                            row.setting_category,
+                category:
+                    row.setting_category as PlatformSetting["category"],
 
-                        key,
+                key,
 
-                        value:
-                            String(value),
+                name: key,
 
-                    })
-                );
+                value:
+                    value as PlatformSetting["value"],
 
-            }
+                valueType:
+                    "String",
+
+                isSystem: false,
+
+                isReadonly: false,
+
+                isEncrypted: false,
+
+                isVisible: true,
+
+                isActive: true,
+
+                createdAt: "",
+
+                metadata: {},
+
+            })),
         );
 
-
     }
-
 
 
 
     async find(
         category: string,
-        key: string
+        key: string,
     ): Promise<PlatformSetting | null> {
 
-
-        const { data, error } =
-            await this.tableRef()
-                .select("*")
-                .eq(
-                    "setting_category",
-                    category
-                )
-                .maybeSingle();
-
-
+        const {
+            data,
+            error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "setting_category",
+                category,
+            )
+            .maybeSingle();
 
         if (error) {
-
             throw error;
-
         }
-
 
         if (!data) {
-
             return null;
-
         }
-
-
 
         const row =
             data as OrganizationSettingRow;
 
-
-
-        if (
-            !(key in row.settings)
-        ) {
-
+        if (!(key in row.settings)) {
             return null;
-
         }
-
-
 
         return {
 
-            id:
-                row.id,
+            id: row.id,
 
             organizationId:
                 row.organization_id,
 
+            scope: "Organization",
+
             category:
-                row.setting_category,
+                row.setting_category as PlatformSetting["category"],
 
             key,
 
+            name: key,
+
             value:
-                String(
-                    row.settings[key]
-                ),
+                row.settings[key] as PlatformSetting["value"],
+
+            valueType: "String",
+
+            isSystem: false,
+
+            isReadonly: false,
+
+            isEncrypted: false,
+
+            isVisible: true,
+
+            isActive: true,
+
+            createdAt: "",
+
+            metadata: {},
 
         };
-
 
     }
 
 
 
-
     async save(
-        setting: PlatformSetting
+        setting: PlatformSetting,
     ): Promise<void> {
-
 
         const existing =
             await this.find(
                 setting.category,
-                setting.key
+                setting.key,
             );
-
-
 
         if (existing) {
 
-
-            const { data, error } =
-                await this.tableRef()
-                    .select("settings")
-                    .eq(
-                        "id",
-                        existing.id
-                    )
-                    .single();
-
-
+            const {
+                data,
+                error,
+            } = await this
+                .tableRef()
+                .select("settings")
+                .eq(
+                    "id",
+                    existing.id,
+                )
+                .single();
 
             if (error) {
-
                 throw error;
-
             }
 
+            const settings = {
 
+                ...(data.settings ?? {}),
 
-            const settings =
-                {
-                    ...(data.settings ?? {}),
-                    [setting.key]:
-                        setting.value,
-                };
+                [setting.key]:
+                    setting.value,
 
+            };
 
-
-            const { error:updateError } =
-                await this.tableRef()
-                    .update({
-                        settings,
-                    })
-                    .eq(
-                        "id",
-                        existing.id
-                    );
-
-
+            const {
+                error: updateError,
+            } = await this
+                .tableRef()
+                .update({
+                    settings,
+                })
+                .eq(
+                    "id",
+                    existing.id,
+                );
 
             if (updateError) {
-
                 throw updateError;
-
             }
-
-
 
             return;
 
         }
 
+        const {
+            error,
+        } = await this
+            .tableRef()
+            .insert({
 
+                organization_id:
+                    this.organizationId,
 
+                setting_category:
+                    setting.category,
 
-        const { error } =
-            await this.tableRef()
-                .insert({
+                settings: {
 
-                    setting_category:
-                        setting.category,
+                    [setting.key]:
+                        setting.value,
 
-                    settings:
-                        {
-                            [setting.key]:
-                                setting.value,
-                        },
+                },
 
-                });
-
-
+            });
 
         if (error) {
-
             throw error;
-
         }
 
-
     }
-
 
 }
