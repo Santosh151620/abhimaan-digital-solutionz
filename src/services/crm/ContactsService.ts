@@ -1,31 +1,22 @@
 import {
     createClient,
-} from '@/lib/supabase/server';
+} from "@/lib/supabase/server";
 
 import {
     createContactsRepository,
-} from '@/repositories/crm/ContactsRepository';
+} from "@/repositories/crm/ContactsRepository";
 
 import type {
     Contact,
     ContactDetails,
-} from '@/types/crm/Contacts';
+    ContactSearchFilters,
+    CreateContactInput,
+    UpdateContactInput,
+    ContactsSummary,
+} from "@/types/crm/Contacts";
 
 
-
-interface ContactSearchFilters {
-
-    search?: string;
-
-    status?: Contact['status'];
-
-    companyId?: string;
-
-}
-
-
-
-class ContactsService {
+export class ContactsService {
 
 
     private async repository() {
@@ -115,45 +106,22 @@ class ContactsService {
 
 
     async create(
-        data: Partial<Contact>,
+        data: CreateContactInput,
     ): Promise<Contact> {
-
 
         const repository =
             await this.repository();
 
 
-
         return repository.create(
-
             {
-
-                firstName:
-                    data.firstName
-                    ??
-                    '',
-
-
-                lastName:
-                    data.lastName
-                    ??
-                    '',
-
-
-                entityType:
-                    'Contact',
-
 
                 ...data,
 
-
-                status:
-                    data.status
-                    ??
-                    'ACTIVE',
+                entityType:
+                    "Contact",
 
             },
-
         );
 
     }
@@ -163,7 +131,7 @@ class ContactsService {
     async update(
         id: string,
 
-        data: Partial<Contact>,
+        data: UpdateContactInput,
 
     ): Promise<Contact> {
 
@@ -173,19 +141,16 @@ class ContactsService {
 
 
         return repository.update(
-
             id,
 
             {
 
                 ...data,
 
-
                 entityType:
-                    'Contact',
+                    "Contact",
 
             },
-
         );
 
     }
@@ -224,7 +189,7 @@ class ContactsService {
 
 
 
-    async summary() {
+    async summary(): Promise<ContactsSummary> {
 
         const repository =
             await this.repository();
@@ -233,7 +198,6 @@ class ContactsService {
         return repository.summary();
 
     }
-
 
 }
 

@@ -15,44 +15,48 @@ import {
 } from 'next/navigation';
 
 import type {
-    ContactDetails,
+    CreateContactInput,
 } from '@/types/crm/Contacts';
+
 
 
 export default function NewContactPage() {
 
 
     async function submit(
-        values: Partial<ContactDetails>
+        values: CreateContactInput,
     ) {
+
         'use server';
 
 
         await createContact(
-            values
+            values,
         );
 
 
         redirect(
-            '/crm/contacts'
+            '/crm/contacts',
         );
+
     }
 
 
+
     return (
+
         <CRMPageLayout>
 
             <CRMHeader
                 title="New Contact"
                 description="Create a new contact for your CRM."
             />
-
-
             <ContactsForm
                 onSubmit={submit}
             />
 
+
         </CRMPageLayout>
+
     );
 }
-

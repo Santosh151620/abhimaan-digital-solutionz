@@ -5,7 +5,9 @@ import { useState } from 'react';
 import type {
     Contact,
     ContactStatus,
+    CreateContactInput,
 } from '@/types/crm/Contacts';
+
 
 interface ContactsFormProps {
 
@@ -14,12 +16,13 @@ interface ContactsFormProps {
     loading?: boolean;
 
     onSubmit?: (
-        values: Partial<Contact>,
+        values: CreateContactInput,
     ) => void | Promise<void>;
 
     onCancel?: () => void;
 
 }
+
 
 const statuses: ContactStatus[] = [
 
@@ -29,6 +32,8 @@ const statuses: ContactStatus[] = [
     'INACTIVE',
 
 ];
+
+
 
 export function ContactsForm({
 
@@ -42,20 +47,61 @@ export function ContactsForm({
 
 }: ContactsFormProps) {
 
+
     const [form, setForm] =
-        useState<Partial<Contact>>({
+        useState<CreateContactInput>({
 
-            status: 'ACTIVE',
+            firstName:
+                initialValues?.firstName
+                ?? '',
 
-            ...initialValues,
+            lastName:
+                initialValues?.lastName
+                ?? '',
+
+            email:
+                initialValues?.email,
+
+            phone:
+                initialValues?.phone,
+
+            mobile:
+                initialValues?.mobile,
+
+            companyId:
+                initialValues?.companyId,
+
+            designation:
+                initialValues?.designation,
+
+            department:
+                initialValues?.department,
+
+            city:
+                initialValues?.city,
+
+            state:
+                initialValues?.state,
+
+            country:
+                initialValues?.country,
+
+            notes:
+                initialValues?.notes,
+
+            status:
+                initialValues?.status
+                ?? 'ACTIVE',
 
         });
 
-    function update<K extends keyof Contact>(
+
+
+    function update<K extends keyof CreateContactInput>(
 
         key: K,
 
-        value: Contact[K],
+        value: CreateContactInput[K],
 
     ) {
 
@@ -69,6 +115,8 @@ export function ContactsForm({
 
     }
 
+
+
     async function submit(
 
         event: React.FormEvent<HTMLFormElement>,
@@ -77,7 +125,8 @@ export function ContactsForm({
 
         event.preventDefault();
 
-        if (!form.firstName?.trim()) {
+
+        if (!form.firstName.trim()) {
 
             alert('First Name is required.');
 
@@ -85,9 +134,14 @@ export function ContactsForm({
 
         }
 
-        await onSubmit?.(form);
+
+        await onSubmit?.(
+            form,
+        );
 
     }
+
+
 
     return (
 
@@ -108,148 +162,55 @@ export function ContactsForm({
 
             </div>
 
+
             <div className="grid gap-4 md:grid-cols-2">
 
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="First Name"
-                    value={form.firstName ?? ''}
-                    onChange={event =>
-                        update(
-                            'firstName',
-                            event.target.value,
-                        )
-                    }
-                />
 
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Last Name"
-                    value={form.lastName ?? ''}
-                    onChange={event =>
-                        update(
-                            'lastName',
-                            event.target.value,
-                        )
-                    }
-                />
+                {[
+                    ['firstName','First Name'],
+                    ['lastName','Last Name'],
+                    ['email','Email'],
+                    ['phone','Phone'],
+                    ['mobile','Mobile'],
+                    ['companyId','Company Id'],
+                    ['designation','Designation'],
+                    ['department','Department'],
+                    ['city','City'],
+                    ['state','State'],
+                    ['country','Country'],
+                ].map(([key,placeholder]) => (
 
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Email"
-                    value={form.email ?? ''}
-                    onChange={event =>
-                        update(
-                            'email',
-                            event.target.value,
-                        )
-                    }
-                />
+                    <input
+                        key={key}
+                        className="rounded-lg border p-2"
+                        placeholder={placeholder}
+                        value={
+                            String(
+                                form[key as keyof CreateContactInput]
+                                ?? '',
+                            )
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    key as keyof CreateContactInput,
+                                    event.target.value,
+                                )
+                        }
+                    />
 
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Phone"
-                    value={form.phone ?? ''}
-                    onChange={event =>
-                        update(
-                            'phone',
-                            event.target.value,
-                        )
-                    }
-                />
+                ))}
 
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Mobile"
-                    value={form.mobile ?? ''}
-                    onChange={event =>
-                        update(
-                            'mobile',
-                            event.target.value,
-                        )
-                    }
-                />
-
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Company Id"
-                    value={form.companyId ?? ''}
-                    onChange={event =>
-                        update(
-                            'companyId',
-                            event.target.value,
-                        )
-                    }
-                />
-
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Designation"
-                    value={form.designation ?? ''}
-                    onChange={event =>
-                        update(
-                            'designation',
-                            event.target.value,
-                        )
-                    }
-                />
-
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Department"
-                    value={form.department ?? ''}
-                    onChange={event =>
-                        update(
-                            'department',
-                            event.target.value,
-                        )
-                    }
-                />
-
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="City"
-                    value={form.city ?? ''}
-                    onChange={event =>
-                        update(
-                            'city',
-                            event.target.value,
-                        )
-                    }
-                />
-
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="State"
-                    value={form.state ?? ''}
-                    onChange={event =>
-                        update(
-                            'state',
-                            event.target.value,
-                        )
-                    }
-                />
-
-                <input
-                    className="rounded-lg border p-2"
-                    placeholder="Country"
-                    value={form.country ?? ''}
-                    onChange={event =>
-                        update(
-                            'country',
-                            event.target.value,
-                        )
-                    }
-                />
 
                 <select
                     className="rounded-lg border p-2"
                     value={form.status}
-                    onChange={event =>
-                        update(
-                            'status',
-                            event.target.value as ContactStatus,
-                        )
+                    onChange={
+                        event =>
+                            update(
+                                'status',
+                                event.target.value as ContactStatus,
+                            )
                     }
                 >
 
@@ -266,51 +227,76 @@ export function ContactsForm({
 
                 </select>
 
+
             </div>
 
-            <div>
 
-                <textarea
-                    rows={4}
-                    className="w-full rounded-lg border p-2"
-                    placeholder="Notes"
-                    value={form.notes ?? ''}
-                    onChange={event =>
+
+            <textarea
+
+                rows={4}
+
+                className="w-full rounded-lg border p-2"
+
+                placeholder="Notes"
+
+                value={form.notes ?? ''}
+
+                onChange={
+                    event =>
                         update(
                             'notes',
                             event.target.value,
                         )
-                    }
-                />
+                }
 
-            </div>
+            />
+
+
 
             <div className="flex justify-end gap-3">
 
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="rounded-lg border px-4 py-2"
-                >
-                    Cancel
-                </button>
 
                 <button
-                    type="submit"
-                    disabled={loading}
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+
+                    type="button"
+
+                    onClick={onCancel}
+
+                    className="rounded-lg border px-4 py-2"
+
                 >
+                    Cancel
+
+                </button>
+
+
+
+                <button
+
+                    type="submit"
+
+                    disabled={loading}
+
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+
+                >
+
                     {loading
                         ? 'Saving...'
                         : 'Save Contact'}
+
                 </button>
 
+
             </div>
+
 
         </form>
 
     );
 
 }
+
 
 export default ContactsForm;
