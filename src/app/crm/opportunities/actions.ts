@@ -1,16 +1,13 @@
 'use server';
 
-
 import {
     opportunitiesService,
 } from '@/services/crm/OpportunitiesService';
 
-
 import type {
-    Opportunity,
+    CreateOpportunityInput,
+    UpdateOpportunityInput,
 } from '@/types/crm/Opportunities';
-
-
 
 export async function getOpportunities() {
 
@@ -18,15 +15,11 @@ export async function getOpportunities() {
 
 }
 
-
-
 export async function getOpportunitySummary() {
 
     return opportunitiesService.summary();
 
 }
-
-
 
 export async function getOpportunity(
     id: string,
@@ -38,10 +31,8 @@ export async function getOpportunity(
 
 }
 
-
-
 export async function createOpportunity(
-    values: Opportunity,
+    values: CreateOpportunityInput,
 ) {
 
     return opportunitiesService.create(
@@ -50,11 +41,9 @@ export async function createOpportunity(
 
 }
 
-
-
 export async function updateOpportunity(
     id: string,
-    values: Partial<Opportunity>,
+    values: UpdateOpportunityInput,
 ) {
 
     return opportunitiesService.update(
@@ -63,8 +52,6 @@ export async function updateOpportunity(
     );
 
 }
-
-
 
 export async function deleteOpportunity(
     id: string,
@@ -75,4 +62,3 @@ export async function deleteOpportunity(
     );
 
 }
-

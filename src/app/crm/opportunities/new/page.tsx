@@ -7,20 +7,24 @@ import {
 } from '../actions';
 
 import type {
-    Opportunity,
+    CreateOpportunityInput,
 } from '@/types/crm/Opportunities';
 
 export default function NewOpportunityPage() {
 
     async function submit(
-        values: Partial<Opportunity>,
+        values: CreateOpportunityInput,
     ) {
 
         'use server';
 
-        await createOpportunity(values as Opportunity);
+        await createOpportunity(
+            values,
+        );
 
-        redirect('/crm/opportunities');
+        redirect(
+            '/crm/opportunities',
+        );
 
     }
 
@@ -41,4 +45,3 @@ export default function NewOpportunityPage() {
     );
 
 }
-
