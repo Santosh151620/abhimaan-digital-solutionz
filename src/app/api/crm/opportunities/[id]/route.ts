@@ -1,82 +1,112 @@
-import { NextResponse } from 'next/server';
+import {
+    NextRequest,
+    NextResponse,
+} from "next/server";
+
 
 import {
     OpportunitiesServiceInstance,
-} from '@/services/crm/OpportunitiesService';
+} from "@/services/crm/OpportunitiesService";
+
 
 interface RouteContext {
 
     params: Promise<{
-        id: string;
+        id:string;
     }>;
 
 }
 
+
+
 export async function GET(
-    _request: Request,
+    _request: NextRequest,
     { params }: RouteContext,
 ) {
 
     try {
 
-        const { id } =
+        const {
+            id,
+        } =
             await params;
+
 
         const opportunity =
             await OpportunitiesServiceInstance.details(
                 id,
             );
 
+
         if (!opportunity) {
 
             return NextResponse.json(
-
                 {
-                    error: 'Opportunity not found',
+                    success:false,
+                    error:
+                        "Opportunity not found",
                 },
-
                 {
-                    status: 404,
+                    status:404,
                 },
-
             );
 
         }
 
+
         return NextResponse.json(
-            opportunity,
+            {
+                success:true,
+                data:opportunity,
+            },
+            {
+                status:200,
+            },
         );
 
-    } catch {
+
+    } catch(error) {
+
+        console.error(
+            "OPPORTUNITY_GET_ERROR",
+            error,
+        );
+
 
         return NextResponse.json(
-
             {
-                error: 'Failed to load opportunity',
+                success:false,
+                error:
+                    "Failed to fetch opportunity",
             },
-
             {
-                status: 500,
+                status:500,
             },
-
         );
 
     }
 
 }
 
+
+
+
 export async function PATCH(
-    request: Request,
-    { params }: RouteContext,
+    request:NextRequest,
+    { params }:RouteContext,
 ) {
 
     try {
 
-        const { id } =
+        const {
+            id,
+        } =
             await params;
+
 
         const body =
             await request.json();
+
 
         const opportunity =
             await OpportunitiesServiceInstance.update(
@@ -84,60 +114,90 @@ export async function PATCH(
                 body,
             );
 
+
         return NextResponse.json(
-            opportunity,
+            {
+                success:true,
+                data:opportunity,
+            },
+            {
+                status:200,
+            },
         );
 
-    } catch {
+
+    } catch(error) {
+
+        console.error(
+            "OPPORTUNITY_UPDATE_ERROR",
+            error,
+        );
+
 
         return NextResponse.json(
-
             {
-                error: 'Failed to update opportunity',
+                success:false,
+                error:
+                    "Failed to update opportunity",
             },
-
             {
-                status: 500,
+                status:500,
             },
-
         );
 
     }
 
 }
 
+
+
+
+
 export async function DELETE(
-    _request: Request,
-    { params }: RouteContext,
+    _request:NextRequest,
+    { params }:RouteContext,
 ) {
 
     try {
 
-        const { id } =
+        const {
+            id,
+        } =
             await params;
+
 
         await OpportunitiesServiceInstance.delete(
             id,
         );
 
-        return NextResponse.json({
-
-            success: true,
-
-        });
-
-    } catch {
 
         return NextResponse.json(
-
             {
-                error: 'Failed to delete opportunity',
+                success:true,
             },
-
             {
-                status: 500,
+                status:200,
             },
+        );
 
+
+    } catch(error) {
+
+        console.error(
+            "OPPORTUNITY_DELETE_ERROR",
+            error,
+        );
+
+
+        return NextResponse.json(
+            {
+                success:false,
+                error:
+                    "Failed to delete opportunity",
+            },
+            {
+                status:500,
+            },
         );
 
     }

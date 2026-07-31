@@ -1,60 +1,122 @@
-import { NextResponse } from 'next/server';
-import { OpportunitiesServiceInstance } from '@/services/crm/OpportunitiesService';
+import {
+    NextRequest,
+    NextResponse,
+} from "next/server";
+
+import {
+    OpportunitiesServiceInstance,
+} from "@/services/crm/OpportunitiesService";
+
 
 export async function GET() {
 
     try {
 
-        return NextResponse.json(
-            await OpportunitiesServiceInstance.list()
-        );
+        const opportunities =
+            await OpportunitiesServiceInstance.list();
 
-    } catch {
 
         return NextResponse.json(
             {
-                error: 'Failed to load opportunities',
+                success: true,
+                data: opportunities,
+            },
+            {
+                status: 200,
+            },
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "OPPORTUNITIES_LIST_ERROR",
+            error,
+        );
+
+
+        return NextResponse.json(
+            {
+                success: false,
+                error:
+                    "Failed to load opportunities",
             },
             {
                 status: 500,
-            }
+            },
         );
 
     }
 
 }
 
+
+
 export async function POST(
-    request: Request
+    request: NextRequest,
 ) {
 
     try {
 
-        const body = await request.json();
+        const body =
+            await request.json();
+
+
+        if (
+            !body ||
+            typeof body !== "object"
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error:
+                        "Invalid request body",
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        const opportunity =
+            await OpportunitiesServiceInstance.create(
+                body,
+            );
+
 
         return NextResponse.json(
-            await OpportunitiesServiceInstance.create(body),
+            {
+                success: true,
+                data: opportunity,
+            },
             {
                 status: 201,
-            }
+            },
         );
 
-    } catch {
+
+    } catch (error) {
+
+        console.error(
+            "OPPORTUNITY_CREATE_ERROR",
+            error,
+        );
+
 
         return NextResponse.json(
             {
-                error: 'Failed to create opportunity',
+                success: false,
+                error:
+                    "Failed to create opportunity",
             },
             {
                 status: 500,
-            }
+            },
         );
 
     }
 
 }
-
-
-
-
-
