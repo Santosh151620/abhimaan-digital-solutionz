@@ -34,7 +34,7 @@ export default async function PipelinePage() {
             />
 
             <PipelineSummary
-                stages={6}
+                stages={summary.stages}
                 opportunities={summary.total}
                 value={summary.pipelineValue}
             />

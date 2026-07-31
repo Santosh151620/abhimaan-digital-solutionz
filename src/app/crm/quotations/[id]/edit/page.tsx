@@ -9,12 +9,12 @@ import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import QuotationsForm from '@/components/crm/quotations/QuotationsForm';
 
 import {
-    updateQuotation,
-} from '../../actions';
-
-import {
     QuotationsServiceInstance,
 } from '@/services/crm/QuotationsService';
+
+import {
+    updateQuotation,
+} from '../../actions';
 
 import type {
     Quotation,

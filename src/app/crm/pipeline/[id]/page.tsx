@@ -77,9 +77,18 @@ export default async function PipelineOpportunityPage({
                                     '-',
                             },
                             {
-                                title: 'Value',
-                                value: `₹ ${opportunity.value}`,
-                            },
+    title: 'Value',
+    value: new Intl.NumberFormat(
+        'en-IN',
+        {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0,
+        },
+    ).format(
+        opportunity.value,
+    ),
+},
                             {
                                 title: 'Probability',
                                 value: `${opportunity.probability}%`,
