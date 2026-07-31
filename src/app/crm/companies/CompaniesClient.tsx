@@ -22,165 +22,90 @@ import {
 
 
 interface Props {
-
     initialCompanies: Company[];
 
 }
 
-
-
 export default function CompaniesClient({
-
     initialCompanies,
 
 }: Props) {
 
-
-    /*
-     * Preserve the SSR contract.
-     * The page currently provides initialCompanies and
-     * future table enhancements may consume it directly.
-     * Until then, intentionally mark it as used.
-     */
     void initialCompanies;
-
-
     const router =
         useRouter();
 
-
     const [
-
         name,
-
         setName,
-
     ] = useState('');
 
-
     const [
-
         isCreating,
-
         setIsCreating,
-
     ] = useState(false);
-
-
 
     async function handleCreate() {
 
-
         const companyName =
             name.trim();
-
-
-
         if (!companyName) {
-
             return;
-
         }
-
-
 
         try {
-
-
             setIsCreating(true);
-
-
-
             await createCompany({
 
-                name: companyName,
+                name:
+                    companyName,
 
-                status: 'ACTIVE',
+                status:
+                    'ACTIVE',
+
+                entityType:
+                    'Company',
 
             });
-
-
-
             setName('');
-
-
-
             router.refresh();
-
-
-        }
-
-        finally {
-
-
+        } finally {
             setIsCreating(false);
-
-
         }
-
-
     }
-
-
-
-
 
     return (
 
         <div className="space-y-6">
-
-
             <div className="flex flex-col gap-3 rounded-lg border p-4 md:flex-row">
-
-
                 <input
-
                     value={name}
-
                     onChange={(event) =>
                         setName(
                             event.target.value,
                         )
                     }
-
                     placeholder="Company name"
-
                     className="flex-1 rounded-md border px-3 py-2"
 
                 />
 
-
-
                 <button
-
                     type="button"
-
                     disabled={isCreating}
-
                     onClick={handleCreate}
-
                     className="rounded-md bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
 
                 >
 
                     {
-
                         isCreating
                             ? 'Creating...'
                             : 'Add Company'
-
                     }
-
                 </button>
-
-
             </div>
-
-
-
             <CompaniesDataTable />
-
-
         </div>
 
     );
