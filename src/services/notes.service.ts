@@ -1,5 +1,5 @@
-import type { Note } from "@/types/notes";
-import { NotesRepository } from "@/repositories/notes.repository";
+﻿import type { Note } from "@/types/crm/Notes";
+import { NotesRepository } from "@/repositories/crm/NotesRepository";
 
 export class NotesService {
   constructor(
@@ -22,6 +22,8 @@ export class NotesService {
     return this.repository.create(note);
   }
 }
+
+
 
 
 

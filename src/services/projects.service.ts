@@ -1,6 +1,6 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+﻿import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { ProjectsRepository } from "@/repositories/projects.repository";
+import { ProjectsRepository } from "@/repositories/crm/ProjectsRepository";
 
 import type {
   Project,
@@ -74,4 +74,5 @@ export function createProjectsService(
     ),
   );
 }
+
 
