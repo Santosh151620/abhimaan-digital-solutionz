@@ -35,6 +35,12 @@ export default function NewCompaniesPage() {
             <CRMHeader
                 title="New Company"
                 description="Register a new customer organization in the CRM."
+                actions={[
+                    {
+                        label: 'Back',
+                        href: '/crm/companies',
+                    },
+                ]}
             />
 
             <CompaniesForm

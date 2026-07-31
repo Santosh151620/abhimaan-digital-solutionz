@@ -67,10 +67,16 @@ export default async function EditCompanyPage({
 
     <CRMPageLayout>
 
-      <CRMHeader
-        title="Edit Company"
-        description="Update company information and subscription details."
-      />
+     <CRMHeader
+    title="Edit Company"
+    description="Update company information and subscription details."
+    actions={[
+        {
+            label: 'Back',
+            href: `/crm/companies/${id}`,
+        },
+    ]}
+/>
 
 
       <CompaniesForm
