@@ -6,6 +6,11 @@ import {
 } from 'react';
 
 import {
+    createContact,
+    updateContact,
+} from '@/app/crm/contacts/actions';
+
+import {
     ContactsForm,
     ContactsSummary,
     ContactsTable,
@@ -16,11 +21,15 @@ import type {
     ContactsSummary as ContactsSummaryModel,
 } from '@/types/crm/Contacts';
 
+
+
 interface Props {
 
     initialContacts: Contact[];
 
 }
+
+
 
 function buildSummary(
     contacts: Contact[],
@@ -65,34 +74,53 @@ function buildSummary(
 
 }
 
+
+
 export default function ContactsClient({
 
     initialContacts,
 
 }: Props) {
 
+
     const [contacts, setContacts] =
         useState<Contact[]>(
             initialContacts,
         );
 
+
     const [showForm, setShowForm] =
         useState(false);
+
 
     const [selectedContact, setSelectedContact] =
         useState<Contact>();
 
+
+    const [loading, setLoading] =
+        useState(false);
+
+
+
     const summary =
         useMemo(
-            () => buildSummary(
+            () =>
+                buildSummary(
+                    contacts,
+                ),
+            [
                 contacts,
-            ),
-            [contacts],
+            ],
         );
 
-    async function createContact(
+
+
+
+
+    async function handleCreate(
         values: Partial<Contact>,
     ) {
+
 
         if (
             !values.firstName?.trim()
@@ -102,95 +130,47 @@ export default function ContactsClient({
 
         }
 
-        const now =
-            new Date().toISOString();
 
-        const contact: Contact = {
+        try {
 
-            id:
-                crypto.randomUUID(),
+            setLoading(true);
 
-            entityType:
-                'Contact',
 
-            entityId:
-                crypto.randomUUID(),
+            const created =
+                await createContact(
+                    values as never,
+                );
 
-            organizationId:
-                values.organizationId,
 
-            companyId:
-                values.companyId,
+            setContacts(
+                previous => [
+                    created,
+                    ...previous,
+                ],
+            );
 
-            firstName:
-                values.firstName,
 
-            lastName:
-                values.lastName ?? '',
+            setShowForm(false);
 
-            fullName:
-                `${values.firstName} ${values.lastName ?? ''}`.trim(),
 
-            email:
-                values.email,
+        } finally {
 
-            phone:
-                values.phone,
+            setLoading(false);
 
-            mobile:
-                values.mobile,
-
-            designation:
-                values.designation,
-
-            department:
-                values.department,
-
-            status:
-                values.status ??
-                'ACTIVE',
-
-            ownerId:
-                values.ownerId,
-
-            assignedTo:
-                values.assignedTo,
-
-            city:
-                values.city,
-
-            state:
-                values.state,
-
-            country:
-                values.country,
-
-            notes:
-                values.notes,
-
-            metadata:
-                values.metadata,
-
-            createdAt:
-                now,
-
-            updatedAt:
-                now,
-
-        };
-
-        setContacts(previous => [
-            contact,
-            ...previous,
-        ]);
-
-        setShowForm(false);
+        }
 
     }
 
-    async function updateContact(
+
+
+
+
+
+
+    async function handleUpdate(
         values: Partial<Contact>,
     ) {
+
 
         if (
             !selectedContact
@@ -200,98 +180,173 @@ export default function ContactsClient({
 
         }
 
-        setContacts(previous =>
-            previous.map(contact =>
 
-                contact.id === selectedContact.id
 
-                    ? {
+        try {
 
-                        ...contact,
+            setLoading(true);
 
-                        ...values,
 
-                        fullName:
-                            `${values.firstName ?? contact.firstName} ${values.lastName ?? contact.lastName}`.trim(),
 
-                        updatedAt:
-                            new Date().toISOString(),
+            const updated =
+                await updateContact(
 
-                    }
+                    selectedContact.id,
 
-                    : contact,
+                    values as never,
 
-            ),
-        );
+                );
 
-        setSelectedContact(undefined);
 
-        setShowForm(false);
+
+            setContacts(
+                previous =>
+                    previous.map(
+                        contact =>
+                            contact.id === updated.id
+
+                                ? updated
+
+                                : contact,
+                    ),
+            );
+
+
+
+            setSelectedContact(
+                undefined,
+            );
+
+
+            setShowForm(false);
+
+
+
+        } finally {
+
+            setLoading(false);
+
+        }
 
     }
-
     function beginCreate() {
+
 
         setSelectedContact(
             undefined,
         );
 
-        setShowForm(true);
+
+        setShowForm(
+            true,
+        );
 
     }
+
+
+
+
+
 
     return (
 
         <div className="space-y-6">
 
+
             <ContactsSummary
-                summary={summary}
+                summary={
+                    summary
+                }
             />
 
+
+
             <div className="flex items-center justify-between">
+
 
                 <h2 className="text-xl font-semibold">
                     Contacts
                 </h2>
 
+
+
                 <button
-                    onClick={beginCreate}
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+
+                    disabled={
+                        loading
+                    }
+
+                    onClick={
+                        beginCreate
+                    }
+
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
+
                 >
+
                     New Contact
+
                 </button>
+
 
             </div>
 
-            {showForm && (
 
-                <ContactsForm
-                    initialValues={
-                        selectedContact
-                    }
-                    onSubmit={
-                        selectedContact
-                            ? updateContact
-                            : createContact
-                    }
-                    onCancel={() => {
 
-                        setSelectedContact(
-                            undefined,
-                        );
 
-                        setShowForm(
-                            false,
-                        );
 
-                    }}
-                />
+            {
+                showForm && (
 
-            )}
+                    <ContactsForm
+
+                        initialValues={
+                            selectedContact
+                        }
+
+
+                        onSubmit={
+
+                            selectedContact
+
+                                ? handleUpdate
+
+                                : handleCreate
+
+                        }
+
+
+                        onCancel={() => {
+
+                            setSelectedContact(
+                                undefined,
+                            );
+
+
+                            setShowForm(
+                                false,
+                            );
+
+                        }}
+
+                    />
+
+                )
+            }
+
+
+
+
 
             <ContactsTable
-                contacts={contacts}
+
+                contacts={
+                    contacts
+                }
+
             />
+
+
 
         </div>
 
