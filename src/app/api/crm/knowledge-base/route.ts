@@ -1,29 +1,36 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 import {
     KnowledgeBaseServiceInstance,
-} from '@/services/crm/KnowledgeBaseService';
+} from "@/services/crm/KnowledgeBaseService";
 
 export async function GET() {
 
     try {
 
         const articles =
-            KnowledgeBaseServiceInstance.list();
+            await KnowledgeBaseServiceInstance.list();
 
         return NextResponse.json(
-            articles,
+            {
+                data: articles,
+            },
             {
                 status: 200,
             },
         );
 
-    } catch {
+    } catch (error) {
+
+        console.error(
+            "Knowledge Base GET error:",
+            error,
+        );
 
         return NextResponse.json(
             {
-                message:
-                    'Failed to fetch knowledge articles.',
+                error:
+                    "Failed to fetch knowledge articles.",
             },
             {
                 status: 500,
@@ -44,23 +51,30 @@ export async function POST(
             await request.json();
 
         const article =
-            KnowledgeBaseServiceInstance.create(
+            await KnowledgeBaseServiceInstance.create(
                 body,
             );
 
         return NextResponse.json(
-            article,
+            {
+                data: article,
+            },
             {
                 status: 201,
             },
         );
 
-    } catch {
+    } catch (error) {
+
+        console.error(
+            "Knowledge Base POST error:",
+            error,
+        );
 
         return NextResponse.json(
             {
-                message:
-                    'Failed to create knowledge article.',
+                error:
+                    "Failed to create knowledge article.",
             },
             {
                 status: 500,
