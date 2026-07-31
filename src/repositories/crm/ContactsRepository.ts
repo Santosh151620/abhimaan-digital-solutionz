@@ -182,47 +182,19 @@ export class ContactsRepository
         data: CreateContactInput,
     ): Promise<Contact> {
 
+return super.create({
 
-        const now =
-            new Date()
-                .toISOString();
+    ...data,
 
+    entityType:
+        'Contact',
 
-        const id =
-            crypto.randomUUID();
+    status:
+        data.status
+        ??
+        'ACTIVE',
 
-
-
-        return super.create({
-
-            ...data,
-
-
-            id,
-
-
-            entityType:
-                'Contact',
-
-
-            entityId:
-                id,
-
-
-            status:
-                data.status
-                ??
-                'ACTIVE',
-
-
-            createdAt:
-                now,
-
-
-            updatedAt:
-                now,
-
-        });
+});
 
     }
 

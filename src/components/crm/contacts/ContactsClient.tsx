@@ -1,14 +1,8 @@
 'use client';
 
 import {
-    useMemo,
     useState,
 } from 'react';
-
-import {
-    createContact,
-    updateContact,
-} from '@/app/crm/contacts/actions';
 
 import {
     ContactsForm,
@@ -16,11 +10,14 @@ import {
     ContactsTable,
 } from './index';
 
+import {
+    createContact,
+} from '@/app/crm/contacts/actions';
+
 import type {
     Contact,
     ContactsSummary as ContactsSummaryModel,
 } from '@/types/crm/Contacts';
-
 
 
 interface Props {
@@ -42,32 +39,32 @@ function buildSummary(
 
         active:
             contacts.filter(
-                contact =>
-                    contact.status === 'ACTIVE',
+                item =>
+                    item.status === 'ACTIVE',
             ).length,
 
         inactive:
             contacts.filter(
-                contact =>
-                    contact.status === 'INACTIVE',
+                item =>
+                    item.status === 'INACTIVE',
             ).length,
 
         leads:
             contacts.filter(
-                contact =>
-                    contact.status === 'LEAD',
+                item =>
+                    item.status === 'LEAD',
             ).length,
 
         customers:
             contacts.filter(
-                contact =>
-                    contact.status === 'CUSTOMER',
+                item =>
+                    item.status === 'CUSTOMER',
             ).length,
 
         archived:
             contacts.filter(
-                contact =>
-                    contact.status === 'ARCHIVED',
+                item =>
+                    item.status === 'ARCHIVED',
             ).length,
 
     };
@@ -94,26 +91,18 @@ export default function ContactsClient({
 
 
     const [selectedContact, setSelectedContact] =
-        useState<Contact>();
+        useState<Contact | undefined>();
 
 
-    const [loading, setLoading] =
+    const [isSaving, setIsSaving] =
         useState(false);
 
 
 
     const summary =
-        useMemo(
-            () =>
-                buildSummary(
-                    contacts,
-                ),
-            [
-                contacts,
-            ],
+        buildSummary(
+            contacts,
         );
-
-
 
 
 
@@ -133,13 +122,61 @@ export default function ContactsClient({
 
         try {
 
-            setLoading(true);
+            setIsSaving(true);
 
 
             const created =
-                await createContact(
-                    values as never,
-                );
+                await createContact({
+
+                    firstName:
+                        values.firstName,
+
+                    lastName:
+                        values.lastName ?? '',
+
+                    companyId:
+                        values.companyId,
+
+                    email:
+                        values.email,
+
+                    phone:
+                        values.phone,
+
+                    mobile:
+                        values.mobile,
+
+                    designation:
+                        values.designation,
+
+                    department:
+                        values.department,
+
+                    status:
+                        values.status ?? 'ACTIVE',
+
+                    ownerId:
+                        values.ownerId,
+
+                    assignedTo:
+                        values.assignedTo,
+
+                    city:
+                        values.city,
+
+                    state:
+                        values.state,
+
+                    country:
+                        values.country,
+
+                    notes:
+                        values.notes,
+
+                    metadata:
+                        values.metadata,
+
+                });
 
 
             setContacts(
@@ -153,9 +190,10 @@ export default function ContactsClient({
             setShowForm(false);
 
 
-        } finally {
+        }
+        finally {
 
-            setLoading(false);
+            setIsSaving(false);
 
         }
 
@@ -163,14 +201,9 @@ export default function ContactsClient({
 
 
 
-
-
-
-
     async function handleUpdate(
         values: Partial<Contact>,
     ) {
-
 
         if (
             !selectedContact
@@ -181,61 +214,41 @@ export default function ContactsClient({
         }
 
 
-
-        try {
-
-            setLoading(true);
-
-
-
-            const updated =
-                await updateContact(
-
-                    selectedContact.id,
-
-                    values as never,
-
-                );
-
-
-
-            setContacts(
-                previous =>
-                    previous.map(
-                        contact =>
-                            contact.id === updated.id
-
-                                ? updated
-
-                                : contact,
-                    ),
-            );
-
-
-
-            setSelectedContact(
-                undefined,
-            );
-
-
-            setShowForm(false);
-
-
-
-        } finally {
-
-            setLoading(false);
-
-        }
-
-    }
-    function beginCreate() {
+        setContacts(
+            previous =>
+                previous.map(
+                    item =>
+                        item.id === selectedContact.id
+                            ? {
+                                ...item,
+                                ...values,
+                                updatedAt:
+                                    new Date()
+                                        .toISOString(),
+                            }
+                            : item,
+                ),
+        );
 
 
         setSelectedContact(
             undefined,
         );
 
+
+        setShowForm(
+            false,
+        );
+
+    }
+
+
+
+    function startCreate() {
+
+        setSelectedContact(
+            undefined,
+        );
 
         setShowForm(
             true,
@@ -245,42 +258,31 @@ export default function ContactsClient({
 
 
 
-
-
-
     return (
 
         <div className="space-y-6">
 
-
             <ContactsSummary
-                summary={
-                    summary
-                }
+                summary={summary}
             />
 
 
-
             <div className="flex items-center justify-between">
-
 
                 <h2 className="text-xl font-semibold">
                     Contacts
                 </h2>
 
 
-
                 <button
 
-                    disabled={
-                        loading
-                    }
+                    type="button"
 
-                    onClick={
-                        beginCreate
-                    }
+                    onClick={startCreate}
 
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground disabled:opacity-50"
+                    disabled={isSaving}
+
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
 
                 >
 
@@ -290,8 +292,6 @@ export default function ContactsClient({
 
 
             </div>
-
-
 
 
 
@@ -306,13 +306,9 @@ export default function ContactsClient({
 
 
                         onSubmit={
-
                             selectedContact
-
                                 ? handleUpdate
-
                                 : handleCreate
-
                         }
 
 
@@ -321,7 +317,6 @@ export default function ContactsClient({
                             setSelectedContact(
                                 undefined,
                             );
-
 
                             setShowForm(
                                 false,
@@ -336,8 +331,6 @@ export default function ContactsClient({
 
 
 
-
-
             <ContactsTable
 
                 contacts={
@@ -345,8 +338,6 @@ export default function ContactsClient({
                 }
 
             />
-
-
 
         </div>
 
