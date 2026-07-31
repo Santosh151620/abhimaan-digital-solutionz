@@ -1,6 +1,14 @@
-import { NextResponse } from "next/server";
+import {
+    NextResponse,
+} from "next/server";
 
-import { ContactsServiceInstance } from "@/services/crm/ContactsService";
+
+import {
+    ContactsServiceInstance,
+} from "@/services/crm/ContactsService";
+
+
+
 
 export async function GET() {
 
@@ -9,62 +17,91 @@ export async function GET() {
         const contacts =
             await ContactsServiceInstance.list();
 
+
         return NextResponse.json(
-            contacts,
+            {
+                data: contacts,
+            },
+            {
+                status: 200,
+            },
         );
+
 
     } catch {
 
         return NextResponse.json(
+
             {
-                error: "Failed to load contacts",
+                error:
+                    "Failed to load contacts.",
             },
+
             {
-                status: 500,
+                status:500,
             },
+
         );
 
     }
 
 }
 
+
+
+
+
 export async function POST(
-    request: Request,
+    request:Request,
 ) {
+
 
     try {
 
+
         const body =
             await request.json();
+
+
 
         const contact =
             await ContactsServiceInstance.create(
                 body,
             );
 
+
+
         return NextResponse.json(
-            contact,
+
             {
-                status: 201,
+                data:contact,
             },
+
+            {
+                status:201,
+            },
+
         );
+
+
 
     } catch {
 
+
         return NextResponse.json(
+
             {
-                error: "Failed to create contact",
+                error:
+                    "Failed to create contact.",
             },
+
             {
-                status: 500,
+                status:500,
             },
+
         );
 
     }
 
+
 }
-
-
-
-
-
