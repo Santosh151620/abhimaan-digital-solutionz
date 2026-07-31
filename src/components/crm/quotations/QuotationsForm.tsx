@@ -1,250 +1,323 @@
 'use client';
 
+import { useState } from 'react';
+
 import type {
     Quotation,
+    QuotationStatus,
 } from '@/types/crm/Quotations';
 
+interface QuotationsFormProps {
 
-type Props = {
+    quotation?: Partial<Quotation>;
 
-    quotation?: Quotation;
+    loading?: boolean;
 
-    action?:
-        (
-            formData: FormData
-        ) =>
-            void |
-            Promise<void>;
+    onSubmit?: (
+        values: Partial<Quotation>,
+    ) => void | Promise<void>;
 
-};
+    onCancel?: () => void;
 
+}
 
+const statuses: QuotationStatus[] = [
+
+    'Draft',
+    'Sent',
+    'Accepted',
+    'Rejected',
+
+];
 
 export default function QuotationsForm({
 
     quotation,
 
-    action,
+    loading = false,
 
-}: Props) {
+    onSubmit,
 
+    onCancel,
+
+}: QuotationsFormProps) {
+
+    const [form, setForm] =
+        useState<Partial<Quotation>>({
+
+            title:
+                quotation?.title ?? '',
+
+            customerName:
+                quotation?.customerName ?? '',
+
+            companyId:
+                quotation?.companyId,
+
+            opportunityId:
+                quotation?.opportunityId,
+
+            amount:
+                quotation?.amount ?? 0,
+
+            tax:
+                quotation?.tax ?? 0,
+
+            discount:
+                quotation?.discount ?? 0,
+
+            currency:
+                quotation?.currency ?? 'INR',
+
+            validUntil:
+                quotation?.validUntil,
+
+            notes:
+                quotation?.notes,
+
+            status:
+                quotation?.status ?? 'Draft',
+
+        });
+
+    function update<K extends keyof Partial<Quotation>>(
+
+        key: K,
+
+        value: Partial<Quotation>[K],
+
+    ) {
+
+        setForm(previous => ({
+
+            ...previous,
+
+            [key]: value,
+
+        }));
+
+    }
+
+    async function submit(
+
+        event: React.FormEvent<HTMLFormElement>,
+
+    ) {
+
+        event.preventDefault();
+
+        if (!form.title?.trim()) {
+
+            alert('Quotation Title is required.');
+
+            return;
+
+        }
+
+        if (!form.customerName?.trim()) {
+
+            alert('Customer Name is required.');
+
+            return;
+
+        }
+
+        await onSubmit?.(form);
+
+    }
 
     return (
 
         <form
-            action={action}
-            className="space-y-4"
+            onSubmit={submit}
+            className="space-y-6 rounded-xl border bg-background p-6"
         >
 
-
-            <input
-
-                name="title"
-
-                defaultValue={
-                    quotation?.title ?? ''
-                }
-
-                placeholder="Quotation Title"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="customerName"
-
-                defaultValue={
-                    quotation?.customerName ?? ''
-                }
-
-                placeholder="Customer Name"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="companyId"
-
-                defaultValue={
-                    quotation?.companyId ?? ''
-                }
-
-                placeholder="Company ID"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="opportunityId"
-
-                defaultValue={
-                    quotation?.opportunityId ?? ''
-                }
-
-                placeholder="Opportunity ID"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="amount"
-
-                type="number"
-
-                defaultValue={
-                    quotation?.amount ?? 0
-                }
-
-                placeholder="Amount"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="tax"
-
-                type="number"
-
-                defaultValue={
-                    quotation?.tax ?? 0
-                }
-
-                placeholder="Tax"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="discount"
-
-                type="number"
-
-                defaultValue={
-                    quotation?.discount ?? 0
-                }
-
-                placeholder="Discount"
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="currency"
-
-                defaultValue={
-                    quotation?.currency ?? 'INR'
-                }
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
-
-            <input
-
-                name="validUntil"
-
-                type="date"
-
-                defaultValue={
-                    quotation?.validUntil ?? ''
-                }
-
-                className="border rounded p-2 w-full"
-
-            />
-
-
+            <div>
+
+                <h2 className="text-xl font-semibold">
+                    Quotation Details
+                </h2>
+
+                <p className="text-sm text-muted-foreground">
+                    Create or update quotation.
+                </p>
+
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Quotation Title"
+                    value={form.title ?? ''}
+                    onChange={event =>
+                        update(
+                            'title',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Customer Name"
+                    value={form.customerName ?? ''}
+                    onChange={event =>
+                        update(
+                            'customerName',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Company ID"
+                    value={form.companyId ?? ''}
+                    onChange={event =>
+                        update(
+                            'companyId',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Opportunity ID"
+                    value={form.opportunityId ?? ''}
+                    onChange={event =>
+                        update(
+                            'opportunityId',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    type="number"
+                    className="rounded-lg border p-2"
+                    placeholder="Amount"
+                    value={form.amount ?? 0}
+                    onChange={event =>
+                        update(
+                            'amount',
+                            Number(event.target.value),
+                        )
+                    }
+                />
+
+                <input
+                    type="number"
+                    className="rounded-lg border p-2"
+                    placeholder="Tax"
+                    value={form.tax ?? 0}
+                    onChange={event =>
+                        update(
+                            'tax',
+                            Number(event.target.value),
+                        )
+                    }
+                />
+
+                <input
+                    type="number"
+                    className="rounded-lg border p-2"
+                    placeholder="Discount"
+                    value={form.discount ?? 0}
+                    onChange={event =>
+                        update(
+                            'discount',
+                            Number(event.target.value),
+                        )
+                    }
+                />
+
+                <input
+                    className="rounded-lg border p-2"
+                    placeholder="Currency"
+                    value={form.currency ?? 'INR'}
+                    onChange={event =>
+                        update(
+                            'currency',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <input
+                    type="date"
+                    className="rounded-lg border p-2"
+                    value={form.validUntil ?? ''}
+                    onChange={event =>
+                        update(
+                            'validUntil',
+                            event.target.value,
+                        )
+                    }
+                />
+
+                <select
+                    className="rounded-lg border p-2"
+                    value={form.status}
+                    onChange={event =>
+                        update(
+                            'status',
+                            event.target.value as QuotationStatus,
+                        )
+                    }
+                >
+
+                    {statuses.map(status => (
+
+                        <option
+                            key={status}
+                            value={status}
+                        >
+                            {status}
+                        </option>
+
+                    ))}
+
+                </select>
+
+            </div>
 
             <textarea
-
-                name="notes"
-
-                defaultValue={
-                    quotation?.notes ?? ''
-                }
-
+                rows={4}
+                className="w-full rounded-lg border p-2"
                 placeholder="Notes"
-
-                className="border rounded p-2 w-full"
-
+                value={form.notes ?? ''}
+                onChange={event =>
+                    update(
+                        'notes',
+                        event.target.value,
+                    )
+                }
             />
 
+            <div className="flex justify-end gap-3">
 
+                <button
+                    type="button"
+                    onClick={onCancel}
+                    className="rounded-lg border px-4 py-2"
+                >
+                    Cancel
+                </button>
 
-            <select
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+                >
+                    {loading
+                        ? 'Saving...'
+                        : 'Save Quotation'}
+                </button>
 
-                name="status"
-
-                defaultValue={
-                    quotation?.status ?? 'Draft'
-                }
-
-                className="border rounded p-2 w-full"
-
-            >
-
-                <option value="Draft">
-                    Draft
-                </option>
-
-                <option value="Sent">
-                    Sent
-                </option>
-
-                <option value="Accepted">
-                    Accepted
-                </option>
-
-                <option value="Rejected">
-                    Rejected
-                </option>
-
-            </select>
-
-
-
-            <button
-
-                type="submit"
-
-                className="rounded bg-blue-600 px-4 py-2 text-white"
-
-            >
-
-                Save Quotation
-
-            </button>
-
+            </div>
 
         </form>
 

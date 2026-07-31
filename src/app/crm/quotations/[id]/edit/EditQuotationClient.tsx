@@ -1,31 +1,23 @@
 'use client';
 
-import {
-    useRouter,
-} from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 import QuotationsForm from '@/components/crm/quotations/QuotationsForm';
 
 import type {
     Quotation,
-    QuotationStatus,
 } from '@/types/crm/Quotations';
 
-
-
-type Props = {
+interface Props {
 
     quotation: Quotation;
 
-    updateQuotation:
-        (
-            id: string,
-            data: Partial<Quotation>,
-        ) => Promise<Quotation | null>;
+    updateQuotation: (
+        id: string,
+        values: Partial<Quotation>,
+    ) => Promise<unknown>;
 
-};
-
-
+}
 
 export default function EditQuotationClient({
 
@@ -35,118 +27,31 @@ export default function EditQuotationClient({
 
 }: Props) {
 
+    const router = useRouter();
 
-    const router =
-        useRouter();
+    async function handleSubmit(
 
+        values: Partial<Quotation>,
 
-
-    async function submit(
-        formData: FormData,
     ) {
-
-
-        const statusValue =
-            formData.get('status');
-
-
-        const status: QuotationStatus =
-            typeof statusValue === 'string'
-                ? statusValue as QuotationStatus
-                : 'Draft';
-
-
 
         await updateQuotation(
 
             quotation.id,
 
-            {
-
-                title:
-                    String(
-                        formData.get('title') ?? '',
-                    ),
-
-
-                customerName:
-                    String(
-                        formData.get('customerName') ?? '',
-                    ),
-
-
-                companyId:
-                    String(
-                        formData.get('companyId') ??
-                        quotation.companyId,
-                    ),
-
-
-                opportunityId:
-                    String(
-                        formData.get('opportunityId') ??
-                        '',
-                    )
-                    ||
-                    undefined,
-
-
-                amount:
-                    Number(
-                        formData.get('amount') ?? 0,
-                    ),
-
-
-                currency:
-                    String(
-                        formData.get('currency') ?? 'INR',
-                    ),
-
-
-                status,
-
-
-                validUntil:
-                    String(
-                        formData.get('validUntil') ?? '',
-                    ),
-
-
-                tax:
-                    Number(
-                        formData.get('tax') ?? 0,
-                    ),
-
-
-                discount:
-                    Number(
-                        formData.get('discount') ?? 0,
-                    ),
-
-
-                notes:
-                    String(
-                        formData.get('notes') ?? '',
-                    )
-                    ||
-                    undefined,
-
-            },
+            values,
 
         );
-
-
 
         router.push(
-            `/crm/quotations/${quotation.id}`,
-        );
 
+            `/crm/quotations/${quotation.id}`,
+
+        );
 
         router.refresh();
 
     }
-
-
 
     return (
 
@@ -154,7 +59,9 @@ export default function EditQuotationClient({
 
             quotation={quotation}
 
-            action={submit}
+            onSubmit={handleSubmit}
+
+            onCancel={() => router.back()}
 
         />
 

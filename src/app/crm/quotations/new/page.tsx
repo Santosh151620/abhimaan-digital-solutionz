@@ -2,8 +2,8 @@ import {
     redirect,
 } from 'next/navigation';
 
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 
 import QuotationsForm from '@/components/crm/quotations/QuotationsForm';
 
@@ -12,104 +12,21 @@ import {
 } from '../actions';
 
 import type {
-    QuotationStatus,
+    Quotation,
 } from '@/types/crm/Quotations';
-
 
 export default function NewQuotationPage() {
 
-
     async function submit(
-        formData: FormData,
+        values: Partial<Quotation>,
     ) {
 
         'use server';
 
-
-        const statusValue =
-            formData.get('status');
-
-
-        const quotationStatus: QuotationStatus =
-            typeof statusValue === 'string'
-                ? statusValue as QuotationStatus
-                : 'Draft';
-
-
-
         const quotation =
-            await createQuotation({
-
-                title:
-                    String(
-                        formData.get('title') ?? '',
-                    ),
-
-
-                customerName:
-                    String(
-                        formData.get('customerName') ?? '',
-                    ),
-
-
-                companyId:
-                    String(
-                        formData.get('companyId') ?? '',
-                    ),
-
-
-                opportunityId:
-                    String(
-                        formData.get('opportunityId') ?? '',
-                    )
-                    ||
-                    undefined,
-
-
-                amount:
-                    Number(
-                        formData.get('amount') ?? 0,
-                    ),
-
-
-                currency:
-                    String(
-                        formData.get('currency') ?? 'INR',
-                    ),
-
-
-                status:
-                    quotationStatus,
-
-
-                validUntil:
-                    String(
-                        formData.get('validUntil') ?? '',
-                    ),
-
-
-                tax:
-                    Number(
-                        formData.get('tax') ?? 0,
-                    ),
-
-
-                discount:
-                    Number(
-                        formData.get('discount') ?? 0,
-                    ),
-
-
-                notes:
-                    String(
-                        formData.get('notes') ?? '',
-                    )
-                    ||
-                    undefined,
-
-            });
-
-
+            await createQuotation(
+                values,
+            );
 
         redirect(
             `/crm/quotations/${quotation.id}`,
@@ -117,35 +34,24 @@ export default function NewQuotationPage() {
 
     }
 
-
-
     return (
 
         <CRMPageLayout>
 
-
             <CRMHeader
-
                 title="New Quotation"
-
                 description="Create a new customer quotation."
-
                 actions={[
                     {
-                        label: "Back",
-                        href: "/crm/quotations",
+                        label: 'Back',
+                        href: '/crm/quotations',
                     },
                 ]}
-
             />
-
 
             <QuotationsForm
-
-                action={submit}
-
+                onSubmit={submit}
             />
-
 
         </CRMPageLayout>
 
