@@ -1,5 +1,10 @@
 import {
-    ProductsRepositoryInstance,
+    createClient,
+} from '@/lib/supabase/server';
+
+
+import {
+    ProductsRepository,
 } from '@/repositories/crm/ProductsRepository';
 
 
@@ -10,56 +15,61 @@ import type {
 
 
 
+interface ProductSearchFilters {
+
+    status?: Product['status'];
+
+    type?: Product['type'];
+
+    search?: string;
+
+}
+
 export class ProductsService {
+    private async repository() {
+        const supabase =
+            await createClient();
 
-
-    async list(
-    ): Promise<Product[]> {
-
-        return ProductsRepositoryInstance.list();
-
+        return new ProductsRepository(
+            supabase
+        );
     }
 
-
-
-    async listArchived(
-    ): Promise<Product[]> {
-
-        return ProductsRepositoryInstance.listArchived();
-
+    async list(): Promise<Product[]> {
+        const repository =
+            await this.repository();
+        return repository.list();
     }
-
-
-
+    async listArchived(): Promise<Product[]> {
+        const repository =
+            await this.repository();
+        return repository.listArchived();
+    }
     async findById(
         id:string,
     ): Promise<Product | null> {
-
-        return ProductsRepositoryInstance.findById(
-            id,
+        const repository =
+           await this.repository();
+        return repository.findById(
+            id
         );
-
     }
-
-
-
     async search(
-        filters?: {
-
-            status?: Product['status'];
-
-            type?: Product['type'];
-
-            search?: string;
-
-        },
+        filters?: ProductSearchFilters
     ): Promise<Product[]> {
 
-        return ProductsRepositoryInstance.search(
-            filters,
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.search(
+            filters
         );
 
     }
+
 
 
 
@@ -67,61 +77,114 @@ export class ProductsService {
         data:Partial<Product>,
     ): Promise<Product> {
 
-        return ProductsRepositoryInstance.create(
-            data,
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.create(
+            {
+
+                ...data,
+
+                entityType:
+                    'Product',
+
+            }
         );
 
     }
+
 
 
 
     async update(
         id:string,
-        data:Partial<Product>,
-    ): Promise<Product | null> {
 
-        return ProductsRepositoryInstance.update(
+        data:Partial<Product>
+
+    ): Promise<Product> {
+
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.update(
+
             id,
-            data,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Product',
+
+            }
+
         );
 
     }
+
 
 
 
     async delete(
-        id:string,
-    ): Promise<boolean> {
+        id:string
+    ): Promise<void> {
 
-        return ProductsRepositoryInstance.delete(
-            id,
+
+        const repository =
+            await this.repository();
+
+
+
+        await repository.delete(
+            id
         );
 
     }
+
 
 
 
     async restore(
-        id:string,
+        id:string
     ): Promise<boolean> {
 
-        return ProductsRepositoryInstance.restore(
-            id,
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.restore(
+            id
         );
 
     }
 
 
 
-    async summary(
-    ): Promise<ProductSummary> {
 
-        return ProductsRepositoryInstance.summary();
+    async summary(): Promise<ProductSummary> {
+
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.summary();
 
     }
 
 
 }
+
 
 
 

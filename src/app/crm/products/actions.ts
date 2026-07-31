@@ -20,7 +20,7 @@ const PRODUCTS_PATH =
 
 
 export async function createProduct(
-    data:Record<string, unknown>,
+    data: Record<string, unknown>,
 ) {
 
     try {
@@ -63,6 +63,8 @@ export async function createProduct(
     }
 
 }
+
+
 
 
 
@@ -131,6 +133,10 @@ export async function updateProduct(
 
 
 
+
+
+
+
 export async function deleteProduct(
     id:string,
 ) {
@@ -138,22 +144,9 @@ export async function deleteProduct(
     try {
 
 
-        const deleted =
-            await ProductsServiceInstance.delete(
-                id,
-            );
-
-
-
-        if (!deleted) {
-
-            return {
-                success:false,
-                message:
-                    'Unable to delete product',
-            };
-
-        }
+        await ProductsServiceInstance.delete(
+            id,
+        );
 
 
 
@@ -164,7 +157,12 @@ export async function deleteProduct(
 
 
         return {
+
             success:true,
+
+            message:
+                'Product deleted successfully',
+
         };
 
 
@@ -178,14 +176,21 @@ export async function deleteProduct(
 
 
         return {
+
             success:false,
+
             message:
                 'Unable to delete product',
+
         };
 
     }
 
 }
+
+
+
+
 
 
 
@@ -198,22 +203,9 @@ export async function restoreProduct(
     try {
 
 
-        const restored =
-            await ProductsServiceInstance.restore(
-                id,
-            );
-
-
-
-        if (!restored) {
-
-            return {
-                success:false,
-                message:
-                    'Unable to restore product',
-            };
-
-        }
+        await ProductsServiceInstance.restore(
+            id,
+        );
 
 
 
@@ -224,7 +216,12 @@ export async function restoreProduct(
 
 
         return {
+
             success:true,
+
+            message:
+                'Product restored successfully',
+
         };
 
 
@@ -238,9 +235,12 @@ export async function restoreProduct(
 
 
         return {
+
             success:false,
+
             message:
                 'Unable to restore product',
+
         };
 
     }

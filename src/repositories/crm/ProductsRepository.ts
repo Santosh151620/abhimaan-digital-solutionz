@@ -1,396 +1,483 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+
+import type {
     Product,
     ProductSummary,
 } from '@/types/crm/Products';
 
 
-class ProductsRepository {
+
+interface ProductSearchFilters {
+
+    status?: Product['status'];
+
+    type?: Product['type'];
+
+    search?: string;
+
+}
 
 
-    private products =
-        new Map<string, Product>();
+
+export class ProductsRepository
+    extends BaseRepository<Product> {
+
+
+    constructor(
+        supabase: SupabaseClient
+    ) {
+
+        super(
+            supabase,
+            'products'
+        );
+
+    }
+
 
 
     async list(): Promise<Product[]> {
 
-        return Array.from(
-            this.products.values()
-        )
-        .filter(
-            product =>
-                !product.isDeleted
-        );
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                )
+                .eq(
+                    'is_deleted',
+                    false
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Product[];
 
     }
+
 
 
 
     async listArchived(): Promise<Product[]> {
 
-        return Array.from(
-            this.products.values()
-        )
-        .filter(
-            product =>
-                product.isDeleted
-        );
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                )
+                .eq(
+                    'is_deleted',
+                    true
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Product[];
 
     }
+
 
 
 
     async findById(
-        id:string
-    ):Promise<Product | null>{
+        id: string
+    ): Promise<Product | null> {
 
-        return (
-            this.products.get(id)
-            ??
-            null
+
+        return super.findById(
+            id
         );
 
     }
 
 
 
+
     async create(
-        data:Partial<Product>
-    ):Promise<Product>{
-
-        const now =
-            new Date()
-            .toISOString();
+        data: Partial<Product>
+    ): Promise<Product> {
 
 
-        const product:Product = {
+        const payload: Partial<Product> = {
 
-            id:
-                crypto.randomUUID(),
 
-            organizationId:
-                data.organizationId,
+            ...data,
 
-            productNumber:
-                data.productNumber
-                ??
-                `PRD-${Date.now()}`,
-
-            sku:
-                data.sku,
-
-            name:
-                data.name
-                ??
-                '',
-
-            description:
-                data.description,
-
-            type:
-                data.type
-                ??
-                'Product',
 
             status:
                 data.status
                 ??
                 'Draft',
 
-            unit:
-                data.unit,
 
-            price:
-                data.price
+            type:
+                data.type
                 ??
-                0,
+                'Product',
 
-            cost:
-                data.cost,
-
-            taxRate:
-                data.taxRate,
-
-            category:
-                data.category,
 
             entityType:
-                data.entityType,
+                data.entityType
+                ??
+                'Product',
 
-            entityId:
-                data.entityId,
 
-            isDeleted:false,
+            isDeleted:
+                false,
 
-            deletedAt:null,
-
-            deletedBy:null,
-
-            createdAt:now,
-
-            updatedAt:now,
 
         };
 
 
-        this.products.set(
-            product.id,
-            product
+
+        return super.create(
+            payload
         );
 
-
-        return product;
-
     }
+
 
 
 
     async update(
-        id:string,
-        data:Partial<Product>
-    ):Promise<Product | null>{
+        id: string,
+
+        data: Partial<Product>
+
+    ): Promise<Product> {
 
 
-        const existing =
-            this.products.get(id);
 
+        return super.update(
 
-        if(!existing){
-
-            return null;
-
-        }
-
-
-        const updated:Product = {
-
-            ...existing,
-
-            ...data,
-
-            updatedAt:
-                new Date()
-                .toISOString(),
-
-        };
-
-
-        this.products.set(
             id,
-            updated
+
+            {
+
+                ...data,
+
+                entityType:
+                    data.entityType
+                    ??
+                    'Product',
+
+            }
+
         );
 
 
-        return updated;
-
     }
-
-
 
     async delete(
-        id:string
-    ):Promise<boolean>{
+        id: string
+    ): Promise<void> {
 
 
-        const product =
-            this.products.get(id);
+        await this.update(
 
-
-        if(!product){
-
-            return false;
-
-        }
-
-
-        product.isDeleted = true;
-
-        product.status =
-            'Archived';
-
-        product.deletedAt =
-            new Date()
-            .toISOString();
-
-
-        product.updatedAt =
-            new Date()
-            .toISOString();
-
-
-        this.products.set(
             id,
-            product
+
+            {
+
+                status:
+                    'Archived',
+
+                isDeleted:
+                    true,
+
+                deletedAt:
+                    new Date()
+                    .toISOString(),
+
+            }
+
         );
 
 
-        return true;
-
     }
-
-
 
     async restore(
-        id:string
-    ):Promise<boolean>{
+        id: string
+    ): Promise<boolean> {
 
 
         const product =
-            this.products.get(id);
+            await this.findById(
+                id
+            );
 
 
-        if(!product){
+
+        if (!product) {
 
             return false;
 
         }
 
 
-        product.isDeleted = false;
 
-        product.deletedAt = null;
+        await this.update(
 
-        product.deletedBy = null;
-
-
-        if(
-            product.status === 'Archived'
-        ){
-
-            product.status =
-                'Active';
-
-        }
-
-
-        product.updatedAt =
-            new Date()
-            .toISOString();
-
-
-        this.products.set(
             id,
-            product
+
+            {
+
+                isDeleted:
+                    false,
+
+
+                deletedAt:
+                    undefined,
+
+
+                status:
+                    'Active',
+
+            }
+
         );
+
 
 
         return true;
 
     }
+
 
 
 
     async search(
-        filters?: {
+        filters?: ProductSearchFilters
 
-            status?: Product['status'];
-
-            type?: Product['type'];
-
-            search?: string;
-
-        }
-
-    ):Promise<Product[]>{
+    ): Promise<Product[]> {
 
 
-        let products =
-            await this.list();
 
-
-        if(filters?.status){
-
-            products =
-                products.filter(
-                    product =>
-                        product.status === filters.status
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId
+                )
+                .eq(
+                    'is_deleted',
+                    false
                 );
 
-        }
 
 
-        if(filters?.type){
 
-            products =
-                products.filter(
-                    product =>
-                        product.type === filters.type
+        if (filters?.status) {
+
+
+            query =
+                query.eq(
+
+                    'status',
+
+                    filters.status
+
                 );
 
+
         }
 
 
-        if(filters?.search){
+
+
+        if (filters?.type) {
+
+
+            query =
+                query.eq(
+
+                    'type',
+
+                    filters.type
+
+                );
+
+
+        }
+
+
+
+
+        if (filters?.search) {
+
 
             const keyword =
-                filters.search.toLowerCase();
+                filters.search.trim();
 
 
-            products =
-                products.filter(
-                    product =>
 
-                        product.name
-                        .toLowerCase()
-                        .includes(keyword)
+            if (keyword.length > 0) {
 
-                        ||
 
-                        product.sku
-                        ?.toLowerCase()
-                        .includes(keyword)
+                query =
+                    query.or(
 
-                );
+                        [
+
+                            `name.ilike.%${keyword}%`,
+
+                            `sku.ilike.%${keyword}%`,
+
+                            `product_number.ilike.%${keyword}%`,
+
+                        ]
+
+                        .join(',')
+
+                    );
+
+
+            }
+
 
         }
 
 
-        return products;
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    }
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Product[];
+
 
     }
 
 
 
-    async summary():Promise<ProductSummary>{
+
+
+    async summary(): Promise<ProductSummary> {
 
 
         const products =
             await this.list();
 
 
+
         const archived =
             await this.listArchived();
 
 
+
+
         return {
 
+
             total:
+
                 products.length,
 
+
+
             active:
+
                 products.filter(
+
                     product =>
+
                         product.status === 'Active'
+
                 )
                 .length,
+
+
 
             inactive:
+
                 products.filter(
+
                     product =>
+
                         product.status === 'Inactive'
+
                 )
                 .length,
 
+
+
             archived:
+
                 archived.length,
-
         };
-
     }
-
 }
-
-
-
-export const ProductsRepositoryInstance =
-    new ProductsRepository();
-

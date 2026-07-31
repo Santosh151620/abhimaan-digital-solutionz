@@ -13,7 +13,7 @@ import {
 interface RouteContext {
 
     params: Promise<{
-        id:string;
+        id: string;
     }>;
 
 }
@@ -21,14 +21,12 @@ interface RouteContext {
 
 
 
-
 export async function GET(
-    _request:NextRequest,
-    context:RouteContext,
+    _request: NextRequest,
+    context: RouteContext,
 ) {
 
     try {
-
 
         const {
             id,
@@ -48,12 +46,12 @@ export async function GET(
 
             return NextResponse.json(
                 {
-                    success:false,
+                    success: false,
                     message:
                         'Product not found',
                 },
                 {
-                    status:404,
+                    status: 404,
                 },
             );
 
@@ -63,16 +61,16 @@ export async function GET(
 
         return NextResponse.json(
             {
-                success:true,
-                data:product,
+                success: true,
+                data: product,
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
 
-    } catch(error) {
+    } catch (error) {
 
 
         console.error(
@@ -83,12 +81,12 @@ export async function GET(
 
         return NextResponse.json(
             {
-                success:false,
+                success: false,
                 message:
                     'Unable to fetch product',
             },
             {
-                status:500,
+                status: 500,
             },
         );
 
@@ -103,8 +101,8 @@ export async function GET(
 
 
 export async function PUT(
-    request:NextRequest,
-    context:RouteContext,
+    request: NextRequest,
+    context: RouteContext,
 ) {
 
     try {
@@ -134,12 +132,12 @@ export async function PUT(
 
             return NextResponse.json(
                 {
-                    success:false,
+                    success: false,
                     message:
                         'Product not found',
                 },
                 {
-                    status:404,
+                    status: 404,
                 },
             );
 
@@ -149,16 +147,16 @@ export async function PUT(
 
         return NextResponse.json(
             {
-                success:true,
-                data:product,
+                success: true,
+                data: product,
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
 
-    } catch(error) {
+    } catch (error) {
 
 
         console.error(
@@ -169,12 +167,12 @@ export async function PUT(
 
         return NextResponse.json(
             {
-                success:false,
+                success: false,
                 message:
                     'Unable to update product',
             },
             {
-                status:500,
+                status: 500,
             },
         );
 
@@ -182,16 +180,9 @@ export async function PUT(
 
 }
 
-
-
-
-
-
-
-
 export async function DELETE(
-    _request:NextRequest,
-    context:RouteContext,
+    _request: NextRequest,
+    context: RouteContext,
 ) {
 
     try {
@@ -204,43 +195,25 @@ export async function DELETE(
 
 
 
-        const deleted =
-            await ProductsServiceInstance.delete(
-                id,
-            );
-
-
-
-        if (!deleted) {
-
-            return NextResponse.json(
-                {
-                    success:false,
-                    message:
-                        'Unable to delete product',
-                },
-                {
-                    status:400,
-                },
-            );
-
-        }
+        await ProductsServiceInstance.delete(
+            id,
+        );
 
 
 
         return NextResponse.json(
             {
-                success:true,
+                success: true,
                 message:
                     'Product deleted successfully',
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
 
-    } catch(error) {
+    } catch (error) {
 
 
         console.error(
@@ -251,12 +224,12 @@ export async function DELETE(
 
         return NextResponse.json(
             {
-                success:false,
+                success: false,
                 message:
                     'Unable to delete product',
             },
             {
-                status:500,
+                status: 500,
             },
         );
 

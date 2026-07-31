@@ -182,13 +182,9 @@ export async function PUT(
 
 }
 
-
-
-
-
 export async function DELETE(
-    _request:NextRequest,
-    context:RouteContext,
+    _request: NextRequest,
+    context: RouteContext,
 ) {
 
     try {
@@ -201,61 +197,41 @@ export async function DELETE(
 
 
 
-        const deleted =
-            await ProductsServiceInstance.delete(
-                id,
-            );
-
-
-
-        if (!deleted) {
-
-            return NextResponse.json(
-                {
-                    success:false,
-                    message:
-                        'Unable to delete product',
-                },
-                {
-                    status:400,
-                },
-            );
-
-        }
+        await ProductsServiceInstance.delete(
+            id,
+        );
 
 
 
         return NextResponse.json(
             {
-                success:true,
+                success: true,
                 message:
                     'Product deleted successfully',
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
 
-
-    } catch(error) {
+    } catch (error) {
 
 
         console.error(
-            'PRODUCT_DELETE_API_ERROR',
+            'PRODUCT_DELETE_ERROR',
             error,
         );
 
 
-
         return NextResponse.json(
             {
-                success:false,
+                success: false,
                 message:
                     'Unable to delete product',
             },
             {
-                status:500,
+                status: 500,
             },
         );
 
