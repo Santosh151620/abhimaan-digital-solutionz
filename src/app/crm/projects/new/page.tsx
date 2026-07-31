@@ -1,86 +1,109 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
-import ProjectsForm from '@/components/crm/projects/ProjectsForm';
+import ProjectsForm from "@/components/crm/projects/ProjectsForm";
 
 import {
     createProject,
-} from '../actions';
+} from "../actions";
 
 import type {
     ProjectStatus,
-} from '@/types/crm/Projects';
+} from "@/types/crm/Projects";
 
 export default function NewProjectPage() {
 
     async function submit(
-        formData: FormData
+        formData: FormData,
     ) {
-        'use server';
 
-        const project =
+        "use server";
+
+        const result =
             await createProject({
 
                 projectNumber: String(
-                    formData.get('projectNumber') ?? ''
+                    formData.get("projectNumber") ?? "",
                 ),
 
                 name: String(
-                    formData.get('name') ?? ''
+                    formData.get("name") ?? "",
                 ),
 
                 customerName: String(
-                    formData.get('customerName') ?? ''
+                    formData.get("customerName") ?? "",
                 ),
 
                 companyId: String(
-                    formData.get('companyId') ?? ''
+                    formData.get("companyId") ?? "",
                 ),
 
                 contractId: String(
-                    formData.get('contractId') ?? ''
+                    formData.get("contractId") ?? "",
                 ),
 
                 manager: String(
-                    formData.get('manager') ?? ''
+                    formData.get("manager") ?? "",
                 ),
 
                 description: String(
-                    formData.get('description') ?? ''
+                    formData.get("description") ?? "",
                 ),
 
                 status: String(
-                    formData.get('status') ?? 'Planning'
+                    formData.get("status") ?? "Planning",
                 ) as ProjectStatus,
 
                 startDate: String(
-                    formData.get('startDate') ?? ''
+                    formData.get("startDate") ?? "",
                 ),
 
                 endDate: String(
-                    formData.get('endDate') ?? ''
+                    formData.get("endDate") ?? "",
                 ),
 
                 budget: Number(
-                    formData.get('budget') ?? 0
+                    formData.get("budget") ?? 0,
                 ),
 
                 currency: String(
-                    formData.get('currency') ?? 'INR'
+                    formData.get("currency") ?? "INR",
                 ),
 
             });
 
+        if (
+            !result.success ||
+            !result.data
+        ) {
+
+            throw new Error(
+                result.message ??
+                "Unable to create project",
+            );
+
+        }
+
         redirect(
-            `/crm/projects/${project.id}`
+            `/crm/projects/${result.data.id}`,
         );
 
     }
 
     return (
 
-        <div className="space-y-6 p-6">
+        <div
+            className="
+                space-y-6
+                p-6
+            "
+        >
 
-            <h1 className="text-3xl font-bold">
+            <h1
+                className="
+                    text-3xl
+                    font-bold
+                "
+            >
                 New Project
             </h1>
 
@@ -93,4 +116,3 @@ export default function NewProjectPage() {
     );
 
 }
-
