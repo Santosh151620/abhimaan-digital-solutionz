@@ -1,30 +1,16 @@
 import type {
     SupabaseClient,
-} from '@supabase/supabase-js';
+} from "@supabase/supabase-js";
 
 import {
     BaseRepository,
-} from '@/lib/db/base-repository';
+} from "@/lib/db/base-repository";
 
 import type {
     Opportunity,
     OpportunitySummary,
-} from '@/types/crm/Opportunities';
-
-
-
-export interface OpportunitySearchFilters {
-
-    stage?: Opportunity['stage'];
-
-    status?: Opportunity['status'];
-
-    companyId?: string;
-
-    search?: string;
-
-}
-
+    OpportunitySearchFilters,
+} from "@/types/crm/Opportunities";
 
 
 export class OpportunitiesRepository
@@ -37,36 +23,34 @@ export class OpportunitiesRepository
 
         super(
             supabase,
-            'opportunities',
+            "opportunities",
         );
 
     }
 
 
 
-
     async list(): Promise<Opportunity[]> {
-
 
         const {
             data,
             error,
         } =
             await this.tableRef()
-                .select('*')
+                .select("*")
                 .eq(
-                    'organization_id',
+                    "organization_id",
                     this.organizationId,
                 )
                 .order(
-                    'created_at',
+                    "created_at",
                     {
-                        ascending: false,
+                        ascending:false,
                     },
                 );
 
 
-        if (error) {
+        if(error) {
 
             throw error;
 
@@ -82,11 +66,9 @@ export class OpportunitiesRepository
 
 
 
-
-    async findById(
-        id: string,
-    ): Promise<Opportunity | null> {
-
+    async details(
+        id:string,
+    ):Promise<Opportunity | null> {
 
         return super.findById(
             id,
@@ -97,80 +79,86 @@ export class OpportunitiesRepository
 
 
 
-
-    async details(
-        id: string,
-    ): Promise<Opportunity | null> {
-
-
-        return this.findById(
-            id,
-        );
-
-    }
-
-
-
-
-
     async create(
-        data: Partial<Opportunity>,
-    ): Promise<Opportunity> {
+        data:Partial<Opportunity>,
+    ):Promise<Opportunity> {
 
 
-        return super.create(
+        const now =
+            new Date()
+                .toISOString();
 
-            {
 
-                ...data,
-                id:
-                    data.id ??
-                    crypto.randomUUID(),
-                entityType:
-                    'Opportunity',
-                opportunityNumber:
-                    data.opportunityNumber ??
-                    `OPP-${Date.now()}`,
-                name:
-                    data.name ??
-                    data.title ??
-                    'Untitled Opportunity',
-                title:
-                    data.title ??
-                    data.name ??
-                    'Untitled Opportunity',
-                stage:
-                    data.stage ??
-                    'New',
-                status:
-                    data.status ??
-                    'Open',
-                value:
-                    data.value ??
-                    0,
-                probability:
-                    data.probability ??
-                    0,
+        return super.create({
 
-                createdAt:
-                    new Date()
-                        .toISOString(),
+            ...data,
 
-                updatedAt:
-                    new Date()
-                        .toISOString(),
-            },
 
-        );
+            id:
+                data.id ??
+                crypto.randomUUID(),
+
+
+            entityType:
+                "Opportunity",
+
+
+            opportunityNumber:
+                data.opportunityNumber ??
+                `OPP-${Date.now()}`,
+
+
+            name:
+                data.name ??
+                data.title ??
+                "Untitled Opportunity",
+
+
+            title:
+                data.title ??
+                data.name ??
+                "Untitled Opportunity",
+
+
+            stage:
+                data.stage ??
+                "New",
+
+
+            status:
+                data.status ??
+                "Open",
+
+
+            value:
+                data.value ??
+                0,
+
+
+            probability:
+                data.probability ??
+                0,
+
+
+            createdAt:
+                data.createdAt ??
+                now,
+
+
+            updatedAt:
+                now,
+
+        });
 
     }
+
+
+
 
     async update(
-        id: string,
-
-        data: Partial<Opportunity>,
-
-    ): Promise<Opportunity> {
+        id:string,
+        data:Partial<Opportunity>,
+    ):Promise<Opportunity> {
 
 
         return super.update(
@@ -181,12 +169,13 @@ export class OpportunitiesRepository
 
                 ...data,
 
-
                 entityType:
-                    'Opportunity',
+                    "Opportunity",
+
                 updatedAt:
                     new Date()
                         .toISOString(),
+
             },
 
         );
@@ -198,8 +187,8 @@ export class OpportunitiesRepository
 
 
     async delete(
-        id: string,
-    ): Promise<void> {
+        id:string,
+    ):Promise<void> {
 
 
         await this.update(
@@ -209,7 +198,7 @@ export class OpportunitiesRepository
             {
 
                 status:
-                    'Lost',
+                    "Lost",
 
             },
 
@@ -222,25 +211,25 @@ export class OpportunitiesRepository
 
 
     async search(
-        filters?: OpportunitySearchFilters,
-    ): Promise<Opportunity[]> {
+        filters?:OpportunitySearchFilters,
+    ):Promise<Opportunity[]> {
 
 
         let query =
             this.tableRef()
-                .select('*')
+                .select("*")
                 .eq(
-                    'organization_id',
+                    "organization_id",
                     this.organizationId,
                 );
 
 
 
-        if (filters?.stage) {
+        if(filters?.stage) {
 
             query =
                 query.eq(
-                    'stage',
+                    "stage",
                     filters.stage,
                 );
 
@@ -248,11 +237,11 @@ export class OpportunitiesRepository
 
 
 
-        if (filters?.status) {
+        if(filters?.status) {
 
             query =
                 query.eq(
-                    'status',
+                    "status",
                     filters.status,
                 );
 
@@ -260,11 +249,11 @@ export class OpportunitiesRepository
 
 
 
-        if (filters?.companyId) {
+        if(filters?.companyId) {
 
             query =
                 query.eq(
-                    'company_id',
+                    "company_id",
                     filters.companyId,
                 );
 
@@ -272,20 +261,17 @@ export class OpportunitiesRepository
 
 
 
-        if (filters?.search) {
+        if(filters?.search) {
 
             query =
                 query.or(
 
                     [
-
                         `name.ilike.%${filters.search}%`,
-
                         `title.ilike.%${filters.search}%`,
-
                         `opportunity_number.ilike.%${filters.search}%`,
-
-                    ].join(','),
+                    ]
+                    .join(","),
 
                 );
 
@@ -301,7 +287,7 @@ export class OpportunitiesRepository
 
 
 
-        if (error) {
+        if(error) {
 
             throw error;
 
@@ -319,7 +305,7 @@ export class OpportunitiesRepository
 
 
 
-    async summary(): Promise<OpportunitySummary> {
+    async summary():Promise<OpportunitySummary> {
 
 
         const opportunities =
@@ -352,21 +338,21 @@ export class OpportunitiesRepository
             open:
                 opportunities.filter(
                     item =>
-                        item.status === 'Open',
+                        item.status === "Open",
                 ).length,
 
 
             won:
                 opportunities.filter(
                     item =>
-                        item.status === 'Won',
+                        item.status === "Won",
                 ).length,
 
 
             lost:
                 opportunities.filter(
                     item =>
-                        item.status === 'Lost',
+                        item.status === "Lost",
                 ).length,
 
 
@@ -400,7 +386,6 @@ export class OpportunitiesRepository
     }
 
 }
-
 export function createOpportunitiesRepository(
     supabase: SupabaseClient,
 ) {
@@ -415,9 +400,9 @@ export function createOpportunitiesRepository(
 /**
  * Backward compatibility aliases.
  */
+export const opportunitiesRepository =
+    createOpportunitiesRepository;
+
 export const OpportunitiesRepositoryInstance =
     createOpportunitiesRepository;
 
-
-export const opportunitiesRepository =
-    createOpportunitiesRepository;

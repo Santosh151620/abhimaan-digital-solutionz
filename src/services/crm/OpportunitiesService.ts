@@ -1,63 +1,43 @@
 import type {
-    Opportunity,
-    OpportunitySummary,
-} from '@/types/crm/Opportunities';
+    SupabaseClient,
+} from "@supabase/supabase-js";
 
 
 import {
     createOpportunitiesRepository,
-} from '@/repositories/crm/OpportunitiesRepository';
+    OpportunitiesRepository,
+} from "@/repositories/crm/OpportunitiesRepository";
 
 
-import {
-    createClient,
-} from '@/lib/supabase/server';
+import type {
+    Opportunity,
+    OpportunitySummary,
+} from "@/types/crm/Opportunities";
 
 
-
-class OpportunitiesService {
-
-
-    private async repository() {
+export class OpportunitiesService {
 
 
-        const supabase =
-            await createClient();
-
-
-        return createOpportunitiesRepository(
-            supabase,
-        );
-
-    }
-
+    constructor(
+        private readonly repository:
+            OpportunitiesRepository,
+    ) {}
 
 
 
     async list(): Promise<Opportunity[]> {
 
-
-        const repository =
-            await this.repository();
-
-
-        return repository.list();
+        return this.repository.list();
 
     }
 
 
 
-
     async details(
-        id: string,
+        id:string,
     ): Promise<Opportunity | null> {
 
-
-        const repository =
-            await this.repository();
-
-
-        return repository.details(
+        return this.repository.details(
             id,
         );
 
@@ -65,11 +45,9 @@ class OpportunitiesService {
 
 
 
-
     async get(
-        id: string,
+        id:string,
     ): Promise<Opportunity | null> {
-
 
         return this.details(
             id,
@@ -79,15 +57,9 @@ class OpportunitiesService {
 
 
 
-
     async create(
-        data: Partial<Opportunity>,
-    ): Promise<Opportunity> {
-
-
-        const repository =
-            await this.repository();
-
+        data:Partial<Opportunity>,
+    ):Promise<Opportunity> {
 
 
         const now =
@@ -95,136 +67,67 @@ class OpportunitiesService {
                 .toISOString();
 
 
+        return this.repository.create({
 
-        const opportunity: Opportunity = {
-
+            ...data,
 
             id:
                 data.id ??
                 crypto.randomUUID(),
 
-
-
             entityType:
-                'Opportunity',
-
-
+                "Opportunity",
 
             opportunityNumber:
                 data.opportunityNumber ??
                 `OPP-${Date.now()}`,
 
-
-
             name:
                 data.name ??
                 data.title ??
-                'Untitled Opportunity',
-
-
+                "Untitled Opportunity",
 
             title:
                 data.title ??
                 data.name ??
-                'Untitled Opportunity',
-
-
-
-            description:
-                data.description,
-
-
-
-            companyId:
-                data.companyId,
-
-
-
-            contactId:
-                data.contactId,
-
-
-
-            leadId:
-                data.leadId,
-
-
-
-            ownerId:
-                data.ownerId,
-
-
-
-            owner:
-                data.owner ??
-                data.ownerId,
-
-
+                "Untitled Opportunity",
 
             stage:
                 data.stage ??
-                'New',
-
-
+                "New",
 
             status:
                 data.status ??
-                'Open',
-
-
+                "Open",
 
             value:
                 data.value ??
                 0,
 
-
-
             probability:
                 data.probability ??
                 0,
-
-
-
-            expectedCloseDate:
-                data.expectedCloseDate,
-
-
 
             createdAt:
                 data.createdAt ??
                 now,
 
-
-
             updatedAt:
                 now,
 
-        };
-
-
-
-        return repository.create(
-            opportunity,
-        );
+        });
 
     }
 
 
 
-
     async update(
-        id: string,
-
-        data: Partial<Opportunity>,
-
-    ): Promise<Opportunity> {
+        id:string,
+        data:Partial<Opportunity>,
+    ):Promise<Opportunity> {
 
 
-        const repository =
-            await this.repository();
-
-
-        return repository.update(
+        return this.repository.update(
 
             id,
 
@@ -233,7 +136,11 @@ class OpportunitiesService {
                 ...data,
 
                 entityType:
-                    'Opportunity',
+                    "Opportunity",
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
 
             },
 
@@ -243,17 +150,11 @@ class OpportunitiesService {
 
 
 
-
     async delete(
-        id: string,
-    ): Promise<void> {
+        id:string,
+    ):Promise<void> {
 
-
-        const repository =
-            await this.repository();
-
-
-        await repository.delete(
+        return this.repository.delete(
             id,
         );
 
@@ -261,32 +162,177 @@ class OpportunitiesService {
 
 
 
+    async summary():Promise<OpportunitySummary> {
 
-    async summary(): Promise<OpportunitySummary> {
-
-
-        const repository =
-            await this.repository();
-
-
-        return repository.summary();
+        return this.repository.summary();
 
     }
-
 
 }
 
 
 
+export function createOpportunitiesService(
+    supabase:SupabaseClient,
+) {
 
-export const opportunitiesService =
-    new OpportunitiesService();
+    return new OpportunitiesService(
 
+        createOpportunitiesRepository(
+            supabase,
+        ),
+
+    );
+
+}
 
 
 
 /**
- * Backward compatibility alias.
+ * Legacy compatibility factory.
+ *
+ * Existing routes/pages still import:
+ * OpportunitiesServiceInstance
+ * opportunitiesService
+ *
+ * Keep these exports until all consumers
+ * migrate to dependency injection.
  */
+export function getOpportunitiesService(
+    supabase:SupabaseClient,
+) {
+
+    return createOpportunitiesService(
+        supabase,
+    );
+
+}
+
+
+export const opportunitiesService = {
+
+    async list() {
+
+        const {
+            createClient,
+        } = await import(
+            "@/lib/supabase/server"
+        );
+
+
+        return (
+            await createOpportunitiesService(
+                await createClient(),
+            )
+        ).list();
+
+    },
+
+
+    async details(
+        id:string,
+    ) {
+
+        const {
+            createClient,
+        } = await import(
+            "@/lib/supabase/server"
+        );
+
+
+        return (
+            await createOpportunitiesService(
+                await createClient(),
+            )
+        ).details(id);
+
+    },
+
+
+    async create(
+        data:Partial<Opportunity>,
+    ) {
+
+        const {
+            createClient,
+        } = await import(
+            "@/lib/supabase/server"
+        );
+
+
+        return (
+            await createOpportunitiesService(
+                await createClient(),
+            )
+        ).create(data);
+
+    },
+
+
+    async update(
+        id:string,
+        data:Partial<Opportunity>,
+    ) {
+
+        const {
+            createClient,
+        } = await import(
+            "@/lib/supabase/server"
+        );
+
+
+        return (
+            await createOpportunitiesService(
+                await createClient(),
+            )
+        ).update(
+            id,
+            data,
+        );
+
+    },
+
+
+    async delete(
+        id:string,
+    ) {
+
+        const {
+            createClient,
+        } = await import(
+            "@/lib/supabase/server"
+        );
+
+
+        return (
+            await createOpportunitiesService(
+                await createClient(),
+            )
+        ).delete(id);
+
+    },
+
+
+    async summary() {
+
+        const {
+            createClient,
+        } = await import(
+            "@/lib/supabase/server"
+        );
+
+
+        return (
+            await createOpportunitiesService(
+                await createClient(),
+            )
+        ).summary();
+
+    },
+
+};
+
+
+
 export const OpportunitiesServiceInstance =
     opportunitiesService;
