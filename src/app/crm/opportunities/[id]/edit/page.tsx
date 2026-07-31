@@ -1,31 +1,31 @@
 import {
     notFound,
     redirect,
-} from 'next/navigation';
+} from "next/navigation";
 
 
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
+import CRMHeader from "@/components/crm/shared/layout/CRMHeader";
 
 
 import {
     OpportunitiesForm,
-} from '@/components/crm/opportunities';
+} from "@/components/crm/opportunities";
 
 
 import {
     OpportunitiesServiceInstance,
-} from '@/services/crm/OpportunitiesService';
+} from "@/services/crm/OpportunitiesService";
 
 
 import {
     updateOpportunity,
-} from '../../actions';
+} from "../../actions";
 
 
 import type {
     Opportunity,
-} from '@/types/crm/Opportunities';
+} from "@/types/crm/Opportunities";
 
 
 
@@ -39,7 +39,6 @@ interface Props {
 
 
 
-
 export default async function EditOpportunityPage({
 
     params,
@@ -50,7 +49,8 @@ export default async function EditOpportunityPage({
 
     const {
         id,
-    } = await params;
+    } =
+        await params;
 
 
 
@@ -58,9 +58,8 @@ export default async function EditOpportunityPage({
     const opportunity =
 
         await OpportunitiesServiceInstance.details(
-            id
+            id,
         );
-
 
 
 
@@ -79,7 +78,7 @@ export default async function EditOpportunityPage({
 
     ) {
 
-        'use server';
+        "use server";
 
 
 
@@ -87,7 +86,7 @@ export default async function EditOpportunityPage({
 
             id,
 
-            values
+            values,
 
         );
 
@@ -95,7 +94,7 @@ export default async function EditOpportunityPage({
 
         redirect(
 
-            `/crm/opportunities/${id}`
+            `/crm/opportunities/${id}`,
 
         );
 
@@ -106,41 +105,47 @@ export default async function EditOpportunityPage({
 
     return (
 
-
         <CRMPageLayout>
-
 
 
             <CRMHeader
 
                 title="Edit Opportunity"
 
+
                 description="Update CRM opportunity details."
 
+
                 actions={[
+
                     {
                         label:"Back",
-                        href:`/crm/opportunities/${id}`,
+
+                        href:
+                            `/crm/opportunities/${id}`,
                     },
+
                 ]}
 
             />
 
 
 
-
             <OpportunitiesForm
 
-                initialValues={opportunity}
+                initialValues={
+                    opportunity
+                }
 
-                onSubmit={submit}
+
+                onSubmit={
+                    submit
+                }
 
             />
 
 
-
         </CRMPageLayout>
-
 
     );
 

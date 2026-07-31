@@ -1,17 +1,19 @@
-import { notFound } from 'next/navigation';
+import {
+    notFound,
+} from "next/navigation";
 
 
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
+import CRMHeader from "@/components/crm/shared/layout/CRMHeader";
 
 
-import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
-import EntityWorkspace from '@/components/entities/EntityWorkspace';
+import EntityOverviewGrid from "@/components/entities/EntityOverviewGrid";
+import EntityWorkspace from "@/components/entities/EntityWorkspace";
 
 
 import {
     OpportunitiesServiceInstance,
-} from '@/services/crm/OpportunitiesService';
+} from "@/services/crm/OpportunitiesService";
 
 
 
@@ -41,7 +43,7 @@ export default async function OpportunityDetailsPage({
     const opportunity =
 
         await OpportunitiesServiceInstance.details(
-            id
+            id,
         );
 
 
@@ -56,16 +58,19 @@ export default async function OpportunityDetailsPage({
 
     return (
 
-
         <CRMPageLayout>
-
 
 
             <CRMHeader
 
-                title={opportunity.title ?? opportunity.name}
+                title={
+                    opportunity.title ??
+                    opportunity.name
+                }
+
 
                 description="Opportunity details and sales workspace."
+
 
                 actions={[
                     {
@@ -73,14 +78,16 @@ export default async function OpportunityDetailsPage({
                         href:"/crm/opportunities",
                     },
 
+
                     {
                         label:"Edit",
-                        href:`/crm/opportunities/${opportunity.id}/edit`,
+                        href:
+                            `/crm/opportunities/${opportunity.id}/edit`,
                     },
+
                 ]}
 
             />
-
 
 
 
@@ -90,7 +97,9 @@ export default async function OpportunityDetailsPage({
                 entityType="Opportunity"
 
 
-                entityId={opportunity.id}
+                entityId={
+                    opportunity.id
+                }
 
 
 
@@ -105,33 +114,37 @@ export default async function OpportunityDetailsPage({
 
                             {
                                 title:"Stage",
-                                value:opportunity.stage,
+                                value:
+                                    opportunity.stage,
                             },
 
 
                             {
                                 title:"Company",
-                                value:opportunity.companyId,
+                                value:
+                                    opportunity.companyId ??
+                                    "-",
                             },
 
 
                             {
                                 title:"Value",
-                                value:`₹ ${opportunity.value}`,
+                                value:
+                                    `₹ ${opportunity.value}`,
                             },
 
 
                             {
                                 title:"Probability",
-                                value:`${opportunity.probability}%`,
+                                value:
+                                    `${opportunity.probability}%`,
                             },
 
 
                             {
                                 title:"Expected Close",
                                 value:
-                                    opportunity.expectedCloseDate
-                                    ??
+                                    opportunity.expectedCloseDate ??
                                     "-",
                             },
 
@@ -139,8 +152,7 @@ export default async function OpportunityDetailsPage({
                             {
                                 title:"Owner",
                                 value:
-                                    opportunity.ownerId
-                                    ??
+                                    opportunity.ownerId ??
                                     "-",
                             },
 
@@ -149,8 +161,9 @@ export default async function OpportunityDetailsPage({
                                 title:"Created",
                                 value:
                                     new Date(
-                                        opportunity.createdAt
-                                    ).toLocaleDateString(),
+                                        opportunity.createdAt,
+                                    )
+                                    .toLocaleDateString(),
                             },
 
 
@@ -158,16 +171,15 @@ export default async function OpportunityDetailsPage({
                                 title:"Updated",
                                 value:
                                     new Date(
-                                        opportunity.updatedAt
-                                    ).toLocaleDateString(),
+                                        opportunity.updatedAt,
+                                    )
+                                    .toLocaleDateString(),
                             },
 
 
                         ]}
 
-
                     />
-
 
                 }
 
@@ -175,9 +187,7 @@ export default async function OpportunityDetailsPage({
             />
 
 
-
         </CRMPageLayout>
-
 
     );
 

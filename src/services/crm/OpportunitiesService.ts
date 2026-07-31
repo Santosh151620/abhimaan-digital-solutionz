@@ -4,6 +4,11 @@ import type {
 
 
 import {
+    createClient,
+} from "@/lib/supabase/server";
+
+
+import {
     createOpportunitiesRepository,
     OpportunitiesRepository,
 } from "@/repositories/crm/OpportunitiesRepository";
@@ -13,6 +18,7 @@ import type {
     Opportunity,
     OpportunitySummary,
 } from "@/types/crm/Opportunities";
+
 
 
 export class OpportunitiesService {
@@ -25,7 +31,7 @@ export class OpportunitiesService {
 
 
 
-    async list(): Promise<Opportunity[]> {
+    async list():Promise<Opportunity[]> {
 
         return this.repository.list();
 
@@ -35,7 +41,7 @@ export class OpportunitiesService {
 
     async details(
         id:string,
-    ): Promise<Opportunity | null> {
+    ):Promise<Opportunity | null> {
 
         return this.repository.details(
             id,
@@ -47,7 +53,7 @@ export class OpportunitiesService {
 
     async get(
         id:string,
-    ): Promise<Opportunity | null> {
+    ):Promise<Opportunity | null> {
 
         return this.details(
             id,
@@ -71,46 +77,57 @@ export class OpportunitiesService {
 
             ...data,
 
+
             id:
                 data.id ??
                 crypto.randomUUID(),
 
+
             entityType:
                 "Opportunity",
+
 
             opportunityNumber:
                 data.opportunityNumber ??
                 `OPP-${Date.now()}`,
+
 
             name:
                 data.name ??
                 data.title ??
                 "Untitled Opportunity",
 
+
             title:
                 data.title ??
                 data.name ??
                 "Untitled Opportunity",
 
+
             stage:
                 data.stage ??
                 "New",
+
 
             status:
                 data.status ??
                 "Open",
 
+
             value:
                 data.value ??
                 0,
+
 
             probability:
                 data.probability ??
                 0,
 
+
             createdAt:
                 data.createdAt ??
                 now,
+
 
             updatedAt:
                 now,
@@ -135,8 +152,10 @@ export class OpportunitiesService {
 
                 ...data,
 
+
                 entityType:
                     "Opportunity",
+
 
                 updatedAt:
                     new Date()
@@ -172,6 +191,7 @@ export class OpportunitiesService {
 
 
 
+
 export function createOpportunitiesService(
     supabase:SupabaseClient,
 ) {
@@ -188,16 +208,8 @@ export function createOpportunitiesService(
 
 
 
-/**
- * Legacy compatibility factory.
- *
- * Existing routes/pages still import:
- * OpportunitiesServiceInstance
- * opportunitiesService
- *
- * Keep these exports until all consumers
- * migrate to dependency injection.
- */
+
+
 export function getOpportunitiesService(
     supabase:SupabaseClient,
 ) {
@@ -209,64 +221,79 @@ export function getOpportunitiesService(
 }
 
 
+
+
+/**
+ * Server-safe service facade.
+ *
+ * Existing consumers continue using:
+ *
+ * opportunitiesService
+ * OpportunitiesServiceInstance
+ *
+ * without importing Supabase directly.
+ */
 export const opportunitiesService = {
+
 
     async list() {
 
-        const {
-            createClient,
-        } = await import(
-            "@/lib/supabase/server"
-        );
+        const service =
+            await serverService();
 
 
-        return (
-            await createOpportunitiesService(
-                await createClient(),
-            )
-        ).list();
+        return service.list();
 
     },
+
 
 
     async details(
         id:string,
     ) {
 
-        const {
-            createClient,
-        } = await import(
-            "@/lib/supabase/server"
+        const service =
+            await serverService();
+
+
+        return service.details(
+            id,
         );
 
+    },
 
-        return (
-            await createOpportunitiesService(
-                await createClient(),
-            )
-        ).details(id);
+
+
+    async get(
+        id:string,
+    ) {
+
+        const service =
+            await serverService();
+
+
+        return service.get(
+            id,
+        );
 
     },
+
 
 
     async create(
         data:Partial<Opportunity>,
     ) {
 
-        const {
-            createClient,
-        } = await import(
-            "@/lib/supabase/server"
+        const service =
+            await serverService();
+
+
+        return service.create(
+            data,
         );
 
-
-        return (
-            await createOpportunitiesService(
-                await createClient(),
-            )
-        ).create(data);
-
     },
+
 
 
     async update(
@@ -274,18 +301,11 @@ export const opportunitiesService = {
         data:Partial<Opportunity>,
     ) {
 
-        const {
-            createClient,
-        } = await import(
-            "@/lib/supabase/server"
-        );
+        const service =
+            await serverService();
 
 
-        return (
-            await createOpportunitiesService(
-                await createClient(),
-            )
-        ).update(
+        return service.update(
             id,
             data,
         );
@@ -293,44 +313,48 @@ export const opportunitiesService = {
     },
 
 
+
     async delete(
         id:string,
     ) {
 
-        const {
-            createClient,
-        } = await import(
-            "@/lib/supabase/server"
+        const service =
+            await serverService();
+
+
+        return service.delete(
+            id,
         );
 
-
-        return (
-            await createOpportunitiesService(
-                await createClient(),
-            )
-        ).delete(id);
-
     },
+
 
 
     async summary() {
 
-        const {
-            createClient,
-        } = await import(
-            "@/lib/supabase/server"
-        );
+        const service =
+            await serverService();
 
 
-        return (
-            await createOpportunitiesService(
-                await createClient(),
-            )
-        ).summary();
+        return service.summary();
 
     },
 
 };
+
+
+
+async function serverService() {
+
+    return createOpportunitiesService(
+
+        await createClient(),
+
+    );
+
+}
+
+
 
 
 
