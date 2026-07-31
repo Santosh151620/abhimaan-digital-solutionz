@@ -2,9 +2,11 @@ import {
     createClient,
 } from "@/lib/supabase/server";
 
+
 import {
     createContactsRepository,
 } from "@/repositories/crm/ContactsRepository";
+
 
 import type {
     Contact,
@@ -14,6 +16,8 @@ import type {
     UpdateContactInput,
     ContactsSummary,
 } from "@/types/crm/Contacts";
+
+
 
 
 export class ContactsService {
@@ -33,7 +37,11 @@ export class ContactsService {
 
 
 
-    async list(): Promise<Contact[]> {
+
+
+
+    async list():Promise<Contact[]> {
+
 
         const repository =
             await this.repository();
@@ -45,7 +53,11 @@ export class ContactsService {
 
 
 
-    async listArchived(): Promise<Contact[]> {
+
+
+
+    async listArchived():Promise<Contact[]> {
+
 
         const repository =
             await this.repository();
@@ -57,9 +69,13 @@ export class ContactsService {
 
 
 
+
+
+
     async findById(
-        id: string,
-    ): Promise<Contact | null> {
+        id:string,
+    ):Promise<Contact | null> {
+
 
         const repository =
             await this.repository();
@@ -73,9 +89,13 @@ export class ContactsService {
 
 
 
+
+
+
     async details(
-        id: string,
-    ): Promise<ContactDetails | null> {
+        id:string,
+    ):Promise<ContactDetails | null> {
+
 
         const repository =
             await this.repository();
@@ -89,9 +109,29 @@ export class ContactsService {
 
 
 
+
+
+
+    async get(
+        id:string,
+    ):Promise<Contact | null> {
+
+
+        return this.findById(
+            id,
+        );
+
+    }
+
+
+
+
+
+
     async search(
-        filters?: ContactSearchFilters,
-    ): Promise<Contact[]> {
+        filters?:ContactSearchFilters,
+    ):Promise<Contact[]> {
+
 
         const repository =
             await this.repository();
@@ -105,35 +145,35 @@ export class ContactsService {
 
 
 
+
+
+
     async create(
-        data: CreateContactInput,
-    ): Promise<Contact> {
+        data:CreateContactInput,
+    ):Promise<Contact> {
+
 
         const repository =
             await this.repository();
 
 
         return repository.create(
-            {
-
-                ...data,
-
-                entityType:
-                    "Contact",
-
-            },
+            data,
         );
 
     }
 
 
 
+
+
+
     async update(
-        id: string,
+        id:string,
 
-        data: UpdateContactInput,
+        data:UpdateContactInput,
 
-    ): Promise<Contact> {
+    ):Promise<Contact> {
 
 
         const repository =
@@ -141,25 +181,24 @@ export class ContactsService {
 
 
         return repository.update(
+
             id,
 
-            {
+            data,
 
-                ...data,
-
-                entityType:
-                    "Contact",
-
-            },
         );
 
     }
 
 
 
+
+
+
     async delete(
-        id: string,
-    ): Promise<void> {
+        id:string,
+    ):Promise<void> {
+
 
         const repository =
             await this.repository();
@@ -173,9 +212,13 @@ export class ContactsService {
 
 
 
+
+
+
     async restore(
-        id: string,
-    ): Promise<boolean> {
+        id:string,
+    ):Promise<boolean> {
+
 
         const repository =
             await this.repository();
@@ -189,7 +232,11 @@ export class ContactsService {
 
 
 
-    async summary(): Promise<ContactsSummary> {
+
+
+
+    async summary():Promise<ContactsSummary> {
+
 
         const repository =
             await this.repository();
@@ -199,9 +246,52 @@ export class ContactsService {
 
     }
 
+
 }
 
 
 
+
+
+
+
+/**
+ * Production factory
+ */
+export function createContactsService() {
+
+
+    return new ContactsService();
+
+}
+
+
+
+
+
+
+
+/**
+ * Application singleton
+ *
+ * Used by:
+ * - Server components
+ * - Actions
+ * - API routes
+ */
 export const ContactsServiceInstance =
     new ContactsService();
+
+
+
+
+
+
+
+/**
+ * Legacy compatibility
+ *
+ * Existing imports continue working.
+ */
+export const contactsService =
+    ContactsServiceInstance;
