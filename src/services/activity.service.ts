@@ -1,16 +1,35 @@
-import type { Activity } from "@/types/crm/Activities";
-import { ActivitiesRepository } from "@/repositories/crm/ActivitiesRepository";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import {
+    createActivitiesRepository,
+} from "@/repositories/crm/ActivitiesRepository";
+
+import type {
+    Activity,
+} from "@/types/crm/Activities";
 
 
 export class ActivityService {
 
+    private readonly repository:
+        ReturnType<
+            typeof createActivitiesRepository
+        >;
+
 
     constructor(
-        private readonly repository: ActivitiesRepository,
-    ) {}
+        supabase: SupabaseClient,
+    ) {
+
+        this.repository =
+            createActivitiesRepository(
+                supabase,
+            );
+
+    }
 
 
-    getByEntity(
+    async getByEntity(
         entityType: string,
         entityId: string,
     ): Promise<Activity[]> {
@@ -23,7 +42,7 @@ export class ActivityService {
     }
 
 
-    create(
+    async create(
         activity: Partial<Activity>,
     ): Promise<Activity> {
 
@@ -35,3 +54,13 @@ export class ActivityService {
 
 }
 
+
+export function createActivityService(
+    supabase: SupabaseClient,
+) {
+
+    return new ActivityService(
+        supabase,
+    );
+
+}
