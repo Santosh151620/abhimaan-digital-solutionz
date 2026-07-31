@@ -1,30 +1,95 @@
-import type { Task } from "@/types/crm/Tasks";
-import { TasksRepository } from "@/repositories/tasks.repository";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import {
+    createTasksRepository,
+} from "@/repositories/crm/TasksRepository";
+
+import type {
+    Task,
+} from "@/types/crm/Tasks";
+
 
 export class TasksService {
-  constructor(
-    private readonly repository: TasksRepository,
-  ) {}
 
-  getByEntity(
-    entityType: string,
-    entityId: string,
-  ): Promise<Task[]> {
-    return this.repository.findByEntity(
-      entityType,
-      entityId,
-    );
-  }
 
-  create(
-    task: Partial<Task>,
-  ): Promise<Task> {
-    return this.repository.create(task);
-  }
+    private readonly repository;
+
+
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        this.repository =
+            createTasksRepository(
+                supabase,
+            );
+
+    }
+
+
+
+    async list(): Promise<Task[]> {
+
+        return this.repository.list();
+
+    }
+
+
+
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Task[]> {
+
+        const tasks =
+            await this.repository.list();
+
+
+        return tasks.filter(
+            task =>
+                task.entityType === entityType &&
+                task.entityId === entityId,
+        );
+
+    }
+
+
+
+    async create(
+        task: Partial<Task>,
+    ) {
+
+        return this.repository.create(
+            task,
+        );
+
+    }
+
+
+
+    async update(
+        id: string,
+        task: Partial<Task>,
+    ) {
+
+        return this.repository.update(
+            id,
+            task,
+        );
+
+    }
+
+
+
+    async delete(
+        id: string,
+    ) {
+
+        return this.repository.delete(
+            id,
+        );
+
+    }
+
+
 }
-
-
-
-
-
-
