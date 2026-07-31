@@ -1,10 +1,11 @@
 import type {
     SupabaseClient,
-} from '@supabase/supabase-js';
+} from "@supabase/supabase-js";
+
 
 import {
     BaseRepository,
-} from '@/lib/db/base-repository';
+} from "@/lib/db/base-repository";
 
 
 import type {
@@ -14,7 +15,7 @@ import type {
     ContactsSummary,
     CreateContactInput,
     UpdateContactInput,
-} from '@/types/crm/Contacts';
+} from "@/types/crm/Contacts";
 
 
 
@@ -30,7 +31,7 @@ export class ContactsRepository
 
         super(
             supabase,
-            'contacts',
+            "contacts",
         );
 
     }
@@ -47,19 +48,19 @@ export class ContactsRepository
             error,
         } =
             await this.tableRef()
-                .select('*')
+                .select("*")
                 .eq(
-                    'organization_id',
+                    "organization_id",
                     this.organizationId,
                 )
                 .neq(
-                    'status',
-                    'ARCHIVED',
+                    "status",
+                    "ARCHIVED",
                 )
                 .order(
-                    'created_at',
+                    "created_at",
                     {
-                        ascending: false,
+                        ascending:false,
                     },
                 );
 
@@ -79,7 +80,6 @@ export class ContactsRepository
         ) as Contact[];
 
     }
-
 
 
 
@@ -94,19 +94,19 @@ export class ContactsRepository
             error,
         } =
             await this.tableRef()
-                .select('*')
+                .select("*")
                 .eq(
-                    'organization_id',
+                    "organization_id",
                     this.organizationId,
                 )
                 .eq(
-                    'status',
-                    'ARCHIVED',
+                    "status",
+                    "ARCHIVED",
                 )
                 .order(
-                    'created_at',
+                    "created_at",
                     {
-                        ascending: false,
+                        ascending:false,
                     },
                 );
 
@@ -132,10 +132,9 @@ export class ContactsRepository
 
 
 
-
     async findById(
-        id: string,
-    ): Promise<Contact | null> {
+        id:string,
+    ):Promise<Contact | null> {
 
 
         return super.findById(
@@ -149,10 +148,9 @@ export class ContactsRepository
 
 
 
-
     async details(
-        id: string,
-    ): Promise<ContactDetails | null> {
+        id:string,
+    ):Promise<ContactDetails | null> {
 
 
         const contact =
@@ -178,32 +176,69 @@ export class ContactsRepository
 
     }
 
+
+
+
+
+
+
     async create(
-        data: CreateContactInput,
-    ): Promise<Contact> {
+        data:CreateContactInput,
+    ):Promise<Contact> {
 
-return super.create({
 
-    ...data,
+        const now =
+            new Date()
+                .toISOString();
 
-    entityType:
-        'Contact',
 
-    status:
-        data.status
-        ??
-        'ACTIVE',
 
-});
+        return super.create({
+
+            ...data,
+
+
+            id:
+                crypto.randomUUID(),
+
+
+            entityType:
+                "Contact",
+
+
+            status:
+                data.status ??
+                "ACTIVE",
+
+
+            isDeleted:
+                false,
+
+
+            createdAt:
+                now,
+
+
+            updatedAt:
+                now,
+
+        });
+
 
     }
 
+
+
+
+
+
+
     async update(
-        id: string,
+        id:string,
 
-        data: UpdateContactInput,
+        data:UpdateContactInput,
 
-    ): Promise<Contact> {
+    ):Promise<Contact> {
 
 
         return super.update(
@@ -214,8 +249,14 @@ return super.create({
 
                 ...data,
 
+
                 entityType:
-                    'Contact',
+                    "Contact",
+
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
 
             },
 
@@ -230,8 +271,8 @@ return super.create({
 
 
     async delete(
-        id: string,
-    ): Promise<void> {
+        id:string,
+    ):Promise<void> {
 
 
         await this.update(
@@ -241,7 +282,7 @@ return super.create({
             {
 
                 status:
-                    'ARCHIVED',
+                    "ARCHIVED",
 
 
                 isDeleted:
@@ -265,8 +306,8 @@ return super.create({
 
 
     async restore(
-        id: string,
-    ): Promise<boolean> {
+        id:string,
+    ):Promise<boolean> {
 
 
         const existing =
@@ -291,7 +332,7 @@ return super.create({
             {
 
                 status:
-                    'ACTIVE',
+                    "ACTIVE",
 
 
                 isDeleted:
@@ -310,25 +351,19 @@ return super.create({
         return true;
 
     }
-
-
-
-
-
-
-
-    async search(
-        filters?: ContactSearchFilters,
-    ): Promise<Contact[]> {
+        async search(
+        filters?:ContactSearchFilters,
+    ):Promise<Contact[]> {
 
 
         let query =
             this.tableRef()
-                .select('*')
+                .select("*")
                 .eq(
-                    'organization_id',
+                    "organization_id",
                     this.organizationId,
                 );
+
 
 
 
@@ -336,12 +371,11 @@ return super.create({
 
             query =
                 query.neq(
-                    'status',
-                    'ARCHIVED',
+                    "status",
+                    "ARCHIVED",
                 );
 
         }
-
 
 
 
@@ -350,7 +384,7 @@ return super.create({
 
             query =
                 query.eq(
-                    'status',
+                    "status",
                     filters.status,
                 );
 
@@ -359,12 +393,11 @@ return super.create({
 
 
 
-
         if (filters?.companyId) {
 
             query =
                 query.eq(
-                    'company_id',
+                    "company_id",
                     filters.companyId,
                 );
 
@@ -373,12 +406,11 @@ return super.create({
 
 
 
-
         if (filters?.ownerId) {
 
             query =
                 query.eq(
-                    'owner_id',
+                    "owner_id",
                     filters.ownerId,
                 );
 
@@ -387,12 +419,11 @@ return super.create({
 
 
 
-
         if (filters?.assignedTo) {
 
             query =
                 query.eq(
-                    'assigned_to',
+                    "assigned_to",
                     filters.assignedTo,
                 );
 
@@ -401,14 +432,13 @@ return super.create({
 
 
 
-
-        if (filters?.search) {
-
-
-            const keyword =
-                filters.search.trim();
+        const keyword =
+            filters?.search
+                ?.trim();
 
 
+
+        if (keyword) {
 
             query =
                 query.or(
@@ -425,7 +455,7 @@ return super.create({
 
                         `phone.ilike.%${keyword}%`,
 
-                    ].join(','),
+                    ].join(","),
 
                 );
 
@@ -441,10 +471,10 @@ return super.create({
         } =
             await query.order(
 
-                'created_at',
+                "created_at",
 
                 {
-                    ascending: false,
+                    ascending:false,
                 },
 
             );
@@ -474,7 +504,8 @@ return super.create({
 
 
 
-    async summary(): Promise<ContactsSummary> {
+
+    async summary():Promise<ContactsSummary> {
 
 
         const contacts =
@@ -484,6 +515,7 @@ return super.create({
 
         const archived =
             await this.listArchived();
+
 
 
 
@@ -498,8 +530,10 @@ return super.create({
             active:
 
                 contacts.filter(
+
                     item =>
-                        item.status === 'ACTIVE',
+                        item.status === "ACTIVE",
+
                 ).length,
 
 
@@ -507,8 +541,10 @@ return super.create({
             inactive:
 
                 contacts.filter(
+
                     item =>
-                        item.status === 'INACTIVE',
+                        item.status === "INACTIVE",
+
                 ).length,
 
 
@@ -516,8 +552,10 @@ return super.create({
             leads:
 
                 contacts.filter(
+
                     item =>
-                        item.status === 'LEAD',
+                        item.status === "LEAD",
+
                 ).length,
 
 
@@ -525,8 +563,10 @@ return super.create({
             customers:
 
                 contacts.filter(
+
                     item =>
-                        item.status === 'CUSTOMER',
+                        item.status === "CUSTOMER",
+
                 ).length,
 
 
@@ -534,13 +574,13 @@ return super.create({
             archived:
                 archived.length,
 
-
         };
 
     }
 
-
 }
+
+
 
 
 
@@ -551,8 +591,9 @@ return super.create({
  * Production factory
  */
 export function createContactsRepository(
-    supabase: SupabaseClient,
+    supabase:SupabaseClient,
 ) {
+
 
     return new ContactsRepository(
         supabase,
@@ -564,11 +605,15 @@ export function createContactsRepository(
 
 
 
+
 /**
  * Standard export
  */
 export const ContactsRepositoryInstance =
     createContactsRepository;
+
+
+
 
 
 
