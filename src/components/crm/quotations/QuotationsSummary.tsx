@@ -32,7 +32,7 @@ export default function QuotationsSummary({
             ) =>
 
                 sum +
-                quotation.total,
+                Number(quotation.total ?? 0),
 
             0,
 
@@ -75,14 +75,19 @@ export default function QuotationsSummary({
 
     const formattedValue =
         new Intl.NumberFormat(
+
             'en-IN',
+
             {
                 style: 'currency',
                 currency: 'INR',
                 maximumFractionDigits: 0,
             },
+
         ).format(
+
             totalValue,
+
         );
 
 

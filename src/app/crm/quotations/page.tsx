@@ -14,8 +14,7 @@ import {
 
 export default async function QuotationsPage() {
 
-    const quotations =
-        await getQuotations();
+    const quotations = await getQuotations();
 
 
     return (
@@ -34,28 +33,35 @@ export default async function QuotationsPage() {
             />
 
 
-            <QuotationsSummary
-                quotations={quotations}
-            />
+            <div className="space-y-6">
 
 
-            <QuotationsDataTable
-                quotations={quotations}
-            />
-
-
-            <QuotationsKanban
-                quotations={quotations}
-            />
-
-
-            <div className="flex gap-3">
-
-                <QuotationsExport
+                <QuotationsSummary
                     quotations={quotations}
                 />
 
-                <QuotationsImport />
+
+                <QuotationsDataTable
+                    quotations={quotations}
+                />
+
+
+                <QuotationsKanban
+                    quotations={quotations}
+                />
+
+
+                <div className="flex gap-3">
+
+                    <QuotationsExport
+                        quotations={quotations}
+                    />
+
+
+                    <QuotationsImport />
+
+                </div>
+
 
             </div>
 
@@ -65,4 +71,3 @@ export default async function QuotationsPage() {
     );
 
 }
-
