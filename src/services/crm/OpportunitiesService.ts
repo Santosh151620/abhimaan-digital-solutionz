@@ -63,111 +63,68 @@ export class OpportunitiesService {
 
 
 
-    async create(
-        data:Partial<Opportunity>,
-    ):Promise<Opportunity> {
+async create(
+    data: Partial<Opportunity>,
+): Promise<Opportunity> {
 
 
-        const now =
-            new Date()
-                .toISOString();
+    return this.repository.create({
+
+        ...data,
 
 
-        return this.repository.create({
+        entityType:
+            "Opportunity",
+
+
+        stage:
+            data.stage ?? 
+            "New",
+
+
+        status:
+            data.status ??
+            "Open",
+
+
+        value:
+            data.value ??
+            0,
+
+
+        probability:
+            data.probability ??
+            0,
+
+    });
+
+}
+
+
+
+async update(
+    id: string,
+    data: Partial<Opportunity>,
+): Promise<Opportunity> {
+
+
+    return this.repository.update(
+
+        id,
+
+        {
 
             ...data,
-
-
-            id:
-                data.id ??
-                crypto.randomUUID(),
 
 
             entityType:
                 "Opportunity",
 
+        },
 
-            opportunityNumber:
-                data.opportunityNumber ??
-                `OPP-${Date.now()}`,
+    );
 
-
-            name:
-                data.name ??
-                data.title ??
-                "Untitled Opportunity",
-
-
-            title:
-                data.title ??
-                data.name ??
-                "Untitled Opportunity",
-
-
-            stage:
-                data.stage ??
-                "New",
-
-
-            status:
-                data.status ??
-                "Open",
-
-
-            value:
-                data.value ??
-                0,
-
-
-            probability:
-                data.probability ??
-                0,
-
-
-            createdAt:
-                data.createdAt ??
-                now,
-
-
-            updatedAt:
-                now,
-
-        });
-
-    }
-
-
-
-    async update(
-        id:string,
-        data:Partial<Opportunity>,
-    ):Promise<Opportunity> {
-
-
-        return this.repository.update(
-
-            id,
-
-            {
-
-                ...data,
-
-
-                entityType:
-                    "Opportunity",
-
-
-                updatedAt:
-                    new Date()
-                        .toISOString(),
-
-            },
-
-        );
-
-    }
-
-
+}
 
     async delete(
         id:string,
@@ -235,18 +192,11 @@ export function getOpportunitiesService(
  */
 export const opportunitiesService = {
 
-
     async list() {
-
         const service =
             await serverService();
-
-
         return service.list();
-
     },
-
-
 
     async details(
         id:string,
@@ -254,15 +204,10 @@ export const opportunitiesService = {
 
         const service =
             await serverService();
-
-
         return service.details(
             id,
         );
-
     },
-
-
 
     async get(
         id:string,
@@ -270,15 +215,10 @@ export const opportunitiesService = {
 
         const service =
             await serverService();
-
-
         return service.get(
             id,
         );
-
     },
-
-
 
     async create(
         data:Partial<Opportunity>,
@@ -286,15 +226,10 @@ export const opportunitiesService = {
 
         const service =
             await serverService();
-
-
         return service.create(
             data,
         );
-
     },
-
-
 
     async update(
         id:string,
@@ -303,16 +238,11 @@ export const opportunitiesService = {
 
         const service =
             await serverService();
-
-
         return service.update(
             id,
             data,
         );
-
     },
-
-
 
     async delete(
         id:string,
@@ -320,43 +250,24 @@ export const opportunitiesService = {
 
         const service =
             await serverService();
-
-
         return service.delete(
             id,
         );
-
     },
-
-
 
     async summary() {
-
         const service =
             await serverService();
-
-
         return service.summary();
-
     },
-
 };
-
-
 
 async function serverService() {
 
     return createOpportunitiesService(
-
         await createClient(),
 
     );
-
 }
-
-
-
-
-
 export const OpportunitiesServiceInstance =
     opportunitiesService;
