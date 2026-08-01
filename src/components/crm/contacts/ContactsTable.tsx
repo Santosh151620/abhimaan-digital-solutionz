@@ -3,13 +3,13 @@
 import Link from 'next/link';
 
 import type {
-    ContactDetails,
+    Contact,
 } from '@/types/crm/Contacts';
 
 
 interface Props {
 
-    contacts: ContactDetails[];
+    contacts: Contact[];
 
 }
 
@@ -133,7 +133,7 @@ export default function ContactsTable({
 
                                 <td className="px-4 py-3">
 
-                                    {contact.companyName ?? '-'}
+                                    {contact.companyId ?? '-'}
 
                                 </td>
 
@@ -173,7 +173,7 @@ export default function ContactsTable({
 
                                 <td className="px-4 py-3">
 
-                                    {contact.lastActivity ?? '-'}
+                                    -
 
                                 </td>
 
@@ -181,14 +181,37 @@ export default function ContactsTable({
 
                                 <td className="px-4 py-3 text-right">
 
-                                    <Link
-                                        href={`/crm/contacts/${contact.id}`}
-                                        className="rounded border px-3 py-1 text-sm"
-                                    >
-                                        View
-                                    </Link>
+                                    <div className="flex justify-end gap-2">
+
+                                        <Link
+
+                                            href={`/crm/contacts/${contact.id}`}
+
+                                            className="rounded border px-3 py-1 text-sm"
+
+                                        >
+
+                                            View
+
+                                        </Link>
+
+
+                                        <Link
+
+                                            href={`/crm/contacts/${contact.id}/edit`}
+
+                                            className="rounded border px-3 py-1 text-sm"
+
+                                        >
+
+                                            Edit
+
+                                        </Link>
+
+                                    </div>
 
                                 </td>
+
 
                             </tr>
 

@@ -12,6 +12,7 @@ import {
 
 import {
     createContact,
+    updateContact,
 } from '@/app/crm/contacts/actions';
 
 import type {
@@ -200,7 +201,6 @@ export default function ContactsClient({
     }
 
 
-
     async function handleUpdate(
         values: Partial<Contact>,
     ) {
@@ -214,31 +214,57 @@ export default function ContactsClient({
         }
 
 
-        setContacts(
-            previous =>
-                previous.map(
-                    item =>
-                        item.id === selectedContact.id
-                            ? {
-                                ...item,
-                                ...values,
-                                updatedAt:
-                                    new Date()
-                                        .toISOString(),
-                            }
-                            : item,
-                ),
-        );
+        try {
+
+            setIsSaving(true);
 
 
-        setSelectedContact(
-            undefined,
-        );
+            const updated =
+                await updateContact(
+
+                    selectedContact.id,
+
+                    values,
+
+                );
 
 
-        setShowForm(
-            false,
-        );
+            setContacts(
+
+                previous =>
+
+                    previous.map(
+
+                        item =>
+
+                            item.id === updated.id
+
+                                ? updated
+
+                                : item,
+
+                    ),
+
+            );
+
+
+            setSelectedContact(
+                undefined,
+            );
+
+
+            setShowForm(
+                false,
+            );
+
+
+        }
+
+        finally {
+
+            setIsSaving(false);
+
+        }
 
     }
 
@@ -304,13 +330,15 @@ export default function ContactsClient({
                             selectedContact
                         }
 
+                        loading={
+                            isSaving
+                        }
 
                         onSubmit={
                             selectedContact
                                 ? handleUpdate
                                 : handleCreate
                         }
-
 
                         onCancel={() => {
 
