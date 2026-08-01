@@ -139,31 +139,135 @@ export class ContractsRepository
 
     }
 
-
-
-
-
-    async create(
+       async create(
         data: Partial<Contract>,
     ): Promise<Contract> {
+
+
+        const now =
+            new Date()
+                .toISOString();
+
+
+
+        const subtotal =
+            data.subtotal
+            ??
+            data.value
+            ??
+            0;
+
+
+
+        const tax =
+            data.tax
+            ??
+            0;
+
+
+
+        const discount =
+            data.discount
+            ??
+            0;
+
+
+
+        const total =
+            data.total
+            ??
+            (
+                subtotal +
+                tax -
+                discount
+            );
+
 
 
         const payload: Partial<Contract> = {
 
             ...data,
 
+
+            id:
+                data.id
+                ??
+                crypto.randomUUID(),
+
+
+
             entityType:
                 'Contract',
+
+
+
+            contractNumber:
+                data.contractNumber
+                ??
+                `CON-${Date.now()}`,
+
+
+
+            title:
+                data.title
+                ??
+                'Untitled Contract',
+
+
+
+            customerName:
+                data.customerName
+                ??
+                '',
+
+
 
             status:
                 data.status
                 ??
                 'Draft',
 
+
+
+            currency:
+                data.currency
+                ??
+                'INR',
+
+
+
+            subtotal,
+
+
+            tax,
+
+
+            discount,
+
+
+            total,
+
+
+            value:
+                total,
+
+
+
             archived:
                 false,
 
+
+
+            createdAt:
+                now,
+
+
+
+            updatedAt:
+                now,
+
         };
+
 
 
         return super.create(
@@ -171,9 +275,6 @@ export class ContractsRepository
         );
 
     }
-
-
-
 
 
     async update(
