@@ -9,68 +9,84 @@ import type {
     ContractStatus,
 } from '@/types/crm/Contracts';
 
-
 export async function getContracts() {
-    return ContractsServiceInstance.list();
-}
 
+    return await ContractsServiceInstance.list();
+
+}
 
 export async function getArchivedContracts() {
-    return ContractsServiceInstance.listArchived();
-}
 
+    return await ContractsServiceInstance.listArchived();
+
+}
 
 export async function getContract(
-    id: string
+    id: string,
 ) {
-    return ContractsServiceInstance.details(id);
-}
 
+    return await ContractsServiceInstance.details(
+        id,
+    );
+
+}
 
 export async function createContract(
-    data: Partial<Contract>
+    data: Partial<Contract>,
 ) {
-    return ContractsServiceInstance.create(data);
-}
 
+    return await ContractsServiceInstance.create(
+        data,
+    );
+
+}
 
 export async function updateContract(
     id: string,
-    data: Partial<Contract>
+    data: Partial<Contract>,
 ) {
-    return ContractsServiceInstance.update(
-        id,
-        data
-    );
-}
 
+    return await ContractsServiceInstance.update(
+        id,
+        data,
+    );
+
+}
 
 export async function deleteContract(
-    id: string
+    id: string,
 ) {
-    return ContractsServiceInstance.delete(id);
-}
 
+    await ContractsServiceInstance.delete(
+        id,
+    );
+
+}
 
 export async function restoreContract(
-    id: string
+    id: string,
 ) {
-    return ContractsServiceInstance.restore(id);
-}
 
+    return await ContractsServiceInstance.restore(
+        id,
+    );
+
+}
 
 export async function updateContractStatus(
     id: string,
-    status: ContractStatus
+    status: ContractStatus,
 ) {
-    return ContractsServiceInstance.updateStatus(
-        id,
-        status
-    );
-}
 
+    return await ContractsServiceInstance.updateStatus(
+        id,
+        status,
+    );
+
+}
 
 export async function getContractsSummary() {
-    return ContractsServiceInstance.summary();
-}
 
+    return await ContractsServiceInstance.summary();
+
+}

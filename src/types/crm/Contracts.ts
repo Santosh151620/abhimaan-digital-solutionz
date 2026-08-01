@@ -9,45 +9,100 @@ export type ContractStatus =
 
 export interface Contract {
 
+    /**
+     * Entity
+     */
     id: string;
-    entityType: 'Contract';
-    contractNumber: string;
 
-    companyId: string;
+    entityType: 'Contract';
+
+    entityId?: string;
+
+    organizationId?: string;
+
+    /**
+     * Relationships
+     */
+    companyId?: string;
+
+    contactId?: string;
 
     quotationId?: string;
 
     invoiceId?: string;
 
+    ownerId?: string;
+
+    /**
+     * Business
+     */
+    contractNumber: string;
+
     title: string;
 
-    customerName: string;
+    description?: string;
 
+    /**
+     * UI compatibility
+     */
+    customerName?: string;
+
+    /**
+     * Lifecycle
+     */
     status: ContractStatus;
 
-    startDate: string;
+    startDate?: string;
 
-    endDate: string;
+    endDate?: string;
 
     renewalDate?: string;
 
-    autoRenew?: boolean;
+    autoRenew: boolean;
 
-    value: number;
-
+    /**
+     * Financial
+     */
     currency: string;
 
-    subtotal?: number;
+    subtotal: number;
 
-    tax?: number;
+    tax: number;
 
-    discount?: number;
+    discount: number;
 
-    total?: number;
+    total: number;
 
+    /**
+     * Legacy compatibility
+     * Existing UI still uses value.
+     */
+    value: number;
+
+    /**
+     * Execution
+     */
+    signedDate?: string;
+
+    signedBy?: string;
+
+    documentUrl?: string;
+
+    /**
+     * Additional Information
+     */
     notes?: string;
 
+    metadata?: Record<string, unknown>;
+
     archived: boolean;
+
+    /**
+     * Audit
+     */
+    createdBy?: string;
+
+    updatedBy?: string;
 
     createdAt: string;
 
@@ -90,4 +145,3 @@ export interface ContractSearchFilters {
     search?: string;
 
 }
-

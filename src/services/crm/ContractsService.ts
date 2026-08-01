@@ -1,5 +1,9 @@
 import {
-    ContractsRepositoryInstance,
+    createClient,
+} from '@/lib/supabase/server';
+
+import {
+    createContractsRepository,
 } from '@/repositories/crm/ContractsRepository';
 
 import type {
@@ -11,116 +15,171 @@ import type {
 
 class ContractsService {
 
-    list(): Contract[] {
+    private async repository() {
 
-        return ContractsRepositoryInstance.list();
+        const supabase =
+            await createClient();
+
+        return createContractsRepository(
+            supabase,
+        );
 
     }
 
-    listArchived(): Contract[] {
+    async list(): Promise<Contract[]> {
 
-        return ContractsRepositoryInstance.listArchived();
+        return (
+            await this.repository()
+        ).list();
 
     }
 
-    details(
+    async listArchived(): Promise<Contract[]> {
+
+        return (
+            await this.repository()
+        ).listArchived();
+
+    }
+
+    async findById(
         id: string,
-    ): Contract | null {
+    ): Promise<Contract | null> {
 
-        return ContractsRepositoryInstance.details(
+        return (
+            await this.repository()
+        ).findById(
             id,
         );
 
     }
 
-    findById(
+    async details(
         id: string,
-    ): Contract | null {
+    ): Promise<Contract | null> {
 
-        return this.details(
+        return this.findById(
             id,
         );
 
     }
 
-    search(
-        filters?: ContractSearchFilters,
-    ): Contract[] {
-
-        return ContractsRepositoryInstance.search(
-            filters,
-        );
-
-    }
-
-    create(
+    async create(
         data: Partial<Contract>,
-    ): Contract {
+    ): Promise<Contract> {
 
-        return ContractsRepositoryInstance.create(
+        return (
+            await this.repository()
+        ).create(
             data,
         );
 
     }
 
-    update(
+    async update(
         id: string,
         data: Partial<Contract>,
-    ): Contract | null {
+    ): Promise<Contract> {
 
-        return ContractsRepositoryInstance.update(
+        return (
+            await this.repository()
+        ).update(
             id,
-            data,
+            {
+                ...data,
+                entityType:
+                    'Contract',
+            },
         );
 
     }
 
-    updateStatus(
+    async delete(
+        id: string,
+    ): Promise<void> {
+
+        await (
+            await this.repository()
+        ).delete(
+            id,
+        );
+
+    }
+
+    async restore(
+        id: string,
+    ): Promise<Contract> {
+
+        return (
+            await this.repository()
+        ).restore(
+            id,
+        );
+
+    }
+
+    async updateStatus(
         id: string,
         status: ContractStatus,
-    ): Contract | null {
+    ): Promise<Contract> {
 
-        return ContractsRepositoryInstance.updateStatus(
+        return (
+            await this.repository()
+        ).updateStatus(
             id,
             status,
         );
 
     }
 
-    delete(
-        id: string,
-    ): boolean {
+    async search(
+        filters?: ContractSearchFilters,
+    ): Promise<Contract[]> {
 
-        return ContractsRepositoryInstance.delete(
-            id,
+        return (
+            await this.repository()
+        ).search(
+            filters,
         );
 
     }
 
-    restore(
-        id: string,
-    ): boolean {
+    async summary(): Promise<
+        ContractSummary & {
+            value: number;
+        }
+    > {
 
-        return ContractsRepositoryInstance.restore(
-            id,
-        );
+        const summary =
+            await (
+                await this.repository()
+            ).summary();
 
-    }
+        return {
 
-    summary(): ContractSummary {
+            ...summary,
 
-        return ContractsRepositoryInstance.summary();
+            /**
+             * Backward compatibility
+             */
+            value:
+                summary.totalValue,
+
+        };
 
     }
 
 }
 
-export async function createContractsService() {
-
-    return new ContractsService();
-
-}
-
-export const ContractsServiceInstance =
+export const contractsService =
     new ContractsService();
 
+/**
+ * Backward compatibility alias.
+ */
+export const ContractsServiceInstance =
+    contractsService;
+
+export const contractService =
+    contractsService;
+    

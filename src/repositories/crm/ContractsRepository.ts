@@ -1,501 +1,511 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Contract,
     ContractSearchFilters,
     ContractSummary,
     ContractStatus,
 } from '@/types/crm/Contracts';
 
-class ContractsRepository {
 
-    private contracts =
-        new Map<string, Contract>();
+export class ContractsRepository
+    extends BaseRepository<Contract> {
 
-    list(): Contract[] {
 
-        return Array.from(
-            this.contracts.values(),
-        )
-            .filter(
-                contract =>
-                    !contract.archived,
-            )
-            .sort(
-                (a, b) =>
-                    b.createdAt.localeCompare(
-                        a.createdAt,
-                    ),
-            );
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        super(
+            supabase,
+            'crm.contracts',
+        );
 
     }
 
-    listArchived(): Contract[] {
 
-        return Array.from(
-            this.contracts.values(),
-        )
-            .filter(
-                contract =>
-                    contract.archived,
-            )
-            .sort(
-                (a, b) =>
-                    b.updatedAt.localeCompare(
-                        a.updatedAt,
-                    ),
-            );
 
-    }
+    async list(): Promise<Contract[]> {
 
-    details(
-        id: string,
-    ): Contract | null {
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending: false,
+                    },
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
 
         return (
-            this.contracts.get(id)
-            ??
-            null
-        );
+            data ?? []
+        ) as Contract[];
 
     }
 
-    search(
-        filters?: ContractSearchFilters,
-    ): Contract[] {
 
-        let contracts =
-            this.list();
 
-        if (filters?.status) {
 
-            contracts =
-                contracts.filter(
-                    contract =>
-                        contract.status ===
-                        filters.status,
+
+    async listArchived(): Promise<Contract[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    true,
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending: false,
+                    },
                 );
+
+
+        if (error) {
+
+            throw error;
 
         }
 
-        if (filters?.companyId) {
 
-            contracts =
-                contracts.filter(
-                    contract =>
-                        contract.companyId ===
-                        filters.companyId,
-                );
-
-        }
-
-        if (filters?.search) {
-
-            const keyword =
-                filters.search
-                    .trim()
-                    .toLowerCase();
-            contracts =
-                contracts.filter(
-                    contract =>
-
-                        contract.title
-                            .toLowerCase()
-                            .includes(keyword)
-
-                        ||
-
-                        contract.customerName
-                            .toLowerCase()
-                            .includes(keyword)
-
-                        ||
-
-                        contract.contractNumber
-                            .toLowerCase()
-                            .includes(keyword),
-
-                );
-
-        }
-
-        return contracts;
+        return (
+            data ?? []
+        ) as Contract[];
 
     }
 
-    create(
-        data: Partial<Contract>,
-    ): Contract {
 
-        const now =
-            new Date().toISOString();
 
-        const today =
-            now.substring(0, 10);
 
-        const subtotal =
-            data.subtotal
-            ??
-            data.value
-            ??
-            0;
 
-        const tax =
-            data.tax
-            ??
-            0;
-
-        const discount =
-            data.discount
-            ??
-            0;
-
-        const total =
-            data.total
-            ??
-            (
-                subtotal +
-                tax -
-                discount
-            );
-
-        const contract: Contract = {
-
-            entityType:
-                'Contract',
-
-            id:
-                crypto.randomUUID(),
-
-            contractNumber:
-                data.contractNumber
-                ??
-                `CNT-${Date.now()}`,
-
-            companyId:
-                data.companyId
-                ??
-                '',
-
-            quotationId:
-                data.quotationId,
-
-            invoiceId:
-                data.invoiceId,
-
-            title:
-                data.title
-                ??
-                '',
-
-            customerName:
-                data.customerName
-                ??
-                '',
-
-            status:
-                data.status
-                ??
-                'Draft',
-
-            startDate:
-                data.startDate
-                ??
-                today,
-
-            endDate:
-                data.endDate
-                ??
-                today,
-
-            renewalDate:
-                data.renewalDate,
-
-            autoRenew:
-                data.autoRenew
-                ??
-                false,
-
-            value:
-                data.value
-                ??
-                total,
-
-            currency:
-                data.currency
-                ??
-                'INR',
-
-            subtotal,
-
-            tax,
-
-            discount,
-
-            total,
-
-            notes:
-                data.notes,
-
-            archived:
-                false,
-
-            createdAt:
-                now,
-
-            updatedAt:
-                now,
-
-        };
-
-        this.contracts.set(
-            contract.id,
-            contract,
-        );
-
-        return contract;
-
-    }
-    update(
+    async findById(
         id: string,
+    ): Promise<Contract | null> {
+
+        return super.findById(
+            id,
+        );
+
+    }
+
+
+
+
+
+    async details(
+        id: string,
+    ): Promise<Contract | null> {
+
+        return this.findById(
+            id,
+        );
+
+    }
+
+
+
+
+
+    async create(
         data: Partial<Contract>,
-    ): Contract | null {
+    ): Promise<Contract> {
 
-        const existing =
-            this.contracts.get(id);
 
-        if (!existing) {
-
-            return null;
-
-        }
-
-        const subtotal =
-            data.subtotal ??
-            existing.subtotal ??
-            existing.value;
-
-        const tax =
-            data.tax ??
-            existing.tax ??
-            0;
-
-        const discount =
-            data.discount ??
-            existing.discount ??
-            0;
-
-        const total =
-            data.total ??
-            (
-                subtotal +
-                tax -
-                discount
-            );
-
-        const updated: Contract = {
-
-            ...existing,
+        const payload: Partial<Contract> = {
 
             ...data,
 
             entityType:
                 'Contract',
 
-            subtotal,
+            status:
+                data.status
+                ??
+                'Draft',
 
-            tax,
-
-            discount,
-
-            total,
-
-            value:
-                data.value ??
-                total,
-
-            updatedAt:
-                new Date().toISOString(),
+            archived:
+                false,
 
         };
 
-        this.contracts.set(
-            id,
-            updated,
-        );
 
-        return updated;
+        return super.create(
+            payload,
+        );
 
     }
 
-    updateStatus(
+
+
+
+
+    async update(
         id: string,
+
+        data: Partial<Contract>,
+
+    ): Promise<Contract> {
+
+
+        return super.update(
+
+            id,
+
+            {
+
+                ...data,
+
+                entityType:
+                    'Contract',
+
+            },
+
+        );
+
+    }
+
+
+
+
+
+    async updateStatus(
+        id: string,
+
         status: ContractStatus,
-    ): Contract | null {
+
+    ): Promise<Contract> {
+
 
         return this.update(
+
             id,
+
             {
+
                 status,
+
             },
+
         );
 
     }
 
-    delete(
+async delete(
+    id: string,
+): Promise<void> {
+
+
+    await this.update(
+
+        id,
+
+        {
+
+            archived:
+                true,
+
+        },
+
+    );
+
+}
+
+    async restore(
         id: string,
-    ): boolean {
+    ): Promise<Contract> {
 
-        const contract =
-            this.contracts.get(id);
 
-        if (!contract) {
+        return this.update(
 
-            return false;
+            id,
+
+            {
+
+                archived:
+                    false,
+
+            },
+
+        );
+
+    }
+
+
+
+
+
+    async search(
+        filters?: ContractSearchFilters,
+    ): Promise<Contract[]> {
+
+
+        let query =
+            this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'archived',
+                    false,
+                );
+
+
+
+        if (filters?.status) {
+
+            query =
+                query.eq(
+                    'status',
+                    filters.status,
+                );
 
         }
 
-        contract.archived =
-            true;
 
-        contract.updatedAt =
-            new Date().toISOString();
 
-        this.contracts.set(
-            id,
-            contract,
-        );
+        if (filters?.companyId) {
 
-        return true;
-
-    }
-
-    restore(
-        id: string,
-    ): boolean {
-
-        const contract =
-            this.contracts.get(id);
-
-        if (!contract) {
-
-            return false;
+            query =
+                query.eq(
+                    'company_id',
+                    filters.companyId,
+                );
 
         }
 
-        contract.archived =
-            false;
 
-        contract.updatedAt =
-            new Date().toISOString();
 
-        this.contracts.set(
-            id,
-            contract,
-        );
+        if (
+            filters?.search &&
+            filters.search.trim()
+        ) {
 
-        return true;
+
+            const keyword =
+                filters.search.trim();
+
+
+
+            query =
+                query.or(
+
+                    [
+
+                        `title.ilike.%${keyword}%`,
+
+                        `contract_number.ilike.%${keyword}%`,
+
+                    ].join(','),
+
+                );
+
+        }
+
+
+
+        const {
+            data,
+            error,
+        } =
+            await query.order(
+
+                'created_at',
+
+                {
+
+                    ascending:
+                        false,
+
+                },
+
+            );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            data ?? []
+        ) as Contract[];
 
     }
 
-    summary(): ContractSummary {
+
+
+
+
+    async summary(): Promise<ContractSummary> {
+
 
         const contracts =
-            this.list();
+            await this.list();
+
+
 
         const archived =
-            this.listArchived();
+            await this.listArchived();
+
+
 
         const totalValue =
             contracts.reduce(
+
                 (
-                    sum,
+                    total,
                     contract,
                 ) =>
-                    sum +
+
+                    total +
                     (
                         contract.total ??
-                        contract.value
+                        contract.value ??
+                        0
                     ),
+
                 0,
+
             );
+
+
 
         const activeValue =
             contracts
+
                 .filter(
+
                     contract =>
                         contract.status ===
                         'Active',
+
                 )
+
                 .reduce(
+
                     (
-                        sum,
+                        total,
                         contract,
                     ) =>
-                        sum +
+
+                        total +
                         (
                             contract.total ??
-                            contract.value
+                            contract.value ??
+                            0
                         ),
+
                     0,
+
                 );
 
+
+
         return {
+
 
             total:
                 contracts.length,
 
+
             draft:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Draft',
+                    x =>
+                        x.status === 'Draft',
                 ).length,
+
 
             pending:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Pending',
+                    x =>
+                        x.status === 'Pending',
                 ).length,
+
 
             active:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Active',
+                    x =>
+                        x.status === 'Active',
                 ).length,
+
 
             completed:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Completed',
+                    x =>
+                        x.status === 'Completed',
                 ).length,
+
 
             expired:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Expired',
+                    x =>
+                        x.status === 'Expired',
                 ).length,
+
 
             terminated:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Terminated',
+                    x =>
+                        x.status === 'Terminated',
                 ).length,
+
 
             cancelled:
                 contracts.filter(
-                    contract =>
-                        contract.status ===
-                        'Cancelled',
+                    x =>
+                        x.status === 'Cancelled',
                 ).length,
+
 
             archived:
                 archived.length,
 
+
             totalValue,
+
 
             activeValue,
 
@@ -503,14 +513,20 @@ class ContractsRepository {
 
     }
 
-}
-
-export function createContractsRepository() {
-
-    return new ContractsRepository();
 
 }
 
 
-export const ContractsRepositoryInstance =
-    createContractsRepository();
+
+
+
+export function createContractsRepository(
+    supabase: SupabaseClient,
+) {
+
+
+    return new ContractsRepository(
+        supabase,
+    );
+
+}
