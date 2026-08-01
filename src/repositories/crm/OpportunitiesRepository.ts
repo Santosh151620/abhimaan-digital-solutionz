@@ -77,114 +77,158 @@ export class OpportunitiesRepository
     }
 
 
+async create(
+    data: Partial<Opportunity>,
+): Promise<Opportunity> {
 
 
-    async create(
-        data:Partial<Opportunity>,
-    ):Promise<Opportunity> {
+    const payload = {
 
 
-        const now =
-            new Date()
-                .toISOString();
+        entityType:
+            "Opportunity",
 
 
-        return super.create({
+        opportunity_number:
+            data.opportunityNumber
+            ??
+            `OPP-${Date.now()}`,
 
-            ...data,
+
+        opportunity_name:
+            data.name
+            ??
+            data.title
+            ??
+            "Untitled Opportunity",
 
 
-            id:
-                data.id ??
-                crypto.randomUUID(),
+        company_id:
+            data.companyId
+            ??
+            null,
 
+
+        primary_contact_id:
+            data.contactId
+            ??
+            null,
+
+
+        owner_user_id:
+            data.ownerId
+            ??
+            null,
+
+
+        status:
+            data.status
+            ??
+            "Open",
+
+
+        amount:
+            data.value
+            ??
+            0,
+
+
+        probability:
+            data.probability
+            ??
+            0,
+
+
+        expected_close_date:
+            data.expectedCloseDate
+            ??
+            null,
+
+
+        description:
+            data.description
+            ??
+            null,
+
+
+        metadata:
+            data.metadata
+            ??
+            {},
+
+
+    };
+
+
+    return super.create(
+        payload as Partial<Opportunity>,
+    );
+
+}
+
+async update(
+    id:string,
+    data:Partial<Opportunity>,
+):Promise<Opportunity> {
+
+
+    return super.update(
+
+        id,
+
+        {
 
             entityType:
                 "Opportunity",
 
 
-            opportunityNumber:
-                data.opportunityNumber ??
-                `OPP-${Date.now()}`,
+            opportunity_name:
+                data.name
+                ??
+                data.title,
 
 
-            name:
-                data.name ??
-                data.title ??
-                "Untitled Opportunity",
+            company_id:
+                data.companyId,
 
 
-            title:
-                data.title ??
-                data.name ??
-                "Untitled Opportunity",
+            primary_contact_id:
+                data.contactId,
 
 
-            stage:
-                data.stage ??
-                "New",
+            owner_user_id:
+                data.ownerId,
 
 
             status:
-                data.status ??
-                "Open",
+                data.status,
 
 
-            value:
-                data.value ??
-                0,
+            amount:
+                data.value,
 
 
             probability:
-                data.probability ??
-                0,
+                data.probability,
 
 
-            createdAt:
-                data.createdAt ??
-                now,
+            expected_close_date:
+                data.expectedCloseDate,
 
 
-            updatedAt:
-                now,
-
-        });
-
-    }
+            description:
+                data.description,
 
 
+            metadata:
+                data.metadata,
 
 
-    async update(
-        id:string,
-        data:Partial<Opportunity>,
-    ):Promise<Opportunity> {
+        } as Partial<Opportunity>,
 
+    );
 
-        return super.update(
-
-            id,
-
-            {
-
-                ...data,
-
-                entityType:
-                    "Opportunity",
-
-                updatedAt:
-                    new Date()
-                        .toISOString(),
-
-            },
-
-        );
-
-    }
-
-
-
-
+}
 
     async delete(
         id:string,
@@ -259,25 +303,24 @@ export class OpportunitiesRepository
 
         }
 
+if(filters?.search) {
 
 
-        if(filters?.search) {
+    query =
+        query.or(
 
-            query =
-                query.or(
+            [
 
-                    [
-                        `name.ilike.%${filters.search}%`,
-                        `title.ilike.%${filters.search}%`,
-                        `opportunity_number.ilike.%${filters.search}%`,
-                    ]
-                    .join(","),
+                `opportunity_name.ilike.%${filters.search}%`,
 
-                );
+                `opportunity_number.ilike.%${filters.search}%`,
 
-        }
+            ]
+            .join(","),
 
+        );
 
+}
 
         const {
             data,
