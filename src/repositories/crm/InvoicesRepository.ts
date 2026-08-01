@@ -157,73 +157,52 @@ export class InvoicesRepository
         data: Partial<Invoice>,
     ): Promise<Invoice> {
 
-
         const payload: Partial<Invoice> = {
-
 
             ...data,
 
-
             entityType:
                 'Invoice',
-
-
 
             status:
                 data.status
                 ??
                 'Draft',
 
-
-
             title:
                 data.title
                 ??
                 'Invoice',
-
-
 
             currency:
                 data.currency
                 ??
                 'INR',
 
-
-
             subtotal:
                 data.subtotal
                 ??
                 0,
-
-
 
             tax:
                 data.tax
                 ??
                 0,
 
-
-
             discount:
                 data.discount
                 ??
                 0,
-
-
 
             total:
                 data.total
                 ??
                 0,
 
-
-
             paidAmount:
                 data.paidAmount
                 ??
                 0,
-
-
 
             balanceAmount:
                 data.balanceAmount
@@ -234,8 +213,6 @@ export class InvoicesRepository
                     0
                 ),
 
-
-
             amount:
                 data.amount
                 ??
@@ -244,8 +221,6 @@ export class InvoicesRepository
                     ??
                     0
                 ),
-
-
 
             value:
                 data.value
@@ -256,19 +231,38 @@ export class InvoicesRepository
                     0
                 ),
 
-
-
             archived:
                 false,
 
         };
 
-
-
         return super.create(
-            payload,
-        );
 
+            {
+
+                ...payload,
+
+                invoice_status:
+                    payload.status,
+
+                currency_code:
+                    payload.currency,
+
+                subtotal_amount:
+                    payload.subtotal,
+
+                tax_amount:
+                    payload.tax,
+
+                discount_amount:
+                    payload.discount,
+
+                total_amount:
+                    payload.total,
+
+            } as Partial<Invoice>,
+
+        );
     }
 
 
@@ -295,7 +289,25 @@ export class InvoicesRepository
                 entityType:
                     'Invoice',
 
-            },
+                invoice_status:
+                    data.status,
+
+                currency_code:
+                    data.currency,
+
+                subtotal_amount:
+                    data.subtotal,
+
+                tax_amount:
+                    data.tax,
+
+                discount_amount:
+                    data.discount,
+
+                total_amount:
+                    data.total,
+
+            } as Partial<Invoice>,
 
         );
 
@@ -406,8 +418,7 @@ export class InvoicesRepository
             query =
                 query.eq(
 
-                    'status',
-
+                    'invoice_status',
                     filters.status,
 
                 );
