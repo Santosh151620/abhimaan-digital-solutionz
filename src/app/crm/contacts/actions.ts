@@ -86,3 +86,11 @@ export async function restoreContact(
     );
 
 }
+
+
+
+export async function getContactsSummary() {
+
+    return ContactsServiceInstance.summary();
+
+}

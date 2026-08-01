@@ -1,14 +1,23 @@
 'use client';
 
+import {
+    memo,
+} from 'react';
+
+
 import type {
     ContactsSummary as ContactsSummaryModel,
 } from '@/types/crm/Contacts';
+
+
 
 interface Props {
 
     summary: ContactsSummaryModel;
 
 }
+
+
 
 const cards = [
 
@@ -44,23 +53,30 @@ const cards = [
 
 ] as const;
 
-export default function ContactsSummary({
+
+
+
+function ContactsSummary({
 
     summary,
 
 }: Props) {
 
+
     return (
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
 
-            {
 
+            {
                 cards.map(card => (
 
                     <div
+
                         key={card.key}
+
                         className="rounded-xl border bg-card p-5"
+
                     >
 
                         <div className="text-sm text-muted-foreground">
@@ -69,20 +85,33 @@ export default function ContactsSummary({
 
                         </div>
 
+
+
                         <div className="mt-2 text-3xl font-semibold">
 
-                            {summary[card.key]}
+                            {
+                                summary[card.key]
+                                ??
+                                0
+                            }
 
                         </div>
+
 
                     </div>
 
                 ))
-
             }
+
 
         </div>
 
     );
 
 }
+
+
+
+export default memo(
+    ContactsSummary,
+);
