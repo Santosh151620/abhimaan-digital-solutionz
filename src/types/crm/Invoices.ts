@@ -5,82 +5,245 @@ export type InvoiceStatus =
     | 'Overdue'
     | 'Cancelled';
 
+
+
 export interface Invoice {
-entityType: 'Invoice';
-    id: string;
 
-    invoiceNumber: string;
 
-    companyId: string;
+    /**
+     * Entity identity
+     */
 
-    customerName: string;
+    entityType:
+        'Invoice';
+
+    entityId?: string;
+
+    id:
+        string;
+
+    organizationId?: string;
+
+
+
+    /**
+     * Relationships
+     */
+
+    companyId?: string;
+
+    contactId?: string;
 
     contractId?: string;
 
     quotationId?: string;
 
-    status: InvoiceStatus;
+    ownerId?: string;
 
-    issueDate: string;
 
-    dueDate: string;
 
-    subtotal: number;
+    /**
+     * Business identity
+     */
 
-    tax: number;
+    invoiceNumber:
+        string;
 
-    total: number;
+    title:
+        string;
 
-    currency: string;
+    description?: string;
 
-    title?: string;
 
-    amount?: number;
 
-    paidAmount?: number;
+    /**
+     * Display compatibility
+     */
 
-    balanceAmount?: number;
+    customerName?: string;
+
+
+
+    /**
+     * Lifecycle
+     */
+
+    status:
+        InvoiceStatus;
+
+
+    issueDate:
+        string;
+
+
+    dueDate:
+        string;
+
+
+
+    /**
+     * Financial
+     */
+
+    currency:
+        string;
+
+
+    subtotal:
+        number;
+
+
+    tax:
+        number;
+
+
+    discount:
+        number;
+
+
+    total:
+        number;
+
+
+
+    /**
+     * Payment tracking
+     */
+
+    paidAmount:
+        number;
+
+
+    balanceAmount:
+        number;
+
+
+
+    /**
+     * Backward compatibility
+     */
+
+    amount:
+        number;
+
+
+
+    value:
+        number;
+
+
+
+    /**
+     * Content
+     */
 
     notes?: string;
 
-    archived: boolean;
 
-    createdAt: string;
 
-    updatedAt: string;
+    /**
+     * Extension
+     */
+
+    metadata?: Record<string, unknown>;
+
+
+
+    /**
+     * Archive
+     */
+
+    archived:
+        boolean;
+
+
+
+    /**
+     * Audit
+     */
+
+    createdBy?: string;
+
+    updatedBy?: string;
+
+
+    createdAt:
+        string;
+
+
+    updatedAt:
+        string;
 
 }
+
+
+
 
 export interface InvoiceSearchFilters {
 
-    status?: InvoiceStatus;
 
-    companyId?: string;
+    status?:
+        InvoiceStatus;
 
-    search?: string;
+
+    companyId?:
+        string;
+
+
+    search?:
+        string;
 
 }
 
+
+
+
 export interface InvoiceSummary {
 
-    total: number;
 
-    draft: number;
+    total:
+        number;
 
-    sent: number;
 
-    paid: number;
+    draft:
+        number;
 
-    overdue: number;
 
-    cancelled: number;
+    sent:
+        number;
 
-    archived: number;
 
-    totalValue: number;
+    paid:
+        number;
 
-    outstandingValue: number;
 
-    value?: number;
+    overdue:
+        number;
+
+
+    cancelled:
+        number;
+
+
+    archived:
+        number;
+
+
+
+    totalValue:
+        number;
+
+
+    outstandingValue:
+        number;
+
+
+
+    /**
+     * Backward compatibility
+     */
+
+    value?:
+        number;
 
 }
