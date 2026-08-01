@@ -130,6 +130,32 @@ async details(
         );
 
     }
+
+    async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<Task[]> {
+
+        const {
+            data,
+            error,
+        } = await this.supabase
+            .from(this.table)
+            .select("*")
+            .eq("organization_id", this.organizationId)
+            .eq("entityType", entityType)
+            .eq("entityId", entityId)
+            .order("createdAt", {
+                ascending: false,
+            });
+
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []) as Task[];
+    }
+
     async search(
         filters?: TaskSearchFilters,
     ): Promise<Task[]> {

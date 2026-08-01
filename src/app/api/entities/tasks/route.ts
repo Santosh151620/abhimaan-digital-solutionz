@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { TasksRepository } from "@/repositories/tasks.repository";
+import { createTasksRepository } from "@/repositories/crm/TasksRepository";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
-const repo = new TasksRepository(supabase);
+
+  const repo = createTasksRepository(supabase);
 
   const entityType =
     req.nextUrl.searchParams.get("entityType");
@@ -26,7 +27,8 @@ const repo = new TasksRepository(supabase);
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
-  const repo = new TasksRepository(supabase);
+
+  const repo = createTasksRepository(supabase);
 
   const body = await req.json();
 
@@ -35,8 +37,3 @@ export async function POST(req: NextRequest) {
     { status: 201 }
   );
 }
-
-
-
-
-
