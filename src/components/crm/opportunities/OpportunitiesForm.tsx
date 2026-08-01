@@ -33,20 +33,22 @@ export default function OpportunitiesForm({
 
 }: OpportunitiesFormProps) {
 
-    const [form, setForm] =
-        useState<Partial<Opportunity>>({
+   const [form, setForm] =
+    useState<Partial<Opportunity>>({
 
-            stage: 'New',
+        stage: 'New',
 
-            status: 'Open',
+        status: 'Open',
 
-            probability: 0,
+        probability: 10,
 
-            value: 0,
+        value: 0,
 
-            ...initialValues,
+        currency: 'INR',
 
-        });
+        ...initialValues,
+
+    });
 
     function update<K extends keyof Opportunity>(
         key: K,
@@ -81,7 +83,7 @@ export default function OpportunitiesForm({
 
             name: form.name,
 
-            title: form.title,
+            title: form.title ?? form.name,
 
             description: form.description,
 
@@ -153,7 +155,7 @@ export default function OpportunitiesForm({
 
                 <button
                     type="button"
-                    onClick={onCancel}
+                    onClick={() => onCancel?.()}
                     className="rounded-lg border px-4 py-2"
                 >
                     Cancel
