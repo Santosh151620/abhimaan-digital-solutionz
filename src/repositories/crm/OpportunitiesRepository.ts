@@ -2,9 +2,11 @@ import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
 
+
 import {
     BaseRepository,
 } from "@/lib/db/base-repository";
+
 
 import type {
     Opportunity,
@@ -13,8 +15,10 @@ import type {
 } from "@/types/crm/Opportunities";
 
 
+
 export class OpportunitiesRepository
     extends BaseRepository<Opportunity> {
+
 
 
     constructor(
@@ -30,7 +34,138 @@ export class OpportunitiesRepository
 
 
 
+
+
+    private mapToDomain(
+        row: Record<string, any>,
+    ): Opportunity {
+
+        return {
+
+            id:
+                row.id,
+
+
+            entityType:
+                "Opportunity",
+
+
+            entityId:
+                row.entity_id ??
+                row.id,
+
+
+            organizationId:
+                row.organization_id,
+
+
+
+            opportunityNumber:
+                row.opportunity_number ??
+                "",
+
+
+
+            name:
+                row.opportunity_name ??
+                "Untitled Opportunity",
+
+
+
+            title:
+                row.opportunity_name ??
+                "Untitled Opportunity",
+
+
+
+            description:
+                row.description ?? undefined,
+
+
+
+            companyId:
+                row.company_id ?? undefined,
+
+
+
+            contactId:
+                row.primary_contact_id ?? undefined,
+
+
+
+            ownerId:
+                row.owner_user_id ?? undefined,
+
+
+
+            status:
+                row.status ??
+                "Open",
+
+
+
+            stage:
+                row.stage ??
+                "New",
+
+
+
+            value:
+                Number(
+                    row.amount ??
+                    0,
+                ),
+
+
+
+            probability:
+                Number(
+                    row.probability ??
+                    0,
+                ),
+
+
+
+            expectedCloseDate:
+                row.expected_close_date ?? undefined,
+
+
+
+            metadata:
+                row.metadata ?? {},
+
+
+
+            isDeleted:
+                row.is_deleted ??
+                false,
+
+
+
+            deletedAt:
+                row.deleted_at ?? null,
+
+
+
+            createdAt:
+                row.created_at,
+
+
+
+            updatedAt:
+                row.updated_at,
+
+        };
+
+    }
+
+
+
+
+
+
     async list(): Promise<Opportunity[]> {
+
 
         const {
             data,
@@ -50,6 +185,7 @@ export class OpportunitiesRepository
                 );
 
 
+
         if(error) {
 
             throw error;
@@ -57,11 +193,24 @@ export class OpportunitiesRepository
         }
 
 
+
         return (
+
             data ?? []
-        ) as Opportunity[];
+
+        ).map(
+
+            item =>
+                this.mapToDomain(
+                    item,
+                ),
+
+        );
 
     }
+
+
+
 
 
 
@@ -70,165 +219,223 @@ export class OpportunitiesRepository
         id:string,
     ):Promise<Opportunity | null> {
 
-        return super.findById(
-            id,
+
+        const opportunity =
+            await super.findById(
+                id,
+            );
+
+
+
+        if(!opportunity) {
+
+            return null;
+
+        }
+
+
+
+        return this.mapToDomain(
+            opportunity as unknown as Record<string,any>,
         );
 
     }
 
 
-async create(
-    data: Partial<Opportunity>,
-): Promise<Opportunity> {
 
 
-    const payload = {
 
 
-        entityType:
-            "Opportunity",
 
 
-        opportunity_number:
-            data.opportunityNumber
-            ??
-            `OPP-${Date.now()}`,
+    async create(
+        data:Partial<Opportunity>,
+    ):Promise<Opportunity> {
 
 
-        opportunity_name:
-            data.name
-            ??
-            data.title
-            ??
-            "Untitled Opportunity",
+        const payload = {
 
 
-        company_id:
-            data.companyId
-            ??
-            null,
-
-
-        primary_contact_id:
-            data.contactId
-            ??
-            null,
-
-
-        owner_user_id:
-            data.ownerId
-            ??
-            null,
-
-
-        status:
-            data.status
-            ??
-            "Open",
-
-
-        amount:
-            data.value
-            ??
-            0,
-
-
-        probability:
-            data.probability
-            ??
-            0,
-
-
-        expected_close_date:
-            data.expectedCloseDate
-            ??
-            null,
-
-
-        description:
-            data.description
-            ??
-            null,
-
-
-        metadata:
-            data.metadata
-            ??
-            {},
-
-
-    };
-
-
-    return super.create(
-        payload as Partial<Opportunity>,
-    );
-
-}
-
-async update(
-    id:string,
-    data:Partial<Opportunity>,
-):Promise<Opportunity> {
-
-
-    return super.update(
-
-        id,
-
-        {
-
-            entityType:
+            entity_type:
                 "Opportunity",
 
 
+
+            opportunity_number:
+                data.opportunityNumber ??
+                `OPP-${Date.now()}`,
+
+
+
             opportunity_name:
-                data.name
-                ??
-                data.title,
+                data.name ??
+                data.title ??
+                "Untitled Opportunity",
+
 
 
             company_id:
-                data.companyId,
+                data.companyId ??
+                null,
+
 
 
             primary_contact_id:
-                data.contactId,
+                data.contactId ??
+                null,
+
 
 
             owner_user_id:
-                data.ownerId,
+                data.ownerId ??
+                null,
+
+
+
+            stage:
+                data.stage ??
+                "New",
+
 
 
             status:
-                data.status,
+                data.status ??
+                "Open",
+
 
 
             amount:
-                data.value,
+                data.value ??
+                0,
+
 
 
             probability:
-                data.probability,
+                data.probability ??
+                0,
+
 
 
             expected_close_date:
-                data.expectedCloseDate,
+                data.expectedCloseDate ??
+                null,
+
 
 
             description:
-                data.description,
+                data.description ??
+                null,
+
 
 
             metadata:
-                data.metadata,
+                data.metadata ??
+                {},
 
 
-        } as Partial<Opportunity>,
+        };
 
-    );
 
-}
+
+        const result =
+            await super.create(
+                payload as Partial<Opportunity>,
+            );
+
+
+
+        return this.mapToDomain(
+            result as unknown as Record<string,any>,
+        );
+
+    }
+
+
+
+
+
+
+
+    async update(
+        id:string,
+        data:Partial<Opportunity>,
+    ):Promise<Opportunity> {
+
+
+        const result =
+            await super.update(
+
+                id,
+
+                {
+
+                    opportunity_name:
+                        data.name ??
+                        data.title,
+
+
+                    company_id:
+                        data.companyId,
+
+
+                    primary_contact_id:
+                        data.contactId,
+
+
+                    owner_user_id:
+                        data.ownerId,
+
+
+                    stage:
+                        data.stage,
+
+
+                    status:
+                        data.status,
+
+
+                    amount:
+                        data.value,
+
+
+                    probability:
+                        data.probability,
+
+
+                    expected_close_date:
+                        data.expectedCloseDate,
+
+
+                    description:
+                        data.description,
+
+
+                    metadata:
+                        data.metadata,
+
+
+                    updated_at:
+                        new Date()
+                            .toISOString(),
+
+                } as Partial<Opportunity>,
+
+            );
+
+
+
+        return this.mapToDomain(
+            result as unknown as Record<string,any>,
+        );
+
+    }
+
+
+
+
+
+
+
 
     async delete(
         id:string,
@@ -254,6 +461,9 @@ async update(
 
 
 
+
+
+
     async search(
         filters?:OpportunitySearchFilters,
     ):Promise<Opportunity[]> {
@@ -269,24 +479,24 @@ async update(
 
 
 
-        if(filters?.stage) {
-
-            query =
-                query.eq(
-                    "stage",
-                    filters.stage,
-                );
-
-        }
-
-
-
         if(filters?.status) {
 
             query =
                 query.eq(
                     "status",
                     filters.status,
+                );
+
+        }
+
+
+
+        if(filters?.stage) {
+
+            query =
+                query.eq(
+                    "stage",
+                    filters.stage,
                 );
 
         }
@@ -303,24 +513,27 @@ async update(
 
         }
 
-if(filters?.search) {
 
 
-    query =
-        query.or(
+        if(filters?.search) {
 
-            [
 
-                `opportunity_name.ilike.%${filters.search}%`,
+            query =
+                query.or(
 
-                `opportunity_number.ilike.%${filters.search}%`,
+                    [
 
-            ]
-            .join(","),
+                        `opportunity_name.ilike.%${filters.search}%`,
 
-        );
+                        `opportunity_number.ilike.%${filters.search}%`,
 
-}
+                    ].join(","),
+
+                );
+
+        }
+
+
 
         const {
             data,
@@ -339,10 +552,22 @@ if(filters?.search) {
 
 
         return (
+
             data ?? []
-        ) as Opportunity[];
+
+        ).map(
+
+            item =>
+                this.mapToDomain(
+                    item,
+                ),
+
+        );
 
     }
+
+
+
 
 
 
@@ -363,6 +588,7 @@ if(filters?.search) {
                     sum,
                     item,
                 ) =>
+
                     sum +
                     item.value,
 
@@ -373,6 +599,7 @@ if(filters?.search) {
 
 
         return {
+
 
             total:
                 opportunities.length,
@@ -410,6 +637,7 @@ if(filters?.search) {
                         sum,
                         item,
                     ) =>
+
                         sum +
                         (
                             item.value *
@@ -429,8 +657,12 @@ if(filters?.search) {
     }
 
 }
+
+
+
+
 export function createOpportunitiesRepository(
-    supabase: SupabaseClient,
+    supabase:SupabaseClient,
 ) {
 
     return new OpportunitiesRepository(
@@ -440,12 +672,13 @@ export function createOpportunitiesRepository(
 }
 
 
+
 /**
  * Backward compatibility aliases.
  */
 export const opportunitiesRepository =
     createOpportunitiesRepository;
 
+
 export const OpportunitiesRepositoryInstance =
     createOpportunitiesRepository;
-
