@@ -8,55 +8,62 @@ export type ProjectStatus =
 export interface Project {
 
     id: string;
-
     projectNumber: string;
-
-    companyId: string;
-
+    companyId?: string;
+    contactId?: string;
+    opportunityId?: string;
     contractId?: string;
-
-    customerName: string;
-
+    customerName?: string;
     name: string;
-
     description?: string;
-
     status: ProjectStatus;
-
-    startDate: string;
-
-    endDate: string;
-
-    budget: number;
-
-    currency: string;
-
+    projectType?: string;
+    priority?: string;
+    ownerUserId?: string;
     manager?: string;
-
-    archived: boolean;
-
+    startDate?: string;
+    endDate?: string;
+    actualEndDate?: string;
+    budget: number;
+    actualCost?: number;
+    currency?: string;
+    metadata?: Record<string, unknown>;
+    archived?: boolean;
     createdAt: string;
-
     updatedAt: string;
 
 }
+
 export interface ProjectSearchFilters {
-
-    status?: ProjectStatus;
-
-    companyId?: string;
 
     search?: string;
 
+    companyId?: string;
+
+    status?: ProjectStatus;
+
+    manager?: string;
+
 }
+
 export interface ProjectSummary {
 
     total: number;
+
     planning: number;
+
     active: number;
+
     onHold: number;
+
     completed: number;
+
     cancelled: number;
-    totalBudget: number;
+
     archived: number;
+
+    totalBudget: number;
+
+    totalActualCost: number;
+
 }

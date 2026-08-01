@@ -6,6 +6,7 @@ export type PaymentStatus =
     | 'Cancelled'
     | 'Refunded';
 
+
 export type PaymentMethod =
     | 'Cash'
     | 'Bank Transfer'
@@ -16,22 +17,49 @@ export type PaymentMethod =
     | 'Wallet'
     | 'Other';
 
+
+
 export interface Payment {
+
+    /**
+     * Entity identity
+     */
+    entityType: 'Payment';
 
     id: string;
 
-    paymentNumber: string;
-
     organizationId?: string;
 
+
+
+    /**
+     * Business identity
+     */
+    paymentNumber: string;
+
+
+
+    /**
+     * Relationships
+     */
     invoiceId?: string;
 
     companyId?: string;
 
+
+
+    /**
+     * Display compatibility
+     */
     customerName: string;
 
     description?: string;
 
+
+
+    /**
+     * Financial
+     */
     amount: number;
 
     paidAmount: number;
@@ -40,25 +68,57 @@ export interface Payment {
 
     currency: string;
 
+
+
+    /**
+     * Lifecycle
+     */
     paymentMethod: PaymentMethod;
 
     status: PaymentStatus;
 
+
+
+    /**
+     * Dates
+     */
     paymentDate?: string;
 
     dueDate?: string;
 
+
+
+    /**
+     * Reference
+     */
     referenceNumber?: string;
 
+
+
+    /**
+     * Content
+     */
     notes?: string;
 
+
+
+    /**
+     * Archive
+     */
     archived: boolean;
 
+
+
+    /**
+     * Audit
+     */
     createdAt: string;
 
     updatedAt: string;
 
 }
+
+
 
 export interface PaymentSearchFilters {
 
@@ -74,17 +134,22 @@ export interface PaymentSearchFilters {
 
 }
 
+
+
 export interface PaymentSummary {
 
+
     /**
-     * Active (non-archived) payments
+     * Active payments
      */
     total: number;
+
 
     /**
      * Archived payments
      */
     archived: number;
+
 
     pending: number;
 
@@ -98,31 +163,24 @@ export interface PaymentSummary {
 
     refunded: number;
 
+
+
     /**
-     * Gross invoiced/payment amount
+     * Financial metrics
      */
     totalAmount: number;
 
-    /**
-     * Amount already collected
-     */
     totalReceived: number;
 
-    /**
-     * Remaining receivable
-     */
     totalOutstanding: number;
 
+
+
     /**
-     * Average payment value
+     * Analytics
      */
     averagePayment: number;
 
-    /**
-     * Collection percentage
-     * (0 - 100)
-     */
     collectionRate: number;
 
 }
-

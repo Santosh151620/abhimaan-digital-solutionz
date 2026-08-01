@@ -4,7 +4,7 @@ import { TasksRepository } from "@/repositories/tasks.repository";
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
-  const repo = new TasksRepository(supabase);
+const repo = new TasksRepository(supabase);
 
   const entityType =
     req.nextUrl.searchParams.get("entityType");
