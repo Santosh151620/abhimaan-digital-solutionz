@@ -16,6 +16,37 @@ import type {
 
 
 
+interface OpportunityRow {
+    id: string;
+    entity_id?: string | null;
+    organization_id?: string | null;
+
+    opportunity_number?: string | null;
+    opportunity_name?: string | null;
+
+    description?: string | null;
+
+    company_id?: string | null;
+    primary_contact_id?: string | null;
+    owner_user_id?: string | null;
+
+    status?: Opportunity["status"];
+    stage?: Opportunity["stage"];
+
+    amount?: number | null;
+    probability?: number | null;
+
+    expected_close_date?: string | null;
+
+    metadata?: Record<string, unknown> | null;
+
+    is_deleted?: boolean;
+    deleted_at?: string | null;
+
+    created_at: string;
+    updated_at: string;
+}
+
 export class OpportunitiesRepository
     extends BaseRepository<Opportunity> {
 
@@ -33,125 +64,66 @@ export class OpportunitiesRepository
     }
 
 
-
-
-
     private mapToDomain(
-        row: Record<string, any>,
+        row: OpportunityRow,
     ): Opportunity {
 
         return {
 
             id:
                 row.id,
-
-
             entityType:
                 "Opportunity",
-
-
             entityId:
                 row.entity_id ??
                 row.id,
-
-
             organizationId:
-                row.organization_id,
-
-
-
+                row.organization_id ?? undefined,
             opportunityNumber:
                 row.opportunity_number ??
                 "",
-
-
-
             name:
                 row.opportunity_name ??
                 "Untitled Opportunity",
-
-
-
             title:
                 row.opportunity_name ??
                 "Untitled Opportunity",
-
-
-
             description:
                 row.description ?? undefined,
-
-
-
             companyId:
-                row.company_id ?? undefined,
-
-
-
+                row.company_id || undefined,
             contactId:
-                row.primary_contact_id ?? undefined,
-
-
-
+                row.primary_contact_id || undefined,
             ownerId:
-                row.owner_user_id ?? undefined,
-
-
-
+                row.owner_user_id || undefined,
             status:
                 row.status ??
                 "Open",
-
-
-
             stage:
                 row.stage ??
                 "New",
-
-
-
             value:
                 Number(
                     row.amount ??
                     0,
                 ),
-
-
-
             probability:
                 Number(
                     row.probability ??
                     0,
                 ),
 
-
-
             expectedCloseDate:
-                row.expected_close_date ?? undefined,
-
-
-
+                row.expected_close_date || undefined,
             metadata:
                 row.metadata ?? {},
-
-
-
             isDeleted:
                 row.is_deleted ??
                 false,
-
-
-
             deletedAt:
-                row.deleted_at ?? null,
-
-
-
+                row.deleted_at ?? undefined,
             createdAt:
                 row.created_at,
-
-
-
             updatedAt:
                 row.updated_at,
 
@@ -180,13 +152,13 @@ export class OpportunitiesRepository
                 .order(
                     "created_at",
                     {
-                        ascending:false,
+                        ascending: false,
                     },
                 );
 
 
 
-        if(error) {
+        if (error) {
 
             throw error;
 
@@ -216,8 +188,8 @@ export class OpportunitiesRepository
 
 
     async details(
-        id:string,
-    ):Promise<Opportunity | null> {
+        id: string,
+    ): Promise<Opportunity | null> {
 
 
         const opportunity =
@@ -227,16 +199,14 @@ export class OpportunitiesRepository
 
 
 
-        if(!opportunity) {
+        if (!opportunity) {
 
             return null;
 
         }
 
-
-
         return this.mapToDomain(
-            opportunity as unknown as Record<string,any>,
+            opportunity as unknown as OpportunityRow,
         );
 
     }
@@ -249,8 +219,8 @@ export class OpportunitiesRepository
 
 
     async create(
-        data:Partial<Opportunity>,
-    ):Promise<Opportunity> {
+        data: Partial<Opportunity>,
+    ): Promise<Opportunity> {
 
 
         const payload = {
@@ -345,7 +315,7 @@ export class OpportunitiesRepository
 
 
         return this.mapToDomain(
-            result as unknown as Record<string,any>,
+            result as unknown as OpportunityRow,
         );
 
     }
@@ -357,9 +327,9 @@ export class OpportunitiesRepository
 
 
     async update(
-        id:string,
-        data:Partial<Opportunity>,
-    ):Promise<Opportunity> {
+        id: string,
+        data: Partial<Opportunity>,
+    ): Promise<Opportunity> {
 
 
         const result =
@@ -422,10 +392,8 @@ export class OpportunitiesRepository
 
             );
 
-
-
         return this.mapToDomain(
-            result as unknown as Record<string,any>,
+            result as unknown as OpportunityRow,
         );
 
     }
@@ -438,8 +406,8 @@ export class OpportunitiesRepository
 
 
     async delete(
-        id:string,
-    ):Promise<void> {
+        id: string,
+    ): Promise<void> {
 
 
         await this.update(
@@ -465,8 +433,8 @@ export class OpportunitiesRepository
 
 
     async search(
-        filters?:OpportunitySearchFilters,
-    ):Promise<Opportunity[]> {
+        filters?: OpportunitySearchFilters,
+    ): Promise<Opportunity[]> {
 
 
         let query =
@@ -479,7 +447,7 @@ export class OpportunitiesRepository
 
 
 
-        if(filters?.status) {
+        if (filters?.status) {
 
             query =
                 query.eq(
@@ -491,7 +459,7 @@ export class OpportunitiesRepository
 
 
 
-        if(filters?.stage) {
+        if (filters?.stage) {
 
             query =
                 query.eq(
@@ -503,7 +471,7 @@ export class OpportunitiesRepository
 
 
 
-        if(filters?.companyId) {
+        if (filters?.companyId) {
 
             query =
                 query.eq(
@@ -515,7 +483,7 @@ export class OpportunitiesRepository
 
 
 
-        if(filters?.search) {
+        if (filters?.search) {
 
 
             query =
@@ -543,7 +511,7 @@ export class OpportunitiesRepository
 
 
 
-        if(error) {
+        if (error) {
 
             throw error;
 
@@ -573,7 +541,7 @@ export class OpportunitiesRepository
 
 
 
-    async summary():Promise<OpportunitySummary> {
+    async summary(): Promise<OpportunitySummary> {
 
 
         const opportunities =
@@ -662,7 +630,7 @@ export class OpportunitiesRepository
 
 
 export function createOpportunitiesRepository(
-    supabase:SupabaseClient,
+    supabase: SupabaseClient,
 ) {
 
     return new OpportunitiesRepository(
