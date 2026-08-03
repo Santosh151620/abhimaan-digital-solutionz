@@ -99,7 +99,7 @@ export default function RolesTable({
                             </td>
 
                             <td className="p-3">
-                                {role.level}
+                                {role.level ?? "Organization"}
                             </td>
 
                             <td className="p-3">
