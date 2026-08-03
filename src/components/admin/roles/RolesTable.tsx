@@ -9,13 +9,13 @@ interface RolesTableProps {
 
     roles: Role[];
 
-    onEdit?:(
-        role: Role
-    )=>void;
+    onEdit?: (
+        role: Role,
+    ) => void;
 
-    onDelete?:(
-        id:string
-    )=>Promise<void>;
+    onDelete?: (
+        id: string,
+    ) => Promise<void>;
 
 }
 
@@ -28,16 +28,13 @@ export default function RolesTable({
 
     onDelete,
 
-}:RolesTableProps){
-
+}: RolesTableProps) {
 
     return (
 
         <div className="overflow-x-auto rounded-xl border">
 
-
             <table className="min-w-full">
-
 
                 <thead>
 
@@ -47,37 +44,46 @@ export default function RolesTable({
                             Name
                         </th>
 
-
                         <th className="p-3 text-left">
                             Code
                         </th>
-
 
                         <th className="p-3 text-left">
                             Level
                         </th>
 
-
                         <th className="p-3 text-left">
                             Status
                         </th>
-
 
                         <th className="p-3 text-right">
                             Actions
                         </th>
 
-
                     </tr>
 
                 </thead>
 
-
                 <tbody>
 
+                    {roles.length === 0 && (
 
-                    {roles.map(role=>(
+                        <tr>
 
+                            <td
+                                colSpan={5}
+                                className="p-6 text-center text-muted-foreground"
+                            >
+
+                                No roles found.
+
+                            </td>
+
+                        </tr>
+
+                    )}
+
+                    {roles.map((role) => (
 
                         <tr
                             key={role.id}
@@ -88,38 +94,28 @@ export default function RolesTable({
                                 {role.name}
                             </td>
 
-
                             <td className="p-3">
                                 {role.code}
                             </td>
-
 
                             <td className="p-3">
                                 {role.level}
                             </td>
 
-
                             <td className="p-3">
                                 {role.status}
                             </td>
 
-
                             <td className="p-3 text-right">
 
-
                                 <div className="flex justify-end gap-2">
-
 
                                     {onEdit && (
 
                                         <button
-
-                                            onClick={()=>
-                                                onEdit(role)
-                                            }
-
+                                            type="button"
+                                            onClick={() => onEdit(role)}
                                             className="rounded border px-3 py-1"
-
                                         >
 
                                             Edit
@@ -128,18 +124,12 @@ export default function RolesTable({
 
                                     )}
 
-
-
                                     {onDelete && (
 
                                         <button
-
-                                            onClick={()=>
-                                                onDelete(role.id)
-                                            }
-
+                                            type="button"
+                                            onClick={() => void onDelete(role.id)}
                                             className="rounded border px-3 py-1 text-destructive"
-
                                         >
 
                                             Delete
@@ -148,24 +138,17 @@ export default function RolesTable({
 
                                     )}
 
-
                                 </div>
-
 
                             </td>
 
-
                         </tr>
-
 
                     ))}
 
-
                 </tbody>
 
-
             </table>
-
 
         </div>
 

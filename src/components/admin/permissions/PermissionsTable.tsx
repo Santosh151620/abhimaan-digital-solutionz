@@ -16,7 +16,7 @@ export default function PermissionsTable({
 
     permissions,
 
-}:PermissionsTableProps){
+}: PermissionsTableProps) {
 
 
     return (
@@ -93,7 +93,7 @@ export default function PermissionsTable({
 
 
 
-                    {permissions.map(permission=>(
+                    {permissions.map(permission => (
 
 
                         <tr

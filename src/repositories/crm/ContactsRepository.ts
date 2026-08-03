@@ -60,7 +60,7 @@ export class ContactsRepository
                 .order(
                     "created_at",
                     {
-                        ascending:false,
+                        ascending: false,
                     },
                 );
 
@@ -106,7 +106,7 @@ export class ContactsRepository
                 .order(
                     "created_at",
                     {
-                        ascending:false,
+                        ascending: false,
                     },
                 );
 
@@ -133,8 +133,8 @@ export class ContactsRepository
 
 
     async findById(
-        id:string,
-    ):Promise<Contact | null> {
+        id: string,
+    ): Promise<Contact | null> {
 
 
         return super.findById(
@@ -149,8 +149,8 @@ export class ContactsRepository
 
 
     async details(
-        id:string,
-    ):Promise<ContactDetails | null> {
+        id: string,
+    ): Promise<ContactDetails | null> {
 
 
         const contact =
@@ -183,62 +183,52 @@ export class ContactsRepository
 
 
     async create(
-        data:CreateContactInput,
-    ):Promise<Contact> {
+        data: CreateContactInput,
+    ): Promise<Contact> {
 
 
         const now =
             new Date()
                 .toISOString();
 
+        const id =
+            crypto.randomUUID();
 
 
         return super.create({
 
             ...data,
 
+            id,
 
-            id:
-                crypto.randomUUID(),
-
+            entityId:
+                id,
 
             entityType:
                 "Contact",
-
 
             status:
                 data.status ??
                 "ACTIVE",
 
-
             isDeleted:
                 false,
 
-
             createdAt:
                 now,
-
 
             updatedAt:
                 now,
 
         });
-
-
     }
 
-
-
-
-
-
-
     async update(
-        id:string,
+        id: string,
 
-        data:UpdateContactInput,
+        data: UpdateContactInput,
 
-    ):Promise<Contact> {
+    ): Promise<Contact> {
 
 
         return super.update(
@@ -271,8 +261,8 @@ export class ContactsRepository
 
 
     async delete(
-        id:string,
-    ):Promise<void> {
+        id: string,
+    ): Promise<void> {
 
 
         await this.update(
@@ -306,8 +296,8 @@ export class ContactsRepository
 
 
     async restore(
-        id:string,
-    ):Promise<boolean> {
+        id: string,
+    ): Promise<boolean> {
 
 
         const existing =
@@ -351,9 +341,9 @@ export class ContactsRepository
         return true;
 
     }
-        async search(
-        filters?:ContactSearchFilters,
-    ):Promise<Contact[]> {
+    async search(
+        filters?: ContactSearchFilters,
+    ): Promise<Contact[]> {
 
 
         let query =
@@ -474,7 +464,7 @@ export class ContactsRepository
                 "created_at",
 
                 {
-                    ascending:false,
+                    ascending: false,
                 },
 
             );
@@ -505,7 +495,7 @@ export class ContactsRepository
 
 
 
-    async summary():Promise<ContactsSummary> {
+    async summary(): Promise<ContactsSummary> {
 
 
         const contacts =
@@ -591,7 +581,7 @@ export class ContactsRepository
  * Production factory
  */
 export function createContactsRepository(
-    supabase:SupabaseClient,
+    supabase: SupabaseClient,
 ) {
 
 

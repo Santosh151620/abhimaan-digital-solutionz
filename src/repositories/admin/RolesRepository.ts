@@ -14,21 +14,21 @@ export interface IRolesRepository {
 
 
     findById(
-        id:string
-    ):Promise<Role | null>;
+        id: string
+    ): Promise<Role | null>;
 
-findByCode(
-    code:string
-):Promise<Role | null>;
+    findByCode(
+        code: string
+    ): Promise<Role | null>;
 
     save(
-        role:Role
-    ):Promise<void>;
+        role: Role
+    ): Promise<void>;
 
 
     delete(
-        id:string
-    ):Promise<void>;
+        id: string
+    ): Promise<void>;
 
 }
 
@@ -40,8 +40,8 @@ export class RolesRepository
 
 
     constructor(
-        supabase:SupabaseClient
-    ){
+        supabase: SupabaseClient
+    ) {
 
         super(
             supabase,
@@ -50,50 +50,56 @@ export class RolesRepository
 
     }
 
-async findByCode(
-    code:string
-):Promise<Role | null>{
+    async findByCode(
+        code: string
+    ): Promise<Role | null> {
 
 
-    const {
-        data,
-        error
-    } =
-    await this
-        .tableRef()
-        .select("*")
-        .eq(
-            "code",
-            code
-        )
-        .maybeSingle();
-
-
-
-    if(error)
-        throw error;
+        const {
+            data,
+            error
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "code",
+                    code
+                )
+                .maybeSingle();
 
 
 
-    return data as Role | null;
+        if (error)
+            throw error;
 
 
-}
 
-    async list():Promise<Role[]>{
+        return data as Role | null;
+
+
+    }
+
+    async list(): Promise<Role[]> {
 
 
         const {
             data,
             error,
         } =
-        await this
-            .tableRef()
-            .select("*");
+            await this
+                .tableRef()
+                .select("*")
+                .order(
+                    "name",
+                    {
+                        ascending: true,
+                    },
+                );
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -106,28 +112,29 @@ async findByCode(
     }
 
 
-
     async findById(
-        id:string
-    ):Promise<Role | null>{
+        id: string,
+    ): Promise<Role | null> {
+
+        return super.findById(id);
 
 
         const {
             data,
             error
         } =
-        await this
-            .tableRef()
-            .select("*")
-            .eq(
-                "id",
-                id
-            )
-            .maybeSingle();
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "id",
+                    id
+                )
+                .maybeSingle();
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -140,50 +147,35 @@ async findByCode(
 
 
     async save(
-        role:Role
-    ):Promise<void>{
+        role: Role
+    ): Promise<void> {
 
 
         const {
             error
         } =
-        await this
-            .tableRef()
-            .upsert(role);
+            await this
+                .tableRef()
+                .upsert({
+                    ...role,
+                });
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
     }
 
 
+async delete(
+    id: string,
+): Promise<void> {
 
-    async delete(
-        id:string
-    ):Promise<void>{
+    await super.delete(id);
 
-
-        const {
-            error
-        } =
-        await this
-            .tableRef()
-            .delete()
-            .eq(
-                "id",
-                id
-            );
-
-
-
-        if(error)
-            throw error;
-
-
-    }
+}
 
 
 }

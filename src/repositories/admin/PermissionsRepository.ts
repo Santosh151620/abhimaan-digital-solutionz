@@ -6,189 +6,142 @@ import type {
     Permission,
 } from "@/types/admin/Permission";
 
-
-
 export interface IPermissionsRepository {
 
-
-    list():Promise<Permission[]>;
-
+    list(): Promise<Permission[]>;
 
     findById(
-        id:string
-    ):Promise<Permission | null>;
+        id: string,
+    ): Promise<Permission | null>;
 
-findByKey(
-    key:string
-):Promise<Permission | null>;
+    findByKey(
+        key: string,
+    ): Promise<Permission | null>;
 
     save(
-        permission:Permission
-    ):Promise<void>;
-
-
+        permission: Permission,
+    ): Promise<void>;
 
     delete(
-        id:string
-    ):Promise<void>;
+        id: string,
+    ): Promise<void>;
 
 }
-
-
 
 export class PermissionsRepository
     extends BaseRepository<Permission>
     implements IPermissionsRepository {
 
-
     constructor(
-        supabase:SupabaseClient
-    ){
+        supabase: SupabaseClient,
+    ) {
 
         super(
             supabase,
-            "permissions"
+            "permissions",
         );
 
     }
 
-
-
-    async list():Promise<Permission[]>{
-
+    async list(): Promise<Permission[]> {
 
         const {
             data,
-            error
-        } =
-        await this
+            error,
+        } = await this
             .tableRef()
-            .select("*");
+            .select("*")
+            .order(
+                "module",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "resource",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "action",
+                {
+                    ascending: true,
+                },
+            );
 
+        if (error) {
 
-
-        if(error)
             throw error;
 
-
+        }
 
         return (
             data ?? []
         ) as Permission[];
 
+    }
+
+    async findById(
+        id: string,
+    ): Promise<Permission | null> {
+
+        return super.findById(id);
 
     }
 
-
-
-
-    async findById(
-        id:string
-    ):Promise<Permission | null>{
-
+    async findByKey(
+        key: string,
+    ): Promise<Permission | null> {
 
         const {
             data,
-            error
-        } =
-        await this
+            error,
+        } = await this
             .tableRef()
             .select("*")
             .eq(
-                "id",
-                id
+                "key",
+                key,
             )
             .maybeSingle();
 
+        if (error) {
 
-
-        if(error)
             throw error;
 
+        }
 
-
-        return data as Permission | null;
-
+        return (data as Permission) ?? null;
 
     }
-
-
-
 
     async save(
-        permission:Permission
-    ):Promise<void>{
-
+        permission: Permission,
+    ): Promise<void> {
 
         const {
-            error
-        } =
-        await this
+            error,
+        } = await this
             .tableRef()
             .upsert(
-                permission
+                permission,
             );
 
+        if (error) {
 
-
-        if(error)
             throw error;
 
+        }
 
     }
-
-async findByKey(
-    key:string
-):Promise<Permission | null>{
-
-
-    const {
-        data,
-        error
-    } =
-    await this
-        .tableRef()
-        .select("*")
-        .eq(
-            "key",
-            key
-        )
-        .maybeSingle();
-
-
-
-    if(error)
-        throw error;
-
-
-
-    return data as Permission | null;
-
-
-}
-
 
     async delete(
-        id:string
-    ):Promise<void>{
+        id: string,
+    ): Promise<void> {
 
-
-        const {
-            error
-        } =
-        await this
-            .tableRef()
-            .delete()
-            .eq(
-                "id",
-                id
-            );
-
-
-
-        if(error)
-            throw error;
-
+        await super.delete(id);
 
     }
+
 }

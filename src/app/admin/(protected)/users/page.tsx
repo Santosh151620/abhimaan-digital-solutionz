@@ -1,29 +1,63 @@
-import { UsersRepository } from "@/repositories/admin/UsersRepository";
-import { UsersService } from "@/services/admin/UsersService";
-
-import { createClient } from "@/lib/supabase/server";
-import UsersTable from "@/components/admin/users/UsersTable";
-
-export const dynamic = "force-dynamic";
+import {
+    UsersRepository,
+} from "@/repositories/admin/UsersRepository";
 
 
-export default async function UsersPage() {
+import {
+    UsersService,
+} from "@/services/admin/UsersService";
+
+
+import {
+    createClient,
+} from "@/lib/supabase/server";
+
+
+import UsersClient
+from "@/components/admin/users/UsersClient";
+
+
+
+export const dynamic =
+    "force-dynamic";
+
+
+
+/**
+ * ADS Admin Users Management
+ *
+ * Server Component
+ *
+ * Responsibilities:
+ * - Authentication boundary
+ * - Data loading
+ * - Tenant scoped repository access
+ *
+ * Client responsibilities:
+ * - CRUD actions
+ * - Dialog state
+ * - UI interactions
+ */
+export default async function UsersPage(){
 
 
     const supabase =
         await createClient();
 
 
+
     const repository =
         new UsersRepository(
-            supabase
+            supabase,
         );
+
 
 
     const service =
         new UsersService(
-            repository
+            repository,
         );
+
 
 
     const users =
@@ -33,32 +67,65 @@ export default async function UsersPage() {
 
     return (
 
-        <main className="space-y-8 p-8">
+        <main
+            className="
+            space-y-8
+            p-8
+            "
+        >
 
 
             <section>
 
-                <h1 className="text-3xl font-bold">
+
+                <h1
+                    className="
+                    text-3xl
+                    font-bold
+                    "
+                >
+
                     Users
+
                 </h1>
 
 
-                <p className="text-muted-foreground">
-                    Manage platform users and access.
+
+                <p
+                    className="
+                    text-muted-foreground
+                    "
+                >
+
+                    Manage platform users,
+                    organization access,
+                    and identity settings.
+
                 </p>
 
-            </section>
-
-
-
-            <section className="rounded-xl border overflow-x-auto">
-
-<UsersTable
-    users={users}
-/>
-
 
             </section>
+
+
+
+            <section
+                className="
+                rounded-xl
+                border
+                p-6
+                "
+            >
+
+
+                <UsersClient
+
+                    users={users}
+
+                />
+
+
+            </section>
+
 
 
         </main>

@@ -197,47 +197,50 @@ export default async function DashboardPage() {
 
                             <tbody>
 
+                                {companies.length === 0 && (
 
-                                {
-                                    companies
-                                        .slice(0, 5)
-                                        .map((company) => (
+                                    <tr>
 
-
-                                        <tr
-
-                                            key={company.id}
-
-                                            className="
-                                                border-b
-                                                hover:bg-muted/20
-                                            "
-
+                                        <td
+                                            colSpan={3}
+                                            className="p-6 text-center text-muted-foreground"
                                         >
 
+                                            No companies found.
+
+                                        </td>
+
+                                    </tr>
+
+                                )}
+
+                                {companies
+                                    .slice(0, 5)
+                                    .map((company) => (
+
+                                        <tr
+                                            key={company.id}
+                                            className="
+                    border-b
+                    hover:bg-muted/20
+                "
+                                        >
 
                                             <td className="p-3">
 
-
                                                 <Link
-
                                                     href={`/crm/companies/${company.id}`}
-
                                                     className="
-                                                        font-medium
-                                                        hover:text-primary
-                                                    "
-
+                            font-medium
+                            hover:text-primary
+                        "
                                                 >
 
                                                     {company.name}
 
                                                 </Link>
 
-
                                             </td>
-
-
 
                                             <td className="p-3">
 
@@ -245,24 +248,17 @@ export default async function DashboardPage() {
 
                                             </td>
 
-
-
                                             <td className="p-3">
 
                                                 {company.status}
 
                                             </td>
 
-
                                         </tr>
 
-
-                                    ))
-                                }
-
+                                    ))}
 
                             </tbody>
-
 
                         </table>
 

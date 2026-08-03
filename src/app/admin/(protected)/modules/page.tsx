@@ -1,12 +1,13 @@
-import { ModulesService } from "@/services/admin/ModulesService";
+import ModulesTable from "@/components/admin/modules/ModulesTable";
 import { ModulesRepository } from "@/repositories/admin/ModulesRepository";
+import { ModulesService } from "@/services/admin/ModulesService";
 
 export const dynamic = "force-dynamic";
 
 export default async function ModulesPage() {
 
     const repository =
-       await ModulesRepository.create();
+        await ModulesRepository.create();
 
     const service =
         new ModulesService(
@@ -34,56 +35,9 @@ export default async function ModulesPage() {
 
             <section className="rounded-xl border overflow-x-auto">
 
-                <table className="min-full">
-
-                    <thead>
-
-                        <tr className="border-b">
-
-                            <th className="p-3 text-left">
-                                Name
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Code
-                            </th>
-
-                            <th className="p-3 text-left">
-                                Status
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {modules.map((module) => (
-
-                            <tr
-                                key={module.id}
-                                className="border-b"
-                            >
-
-                                <td className="p-3">
-                                    {module.name}
-                                </td>
-
-                                <td className="p-3">
-                                    {module.code}
-                                </td>
-
-                                <td className="p-3">
-                                    {module.status}
-                                </td>
-
-                            </tr>
-
-                        ))}
-
-                    </tbody>
-
-                </table>
+                <ModulesTable
+                    modules={modules}
+                />
 
             </section>
 
