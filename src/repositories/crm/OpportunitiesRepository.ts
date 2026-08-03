@@ -229,7 +229,9 @@ export class OpportunitiesRepository
             entity_type:
                 "Opportunity",
 
-
+            entity_id:
+                data.entityId ??
+                crypto.randomUUID(),
 
             opportunity_number:
                 data.opportunityNumber ??
@@ -398,36 +400,22 @@ export class OpportunitiesRepository
 
     }
 
-
-
-
-
-
-
-
     async delete(
         id: string,
     ): Promise<void> {
 
-
-        await this.update(
-
+        await super.update(
             id,
-
             {
-
-                status:
-                    "Lost",
-
-            },
-
+                is_deleted: true,
+                deleted_at:
+                    new Date().toISOString(),
+                updated_at:
+                    new Date().toISOString(),
+            } as Partial<Opportunity>,
         );
 
     }
-
-
-
-
 
 
 
@@ -443,8 +431,11 @@ export class OpportunitiesRepository
                 .eq(
                     "organization_id",
                     this.organizationId,
-                );
-
+                )
+                .eq(
+                    "is_deleted",
+                    false,
+                )
 
 
         if (filters?.status) {
