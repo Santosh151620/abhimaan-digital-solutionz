@@ -13,7 +13,7 @@ import type {
 } from '@/types/crm/Attachment';
 
 
-class AttachmentRepository
+export class AttachmentRepository
     extends BaseRepository<Attachment> {
 
 

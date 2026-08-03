@@ -96,20 +96,11 @@ export default async function ContactsPage() {
                     ) : (
 
                         <ContactsTable
-
                             contacts={contacts}
-
                         />
-
                     )
                 }
-
-
             </CRMTableContainer>
-
-
         </CRMPageLayout>
-
     );
-
 }
