@@ -17,7 +17,7 @@ import type {
 
 
 
-class NotificationsRepository
+export class NotificationsRepository
     extends BaseRepository<Notification> {
 
     constructor(
