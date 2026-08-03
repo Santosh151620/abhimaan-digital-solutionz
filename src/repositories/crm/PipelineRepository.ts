@@ -22,11 +22,25 @@ import type {
 
 
 
+interface OpportunityPipelineRow {
+    id: string;
+    entity_id?: string | null;
+
+    title?: string | null;
+    name?: string | null;
+
+    companyId?: string | null;
+
+    value?: number | null;
+    probability?: number | null;
+
+    stage?: string | null;
+
+    is_deleted?: boolean;
+}
 
 export class PipelineRepository
     extends BaseRepository<Opportunity> {
-
-
 
     constructor(
         supabase: SupabaseClient,
@@ -53,13 +67,10 @@ export class PipelineRepository
             await this.supabase
                 .from('pipeline_stages')
                 .select('*')
-                .order(
-                    'display_order',
-                    {
-                        ascending: true,
-                    },
-                );
-
+                .eq('is_active', true)
+                .order('display_order', {
+                    ascending: true,
+                });
 
 
         if (error) {
@@ -129,10 +140,8 @@ export class PipelineRepository
         } =
             await this.tableRef()
                 .select('*')
-                .eq(
-                    'organization_id',
-                    this.organizationId,
-                )
+                .eq('organization_id', this.organizationId)
+                .eq('is_deleted', false)
                 .order(
                     'created_at',
                     {
@@ -150,13 +159,8 @@ export class PipelineRepository
 
 
 
-        const opportunities =
-            (
-                data ?? []
-            ) as Opportunity[];
-
-
-
+        const opportunities: OpportunityPipelineRow[] =
+            data ?? [];
 
         return stages.map(
             stage => {
@@ -166,40 +170,40 @@ export class PipelineRepository
                     opportunities
                         .filter(
                             opportunity =>
-                                opportunity.stage
-                                    ?.toUpperCase()
-                                === stage.code,
+                                (opportunity.stage ?? '')
+                                    .toUpperCase()
+                                    .trim() === stage.code
                         )
-                        .map(
-                            opportunity => ({
+                        .map(opportunity => ({
 
-                                id:
-                                    opportunity.id,
+                            id:
+                                opportunity.id,
 
-                                entityType:
-                                    'Opportunity' as const,
+                            entityId:
+                                opportunity.entity_id ??
+                                opportunity.id,
 
-                                title:
-                                    opportunity.title
-                                    ??
-                                    opportunity.name,
+                            entityType:
+                                'Opportunity' as const,
 
-                                companyId:
-                                    opportunity.companyId,
+                            title:
+                                opportunity.title ??
+                                opportunity.name ??
+                                'Untitled Opportunity',
 
-                                value:
-                                    opportunity.value,
+                            companyId:
+                                opportunity.companyId ?? undefined,
 
-                                probability:
-                                    opportunity.probability,
+                            value:
+                                Number(opportunity.value ?? 0),
 
-                                stage:
-                                    stage.code,
+                            probability:
+                                Number(opportunity.probability ?? 0),
 
-                            }),
+                            stage:
+                                stage.code,
+                        }),
                         );
-
-
 
                 return {
 
@@ -230,117 +234,80 @@ export class PipelineRepository
     }
 
 
-
-
-
-
-
     async summary(): Promise<PipelineSummary> {
+
         const pipeline =
             await this.getPipeline();
-        return {
 
+        const totalOpportunities =
+            pipeline.reduce(
+
+                (total, item) =>
+                    total +
+                    item.opportunities.length,
+
+                0,
+
+            );
+
+        const totalValue =
+            pipeline.reduce(
+
+                (total, item) =>
+                    total +
+                    item.totalValue,
+
+                0,
+
+            );
+
+        const weightedValue =
+            pipeline.reduce(
+
+                (total, item) =>
+
+                    total +
+
+                    item.opportunities.reduce(
+
+                        (sum, opportunity) =>
+
+                            sum +
+
+                            (
+                                Number(opportunity.value ?? 0) *
+                                Number(opportunity.probability ?? 0) /
+                                100
+                            ),
+
+                        0,
+
+                    ),
+
+                0,
+
+            );
+
+        return {
 
             stages:
                 pipeline.length,
 
+            totalOpportunities,
 
-            totalOpportunities:
-
-                pipeline.reduce(
-
-                    (
-                        total,
-                        item,
-                    ) =>
-                        total +
-                        item.opportunities.length,
-
-                    0,
-
-                ),
             total:
-                pipeline.reduce(
-
-                    (
-                        total,
-                        item,
-                    ) =>
-                        total +
-                        item.opportunities.length,
-
-                    0,
-
-                ),
+                totalOpportunities,
 
             pipelineValue:
-                pipeline.reduce(
+                totalValue,
 
-                    (
-                        total,
-                        item,
-                    ) =>
-                        total +
-                        item.totalValue,
+            totalValue,
 
-                    0,
-
-                ),
-
-            totalValue:
-
-                pipeline.reduce(
-
-                    (
-                        total,
-                        item,
-                    ) =>
-                        total +
-                        item.totalValue,
-
-                    0,
-
-                ),
-
-
-
-            weightedValue:
-
-                pipeline.reduce(
-
-                    (
-                        total,
-                        item,
-                    ) =>
-
-                        total +
-
-                        item.opportunities.reduce(
-
-                            (
-                                sum,
-                                opportunity,
-                            ) =>
-
-                                sum +
-                                (
-                                    opportunity.value *
-                                    opportunity.probability /
-                                    100
-                                ),
-
-                            0,
-
-                        ),
-
-                    0,
-
-                ),
+            weightedValue,
 
         };
 
     }
-
 
 
 }
