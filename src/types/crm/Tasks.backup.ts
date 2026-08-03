@@ -70,6 +70,12 @@ export interface Task {
     taskNumber: string;
 
 
+    projectId?: string;
+
+    companyId?: string;
+
+
+
     /**
      * Ownership
      */
@@ -158,6 +164,14 @@ export interface CreateTaskInput {
 
     entityId?: string;
 
+
+
+    projectId?: string;
+
+    companyId?: string;
+
+
+
     assignedTo?: string;
 
     ownerId?: string;
@@ -217,28 +231,65 @@ export interface TaskSearchFilters {
 
     entityId?: string;
 
+
+
+    companyId?: string;
+
+
+    projectId?: string;
+
+
+
     assignedTo?: string;
 
+
     ownerId?: string;
+
+
 
     includeArchived?: boolean;
 
 }
 
 
+
+
 export interface TaskSummary {
 
 
     total: number;
+
+
     todo: number;
+
+
     inProgress: number;
+
+
     blocked: number;
+
+
     completed: number;
+
+
     cancelled: number;
+
+
+
     critical: number;
+
+
     highPriority: number;
+
+
+
     overdue: number;
+
+
     archived: number;
+
+
+
     averageCompletion: number;
 
 }

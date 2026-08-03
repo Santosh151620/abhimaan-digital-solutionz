@@ -13,8 +13,8 @@ import type {
     TaskSearchFilters,
     TaskPriority,
     TaskStatus,
+    TaskEntityType,
 } from '@/types/crm/Tasks';
-
 
 
 
@@ -28,55 +28,62 @@ export async function GET(
             request.nextUrl.searchParams;
 
 
-const status =
-    searchParams.get('status');
-
-const priority =
-    searchParams.get('priority');
+        const status =
+            searchParams.get('status');
 
 
-const filters: TaskSearchFilters = {
-
-    status:
-        status
-            ? status as TaskStatus
-            : undefined,
+        const priority =
+            searchParams.get('priority');
 
 
-    priority:
-        priority
-            ? priority as TaskPriority
-            : undefined,
+        const entityType =
+            searchParams.get('entityType');
 
 
-    companyId:
-        searchParams.get(
-            'companyId',
-        )
-        ?? undefined,
+        const filters: TaskSearchFilters = {
 
 
-    projectId:
-        searchParams.get(
-            'projectId',
-        )
-        ?? undefined,
+            status:
+                status
+                    ? status as TaskStatus
+                    : undefined,
 
 
-    assignedTo:
-        searchParams.get(
-            'assignedTo',
-        )
-        ?? undefined,
+            priority:
+                priority
+                    ? priority as TaskPriority
+                    : undefined,
 
 
-    search:
-        searchParams.get(
-            'search',
-        )
-        ?? undefined,
+            entityType:
+                entityType
+                    ? entityType as TaskEntityType
+                    : undefined,
 
-};
+
+            entityId:
+                searchParams.get(
+                    'entityId',
+                )
+                ?? undefined,
+
+
+            assignedTo:
+                searchParams.get(
+                    'assignedTo',
+                )
+                ?? undefined,
+
+
+            search:
+                searchParams.get(
+                    'search',
+                )
+                ?? undefined,
+
+
+        };
+
 
         const hasFilters =
             Object.values(
@@ -88,7 +95,6 @@ const filters: TaskSearchFilters = {
                     &&
                     value !== '',
             );
-
 
 
         const tasks =
@@ -119,7 +125,7 @@ const filters: TaskSearchFilters = {
                     'Failed to fetch tasks',
             },
             {
-                status: 500,
+                status:500,
             },
         );
 
@@ -130,14 +136,12 @@ const filters: TaskSearchFilters = {
 
 
 
-
-
-
 export async function POST(
     request: NextRequest,
 ) {
 
     try {
+
 
         const body =
             await request.json();
@@ -150,15 +154,17 @@ export async function POST(
             typeof body.title !== 'string'
         ) {
 
+
             return NextResponse.json(
                 {
                     error:
                         'Task title is required',
                 },
                 {
-                    status: 400,
+                    status:400,
                 },
             );
+
 
         }
 
@@ -174,12 +180,13 @@ export async function POST(
         return NextResponse.json(
             task,
             {
-                status: 201,
+                status:201,
             },
         );
 
 
     } catch {
+
 
         return NextResponse.json(
             {
@@ -187,9 +194,10 @@ export async function POST(
                     'Failed to create task',
             },
             {
-                status: 500,
+                status:500,
             },
         );
+
 
     }
 

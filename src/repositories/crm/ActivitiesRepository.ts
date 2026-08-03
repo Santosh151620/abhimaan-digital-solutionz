@@ -160,104 +160,68 @@ export class ActivitiesRepository
 
             organizationId:
                 data.organizationId,
-
-            leadId:
-                data.leadId,
-
             companyId:
                 data.companyId,
-
             contactId:
                 data.contactId,
-
             opportunityId:
                 data.opportunityId,
-
-            projectId:
-                data.projectId,
-
             ownerId:
                 data.ownerId,
-
             assignedTo:
                 data.assignedTo,
-
             title:
                 data.title ??
                 '',
-
             description:
                 data.description,
-
             type:
                 data.type ??
                 'Other',
-
             status:
                 data.status ??
                 'Planned',
-
             priority:
                 data.priority ??
                 'Medium',
-
             scheduledAt:
                 data.scheduledAt,
-
             startedAt:
                 data.startedAt,
-
             startDate:
                 data.startDate,
-
             dueAt:
                 data.dueAt,
-
             dueDate:
                 data.dueDate,
-
             completedAt:
                 data.completedAt,
-
             reminderAt:
                 data.reminderAt,
-
             reminderMinutes:
                 data.reminderMinutes,
-
             durationMinutes:
                 data.durationMinutes,
-
             outcome:
                 data.outcome,
-
             nextAction:
                 data.nextAction,
-
             location:
                 data.location,
-
             notes:
                 data.notes,
-
             metadata:
                 data.metadata,
-
             archived:
                 false,
-
             isArchived:
                 false,
-
             deletedAt:
                 null,
-
             createdAt:
                 now,
-
             updatedAt:
                 now,
-
         });
 
     }
@@ -477,19 +441,6 @@ export class ActivitiesRepository
         }
 
 
-
-        if (filters?.leadId) {
-
-            query =
-                query.eq(
-                    'lead_id',
-                    filters.leadId,
-                );
-
-        }
-
-
-
         if (filters?.companyId) {
 
             query =
@@ -523,19 +474,6 @@ export class ActivitiesRepository
                 );
 
         }
-
-
-
-        if (filters?.projectId) {
-
-            query =
-                query.eq(
-                    'project_id',
-                    filters.projectId,
-                );
-
-        }
-
 
 
         if (filters?.ownerId) {

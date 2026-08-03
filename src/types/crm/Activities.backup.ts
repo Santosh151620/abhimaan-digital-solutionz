@@ -77,6 +77,7 @@ export interface Activity {
     /**
      * CRM relationships
      */
+    leadId?: string;
 
     companyId?: string;
 
@@ -84,7 +85,10 @@ export interface Activity {
 
     opportunityId?: string;
 
-    
+    projectId?: string;
+
+
+
     /**
      * Activity details
      */
@@ -217,11 +221,19 @@ export interface CreateActivityInput {
     entityId?: string;
 
 
+
+    leadId?: string;
+
     companyId?: string;
 
     contactId?: string;
 
     opportunityId?: string;
+
+    projectId?: string;
+
+
+
     scheduledAt?: string;
 
     startedAt?: string;
@@ -298,11 +310,18 @@ export interface ActivityFilters {
     entityId?: string;
 
 
+
+    leadId?: string;
+
     companyId?: string;
 
     contactId?: string;
 
     opportunityId?: string;
+
+    projectId?: string;
+
+
 
     ownerId?: string;
 

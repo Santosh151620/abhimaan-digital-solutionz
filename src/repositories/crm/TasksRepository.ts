@@ -131,31 +131,47 @@ async details(
 
     }
 
-    async findByEntity(
-        entityType: string,
-        entityId: string,
-    ): Promise<Task[]> {
+   async findByEntity(
+    entityType: string,
+    entityId: string,
+): Promise<Task[]> {
 
-        const {
-            data,
-            error,
-        } = await this.supabase
-            .from(this.table)
-            .select("*")
-            .eq("organization_id", this.organizationId)
-            .eq("entityType", entityType)
-            .eq("entityId", entityId)
-            .order("createdAt", {
-                ascending: false,
-            });
+    const {
+        data,
+        error,
+    } =
+        await this.tableRef()
+            .select('*')
+            .eq(
+                'organization_id',
+                this.organizationId,
+            )
+            .eq(
+                'entity_type',
+                entityType,
+            )
+            .eq(
+                'entity_id',
+                entityId,
+            )
+            .order(
+                'created_at',
+                {
+                    ascending: false,
+                },
+            );
 
-        if (error) {
-            throw error;
-        }
 
-        return (data ?? []) as Task[];
+    if (error) {
+        throw error;
     }
 
+
+    return (
+        data ?? []
+    ) as Task[];
+
+}
     async search(
         filters?: TaskSearchFilters,
     ): Promise<Task[]> {
@@ -201,36 +217,7 @@ async details(
 
         }
 
-
-
-        if (
-            filters?.companyId
-        ) {
-
-            query =
-                query.eq(
-                    'company_id',
-                    filters.companyId,
-                );
-
-        }
-
-
-
-        if (
-            filters?.projectId
-        ) {
-
-            query =
-                query.eq(
-                    'project_id',
-                    filters.projectId,
-                );
-
-        }
-
-
-
+      
         if (
             filters?.assignedTo
         ) {
@@ -256,8 +243,6 @@ async details(
                         ascending: false,
                     },
                 );
-
-
 
         if (error) {
 
@@ -351,32 +336,18 @@ async details(
 
 
 
-        const payload = {
-            entityType:
-                'Task' as const,
+       const payload = {
 
+    entity_type:
+        'Task',
 
-            entityId:
-                data.entityId ??
-                crypto.randomUUID(),
-
-
+    entity_id:
+        data.entityId ??
+        crypto.randomUUID(),
 
             taskNumber:
                 data.taskNumber ??
                 `TSK-${Date.now()}`,
-
-
-
-            projectId:
-                data.projectId,
-
-
-
-            companyId:
-                data.companyId,
-
-
 
             assignedTo:
                 data.assignedTo,

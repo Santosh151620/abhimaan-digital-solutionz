@@ -84,9 +84,6 @@ findById(
             customerName:
                 data.customerName,
 
-            projectId:
-                data.projectId,
-
             assignedTo:
                 data.assignedTo,
 

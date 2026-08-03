@@ -86,11 +86,6 @@ class ClientPortalRepository {
 
 
 
-            clientId:
-                data.clientId,
-
-
-
             name:
                 data.name
                 ??
@@ -118,12 +113,16 @@ class ClientPortalRepository {
 
 
             entityType:
-                data.entityType,
+                data.entityType
+                ??
+                'Client',
 
 
 
             entityId:
-                data.entityId,
+                data.entityId
+                ??
+                crypto.randomUUID(),
 
 
 
@@ -450,4 +449,3 @@ class ClientPortalRepository {
 
 export const ClientPortalRepositoryInstance =
     new ClientPortalRepository();
-
