@@ -602,23 +602,8 @@ export function createContactsRepository(
 }
 
 
-
-
-
-
 /**
  * Standard export
  */
 export const ContactsRepositoryInstance =
-    createContactsRepository;
-
-
-
-
-
-
-/**
- * Legacy compatibility
- */
-export const ContactRepositoryInstance =
     createContactsRepository;

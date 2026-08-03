@@ -640,13 +640,8 @@ export function createOpportunitiesRepository(
 }
 
 
-
 /**
- * Backward compatibility aliases.
+ * Standard export
  */
-export const opportunitiesRepository =
-    createOpportunitiesRepository;
-
-
 export const OpportunitiesRepositoryInstance =
     createOpportunitiesRepository;

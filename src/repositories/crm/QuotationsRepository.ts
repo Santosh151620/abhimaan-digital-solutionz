@@ -592,13 +592,8 @@ export function createQuotationsRepository(
 }
 
 
-
 /**
- * Backward compatibility aliases.
+ * Standard export
  */
 export const QuotationsRepositoryInstance =
-    createQuotationsRepository;
-
-
-export const quotationsRepository =
     createQuotationsRepository;
