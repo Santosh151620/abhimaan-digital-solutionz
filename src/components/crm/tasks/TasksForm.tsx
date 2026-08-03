@@ -17,6 +17,7 @@ interface Props {
     onCancel?: () => void;
 }
 
+
 const statuses: TaskStatus[] = [
     'Todo',
     'In Progress',
@@ -25,12 +26,14 @@ const statuses: TaskStatus[] = [
     'Cancelled',
 ];
 
+
 const priorities: TaskPriority[] = [
     'Low',
     'Medium',
     'High',
     'Critical',
 ];
+
 
 export default function TasksForm({
     initialValues,
@@ -39,12 +42,14 @@ export default function TasksForm({
     onCancel,
 }: Props) {
 
-    const [form, setForm] =
-        useState<Partial<Task>>({
-            status: 'Todo',
-            priority: 'Medium',
-            ...initialValues,
-        });
+
+   const [form, setForm] =
+    useState<Partial<Task>>({
+        status: 'Todo',
+        priority: 'Medium',
+        entityType: 'Task',
+        ...initialValues,
+    });
 
     function update<
         K extends keyof Task
@@ -60,20 +65,33 @@ export default function TasksForm({
 
     }
 
+
+
     async function submit(
         e: React.FormEvent<HTMLFormElement>,
     ) {
 
         e.preventDefault();
 
+
         if (!form.title?.trim()) {
-            alert('Task title is required.');
+
+            alert(
+                'Task title is required.',
+            );
+
             return;
+
         }
 
-        await onSubmit?.(form);
+
+        await onSubmit?.(
+            form,
+        );
 
     }
+
+
 
     return (
 
@@ -83,6 +101,7 @@ export default function TasksForm({
         >
 
             <div className="grid gap-4 md:grid-cols-2">
+
 
                 <div>
 
@@ -103,6 +122,8 @@ export default function TasksForm({
 
                 </div>
 
+
+
                 <div>
 
                     <label className="mb-1 block text-sm font-medium">
@@ -121,6 +142,8 @@ export default function TasksForm({
                     />
 
                 </div>
+
+
 
                 <div className="md:col-span-2">
 
@@ -142,18 +165,20 @@ export default function TasksForm({
 
                 </div>
 
+
+
                 <div>
 
                     <label className="mb-1 block text-sm font-medium">
-                        Company
+                        Entity ID
                     </label>
 
                     <input
                         className="w-full rounded-lg border p-2"
-                        value={form.companyId ?? ''}
+                        value={form.entityId ?? ''}
                         onChange={e =>
                             update(
-                                'companyId',
+                                'entityId',
                                 e.target.value,
                             )
                         }
@@ -161,24 +186,7 @@ export default function TasksForm({
 
                 </div>
 
-                <div>
 
-                    <label className="mb-1 block text-sm font-medium">
-                        Project
-                    </label>
-
-                    <input
-                        className="w-full rounded-lg border p-2"
-                        value={form.projectId ?? ''}
-                        onChange={e =>
-                            update(
-                                'projectId',
-                                e.target.value,
-                            )
-                        }
-                    />
-
-                </div>
 
                 <div>
 
@@ -198,6 +206,8 @@ export default function TasksForm({
                     />
 
                 </div>
+
+
 
                 <div>
 
@@ -231,6 +241,8 @@ export default function TasksForm({
 
                 </div>
 
+
+
                 <div>
 
                     <label className="mb-1 block text-sm font-medium">
@@ -263,25 +275,7 @@ export default function TasksForm({
 
                 </div>
 
-                <div>
 
-                    <label className="mb-1 block text-sm font-medium">
-                        Start Date
-                    </label>
-
-                    <input
-                        type="date"
-                        className="w-full rounded-lg border p-2"
-                        value={form.startDate ?? ''}
-                        onChange={e =>
-                            update(
-                                'startDate',
-                                e.target.value,
-                            )
-                        }
-                    />
-
-                </div>
 
                 <div>
 
@@ -303,47 +297,10 @@ export default function TasksForm({
 
                 </div>
 
-                <div>
-
-                    <label className="mb-1 block text-sm font-medium">
-                        Estimated Hours
-                    </label>
-
-                    <input
-                        type="number"
-                        className="w-full rounded-lg border p-2"
-                        value={form.estimatedHours ?? ''}
-                        onChange={e =>
-                            update(
-                                'estimatedHours',
-                                Number(e.target.value),
-                            )
-                        }
-                    />
-
-                </div>
-
-                <div>
-
-                    <label className="mb-1 block text-sm font-medium">
-                        Actual Hours
-                    </label>
-
-                    <input
-                        type="number"
-                        className="w-full rounded-lg border p-2"
-                        value={form.actualHours ?? ''}
-                        onChange={e =>
-                            update(
-                                'actualHours',
-                                Number(e.target.value),
-                            )
-                        }
-                    />
-
-                </div>
 
             </div>
+
+
 
             <div className="flex justify-end gap-3">
 
@@ -355,19 +312,22 @@ export default function TasksForm({
                     Cancel
                 </button>
 
+
                 <button
                     type="submit"
                     disabled={loading}
                     className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
                 >
-                    {loading ? 'Saving...' : 'Save Task'}
+                    {loading
+                        ? 'Saving...'
+                        : 'Save Task'}
                 </button>
 
             </div>
+
 
         </form>
 
     );
 
 }
-
