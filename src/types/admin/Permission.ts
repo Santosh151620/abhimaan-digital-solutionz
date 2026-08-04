@@ -1,19 +1,27 @@
 /**
  * ============================================================================
- * Permission
- * Enterprise Platform RBAC
- * CRM + ERP Compatible
- * Production Contract
+ * ADS ADMIN PLATFORM
+ * Permission Contract
+ *
+ * Maps to:
+ * admin_permissions
+ *
+ * Production RBAC Model
  * ============================================================================
  */
 
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
 
 
+
+export type PermissionType =
+    | "System"
+    | "Custom";
 export type PermissionScope =
     | "Global"
     | "Organization"
-    | "Department"
     | "Module"
     | "Entity";
 
@@ -23,116 +31,95 @@ export type PermissionEffect =
     | "Deny";
 
 
-export type PermissionType =
-    | "System"
-    | "Custom"
-    | "Workflow"
-    | "Data";
-
-
-export interface Permission extends BaseEntity {
-
-    /**
-     * Organization ownership.
-     * Optional for platform-level permissions.
-     */
-    organizationId?: string;
+export interface Permission
+extends BaseEntity {
 
 
     /**
-     * Business module ownership.
-     * Example:
-     * CRM, HRMS, Finance
+     * Database:
+     * permission_key
      */
-    module: string;
+    key:string;
+
 
 
     /**
-     * Resource controlled.
-     * Example:
-     * Lead, Invoice, User
+     * Database:
+     * module_name
      */
-    resource: string;
+    module:string;
+
 
 
     /**
-     * Action allowed.
-     * Example:
-     * Create, Read, Update, Delete
+     * Database:
+     * action_name
      */
-    action: string;
+    action:string;
 
 
-    /**
-     * Unique permission identifier.
-     */
-    key: string;
+
+    name:string;
 
 
-    name: string;
+
+    description?:string;
 
 
-    description?: string;
+
+    type:PermissionType;
 
 
-    type: PermissionType;
+
+    isSystem:boolean;
 
 
-    scope: PermissionScope;
+
+    isActive:boolean;
 
 
-    effect: PermissionEffect;
+
+    metadata?:Record<string,unknown>;
 
 
-    /**
-     * Protect system permissions
-     * from tenant modification.
-     */
-    isSystem: boolean;
-
-
-    isActive: boolean;
-
-
-    metadata?: Record<string, unknown>;
-
-
-    /**
-     * Audit ownership.
-     */
-    createdBy?: string;
-
-
-    updatedBy?: string;
-
-
-    deletedAt?: string;
 
 }
+
 
 
 export interface PermissionGroup {
 
-    module: string;
 
-    permissions: Permission[];
+    module:string;
+
+
+    permissions:Permission[];
+
 
 }
+
 
 
 export interface RolePermission {
 
-    roleId: string;
 
-    permissionId: string;
+    roleId:string;
+
+
+    permissionId:string;
+
 
 }
 
 
+
 export interface UserPermission {
 
-    userId: string;
 
-    permissionId: string;
+    userId:string;
+
+
+    permissionId:string;
+
 
 }

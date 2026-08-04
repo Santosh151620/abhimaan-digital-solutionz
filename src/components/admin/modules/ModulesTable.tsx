@@ -95,17 +95,10 @@ export default function ModulesTable({
                             <td className="p-3">
                                 {module.status}
                             </td>
-
                         </tr>
-
                     ))}
-
                 </tbody>
-
             </table>
-
         </div>
-
     );
-
 }

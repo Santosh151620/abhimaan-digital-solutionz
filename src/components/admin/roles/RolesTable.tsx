@@ -1,23 +1,34 @@
 "use client";
 
+
 import type {
     Role,
 } from "@/types/admin/Role";
+
 
 
 interface RolesTableProps {
 
     roles: Role[];
 
+
     onEdit?: (
         role: Role,
     ) => void;
+
 
     onDelete?: (
         id: string,
     ) => Promise<void>;
 
+
+    onManagePermissions?: (
+        role: Role,
+    ) => void;
+
 }
+
+
 
 
 export default function RolesTable({
@@ -28,127 +39,264 @@ export default function RolesTable({
 
     onDelete,
 
+    onManagePermissions,
+
 }: RolesTableProps) {
+
 
     return (
 
         <div className="overflow-x-auto rounded-xl border">
 
+
             <table className="min-w-full">
+
 
                 <thead>
 
                     <tr className="border-b bg-muted/30">
 
+
                         <th className="p-3 text-left">
                             Name
                         </th>
+
 
                         <th className="p-3 text-left">
                             Code
                         </th>
 
+
                         <th className="p-3 text-left">
                             Level
                         </th>
+
 
                         <th className="p-3 text-left">
                             Status
                         </th>
 
+
                         <th className="p-3 text-right">
                             Actions
                         </th>
+
 
                     </tr>
 
                 </thead>
 
+
+
+
+
                 <tbody>
 
-                    {roles.length === 0 && (
 
-                        <tr>
+                    {
+                        roles.length === 0 && (
 
-                            <td
-                                colSpan={5}
-                                className="p-6 text-center text-muted-foreground"
-                            >
+                            <tr>
 
-                                No roles found.
+                                <td
 
-                            </td>
+                                    colSpan={5}
 
-                        </tr>
+                                    className="p-6 text-center text-muted-foreground"
 
-                    )}
+                                >
 
-                    {roles.map((role) => (
+                                    No roles found.
 
-                        <tr
-                            key={role.id}
-                            className="border-b"
-                        >
+                                </td>
 
-                            <td className="p-3 font-medium">
-                                {role.name}
-                            </td>
+                            </tr>
 
-                            <td className="p-3">
-                                {role.code}
-                            </td>
+                        )
+                    }
 
-                            <td className="p-3">
-                                {role.level ?? "Organization"}
-                            </td>
 
-                            <td className="p-3">
-                                {role.status}
-                            </td>
 
-                            <td className="p-3 text-right">
 
-                                <div className="flex justify-end gap-2">
 
-                                    {onEdit && (
 
-                                        <button
-                                            type="button"
-                                            onClick={() => onEdit(role)}
-                                            className="rounded border px-3 py-1"
-                                        >
+                    {
+                        roles.map(
 
-                                            Edit
+                            (role) => (
 
-                                        </button>
+                                <tr
 
-                                    )}
+                                    key={role.id}
 
-                                    {onDelete && (
+                                    className="border-b"
 
-                                        <button
-                                            type="button"
-                                            onClick={() => void onDelete(role.id)}
-                                            className="rounded border px-3 py-1 text-destructive"
-                                        >
+                                >
 
-                                            Delete
 
-                                        </button>
 
-                                    )}
+                                    <td className="p-3 font-medium">
 
-                                </div>
+                                        {role.name}
 
-                            </td>
+                                    </td>
 
-                        </tr>
 
-                    ))}
+
+
+                                    <td className="p-3">
+
+                                        {role.code}
+
+                                    </td>
+
+
+
+
+                                    <td className="p-3">
+
+                                        {role.level ?? "Organization"}
+
+                                    </td>
+
+
+
+
+                                    <td className="p-3">
+
+                                        {role.status}
+
+                                    </td>
+
+
+
+
+
+                                    <td className="p-3 text-right">
+
+
+                                        <div className="flex justify-end gap-2">
+
+
+
+
+
+                                            {
+                                                onManagePermissions && (
+
+                                                    <button
+
+                                                        type="button"
+
+                                                        onClick={() =>
+                                                            onManagePermissions(role)
+                                                        }
+
+                                                        className="
+                                                        rounded
+                                                        border
+                                                        px-3
+                                                        py-1
+                                                        "
+
+                                                    >
+
+                                                        Permissions
+
+                                                    </button>
+
+                                                )
+                                            }
+
+
+
+
+
+
+
+                                            {
+                                                onEdit && (
+
+                                                    <button
+
+                                                        type="button"
+
+                                                        onClick={() =>
+                                                            onEdit(role)
+                                                        }
+
+                                                        className="
+                                                        rounded
+                                                        border
+                                                        px-3
+                                                        py-1
+                                                        "
+
+                                                    >
+
+                                                        Edit
+
+                                                    </button>
+
+                                                )
+                                            }
+
+
+
+
+
+
+
+                                            {
+                                                onDelete && (
+
+                                                    <button
+
+                                                        type="button"
+
+                                                        onClick={() =>
+                                                            void onDelete(role.id)
+                                                        }
+
+                                                        className="
+                                                        rounded
+                                                        border
+                                                        px-3
+                                                        py-1
+                                                        text-destructive
+                                                        "
+
+                                                    >
+
+                                                        Delete
+
+                                                    </button>
+
+                                                )
+                                            }
+
+
+
+                                        </div>
+
+
+                                    </td>
+
+
+                                </tr>
+
+                            )
+
+                        )
+                    }
+
+
 
                 </tbody>
 
+
             </table>
+
 
         </div>
 

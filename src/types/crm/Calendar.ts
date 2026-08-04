@@ -35,8 +35,6 @@ export interface CalendarEvent {
 
     customerName?: string;
 
-    projectId?: string;
-
     assignedTo?: string;
 
     title: string;

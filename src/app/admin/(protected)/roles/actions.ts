@@ -1,5 +1,12 @@
 "use server";
 
+import {
+    RolePermissionRepository,
+} from "@/repositories/admin/RolePermissionRepository";
+
+import {
+    RolePermissionService,
+} from "@/services/admin/RolePermissionService";
 
 import {
     createClient,
@@ -84,5 +91,75 @@ export async function deleteRole(
     await service.delete(
         id
     );
+
+}
+
+
+async function getRolePermissionService() {
+
+    const supabase =
+        await createClient();
+
+
+    const repository =
+        new RolePermissionRepository(
+            supabase,
+        );
+
+
+    return new RolePermissionService(
+        repository,
+    );
+
+}
+
+export async function assignRolePermission(
+
+    roleId: string,
+
+    permissionId: string,
+
+) {
+
+    const service =
+        await getRolePermissionService();
+
+
+    await service.assign(
+        roleId,
+        permissionId,
+    );
+
+
+    return {
+        success: true,
+    };
+
+}
+
+
+
+
+export async function revokeRolePermission(
+
+    roleId: string,
+
+    permissionId: string,
+
+) {
+
+    const service =
+        await getRolePermissionService();
+
+
+    await service.revoke(
+        roleId,
+        permissionId,
+    );
+
+
+    return {
+        success: true,
+    };
 
 }

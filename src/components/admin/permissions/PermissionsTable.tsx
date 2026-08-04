@@ -1,168 +1,171 @@
 "use client";
 
+
 import type {
     Permission,
 } from "@/types/admin/Permission";
 
 
+
 interface PermissionsTableProps {
 
-    permissions: Permission[];
+    permissions:Permission[];
 
 }
 
 
+
 export default function PermissionsTable({
 
-    permissions,
+permissions,
 
-}: PermissionsTableProps) {
+}:PermissionsTableProps){
 
 
-    return (
 
-        <div className="overflow-x-auto rounded-xl border">
+return (
 
+<div className="overflow-x-auto rounded-xl border">
 
-            <table className="min-w-full">
 
+<table className="min-full">
 
-                <thead>
 
-                    <tr className="border-b bg-muted/30">
+<thead>
 
-                        <th className="p-3 text-left">
-                            Name
-                        </th>
+<tr className="border-b bg-muted/30">
 
 
-                        <th className="p-3 text-left">
-                            Module
-                        </th>
+<th className="p-3 text-left">
+Name
+</th>
 
 
-                        <th className="p-3 text-left">
-                            Resource
-                        </th>
+<th className="p-3 text-left">
+Module
+</th>
 
 
-                        <th className="p-3 text-left">
-                            Action
-                        </th>
+<th className="p-3 text-left">
+Action
+</th>
 
 
-                        <th className="p-3 text-left">
-                            Scope
-                        </th>
+<th className="p-3 text-left">
+Type
+</th>
 
 
-                        <th className="p-3 text-left">
-                            Status
-                        </th>
+<th className="p-3 text-left">
+Status
+</th>
 
 
-                    </tr>
+</tr>
 
+</thead>
 
-                </thead>
 
 
+<tbody>
 
-                <tbody>
 
+{
+permissions.length===0 && (
 
-                    {permissions.length === 0 && (
+<tr>
 
-                        <tr>
+<td
+colSpan={5}
+className="p-6 text-center text-muted-foreground"
+>
 
-                            <td
+No permissions found.
 
-                                colSpan={6}
+</td>
 
-                                className="p-6 text-center text-muted-foreground"
+</tr>
 
-                            >
+)
+}
 
-                                No permissions found.
 
-                            </td>
 
-                        </tr>
+{
+permissions.map(
+(permission)=>(
 
-                    )}
 
+<tr
+key={permission.id}
+className="border-b"
+>
 
 
-                    {permissions.map(permission => (
+<td className="p-3 font-medium">
 
+{permission.name}
 
-                        <tr
+</td>
 
-                            key={permission.id}
 
-                            className="border-b"
 
-                        >
+<td className="p-3">
 
+{permission.module}
 
-                            <td className="p-3 font-medium">
+</td>
 
-                                {permission.name}
 
-                            </td>
 
+<td className="p-3">
 
-                            <td className="p-3">
+{permission.action}
 
-                                {permission.module}
+</td>
 
-                            </td>
 
 
-                            <td className="p-3">
+<td className="p-3">
 
-                                {permission.resource}
+{permission.type}
 
-                            </td>
+</td>
 
 
-                            <td className="p-3">
 
-                                {permission.action}
+<td className="p-3">
 
-                            </td>
+{
+permission.isActive
+?
+"Active"
+:
+"Inactive"
+}
 
+</td>
 
-                            <td className="p-3">
 
-                                {permission.scope}
 
-                            </td>
+</tr>
 
 
-                            <td className="p-3">
+)
+)
+}
 
-                                {permission.isActive
-                                    ? "Active"
-                                    : "Inactive"}
 
-                            </td>
+</tbody>
 
 
-                        </tr>
+</table>
 
 
-                    ))}
+</div>
 
 
-                </tbody>
+);
 
-
-            </table>
-
-
-        </div>
-
-    );
 
 }
