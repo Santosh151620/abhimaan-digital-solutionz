@@ -1,36 +1,86 @@
-'use server';
-
+"use server";
 
 import {
-    AttachmentServiceInstance,
-} from '@/services/crm/AttachmentService';
+    createClient,
+} from "@/lib/supabase/server";
+
+import {
+    AttachmentsService,
+} from "@/services/attachments.service";
 
 import type {
     Attachment,
-} from '@/types/crm/Attachment';
+    AttachmentSearchFilters,
+} from "@/types/crm/Attachment";
 
-export async function getAttachments() {
-    return AttachmentServiceInstance.list();
+
+async function getService() {
+
+    const supabase =
+        await createClient();
+
+
+    return new AttachmentsService(
+        supabase,
+    );
 
 }
+
+
+
+export async function getAttachments(
+
+    entityType?: string,
+
+    entityId?: string,
+
+) {
+
+    const service =
+        await getService();
+
+
+    return service.list(
+        entityType,
+        entityId,
+    );
+
+}
+
+
+
 export async function getAttachment(
 
     id: string,
 
 ) {
 
-    return AttachmentServiceInstance.details(
+    const service =
+        await getService();
+
+
+    return service.findByEntity(
+        "",
         id,
     );
+
 }
+
+
 
 export async function getEntityAttachments(
 
     entityType: string,
+
     entityId: string,
 
 ) {
-    return AttachmentServiceInstance.listByEntity(
+
+    const service =
+        await getService();
+
+
+    return service.findByEntity(
 
         entityType,
 
@@ -40,16 +90,43 @@ export async function getEntityAttachments(
 
 }
 
+
+
+export async function searchAttachments(
+
+    filters?: AttachmentSearchFilters,
+
+) {
+
+    const service =
+        await getService();
+
+
+    return service.repository.search(
+        filters,
+    );
+
+}
+
+
+
 export async function createAttachment(
 
     data: Partial<Attachment>,
 
 ) {
 
-    return AttachmentServiceInstance.create(
+    const service =
+        await getService();
+
+
+    return service.create(
         data,
     );
+
 }
+
+
 
 export async function updateAttachment(
 
@@ -59,7 +136,11 @@ export async function updateAttachment(
 
 ) {
 
-    return AttachmentServiceInstance.update(
+    const service =
+        await getService();
+
+
+    return service.repository.update(
 
         id,
 
@@ -67,8 +148,9 @@ export async function updateAttachment(
 
     );
 
-
 }
+
+
 
 export async function deleteAttachment(
 
@@ -76,13 +158,24 @@ export async function deleteAttachment(
 
 ) {
 
-    return AttachmentServiceInstance.delete(
+    const service =
+        await getService();
+
+
+    return service.delete(
         id,
     );
+
 }
+
+
 
 export async function getAttachmentSummary() {
 
-    return AttachmentServiceInstance.summary();
-}
+    const service =
+        await getService();
 
+
+    return service.repository.summary();
+
+}

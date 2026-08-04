@@ -12,7 +12,7 @@ import type {
 export class AttachmentsService {
 
 
-    private readonly repository;
+    public readonly repository;
 
 
     constructor(
