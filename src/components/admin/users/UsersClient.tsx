@@ -67,8 +67,8 @@ export default function UsersClient({
 
 
     const [
-        deleting,
-        setDeleting
+        loading,
+        setLoading
     ] =
     useState(false);
 
@@ -84,18 +84,18 @@ export default function UsersClient({
 
 
 
-    function openCreate(){
+    function openCreate() {
 
         setSelectedUser(
             undefined
         );
 
-        setDialogOpen(
-            true
-        );
-
         setError(
             null
+        );
+
+        setDialogOpen(
+            true
         );
 
     }
@@ -105,20 +105,45 @@ export default function UsersClient({
 
 
     function openEdit(
-        user:AdminUser
-    ){
+
+        user: AdminUser,
+
+    ) {
+
 
         setSelectedUser(
             user
         );
 
-        setDialogOpen(
-            true
-        );
 
         setError(
             null
         );
+
+
+        setDialogOpen(
+            true
+        );
+
+
+    }
+
+
+
+
+
+    function closeDialog() {
+
+
+        setDialogOpen(
+            false
+        );
+
+
+        setSelectedUser(
+            undefined
+        );
+
 
     }
 
@@ -127,8 +152,11 @@ export default function UsersClient({
 
 
     async function handleDelete(
-        id:string
-    ){
+
+        id: string,
+
+    ) {
+
 
         const confirmed =
             window.confirm(
@@ -136,17 +164,18 @@ export default function UsersClient({
             );
 
 
-        if(!confirmed){
+        if (!confirmed) {
 
             return;
 
         }
 
 
-        try{
+
+        try {
 
 
-            setDeleting(
+            setLoading(
                 true
             );
 
@@ -164,41 +193,33 @@ export default function UsersClient({
             router.refresh();
 
 
+
         }
-        catch(error){
+        catch (error) {
 
 
             setError(
+
                 error instanceof Error
+
                 ? error.message
+
                 : "Unable to delete user"
+
             );
 
 
         }
-        finally{
+        finally {
 
-            setDeleting(
+
+            setLoading(
                 false
             );
 
+
         }
 
-    }
-
-
-
-
-
-    function closeDialog(){
-
-        setDialogOpen(
-            false
-        );
-
-        setSelectedUser(
-            undefined
-        );
 
     }
 
@@ -209,34 +230,30 @@ export default function UsersClient({
     return (
 
         <div
-            className="
-            space-y-6
-            "
+            className="space-y-6"
         >
 
 
-            <div
+            <section
                 className="
                 flex
-                justify-between
                 items-center
+                justify-between
                 "
             >
 
-
                 <div>
 
-
-                    <h2
+                    <h1
                         className="
-                        text-xl
+                        text-2xl
                         font-semibold
                         "
                     >
 
-                        Organization Users
+                        Users
 
-                    </h2>
+                    </h1>
 
 
                     <p
@@ -246,8 +263,8 @@ export default function UsersClient({
                         "
                     >
 
-                        Manage identity,
-                        access and user lifecycle.
+                        Manage organization users,
+                        identity and access.
 
                     </p>
 
@@ -257,6 +274,8 @@ export default function UsersClient({
 
 
                 <button
+
+                    type="button"
 
                     onClick={openCreate}
 
@@ -275,7 +294,7 @@ export default function UsersClient({
                 </button>
 
 
-            </div>
+            </section>
 
 
 
@@ -285,6 +304,7 @@ export default function UsersClient({
                 error && (
 
                     <div
+
                         className="
                         rounded-md
                         border
@@ -293,6 +313,7 @@ export default function UsersClient({
                         text-sm
                         text-destructive
                         "
+
                     >
 
                         {error}
@@ -322,14 +343,13 @@ export default function UsersClient({
 
 
 
+
             {
                 dialogOpen && (
 
                     <UserDialog
 
-                        user={
-                            selectedUser
-                        }
+                        user={selectedUser}
 
                         onClose={closeDialog}
 
@@ -340,10 +360,14 @@ export default function UsersClient({
 
 
 
+
+
+
             {
-                deleting && (
+                loading && (
 
                     <div
+
                         className="
                         fixed
                         bottom-6
@@ -355,9 +379,10 @@ export default function UsersClient({
                         py-2
                         shadow
                         "
+
                     >
 
-                        Deleting user...
+                        Processing...
 
                     </div>
 
