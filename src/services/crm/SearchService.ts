@@ -1,54 +1,50 @@
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
+
+
 import {
-    SearchRepositoryInstance,
-} from '@/repositories/crm/SearchRepository';
+    createSearchRepository,
+} from "@/repositories/crm/SearchRepository";
+
 
 import type {
     SearchFilters,
     SearchResponse,
-    SearchResult,
-} from '@/types/crm/Search';
+} from "@/types/crm/Search";
 
-class SearchService {
 
-    search(
-        filters: SearchFilters
-    ): SearchResponse {
 
-        return SearchRepositoryInstance.search(
-            filters
+export class SearchService {
+
+
+    private readonly repository;
+
+
+
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        this.repository =
+            createSearchRepository(
+                supabase,
+            );
+
+    }
+
+
+
+    async search(
+        filters: SearchFilters,
+    ): Promise<SearchResponse> {
+
+
+        return this.repository.search(
+            filters,
         );
 
     }
 
-    create(
-        data: SearchResult
-    ): SearchResult {
-
-        return SearchRepositoryInstance.create(
-            data
-        );
-
-    }
-
-    remove(
-        id: string
-    ): boolean {
-
-        return SearchRepositoryInstance.remove(
-            id
-        );
-
-    }
-
-    clear(): void {
-
-        SearchRepositoryInstance.clear();
-
-    }
 
 }
-
-export const
-    SearchServiceInstance =
-        new SearchService();
-

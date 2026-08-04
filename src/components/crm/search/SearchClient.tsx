@@ -1,71 +1,142 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-
-import SearchBar from './SearchBar';
-import SearchResults from './SearchResults';
 
 import {
-    SearchServiceInstance,
-} from '@/services/crm/SearchService';
+    useMemo,
+    useState,
+} from 'react';
+
+
+import SearchBar from './SearchBar';
+
+import SearchResults from './SearchResults';
+
+
+import {
+    searchAction,
+} from '@/app/crm/search/actions';
+
 
 import type {
     SearchResult,
 } from '@/types/crm/Search';
 
+
+
 export default function SearchClient() {
+
 
     const [
         results,
         setResults,
     ] = useState<SearchResult[]>([]);
 
+
+
+    const [
+        loading,
+        setLoading,
+    ] = useState(false);
+
+
+
     const total =
         useMemo(
-            () => results.length,
-            [results]
+            () =>
+                results.length,
+            [
+                results,
+            ],
         );
 
-    function handleSearch(
-        query: string
+
+
+    async function handleSearch(
+        query: string,
     ) {
 
-        const response =
-            SearchServiceInstance.search({
 
-                query,
+        if (!query.trim()) {
 
-            });
+            setResults([]);
 
-        setResults(
-            response.results
-        );
+            return;
+
+        }
+
+
+
+        setLoading(true);
+
+
+
+        try {
+
+
+            const response =
+                await searchAction(
+                    query,
+                );
+
+
+
+            setResults(
+                response.results,
+            );
+
+
+        }
+
+        finally {
+
+            setLoading(false);
+
+        }
 
     }
+
+
 
     return (
 
         <div className="space-y-6">
 
+
             <SearchBar
+
                 onSearch={
                     handleSearch
                 }
+
             />
+
+
 
             <div className="text-sm text-muted-foreground">
 
-                {total} result(s)
+
+                {
+                    loading
+                        ? 'Searching...'
+                        : `${total} result(s)`
+                }
+
 
             </div>
 
+
+
             <SearchResults
-                results={results}
+
+                results={
+                    results
+                }
+
             />
+
 
         </div>
 
     );
 
 }
-
