@@ -1,4 +1,6 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
 
 import {
     createAttachmentRepository,
@@ -6,13 +8,15 @@ import {
 
 import type {
     Attachment,
+    AttachmentSearchFilters,
+    AttachmentSummary,
 } from "@/types/crm/Attachment";
 
 
 export class AttachmentsService {
 
 
-    public readonly repository;
+    private readonly repository;
 
 
     constructor(
@@ -42,6 +46,18 @@ export class AttachmentsService {
 
 
 
+    async details(
+        id: string,
+    ): Promise<Attachment | null> {
+
+        return this.repository.findById(
+            id,
+        );
+
+    }
+
+
+
     async findByEntity(
         entityType: string,
         entityId: string,
@@ -56,9 +72,21 @@ export class AttachmentsService {
 
 
 
+    async search(
+        filters?: AttachmentSearchFilters,
+    ): Promise<Attachment[]> {
+
+        return this.repository.search(
+            filters,
+        );
+
+    }
+
+
+
     async create(
         payload: Partial<Attachment>,
-    ) {
+    ): Promise<Attachment> {
 
         return this.repository.create(
             payload,
@@ -68,13 +96,35 @@ export class AttachmentsService {
 
 
 
+    async update(
+        id: string,
+        payload: Partial<Attachment>,
+    ): Promise<Attachment> {
+
+        return this.repository.update(
+            id,
+            payload,
+        );
+
+    }
+
+
+
     async delete(
         id: string,
-    ) {
+    ): Promise<void> {
 
         return this.repository.delete(
             id,
         );
+
+    }
+
+
+
+    async summary(): Promise<AttachmentSummary> {
+
+        return this.repository.summary();
 
     }
 

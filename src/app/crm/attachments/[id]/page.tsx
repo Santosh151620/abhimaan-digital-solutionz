@@ -1,29 +1,22 @@
 import {
-
     notFound,
+} from "next/navigation";
 
-} from 'next/navigation';
-
-
-
-import Link from 'next/link';
-
-
+import Link from "next/link";
 
 import {
+    createClient,
+} from "@/lib/supabase/server";
 
-    AttachmentServiceInstance,
-
-} from '@/services/crm/AttachmentService';
-
+import {
+    AttachmentsService,
+} from "@/services/attachments.service";
 
 
 interface Props {
 
     params: Promise<{
-
         id: string;
-
     }>;
 
 }
@@ -37,34 +30,36 @@ export default async function AttachmentDetailsPage({
 }: Props) {
 
 
-
     const {
-
         id,
-
     } = await params;
 
 
 
+    const supabase =
+        await createClient();
+
+
+
+    const service =
+        new AttachmentsService(
+            supabase,
+        );
+
+
 
     const attachment =
-
-        AttachmentServiceInstance.details(
-
+        await service.details(
             id,
-
         );
 
 
 
     if (!attachment) {
 
-
         notFound();
 
-
     }
-
 
 
 
@@ -73,9 +68,7 @@ export default async function AttachmentDetailsPage({
         <div className="space-y-6">
 
 
-
             <div className="crm-card p-6">
-
 
 
                 <h1 className="text-2xl font-semibold">
@@ -86,26 +79,19 @@ export default async function AttachmentDetailsPage({
 
 
 
-
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
 
 
-
                     <div>
 
                         <p className="text-sm text-muted-foreground">
-
                             Entity Type
-
                         </p>
 
 
                         <p>
-
                             {attachment.entityType}
-
                         </p>
-
 
                     </div>
 
@@ -114,18 +100,13 @@ export default async function AttachmentDetailsPage({
                     <div>
 
                         <p className="text-sm text-muted-foreground">
-
                             Entity ID
-
                         </p>
 
 
                         <p>
-
                             {attachment.entityId}
-
                         </p>
-
 
                     </div>
 
@@ -134,18 +115,13 @@ export default async function AttachmentDetailsPage({
                     <div>
 
                         <p className="text-sm text-muted-foreground">
-
                             File Type
-
                         </p>
 
 
                         <p>
-
-                            {attachment.fileType ?? '-'}
-
+                            {attachment.fileType}
                         </p>
-
 
                     </div>
 
@@ -154,9 +130,7 @@ export default async function AttachmentDetailsPage({
                     <div>
 
                         <p className="text-sm text-muted-foreground">
-
                             File Size
-
                         </p>
 
 
@@ -165,34 +139,26 @@ export default async function AttachmentDetailsPage({
                             {
                                 attachment.fileSize
                                     ? `${attachment.fileSize} bytes`
-                                    : '-'
+                                    : "-"
                             }
 
                         </p>
 
-
                     </div>
-
 
 
                 </div>
 
 
 
-
                 {
-
                     attachment.description && (
 
                         <div className="mt-6">
 
-
                             <h2 className="font-semibold">
-
                                 Description
-
                             </h2>
-
 
 
                             <p className="mt-2 text-sm">
@@ -202,17 +168,13 @@ export default async function AttachmentDetailsPage({
                             </p>
 
 
-
                         </div>
 
                     )
-
                 }
 
 
-
             </div>
-
 
 
 
@@ -229,10 +191,8 @@ export default async function AttachmentDetailsPage({
             </Link>
 
 
-
         </div>
 
     );
-
 
 }

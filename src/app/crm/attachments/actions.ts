@@ -1,17 +1,21 @@
 "use server";
 
+
 import {
     createClient,
 } from "@/lib/supabase/server";
+
 
 import {
     AttachmentsService,
 } from "@/services/attachments.service";
 
+
 import type {
     Attachment,
     AttachmentSearchFilters,
 } from "@/types/crm/Attachment";
+
 
 
 async function getService() {
@@ -28,39 +32,27 @@ async function getService() {
 
 
 
-export async function getAttachments(
-
-    entityType?: string,
-
-    entityId?: string,
-
-) {
+export async function getAttachments() {
 
     const service =
         await getService();
 
 
-    return service.list(
-        entityType,
-        entityId,
-    );
+    return service.list();
 
 }
 
 
 
 export async function getAttachment(
-
     id: string,
-
 ) {
 
     const service =
         await getService();
 
 
-    return service.findByEntity(
-        "",
+    return service.details(
         id,
     );
 
@@ -81,11 +73,8 @@ export async function getEntityAttachments(
 
 
     return service.findByEntity(
-
         entityType,
-
         entityId,
-
     );
 
 }
@@ -102,7 +91,7 @@ export async function searchAttachments(
         await getService();
 
 
-    return service.repository.search(
+    return service.search(
         filters,
     );
 
@@ -140,12 +129,9 @@ export async function updateAttachment(
         await getService();
 
 
-    return service.repository.update(
-
+    return service.update(
         id,
-
         data,
-
     );
 
 }
@@ -176,6 +162,6 @@ export async function getAttachmentSummary() {
         await getService();
 
 
-    return service.repository.summary();
+    return service.summary();
 
 }
