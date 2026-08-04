@@ -18,6 +18,7 @@ from "@/components/admin/users/UsersClient";
 
 
 
+
 export const dynamic =
     "force-dynamic";
 
@@ -59,11 +60,22 @@ export default async function UsersPage(){
         );
 
 
+let users: Awaited<ReturnType<typeof service.list>> = [];
 
-    const users =
+try {
+
+    users =
         await service.list();
 
+}
+catch (error) {
 
+    console.error(
+        "Failed to load users.",
+        error,
+    );
+
+}
 
     return (
 
