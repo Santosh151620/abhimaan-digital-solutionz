@@ -3,6 +3,11 @@ import type {
 } from "@supabase/supabase-js";
 
 
+import {
+    TenantContextManager,
+} from "@/lib/tenant/tenantContext";
+
+
 import type {
     SearchFilters,
     SearchResponse,
@@ -18,6 +23,92 @@ export class SearchRepository {
         private readonly supabase: SupabaseClient,
     ) {}
 
+
+
+    private get organizationId(): string {
+
+        return TenantContextManager
+            .require()
+            .organizationId;
+
+    }
+
+
+
+private async executeSearch(
+    table: string,
+    column: string,
+    entityType: SearchResult["entityType"],
+    urlPrefix: string,
+    titleField: string,
+    query: string,
+): Promise<SearchResult[]> {
+
+
+    const {
+        data,
+        error,
+    } =
+        await this.supabase
+            .from(table)
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .ilike(
+                column,
+                `%${query}%`,
+            );
+
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+
+    return (
+        data ?? []
+    ).map(
+        (
+            item:
+                Record<string, unknown>,
+        ) => ({
+
+            id:
+                String(
+                    item.id,
+                ),
+
+
+            entityType,
+
+
+            entityId:
+                String(
+                    item.id,
+                ),
+
+
+            title:
+                String(
+                    item[titleField]
+                    ?? "",
+                ),
+
+
+            url:
+                `${urlPrefix}/${item.id}`,
+
+
+        }),
+    );
+
+}
 
 
     async search(
@@ -44,295 +135,236 @@ export class SearchRepository {
 
         }
 
-
-
         const results: SearchResult[] = [];
 
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Company"
+        ) {
 
-
-        const organizationFilter =
-            this.supabase;
-
-
-
-        const companies =
-            await organizationFilter
-                .from("companies")
-                .select(
-                    "id, company_name",
-                )
-                .ilike(
+            results.push(
+                ...await this.executeSearch(
+                    "companies",
                     "company_name",
-                    `%${query}%`,
-                );
+                    "Company",
+                    "/crm/companies",
+                    "company_name",
+                    query,
+                ),
+            );
+
+        }
 
 
 
-        companies.data?.forEach(
-            item => {
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Contact"
+        ) {
 
-                results.push({
-
-                    id:
-                        item.id,
-
-                    entityType:
-                        "Company",
-
-                    entityId:
-                        item.id,
-
-                    title:
-                        item.company_name,
-
-                    url:
-                        `/crm/companies/${item.id}`,
-
-                });
-
-            },
-        );
-
-
-
-        const contacts =
-            await this.supabase
-                .from("contacts")
-                .select(
-                    "id, display_name",
-                )
-                .ilike(
+            results.push(
+                ...await this.executeSearch(
+                    "contacts",
                     "display_name",
-                    `%${query}%`,
-                );
+                    "Contact",
+                    "/crm/contacts",
+                    "display_name",
+                    query,
+                ),
+            );
+
+        }
 
 
 
-        contacts.data?.forEach(
-            item => {
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Lead"
+        ) {
 
-                results.push({
-
-                    id:
-                        item.id,
-
-                    entityType:
-                        "Contact",
-
-                    entityId:
-                        item.id,
-
-                    title:
-                        item.display_name,
-
-                    url:
-                        `/crm/contacts/${item.id}`,
-
-                });
-
-            },
-        );
-
-
-
-        const leads =
-            await this.supabase
-                .from("leads")
-                .select(
-                    "id, title",
-                )
-                .ilike(
+            results.push(
+                ...await this.executeSearch(
+                    "leads",
                     "title",
-                    `%${query}%`,
-                );
-
-
-
-        leads.data?.forEach(
-            item => {
-
-                results.push({
-
-                    id:
-                        item.id,
-
-                    entityType:
-                        "Lead",
-
-                    entityId:
-                        item.id,
-
-                    title:
-                        item.title,
-
-                    url:
-                        `/crm/leads/${item.id}`,
-
-                });
-
-            },
-        );
-
-
-
-        const opportunities =
-            await this.supabase
-                .from("opportunities")
-                .select(
-                    "id, title",
-                )
-                .ilike(
+                    "Lead",
+                    "/crm/leads",
                     "title",
-                    `%${query}%`,
-                );
+                    query,
+                ),
+            );
+
+        }
 
 
 
-        opportunities.data?.forEach(
-            item => {
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Opportunity"
+        ) {
 
-                results.push({
+            results.push(
+                ...await this.executeSearch(
+                    "opportunities",
+                    "title",
+                    "Opportunity",
+                    "/crm/opportunities",
+                    "title",
+                    query,
+                ),
+            );
 
-                    id:
-                        item.id,
-
-                    entityType:
-                        "Opportunity",
-
-                    entityId:
-                        item.id,
-
-                    title:
-                        item.title,
-
-                    url:
-                        `/crm/opportunities/${item.id}`,
-
-                });
-
-            },
-        );
+        }
 
 
 
-        const projects =
-            await this.supabase
-                .from("projects")
-                .select(
-                    "id, project_name",
-                )
-                .ilike(
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Project"
+        ) {
+
+            results.push(
+                ...await this.executeSearch(
+                    "projects",
                     "project_name",
-                    `%${query}%`,
-                );
+                    "Project",
+                    "/crm/projects",
+                    "project_name",
+                    query,
+                ),
+            );
+
+        }
 
 
 
-        projects.data?.forEach(
-            item => {
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Task"
+        ) {
 
-                results.push({
-
-                    id:
-                        item.id,
-
-                    entityType:
-                        "Project",
-
-                    entityId:
-                        item.id,
-
-                    title:
-                        item.project_name,
-
-                    url:
-                        `/crm/projects/${item.id}`,
-
-                });
-
-            },
-        );
-
-
-
-        const tasks =
-            await this.supabase
-                .from("tasks")
-                .select(
-                    "id, title",
-                )
-                .ilike(
+            results.push(
+                ...await this.executeSearch(
+                    "tasks",
                     "title",
-                    `%${query}%`,
-                );
+                    "Task",
+                    "/crm/tasks",
+                    "title",
+                    query,
+                ),
+            );
+
+        }
 
 
 
-        tasks.data?.forEach(
-            item => {
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Activity"
+        ) {
 
-                results.push({
-
-                    id:
-                        item.id,
-
-                    entityType:
-                        "Task",
-
-                    entityId:
-                        item.id,
-
-                    title:
-                        item.title,
-
-                    url:
-                        `/crm/tasks/${item.id}`,
-
-                });
-
-            },
-        );
-
-
-
-        const activities =
-            await this.supabase
-                .from("activities")
-                .select(
-                    "id, subject",
-                )
-                .ilike(
+            results.push(
+                ...await this.executeSearch(
+                    "activities",
                     "subject",
-                    `%${query}%`,
-                );
+                    "Activity",
+                    "/crm/activities",
+                    "subject",
+                    query,
+                ),
+            );
+
+        }
 
 
 
-        activities.data?.forEach(
-            item => {
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Note"
+        ) {
 
-                results.push({
+            results.push(
+                ...await this.executeSearch(
+                    "notes",
+                    "title",
+                    "Note",
+                    "/crm/notes",
+                    "title",
+                    query,
+                ),
+            );
 
-                    id:
-                        item.id,
+        }
 
-                    entityType:
-                        "Activity",
 
-                    entityId:
-                        item.id,
 
-                    title:
-                        item.subject
-                        ?? "Activity",
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Quotation"
+        ) {
 
-                    url:
-                        `/crm/activities/${item.id}`,
+            results.push(
+                ...await this.executeSearch(
+                    "quotations",
+                    "quotation_number",
+                    "Quotation",
+                    "/crm/quotations",
+                    "quotation_number",
+                    query,
+                ),
+            );
 
-                });
+        }
 
-            },
-        );
+
+
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Contract"
+        ) {
+
+            results.push(
+                ...await this.executeSearch(
+                    "contracts",
+                    "contract_number",
+                    "Contract",
+                    "/crm/contracts",
+                    "contract_number",
+                    query,
+                ),
+            );
+
+        }
+
+
+
+        if (
+            !filters.entityType
+            ||
+            filters.entityType === "Invoice"
+        ) {
+
+            results.push(
+                ...await this.executeSearch(
+                    "invoices",
+                    "invoice_number",
+                    "Invoice",
+                    "/crm/invoices",
+                    "invoice_number",
+                    query,
+                ),
+            );
+
+        }
 
 
 
