@@ -4,21 +4,19 @@ import type {
     AdminUser,
 } from "@/types/admin/User";
 
-
 interface UsersTableProps {
 
     users: AdminUser[];
 
     onEdit?: (
-        user: AdminUser
+        user: AdminUser,
     ) => void;
 
     onDelete?: (
-        id: string
+        id: string,
     ) => Promise<void>;
 
 }
-
 
 export default function UsersTable({
 
@@ -30,36 +28,48 @@ export default function UsersTable({
 
 }: UsersTableProps) {
 
-
     return (
 
-        <div className="overflow-x-auto rounded-xl border">
+        <div
+            className="
+            overflow-x-auto
+            rounded-xl
+            border
+            "
+        >
 
+            <table
+                className="
+                min-w-full
+                divide-y
+                "
+            >
 
-            <table className="min-w-full">
+                <thead
+                    className="
+                    bg-muted/30
+                    "
+                >
 
+                    <tr>
 
-                <thead>
-
-                    <tr className="border-b bg-muted/30">
-
-                        <th className="p-3 text-left">
+                        <th className="p-3 text-left font-medium">
                             Name
                         </th>
 
-                        <th className="p-3 text-left">
+                        <th className="p-3 text-left font-medium">
                             Email
                         </th>
 
-                        <th className="p-3 text-left">
-                            Type
+                        <th className="p-3 text-left font-medium">
+                            User Type
                         </th>
 
-                        <th className="p-3 text-left">
+                        <th className="p-3 text-left font-medium">
                             Status
                         </th>
 
-                        <th className="p-3 text-right">
+                        <th className="p-3 text-right font-medium">
                             Actions
                         </th>
 
@@ -67,122 +77,151 @@ export default function UsersTable({
 
                 </thead>
 
-
                 <tbody>
 
+                    {
 
-                    {users.length === 0 && (
+                        users.length === 0 && (
 
-                        <tr>
+                            <tr>
 
-                            <td
-                                colSpan={5}
-                                className="p-6 text-center text-muted-foreground"
-                            >
+                                <td
+                                    colSpan={5}
+                                    className="
+                                    p-8
+                                    text-center
+                                    text-muted-foreground
+                                    "
+                                >
 
-                                No users found.
+                                    No users found.
 
-                            </td>
+                                </td>
 
-                        </tr>
+                            </tr>
 
-                    )}
+                        )
 
+                    }
 
-                    {users.map(user => (
+                    {
 
-                        <tr
-                            key={user.id}
-                            className="border-b"
-                        >
+                        users.map(
 
-                            <td className="p-3 font-medium">
+                            user => (
 
-                                {user.fullName}
+                                <tr
+                                    key={user.id}
+                                    className="
+                                    border-t
+                                    hover:bg-muted/20
+                                    "
+                                >
 
-                            </td>
+                                    <td className="p-3 font-medium">
+                                        {user.fullName}
+                                    </td>
 
+                                    <td className="p-3">
+                                        {user.email}
+                                    </td>
 
-                            <td className="p-3">
+                                    <td className="p-3">
+                                        {user.userType}
+                                    </td>
 
-                                {user.email}
+                                    <td className="p-3">
+                                        {user.status}
+                                    </td>
 
-                            </td>
+                                    <td className="p-3">
 
-
-                            <td className="p-3">
-
-                                {user.userType}
-
-                            </td>
-
-
-                            <td className="p-3">
-
-                                {user.status}
-
-                            </td>
-
-
-                            <td className="p-3">
-
-                                <div className="flex justify-end gap-2">
-
-
-                                    {onEdit && (
-
-                                        <button
-
-                                            onClick={() =>
-                                                onEdit(user)
-                                            }
-
-                                            className="rounded border px-3 py-1"
-
+                                        <div
+                                            className="
+                                            flex
+                                            justify-end
+                                            gap-2
+                                            "
                                         >
 
-                                            Edit
+                                            {
 
-                                        </button>
+                                                onEdit && (
 
-                                    )}
+                                                    <button
 
+                                                        type="button"
 
+                                                        onClick={() =>
+                                                            onEdit(
+                                                                user,
+                                                            )
+                                                        }
 
-                                    {onDelete && (
+                                                        className="
+                                                        rounded-md
+                                                        border
+                                                        px-3
+                                                        py-1
+                                                        "
 
-                                        <button
+                                                    >
 
-                                            onClick={() =>
-                                                onDelete(user.id)
+                                                        Edit
+
+                                                    </button>
+
+                                                )
+
                                             }
 
-                                            className="rounded border px-3 py-1 text-destructive"
+                                            {
 
-                                        >
+                                                onDelete && (
 
-                                            Delete
+                                                    <button
 
-                                        </button>
+                                                        type="button"
 
-                                    )}
+                                                        onClick={() =>
+                                                            void onDelete(
+                                                                user.id,
+                                                            )
+                                                        }
 
+                                                        className="
+                                                        rounded-md
+                                                        border
+                                                        px-3
+                                                        py-1
+                                                        text-destructive
+                                                        "
 
-                                </div>
+                                                    >
 
-                            </td>
+                                                        Delete
 
+                                                    </button>
 
-                        </tr>
+                                                )
 
-                    ))}
+                                            }
 
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            ),
+
+                        )
+
+                    }
 
                 </tbody>
 
-
             </table>
-
 
         </div>
 

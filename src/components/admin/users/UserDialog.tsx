@@ -1,32 +1,41 @@
 "use client";
 
-
 import {
-    useState,
+       useState,
 } from "react";
 
+import {
+    useRouter,
+} from "next/navigation";
 
 import type {
     AdminUser,
 } from "@/types/admin/User";
-
 
 import {
     createUser,
     updateUser,
 } from "@/app/admin/(protected)/users/actions";
 
-
-
-interface Props {
+interface UserDialogProps {
 
     user?: AdminUser;
 
-    onClose:()=>void;
+    onClose: () => void;
 
 }
 
+const defaultForm: Partial<AdminUser> = {
 
+    fullName: "",
+
+    email: "",
+
+    userType: "Internal",
+
+    status: "Pending",
+
+};
 
 export default function UserDialog({
 
@@ -34,42 +43,87 @@ export default function UserDialog({
 
     onClose,
 
-}:Props){
+}: UserDialogProps) {
 
+    const router =
+        useRouter();
 
-    const [loading,setLoading]=
-        useState(false);
+    const [
+        loading,
+        setLoading,
+    ] =
+    useState(false);
 
+    const [
+        error,
+        setError,
+    ] =
+    useState<string | null>(null);
 
+    const [
+        form,
+        setForm,
+    ] =
+    useState<Partial<AdminUser>>(
+        defaultForm,
+    );
 
-    const [form,setForm]=
-        useState<Partial<AdminUser>>({
+    function updateField<
+        K extends keyof AdminUser
+    >(
+        key: K,
+        value: AdminUser[K],
+    ) {
 
-            fullName:
-                user?.fullName ?? "",
+        setForm(
+            previous => ({
 
-            email:
-                user?.email ?? "",
+                ...previous,
 
-            userType:
-                user?.userType ?? "Internal",
+                [key]: value,
 
-            status:
-                user?.status ?? "Pending",
+            }),
+        );
 
-        });
+    }
 
+    async function submit() {
 
+        setError(
+            null,
+        );
 
-    async function submit(){
+        if (
+            !form.fullName?.trim()
+        ) {
 
-        setLoading(true);
+            setError(
+                "Full name is required.",
+            );
 
+            return;
 
-        try{
+        }
 
+        if (
+            !form.email?.trim()
+        ) {
 
-            if(user){
+            setError(
+                "Email is required.",
+            );
+
+            return;
+
+        }
+
+        try {
+
+            setLoading(
+                true,
+            );
+
+            if (user) {
 
                 await updateUser({
 
@@ -79,64 +133,136 @@ export default function UserDialog({
 
                 } as AdminUser);
 
-
             }
-            else{
-
+            else {
 
                 await createUser(
-                    form
+                    form,
                 );
-
 
             }
 
+            router.refresh();
 
             onClose();
 
+        }
+        catch (err) {
+
+            setError(
+
+                err instanceof Error
+
+                    ? err.message
+
+                    : "Unable to save user.",
+
+            );
 
         }
-        finally{
+        finally {
 
-            setLoading(false);
+            setLoading(
+                false,
+            );
 
         }
 
     }
 
-
-
     return (
 
-        <div className="
-            fixed inset-0
-            flex items-center justify-center
+        <div
+            className="
+            fixed
+            inset-0
+            z-50
+            flex
+            items-center
+            justify-center
             bg-black/40
-        ">
+            p-4
+            "
+        >
 
-
-            <div className="
-                w-full max-w-lg
+            <div
+                className="
+                w-full
+                max-w-lg
                 rounded-xl
                 bg-background
                 p-6
-                space-y-4
-            ">
+                shadow-xl
+                space-y-5
+                "
+            >
 
+                <div>
 
-                <h2 className="text-xl font-bold">
+                    <h2
+                        className="
+                        text-xl
+                        font-semibold
+                        "
+                    >
 
-                    {user
-                    ? "Edit User"
-                    : "Create User"}
+                        {
 
-                </h2>
+                            user
 
+                                ? "Edit User"
 
+                                : "Create User"
+
+                        }
+
+                    </h2>
+
+                    <p
+                        className="
+                        text-sm
+                        text-muted-foreground
+                        "
+                    >
+
+                        Create or update
+                        user information.
+
+                    </p>
+
+                </div>
+
+                {
+
+                    error && (
+
+                        <div
+                            className="
+                            rounded-md
+                            border
+                            border-destructive
+                            p-3
+                            text-sm
+                            text-destructive
+                            "
+                        >
+
+                            {error}
+
+                        </div>
+
+                    )
+
+                }
 
                 <input
 
-                    className="w-full rounded border p-2"
+                    className="
+                    w-full
+                    rounded-md
+                    border
+                    p-2
+                    "
 
                     placeholder="Full Name"
 
@@ -145,125 +271,179 @@ export default function UserDialog({
                     }
 
                     onChange={
-                        e =>
-                        setForm({
-
-                            ...form,
-
-                            fullName:
-                            e.target.value
-
-                        })
+                        event =>
+                            updateField(
+                                "fullName",
+                                event.target.value,
+                            )
                     }
 
                 />
 
-
-
                 <input
 
-                    className="w-full rounded border p-2"
+                    className="
+                    w-full
+                    rounded-md
+                    border
+                    p-2
+                    "
 
                     placeholder="Email"
+
+                    type="email"
 
                     value={
                         form.email ?? ""
                     }
 
                     onChange={
-                        e =>
-                        setForm({
-
-                            ...form,
-
-                            email:
-                            e.target.value
-
-                        })
+                        event =>
+                            updateField(
+                                "email",
+                                event.target.value,
+                            )
                     }
 
                 />
 
-
-
                 <select
 
-                    className="w-full rounded border p-2"
+                    className="
+                    w-full
+                    rounded-md
+                    border
+                    p-2
+                    "
 
                     value={
-                        form.status
+                        form.userType ?? "Internal"
                     }
 
                     onChange={
-                        e =>
-                        setForm({
-
-                            ...form,
-
-                            status:
-                            e.target.value as AdminUser["status"]
-
-                        })
+                        event =>
+                            updateField(
+                                "userType",
+                                event.target.value as AdminUser["userType"],
+                            )
                     }
 
                 >
 
-                    <option>
+                    <option value="Internal">
+                        Internal
+                    </option>
+
+                    <option value="Customer">
+                        Customer
+                    </option>
+
+                    <option value="Partner">
+                        Partner
+                    </option>
+
+                </select>
+
+                <select
+
+                    className="
+                    w-full
+                    rounded-md
+                    border
+                    p-2
+                    "
+
+                    value={
+                        form.status ?? "Pending"
+                    }
+
+                    onChange={
+                        event =>
+                            updateField(
+                                "status",
+                                event.target.value as AdminUser["status"],
+                            )
+                    }
+
+                >
+
+                    <option value="Pending">
                         Pending
                     </option>
 
-                    <option>
+                    <option value="Active">
                         Active
                     </option>
 
-                    <option>
+                    <option value="Inactive">
                         Inactive
                     </option>
 
                 </select>
 
-
-
-                <div className="flex justify-end gap-3">
-
+                <div
+                    className="
+                    flex
+                    justify-end
+                    gap-3
+                    pt-2
+                    "
+                >
 
                     <button
+
+                        type="button"
+
                         onClick={onClose}
-                        className="border px-4 py-2 rounded"
-                    >
-                        Cancel
-                    </button>
-
-
-
-                    <button
 
                         disabled={loading}
 
+                        className="
+                        rounded-md
+                        border
+                        px-4
+                        py-2
+                        "
+
+                    >
+
+                        Cancel
+
+                    </button>
+
+                    <button
+
+                        type="button"
+
                         onClick={submit}
 
+                        disabled={loading}
+
                         className="
-                        rounded
+                        rounded-md
                         bg-primary
-                        px-4 py-2
+                        px-4
+                        py-2
                         text-primary-foreground
                         "
 
                     >
 
-                        {loading
-                        ?"Saving..."
-                        :"Save"}
+                        {
+
+                            loading
+
+                                ? "Saving..."
+
+                                : "Save"
+
+                        }
 
                     </button>
 
-
                 </div>
 
-
-
             </div>
-
 
         </div>
 
