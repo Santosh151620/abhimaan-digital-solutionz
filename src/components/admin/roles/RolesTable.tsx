@@ -17,9 +17,11 @@ interface RolesTableProps {
     ) => void;
 
 
-    onDelete?: (
-        id: string,
-    ) => Promise<void>;
+   onDelete?: (
+    id: string,
+) => Promise<{
+        success: boolean;
+    }>;
 
 
     onManagePermissions?: (

@@ -12,19 +12,19 @@ import type {
 } from "@/types/admin/Permission";
 
 
-import {
-    savePermission,
-} from "@/app/admin/(protected)/permissions/actions";
-
-
-
 interface PermissionDialogProps {
 
     initialData?: Permission;
 
+    onSubmit: (
+        permission: Permission,
+    ) => Promise<void>;
+
+    onClose: () => void;
+
+    saving?: boolean;
+
 }
-
-
 
 const defaultPermission: Partial<Permission> = {
 
@@ -47,109 +47,73 @@ const defaultPermission: Partial<Permission> = {
 };
 
 
-
 export default function PermissionDialog({
 
     initialData,
-
+    onSubmit,
+    onClose,
+    saving = false,
 }: PermissionDialogProps) {
-
-
 
     const [open, setOpen] =
         useState(false);
 
-
-
     const [loading, setLoading] =
         useState(false);
-
-
 
     const [form, setForm] =
         useState<Partial<Permission>>(
             initialData ?? defaultPermission
         );
 
-
-
     function update<K extends keyof Permission>(
-
         key: K,
-
         value: Permission[K],
-
     ) {
 
         setForm(previous => ({
-
             ...previous,
-
             [key]: value,
-
         }));
 
     }
 
-
-
     async function submit() {
-
-
         setLoading(true);
-
-
         try {
+           await onSubmit(
+    {
+        ...form,
 
+        id:
+            form.id ??
+            crypto.randomUUID(),
 
-            await savePermission(
+        module:
+            form.module ?? "",
 
-                {
+        action:
+            form.action ?? "",
 
-                    ...form,
+        key:
+            form.key ?? "",
 
-                    id:
-                        form.id ??
-                        crypto.randomUUID(),
+        name:
+            form.name ?? "",
 
+        type:
+            form.type ?? "System",
 
-                    module:
-                        form.module ?? "",
+        isSystem:
+            form.isSystem ?? true,
 
+        isActive:
+            form.isActive ?? true,
 
-                    action:
-                        form.action ?? "",
-
-
-                    key:
-                        form.key ?? "",
-
-
-                    name:
-                        form.name ?? "",
-
-
-                    type:
-                        form.type ?? "System",
-
-
-                    isSystem:
-                        form.isSystem ?? true,
-
-
-                    isActive:
-                        form.isActive ?? true,
-
-
-                } as Permission,
-
-            );
-
-
+    } as Permission,
+);
 
             setOpen(false);
-
-
         }
 
         finally {
@@ -454,9 +418,7 @@ export default function PermissionDialog({
 
                                 type="button"
 
-                                onClick={() =>
-                                    setOpen(false)
-                                }
+                               onClick={onClose}
 
                                 className="
                                 rounded-md
@@ -477,7 +439,7 @@ export default function PermissionDialog({
 
                                 type="button"
 
-                                disabled={loading}
+                                disabled={loading || saving}
 
                                 onClick={submit}
 
@@ -492,7 +454,7 @@ export default function PermissionDialog({
                             >
 
                                 {
-                                    loading
+                                    saving
                                         ? "Saving..."
                                         : "Save"
                                 }

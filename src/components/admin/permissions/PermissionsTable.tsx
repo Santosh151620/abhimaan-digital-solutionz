@@ -1,171 +1,155 @@
 "use client";
 
-
 import type {
     Permission,
 } from "@/types/admin/Permission";
 
-
-
 interface PermissionsTableProps {
 
-    permissions:Permission[];
+    permissions: Permission[];
+
+    onEdit?: (
+        permission: Permission,
+    ) => void;
+
+    onDelete?: (
+        id: string,
+    ) => Promise<void>;
 
 }
-
-
 
 export default function PermissionsTable({
 
-permissions,
+    permissions,
 
-}:PermissionsTableProps){
+    onEdit,
 
+    onDelete,
 
+}: PermissionsTableProps) {
 
-return (
+    return (
 
-<div className="overflow-x-auto rounded-xl border">
+        <div className="overflow-x-auto rounded-xl border">
 
+            <table className="min-w-full">
 
-<table className="min-full">
+                <thead>
 
+                    <tr className="border-b bg-muted/30">
 
-<thead>
+                        <th className="p-3 text-left">
+                            Key
+                        </th>
 
-<tr className="border-b bg-muted/30">
+                        <th className="p-3 text-left">
+                            Module
+                        </th>
 
+                        <th className="p-3 text-left">
+                            Action
+                        </th>
 
-<th className="p-3 text-left">
-Name
-</th>
+                        <th className="p-3 text-left">
+                            Type
+                        </th>
 
+                        <th className="p-3 text-right">
+                            Actions
+                        </th>
 
-<th className="p-3 text-left">
-Module
-</th>
+                    </tr>
 
+                </thead>
 
-<th className="p-3 text-left">
-Action
-</th>
+                <tbody>
 
+                    {permissions.length === 0 && (
 
-<th className="p-3 text-left">
-Type
-</th>
+                        <tr>
 
+                            <td
+                                colSpan={5}
+                                className="p-6 text-center text-muted-foreground"
+                            >
 
-<th className="p-3 text-left">
-Status
-</th>
+                                No permissions found.
 
+                            </td>
 
-</tr>
+                        </tr>
 
-</thead>
+                    )}
 
+                    {permissions.map((permission) => (
 
+                        <tr
+                            key={permission.id}
+                            className="border-b"
+                        >
 
-<tbody>
+                            <td className="p-3 font-medium">
+                                {permission.key}
+                            </td>
 
+                            <td className="p-3">
+                                {permission.module}
+                            </td>
 
-{
-permissions.length===0 && (
+                            <td className="p-3">
+                                {permission.action}
+                            </td>
 
-<tr>
+                            <td className="p-3">
+                                {permission.type}
+                            </td>
 
-<td
-colSpan={5}
-className="p-6 text-center text-muted-foreground"
->
+                            <td className="p-3 text-right">
 
-No permissions found.
+                                <div className="flex justify-end gap-2">
 
-</td>
+                                    {onEdit && (
 
-</tr>
+                                        <button
+                                            type="button"
+                                            onClick={() => onEdit(permission)}
+                                            className="rounded border px-3 py-1"
+                                        >
 
-)
-}
+                                            Edit
 
+                                        </button>
 
+                                    )}
 
-{
-permissions.map(
-(permission)=>(
+                                    {onDelete && (
 
+                                        <button
+                                            type="button"
+                                            onClick={() => void onDelete(permission.id)}
+                                            className="rounded border px-3 py-1 text-destructive"
+                                        >
 
-<tr
-key={permission.id}
-className="border-b"
->
+                                            Delete
 
+                                        </button>
 
-<td className="p-3 font-medium">
+                                    )}
 
-{permission.name}
+                                </div>
 
-</td>
+                            </td>
 
+                        </tr>
 
+                    ))}
 
-<td className="p-3">
+                </tbody>
 
-{permission.module}
+            </table>
 
-</td>
+        </div>
 
-
-
-<td className="p-3">
-
-{permission.action}
-
-</td>
-
-
-
-<td className="p-3">
-
-{permission.type}
-
-</td>
-
-
-
-<td className="p-3">
-
-{
-permission.isActive
-?
-"Active"
-:
-"Inactive"
-}
-
-</td>
-
-
-
-</tr>
-
-
-)
-)
-}
-
-
-</tbody>
-
-
-</table>
-
-
-</div>
-
-
-);
-
+    );
 
 }

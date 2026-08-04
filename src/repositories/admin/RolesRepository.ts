@@ -11,30 +11,40 @@ import type {
 } from "@/types/admin/Role";
 
 
-
 export interface IRolesRepository {
 
     list(): Promise<Role[]>;
 
+    active(): Promise<Role[]>;
+
+    systemRoles(): Promise<Role[]>;
+
+    customRoles(): Promise<Role[]>;
+
+    search(
+        keyword: string,
+    ): Promise<Role[]>;
+
     findById(
-        id:string,
+        id: string,
     ): Promise<Role | null>;
 
-    findByCode(
-        code:string,
-    ): Promise<Role | null>;
+    existsByCode(
+        code: string,
+    ): Promise<boolean>;
+
+    existsByName(
+        name: string,
+    ): Promise<boolean>;
 
     save(
-        role:Role,
+        role: Role,
     ): Promise<void>;
 
     delete(
-        id:string,
+        id: string,
     ): Promise<void>;
-
 }
-
-
 
 export class RolesRepository
 extends BaseRepository<Role>
@@ -130,7 +140,173 @@ return (
 
 }
 
+async existsByCode(
+    code: string,
+): Promise<boolean> {
 
+    const {
+        count,
+        error,
+    } = await this
+        .tableRef()
+        .select(
+            "*",
+            {
+                count: "exact",
+                head: true,
+            },
+        )
+        .eq(
+            "code",
+            code,
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return (count ?? 0) > 0;
+
+}
+
+
+
+async existsByName(
+    name: string,
+): Promise<boolean> {
+
+    const {
+        count,
+        error,
+    } = await this
+        .tableRef()
+        .select(
+            "*",
+            {
+                count: "exact",
+                head: true,
+            },
+        )
+        .ilike(
+            "name",
+            name,
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return (count ?? 0) > 0;
+
+}
+
+
+
+async search(
+    keyword: string,
+): Promise<Role[]> {
+
+    const {
+        data,
+        error,
+    } = await this
+        .tableRef()
+        .select("*")
+        .or(
+            `name.ilike.%${keyword}%,code.ilike.%${keyword}%`,
+        )
+        .order(
+            "name",
+            {
+                ascending: true,
+            },
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return (data ?? []) as Role[];
+
+}
+
+
+
+async active(): Promise<Role[]> {
+
+    const {
+        data,
+        error,
+    } = await this
+        .tableRef()
+        .select("*")
+        .eq(
+            "status",
+            "Active",
+        )
+        .order(
+            "name",
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return (data ?? []) as Role[];
+
+}
+
+
+
+async systemRoles(): Promise<Role[]> {
+
+    const {
+        data,
+        error,
+    } = await this
+        .tableRef()
+        .select("*")
+        .eq(
+            "is_system",
+            true,
+        )
+        .order(
+            "name",
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return (data ?? []) as Role[];
+
+}
+
+
+
+async customRoles(): Promise<Role[]> {
+
+    const {
+        data,
+        error,
+    } = await this
+        .tableRef()
+        .select("*")
+        .eq(
+            "is_system",
+            false,
+        )
+        .order(
+            "name",
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return (data ?? []) as Role[];
+
+}
 
 async findById(
 id:string,
@@ -308,9 +484,6 @@ id:string,
 
 await super.delete(id);
 
-
 }
-
-
 
 }
