@@ -42,6 +42,7 @@ export default function OrganizationsTable({
 
                 <thead className="border-b bg-muted/40">
 
+
                     <tr>
 
                         <th className="p-3 text-left">

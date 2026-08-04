@@ -38,7 +38,7 @@ export default function OrganizationDialog({
         setLoading,
 
     ] =
-    useState(false);
+        useState(false);
 
     const [
 
@@ -47,58 +47,58 @@ export default function OrganizationDialog({
         setForm,
 
     ] =
-    useState<Partial<Organization>>({
+        useState<Partial<Organization>>({
 
-        name:
-            organization?.name ?? "",
+            name:
+                organization?.name ?? "",
 
-        code:
-            organization?.code ?? "",
+            code:
+                organization?.code ?? "",
 
-        legalName:
-            organization?.legalName ?? "",
+            legalName:
+                organization?.legalName ?? "",
 
-        displayName:
-            organization?.displayName ?? "",
+            displayName:
+                organization?.displayName ?? "",
 
-        description:
-            organization?.description ?? "",
+            description:
+                organization?.description ?? "",
 
-        email:
-            organization?.email ?? "",
+            email:
+                organization?.email ?? "",
 
-        phone:
-            organization?.phone ?? "",
+            phone:
+                organization?.phone ?? "",
 
-        website:
-            organization?.website ?? "",
+            website:
+                organization?.website ?? "",
 
-        city:
-            organization?.city ?? "",
+            city:
+                organization?.city ?? "",
 
-        state:
-            organization?.state ?? "",
+            state:
+                organization?.state ?? "",
 
-        country:
-            organization?.country ?? "",
+            country:
+                organization?.country ?? "",
 
-        type:
-            organization?.type
-            ?? "Customer",
+            type:
+                organization?.type
+                ?? "Customer",
 
-        status:
-            organization?.status
-            ?? "Active",
+            status:
+                organization?.status
+                ?? "Active",
 
-        isActive:
-            organization?.isActive
-            ?? true,
+            isActive:
+                organization?.isActive
+                ?? true,
 
-        isSystem:
-            organization?.isSystem
-            ?? false,
+            isSystem:
+                organization?.isSystem
+                ?? false,
 
-    });
+        });
 
     function updateField<
 
@@ -127,8 +127,25 @@ export default function OrganizationDialog({
     }
 
     async function submit() {
+        if (!form.name?.trim()) {
 
+            alert(
+                "Organization name is required.",
+            );
 
+            return;
+
+        }
+
+        if (!form.code?.trim()) {
+
+            alert(
+                "Organization code is required.",
+            );
+
+            return;
+
+        }
         setLoading(
             true,
         );
@@ -150,13 +167,10 @@ export default function OrganizationDialog({
                 } as Organization);
 
             }
-
             else {
 
                 await createOrganization(
-
                     form,
-
                 );
 
             }
@@ -164,36 +178,27 @@ export default function OrganizationDialog({
             onClose();
 
         }
+        catch (error) {
 
+            console.error(error);
+
+            alert(
+
+                error instanceof Error
+                    ? error.message
+                    : "Unable to save organization.",
+
+            );
+
+        }
         finally {
 
-            setLoading(
-                false,
-            );
+            setLoading(false);
 
         }
 
     }
-        if (!form.name?.trim()) {
-
-        alert(
-            "Organization name is required.",
-        );
-
-        return;
-
-    }
-
-    if (!form.code?.trim()) {
-
-        alert(
-            "Organization code is required.",
-        );
-
-        return;
-
-    }
-        return (
+    return (
 
         <div
             className="
@@ -545,7 +550,7 @@ export default function OrganizationDialog({
                     </select>
 
                 </div>
-                                <div
+                <div
                     className="
                         flex
                         justify-end

@@ -1,16 +1,34 @@
-import { requireAuthenticated } from "@/lib/auth";
+import {
+    requireAdmin,
+} from "@/lib/requireAdmin";
 
-export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({
-  children,
+
+    children,
+
 }: {
-  children: React.ReactNode;
+
+    children: React.ReactNode;
+
 }) {
-  if (process.env.NEXT_PHASE !== "phase-production-build") {
-    await requireAuthenticated();
-  }
 
-  return <>{children}</>;
+
+    await requireAdmin(
+
+        "ORGANIZATION_ADMIN"
+
+    );
+
+
+    return (
+
+        <>
+
+            {children}
+
+        </>
+
+    );
+
 }
-

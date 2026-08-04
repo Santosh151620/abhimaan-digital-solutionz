@@ -1,47 +1,58 @@
 import type {
     PermissionAction,
     UserRole,
-} from '@/types/crm/Permission';
+} from "@/types/crm/Permission";
+
+
+import {
+    AuthorizationServiceInstance,
+} from "@/services/auth/AuthorizationService";
+
+
+import type {
+    Role,
+} from "@/types/auth/role";
 
 
 
 class PermissionService {
 
 
-
     hasPermission(
 
-        user:UserRole,
+        user: UserRole,
 
-        module:string,
+        module: string,
 
-        action:PermissionAction,
+        action: PermissionAction,
 
     ) {
 
 
-        return user.permissions.some(
+        const permission =
+            `${module.toLowerCase()}.${action}`;
 
-            permission =>
 
-                permission.module === module
 
-                &&
+        return AuthorizationServiceInstance.can(
 
-                permission.action === action
+            user.role as Role,
+
+            permission,
 
         );
-
 
     }
 
 
 
 
-
     canView(
-        user:UserRole,
-        module:string
+
+        user: UserRole,
+
+        module: string,
+
     ) {
 
 
@@ -51,10 +62,9 @@ class PermissionService {
 
             module,
 
-            'view'
+            "view",
 
         );
-
 
     }
 
@@ -62,8 +72,11 @@ class PermissionService {
 
 
     canCreate(
-        user:UserRole,
-        module:string
+
+        user: UserRole,
+
+        module: string,
+
     ) {
 
 
@@ -73,10 +86,9 @@ class PermissionService {
 
             module,
 
-            'create'
+            "create",
 
         );
-
 
     }
 
@@ -84,8 +96,11 @@ class PermissionService {
 
 
     canUpdate(
-        user:UserRole,
-        module:string
+
+        user: UserRole,
+
+        module: string,
+
     ) {
 
 
@@ -95,10 +110,9 @@ class PermissionService {
 
             module,
 
-            'update'
+            "update",
 
         );
-
 
     }
 
@@ -106,8 +120,11 @@ class PermissionService {
 
 
     canDelete(
-        user:UserRole,
-        module:string
+
+        user: UserRole,
+
+        module: string,
+
     ) {
 
 
@@ -117,20 +134,16 @@ class PermissionService {
 
             module,
 
-            'delete'
+            "delete",
 
         );
 
-
     }
-
 
 
 }
 
 
 
-export const
-    PermissionServiceInstance =
-        new PermissionService();
-
+export const PermissionServiceInstance =
+    new PermissionService();

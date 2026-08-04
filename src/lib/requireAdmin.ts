@@ -1,21 +1,93 @@
-import { createServerClient } from "@/lib/supabase";
-import { requireAdmin as requireAdminGuard } from "@/lib/auth";
+import {
+    redirect,
+} from "next/navigation";
 
-export async function requireAdmin() {
-  const user = await requireAdminGuard();
-  const supabase = await createServerClient();
 
-  return {
-    user: user.user,
-    session: {
-      user: user.user,
-    },
-    supabase,
-  };
+import {
+    createClient,
+} from "@/lib/supabase/server";
+
+
+import {
+    getCurrentUser,
+} from "@/lib/auth/user";
+
+
+import type {
+    Role,
+} from "@/types/auth/role";
+
+
+import {
+    ROLE_HIERARCHY,
+} from "@/lib/auth/role-hierarchy";
+
+
+
+export async function requireAdmin(
+
+    minimumRole: Role = "ORGANIZATION_ADMIN",
+
+) {
+
+
+    const supabase =
+        await createClient();
+
+
+
+    const user =
+        await getCurrentUser();
+
+
+
+    if (!user) {
+
+        redirect("/login");
+
+    }
+
+
+
+    const userRole =
+        ("role" in user
+
+            ? user.role
+
+            : "USER"
+
+        ) as Role;
+
+
+
+    const userLevel =
+        ROLE_HIERARCHY[userRole] ?? 0;
+
+
+
+    const requiredLevel =
+        ROLE_HIERARCHY[minimumRole] ?? 0;
+
+
+
+    if (
+
+        userLevel < requiredLevel
+
+    ) {
+
+        redirect("/unauthorized");
+
+    }
+
+
+
+    return {
+
+        user,
+
+        supabase,
+
+    };
+
 }
-
-
-
-
-
-
