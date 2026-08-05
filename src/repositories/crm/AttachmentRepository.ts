@@ -29,10 +29,11 @@ export class AttachmentRepository
     }
 
 
-
     async list(
         entityType?: string,
         entityId?: string,
+        includeArchived = false,
+        includeDeleted = false,
     ): Promise<Attachment[]> {
 
 
@@ -43,7 +44,24 @@ export class AttachmentRepository
                     'organization_id',
                     this.organizationId,
                 );
+        if (!includeArchived) {
 
+            query =
+                query.eq(
+                    "archived",
+                    false,
+                );
+
+        }
+
+        if (!includeDeleted) {
+
+            query =
+                query.or(
+                    "is_deleted.is.null,is_deleted.eq.false",
+                );
+
+        }
 
         if (entityType) {
 
@@ -130,8 +148,6 @@ export class AttachmentRepository
 
     }
 
-
-
     async search(
         filters?: AttachmentSearchFilters,
     ): Promise<Attachment[]> {
@@ -179,16 +195,33 @@ export class AttachmentRepository
         }
 
 
-        if (filters?.fileType) {
+        if (filters?.mimeType) {
 
             query =
                 query.eq(
-                    'file_type',
-                    filters.fileType,
+                    "mime_type",
+                    filters.mimeType,
+                );
+        }
+
+        if (!filters?.includeArchived) {
+
+            query =
+                query.eq(
+                    "archived",
+                    false,
                 );
 
         }
 
+        if (!filters?.includeDeleted) {
+
+            query =
+                query.or(
+                    "is_deleted.is.null,is_deleted.eq.false",
+                );
+
+        }
 
         const {
             data,
@@ -226,29 +259,35 @@ export class AttachmentRepository
             attachments =
                 attachments.filter(
                     attachment =>
-
                         attachment.fileName
                             .toLowerCase()
-                            .includes(
-                                keyword,
-                            )
+                            .includes(keyword)
 
                         ||
 
                         attachment.fileType
                             .toLowerCase()
-                            .includes(
-                                keyword,
-                            ),
+                            .includes(keyword)
+
+                        ||
+
+                        (attachment.mimeType ?? "")
+                            .toLowerCase()
+                            .includes(keyword)
+
+                        ||
+
+                        (attachment.description ?? "")
+                            .toLowerCase()
+                            .includes(keyword),
                 );
 
         }
 
-
         return attachments;
 
     }
-        async create(
+    async create(
         data: Partial<Attachment>,
     ): Promise<Attachment> {
 
@@ -321,6 +360,7 @@ export class AttachmentRepository
                     'organization_id',
                     this.organizationId,
                 )
+
                 .eq(
                     'id',
                     id,

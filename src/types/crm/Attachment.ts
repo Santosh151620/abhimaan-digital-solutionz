@@ -1,42 +1,36 @@
 import type {
     BaseEntity,
-} from '@/types/platform/BaseEntity';
-
-import type {
-    EntityType,
-} from '@/types/entity';
+} from "@/types/platform/BaseEntity";
 
 
 
 /**
- * ============================================================================
- * Attachment Entity
- * ============================================================================
+ * Supported CRM entities.
  *
- * Universal attachment contract.
- *
- * Used across:
- * - CRM
- * - Tasks
- * - Activities
- * - Notes
- * - Entity Engine
- * - Future modules
- *
- * Database:
- * public.attachments
- *
- * ============================================================================ 
+ * Entity driven design.
+ * No module-specific foreign keys.
  */
-
-
 export type AttachmentEntityType =
-    EntityType;
+    | "Lead"
+    | "Company"
+    | "Contact"
+    | "Opportunity"
+    | "Project"
+    | "Task"
+    | "Quotation"
+    | "Contract"
+    | "Invoice"
+    | "Ticket"
+    | "Activity"
+    | "Payment"
+    | "Other";
 
 
 
-export interface Attachment
-    extends BaseEntity {
+/**
+ * Universal Attachment Entity
+ */
+export interface Attachment extends BaseEntity {
 
 
     /**
@@ -53,11 +47,32 @@ export interface Attachment
      */
     fileName: string;
 
+
     fileUrl: string;
 
+
+    /**
+     * Supabase Storage path
+     */
+    storagePath?: string;
+
+
+    /**
+     * File metadata
+     */
     fileType: string;
 
+
+    mimeType?: string;
+
+
     fileSize?: number;
+
+
+    /**
+     * Integrity validation
+     */
+    checksum?: string;
 
 
 
@@ -83,16 +98,51 @@ export interface Attachment
 
 
     /**
+     * Version control
+     */
+    version?: number;
+
+
+    parentAttachmentId?: string;
+
+
+
+    /**
+     * Permission capabilities
+     */
+    previewAllowed?: boolean;
+
+
+    downloadAllowed?: boolean;
+
+
+
+    /**
      * Soft delete/archive support
      *
-     * Kept for CRM compatibility
+     * Existing CRM compatibility preserved.
      */
     archived: boolean;
+
+
+    /**
+     * Enterprise soft delete
+     */
+    isDeleted?: boolean;
+
+
+    deletedAt?: string;
+
+
+    deletedBy?: string;
 
 }
 
 
 
+/**
+ * Attachment filtering
+ */
 export interface AttachmentSearchFilters {
 
 
@@ -108,12 +158,24 @@ export interface AttachmentSearchFilters {
     fileType?: string;
 
 
+    mimeType?: string;
+
+
     search?: string;
+
+
+    includeArchived?: boolean;
+
+
+    includeDeleted?: boolean;
 
 }
 
 
 
+/**
+ * Attachment statistics
+ */
 export interface AttachmentSummary {
 
 
@@ -125,10 +187,19 @@ export interface AttachmentSummary {
 
     archived: number;
 
+
+    deleted?: number;
+
+
+    storageUsed?: number;
+
 }
 
 
 
+/**
+ * Create attachment request
+ */
 export interface CreateAttachmentRequest {
 
 
@@ -144,7 +215,13 @@ export interface CreateAttachmentRequest {
     fileUrl: string;
 
 
+    storagePath?: string;
+
+
     fileType: string;
+
+
+    mimeType?: string;
 
 
     fileSize?: number;
@@ -152,10 +229,16 @@ export interface CreateAttachmentRequest {
 
     description?: string;
 
+
+    uploadedBy?: string;
+
 }
 
 
 
+/**
+ * Update attachment request
+ */
 export interface UpdateAttachmentRequest {
 
 
@@ -165,12 +248,57 @@ export interface UpdateAttachmentRequest {
     fileUrl?: string;
 
 
+    storagePath?: string;
+
+
     fileType?: string;
+
+
+    mimeType?: string;
 
 
     fileSize?: number;
 
 
     description?: string;
+
+
+    previewAllowed?: boolean;
+
+
+    downloadAllowed?: boolean;
+
+}
+
+
+
+/**
+ * Attachment version information
+ */
+export interface AttachmentVersion {
+
+
+    id: string;
+
+
+    attachmentId: string;
+
+
+    version: number;
+
+
+    fileUrl: string;
+
+
+    storagePath?: string;
+
+
+    fileSize?: number;
+
+
+    uploadedBy?: string;
+
+
+    uploadedAt: string;
 
 }

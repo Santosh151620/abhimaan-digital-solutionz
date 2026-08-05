@@ -125,13 +125,21 @@ private async executeSearch(
 
         if (!query) {
 
-            return {
+  return {
 
-                results: [],
+    results: [],
 
-                total: 0,
+    total: 0,
 
-            };
+    page:
+        filters.page ?? 1,
+
+    pageSize:
+        filters.pageSize ?? 25,
+
+    hasMore: false,
+
+};
 
         }
 
@@ -368,14 +376,37 @@ private async executeSearch(
 
 
 
-        return {
+       const page =
+    filters.page ?? 1;
 
-            results,
+const pageSize =
+    filters.pageSize ?? 25;
 
-            total:
-                results.length,
+const start =
+    (page - 1) * pageSize;
 
-        };
+const pagedResults =
+    results.slice(
+        start,
+        start + pageSize,
+    );
+
+return {
+
+    results:
+        pagedResults,
+
+    total:
+        results.length,
+
+    page,
+
+    pageSize,
+
+    hasMore:
+        start + pageSize < results.length,
+
+};
 
     }
 
