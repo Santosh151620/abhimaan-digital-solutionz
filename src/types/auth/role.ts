@@ -1,11 +1,26 @@
 ﻿export type Role =
-    | "SUPER_ADMIN"
-    | "ADMIN"
-    | "MANAGER"
-    | "USER"
+
+    // Enterprise roles
+
     | "PLATFORM_OWNER"
+
     | "PLATFORM_ADMIN"
+
     | "ORGANIZATION_ADMIN"
+
     | "DEPARTMENT_ADMIN"
+
     | "TEAM_LEAD"
-    | "VIEWER";
+
+    | "USER"
+
+    | "VIEWER"
+
+
+    // Legacy compatibility roles
+
+    | "SUPER_ADMIN"
+
+    | "ADMIN"
+
+    | "MANAGER";

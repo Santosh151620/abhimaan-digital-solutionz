@@ -45,17 +45,11 @@ export default function RequirePermission({
 
     }
 
-
-    const allowed = hasPermission(
-
-        user.role,
-
-        action,
-
-        resource
-
-    );
-
+const allowed = hasPermission(
+    user.role,
+    action,
+    resource
+);
 
     return allowed
 

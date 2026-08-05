@@ -19,5 +19,5 @@
     "projects.create",
     "projects.update",
     "projects.delete",
-
+"crm.export"
 ] as const;

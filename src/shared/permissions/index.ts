@@ -45,3 +45,5 @@ export type Permission =
 
 export const PERMISSION_SET =
     new Set<string>(PERMISSIONS);
+
+    export * from "./role-governance";

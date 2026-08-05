@@ -50,14 +50,7 @@ export async function requireAdmin(
 
 
     const userRole =
-        ("role" in user
-
-            ? user.role
-
-            : "USER"
-
-        ) as Role;
-
+    user.organization.role as Role;
 
 
     const userLevel =

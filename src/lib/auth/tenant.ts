@@ -7,7 +7,12 @@ export function assertTenantAccess(
   user: UserSession,
   tenantId: string
 ) {
-  if (user.role === "SUPER_ADMIN") return true;
+ 
+  if (user.role === "SUPER_ADMIN") {
+
+    return true;
+
+}
 
   if (user.tenantId !== tenantId) {
     throw new Error("TENANT_ACCESS_DENIED");

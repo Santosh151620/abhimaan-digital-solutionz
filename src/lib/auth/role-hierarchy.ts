@@ -3,6 +3,7 @@
 } from "@/types/auth/role";
 
 
+
 export const ROLE_HIERARCHY: Record<Role, number> = {
 
 
@@ -13,20 +14,28 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
 
     ORGANIZATION_ADMIN: 80,
 
+
     DEPARTMENT_ADMIN: 70,
+
 
     TEAM_LEAD: 60,
 
 
-    ADMIN: 55,
+    USER: 50,
 
-    MANAGER: 50,
-
-    USER: 40,
 
     VIEWER: 10,
 
 
-    SUPER_ADMIN: 110,
+
+    // Legacy compatibility roles
+    // Remove after migration audit
+
+    SUPER_ADMIN: 100,
+
+    ADMIN: 80,
+
+    MANAGER: 60,
+
 
 };
