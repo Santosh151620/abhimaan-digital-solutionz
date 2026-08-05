@@ -1,24 +1,6 @@
 "use client";
 
-
-import type {
-    FilterDefinition,
-} from "@/types/crm/Filter";
-
-
-
 interface FilterPanelProps {
-
-
-    value:
-        FilterDefinition;
-
-
-    onChange:
-        (
-            filter: FilterDefinition
-        ) => void;
-
 
     children?:
         React.ReactNode;
@@ -26,17 +8,11 @@ interface FilterPanelProps {
 }
 
 
-
 export default function FilterPanel({
-
-    value: _value,
-
-    onChange: _onChange,
 
     children,
 
 }: FilterPanelProps) {
-
 
     return (
 
