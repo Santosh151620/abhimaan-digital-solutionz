@@ -13,17 +13,11 @@ import {
 } from "./crm.permissions";
 
 
-
 export {
-
     PLATFORM_PERMISSIONS,
-
     ADMIN_PERMISSIONS,
-
     CRM_PERMISSIONS,
-
 };
-
 
 
 export const PERMISSIONS = [
@@ -37,13 +31,15 @@ export const PERMISSIONS = [
 ] as const;
 
 
-
 export type Permission =
     typeof PERMISSIONS[number];
 
 
-
 export const PERMISSION_SET =
-    new Set<string>(PERMISSIONS);
+    new Set<string>(
+        PERMISSIONS,
+    );
 
-    export * from "./role-governance";
+
+export * from "./role-governance";
+export * from "./role-permissions";

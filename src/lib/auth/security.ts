@@ -1,9 +1,4 @@
 import {
-    redirect,
-} from "next/navigation";
-
-
-import {
     requireAuthContext,
 } from "./auth-context.server";
 

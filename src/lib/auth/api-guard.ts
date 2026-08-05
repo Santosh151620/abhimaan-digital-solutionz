@@ -36,14 +36,13 @@ const DEFAULT_OPTIONS: Required<TenantGuardOptions> = {
 
 
 export function withTenantGuard(
+handler: (
 
-    handler: (
+    request: NextRequest,
 
-        request: NextRequest,
+    context: Readonly<unknown>
 
-        context: Readonly<any>
-
-    ) => Promise<NextResponse>,
+) => Promise<NextResponse>,
 
     options: TenantGuardOptions = {}
 

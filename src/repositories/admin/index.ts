@@ -8,3 +8,5 @@ export * from "./SettingsRepository";
 export * from "./UsersRepository";
 export * from "./SupabaseAuditRepository";
 export * from "./SupabaseAdminRepository";
+export * from "./RolePermissionRepository";
+export * from "./UserRoleRepository";
