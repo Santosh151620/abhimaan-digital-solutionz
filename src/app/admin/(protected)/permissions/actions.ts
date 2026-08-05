@@ -70,12 +70,10 @@ export async function deletePermission(
             supabase,
         );
 
-
-
-    const service =
-        new PermissionsService(
-            repository,
-        );
+const service =
+    new PermissionsService(
+        repository,
+    );
 
 
 

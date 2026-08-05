@@ -1,6 +1,5 @@
 "use client";
 
-
 import {
     useState,
 } from "react";
@@ -55,9 +54,7 @@ export default function PermissionDialog({
     saving = false,
 }: PermissionDialogProps) {
 
-    const [open, setOpen] =
-        useState(false);
-
+   
     const [loading, setLoading] =
         useState(false);
 
@@ -113,7 +110,6 @@ export default function PermissionDialog({
     } as Permission,
 );
 
-            setOpen(false);
         }
 
         finally {
@@ -125,47 +121,21 @@ export default function PermissionDialog({
     }
 
 
+return (
 
-    return (
+    <>
 
-        <>
-
-
-            <button
-
-                type="button"
-
-                onClick={() => setOpen(true)}
-
-                className="
-                rounded-md
-                bg-primary
-                px-4
-                py-2
-                text-primary-foreground
-                "
-
-            >
-
-                Add Permission
-
-            </button>
-
-
-
-            {open && (
-
-                <div
-                    className="
-                    fixed
-                    inset-0
-                    z-50
-                    flex
-                    items-center
-                    justify-center
-                    bg-black/40
-                    "
-                >
+        <div
+            className="
+            fixed
+            inset-0
+            z-50
+            flex
+            items-center
+            justify-center
+            bg-black/40
+            "
+        >
 
 
                     <div
@@ -394,16 +364,7 @@ export default function PermissionDialog({
                                     Custom
                                 </option>
 
-                                <option value="Workflow">
-                                    Workflow
-                                </option>
-
-                                <option value="Data">
-                                    Data
-                                </option>
-
-
-                            </select>
+                                                    </select>
 
 
                         </div>
@@ -461,20 +422,10 @@ export default function PermissionDialog({
 
                             </button>
 
-
                         </div>
-
-
                     </div>
-
-
                 </div>
-
-            )}
-
-
-        </>
-
+                    </>
     );
 
 }
