@@ -29,32 +29,13 @@ interface FilterPanelProps {
 
 export default function FilterPanel({
 
-    value,
+    value: _value,
 
-    onChange,
+    onChange: _onChange,
 
     children,
 
 }: FilterPanelProps) {
-
-
-
-    function update(
-        changes:
-            Partial<FilterDefinition>,
-    ) {
-
-
-        onChange({
-
-            ...value,
-
-            ...changes,
-
-        });
-
-    }
-
 
 
     return (

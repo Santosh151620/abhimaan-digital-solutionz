@@ -54,7 +54,7 @@ export class ImportService {
         private readonly validator =
             new ImportValidator(),
 
-    ) {}
+    ) { }
 
     async execute(
 
@@ -70,12 +70,10 @@ export class ImportService {
 
         const errors: ImportValidationError[] = [];
 
-        let processedRows = 0;
         let successRows = 0;
         let failedRows = 0;
         let duplicateRows = 0;
         let skippedRows = 0;
-
         for (
             let index = 0;
             index < rows.length;
@@ -83,9 +81,6 @@ export class ImportService {
         ) {
 
             const row = rows[index];
-
-            processedRows++;
-
             const validationErrors =
                 this.validator.validate(
                     row,
@@ -165,60 +160,60 @@ export class ImportService {
 
         }
 
-      return {
+        return {
 
-    success:
-        failedRows === 0,
+            success:
+                failedRows === 0,
 
-    totalRows:
-        rows.length,
+            totalRows:
+                rows.length,
 
-    importedRows:
-        successRows,
+            importedRows:
+                successRows,
 
-    updatedRows:
-        0,
+            updatedRows:
+                0,
 
-    skippedRows,
+            skippedRows,
 
-    duplicateRows,
+            duplicateRows,
 
-    failedRows,
+            failedRows,
 
-    durationMs:
-        0,
+            durationMs:
+                0,
 
-    summary: {
+            summary: {
 
-        totalRows:
-            rows.length,
+                totalRows:
+                    rows.length,
 
-        importedRows:
-            successRows,
+                importedRows:
+                    successRows,
 
-        updatedRows:
-            0,
+                updatedRows:
+                    0,
 
-        skippedRows,
+                skippedRows,
 
-        duplicateRows,
+                duplicateRows,
 
-        failedRows,
+                failedRows,
 
-        executionTimeMs:
-            0,
+                executionTimeMs:
+                    0,
 
-    },
+            },
 
-    errors,
+            errors,
 
-    validationErrors:
-        errors,
+            validationErrors:
+                errors,
 
-    warnings:
-        [],
+            warnings:
+                [],
 
-};
+        };
 
     }
 
