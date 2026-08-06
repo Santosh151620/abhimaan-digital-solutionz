@@ -1,61 +1,192 @@
-/**
- * ============================================================================
- * ADS ADMIN PLATFORM
- * Permission Contract
- *
- * Maps to:
- * admin_permissions
- *
- * Production RBAC Model
- * ============================================================================
- */
-
 import type {
     BaseEntity,
 } from "@/types/platform/BaseEntity";
 
 
 
+
+
+
+
 export type PermissionType =
+
     | "System"
+
     | "Custom";
-export type PermissionScope =
-    | "Global"
-    | "Organization"
-    | "Module"
-    | "Entity";
 
 
-export type PermissionEffect =
-    | "Allow"
-    | "Deny";
+
+
+
+
+
+
+
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Permission Domain Contract
+ *
+ * RBAC Authorization Foundation
+ *
+ * ============================================================================
+ */
+
+
+
+
+
 
 
 export interface Permission
-extends BaseEntity {
+
+    extends BaseEntity {
+
 
 
     /**
-     * Database:
-     * permission_key
+     * Tenant scope
+     */
+    organizationId?:string;
+
+
+
+
+
+    /**
+     * Permission identity
      */
     key:string;
 
 
 
+
+
+    name:string;
+
+
+
+
+
+    description?:string;
+
+
+
+
+
     /**
-     * Database:
-     * module_name
+     * Authorization grouping
      */
     module:string;
 
 
 
-    /**
-     * Database:
-     * action_name
-     */
+
+
     action:string;
+
+
+
+
+
+    type:PermissionType;
+
+
+
+
+
+    /**
+     * Governance
+     */
+    isSystem:boolean;
+
+
+
+
+
+    isActive:boolean;
+
+
+
+
+
+    /**
+     * Extension
+     */
+    metadata?:Record<string,unknown>;
+
+
+
+}
+
+
+
+
+
+
+
+/**
+ * ============================================================================
+ * Permission Scope
+ *
+ * Where permission applies
+ * ============================================================================
+ */
+
+export type PermissionScope =
+
+    | "Platform"
+
+    | "Organization"
+
+    | "Department"
+
+    | "Team";
+
+
+
+
+
+
+
+
+
+/**
+ * ============================================================================
+ * Permission Effect
+ *
+ * Authorization decision
+ * ============================================================================
+ */
+
+export type PermissionEffect =
+
+    | "Allow"
+
+    | "Deny";
+
+
+
+
+
+
+
+
+
+/**
+ * ============================================================================
+ * Permission Group
+ *
+ * Permission classification container
+ * ============================================================================
+ */
+
+export interface PermissionGroup {
+
+
+
+    id:string;
 
 
 
@@ -67,11 +198,11 @@ extends BaseEntity {
 
 
 
-    type:PermissionType;
+    module:string;
 
 
 
-    isSystem:boolean;
+    organizationId?:string;
 
 
 
@@ -79,47 +210,104 @@ extends BaseEntity {
 
 
 
-    metadata?:Record<string,unknown>;
-
-
-
 }
 
 
 
-export interface PermissionGroup {
 
 
-    module:string;
 
 
-    permissions:Permission[];
 
 
-}
-
-
+/**
+ * ============================================================================
+ * Role Permission Mapping
+ *
+ * Role ↔ Permission relationship
+ * ============================================================================
+ */
 
 export interface RolePermission {
+
+
+
+    id:string;
+
 
 
     roleId:string;
 
 
+
     permissionId:string;
+
+
+
+    organizationId?:string;
+
+
+
+    scope?:PermissionScope;
+
+
+
+    effect?:PermissionEffect;
+
+
+
+    createdAt:string;
+
 
 
 }
 
 
 
+
+
+
+
+
+
+/**
+ * ============================================================================
+ * User Permission Mapping
+ *
+ * Direct user permissions
+ * ============================================================================
+ */
+
 export interface UserPermission {
+
+
+
+    id:string;
+
 
 
     userId:string;
 
 
+
     permissionId:string;
+
+
+
+    organizationId?:string;
+
+
+
+    scope?:PermissionScope;
+
+
+
+    effect?:PermissionEffect;
+
+
+
+    createdAt:string;
+
 
 
 }

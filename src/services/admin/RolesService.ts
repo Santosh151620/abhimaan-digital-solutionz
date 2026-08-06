@@ -9,142 +9,479 @@ import type {
 
 
 
+
+
+
+
 export class RolesService {
 
 
+
     constructor(
-        private readonly repository: IRolesRepository,
+
+        private readonly repository:
+            IRolesRepository,
+
     ) {}
 
 
 
-    list(): Promise<Role[]> {
+
+
+
+
+
+
+    async list():
+
+    Promise<Role[]> {
+
+
 
         return this.repository.list();
 
+
+
     }
 
 
 
-    active(): Promise<Role[]> {
+
+
+
+
+
+
+    async active():
+
+    Promise<Role[]> {
+
+
 
         return this.repository.active();
 
-    }
 
-
-
-    systemRoles(): Promise<Role[]> {
-
-        return this.repository.systemRoles();
 
     }
 
 
 
-    customRoles(): Promise<Role[]> {
-
-        return this.repository.customRoles();
-
-    }
 
 
 
-    search(
-        keyword: string,
-    ): Promise<Role[]> {
 
-        return this.repository.search(
-            keyword,
+
+
+    async findById(
+
+        id:string,
+
+    ):
+
+    Promise<Role | null> {
+
+
+
+        this.validateId(
+
+            id,
+
+            "Role",
+
         );
 
-    }
 
 
 
-    findById(
-        id: string,
-    ): Promise<Role | null> {
+
+
 
         return this.repository.findById(
+
             id,
+
         );
+
+
 
     }
 
 
 
-    existsByCode(
-        code: string,
-    ): Promise<boolean> {
 
-        return this.repository.existsByCode(
-            code,
+
+
+
+
+
+    async findByCode(
+
+        code:string,
+
+    ):
+
+    Promise<Role | null> {
+
+
+
+        if(!code?.trim()) {
+
+
+
+            throw new Error(
+
+                "Role code is required."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        return this.repository.findByCode(
+
+            code
+
+                .trim()
+
+                .toLowerCase(),
+
         );
+
+
 
     }
 
 
 
-    existsByName(
-        name: string,
-    ): Promise<boolean> {
 
-        return this.repository.existsByName(
-            name,
-        );
 
-    }
+
 
 
 
     async save(
-        role: Role,
-    ): Promise<void> {
+
+        role:Role,
+
+    ):
+
+    Promise<void> {
 
 
-        if (
-            !role.name.trim()
+
+        this.validateRole(
+
+            role,
+
+        );
+
+
+
+
+
+
+
+        const existing =
+
+            await this.repository.findByCode(
+
+                role.code,
+
+            );
+
+
+
+
+
+
+
+        if(
+
+            existing &&
+
+            existing.id !== role.id
+
         ) {
 
+
+
             throw new Error(
-                "Role name is required.",
+
+                "Role code already exists."
+
             );
+
+
 
         }
 
 
 
-        if (
-            !role.code.trim()
-        ) {
 
-            throw new Error(
-                "Role code is required.",
-            );
-
-        }
 
 
 
         await this.repository.save(
-            role,
+
+            {
+
+                ...role,
+
+                code:
+
+                    role.code
+
+                    .trim()
+
+                    .toLowerCase(),
+
+                updatedAt:
+
+                    new Date()
+
+                    .toISOString(),
+
+            },
+
         );
 
+
+
     }
+
+
+
+
+
 
 
 
 
     async delete(
-        id: string,
-    ): Promise<void> {
+
+        id:string,
+
+    ):
+
+    Promise<void> {
+
+
+
+        this.validateId(
+
+            id,
+
+            "Role",
+
+        );
+
+
+
+
+
+
+
+        const role =
+
+            await this.repository.findById(
+
+                id,
+
+            );
+
+
+
+
+
+
+
+        if(!role) {
+
+
+
+            throw new Error(
+
+                "Role not found."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        if(role.isSystem) {
+
+
+
+            throw new Error(
+
+                "System roles cannot be deleted."
+
+            );
+
+
+
+        }
+
+
+
+
+
 
 
         await this.repository.delete(
+
             id,
+
         );
 
+
+
     }
+
+
+
+
+
+
+
+
+
+    private validateRole(
+
+        role:Role,
+
+    ) {
+
+
+
+        if(!role.name?.trim()) {
+
+
+
+            throw new Error(
+
+                "Role name is required."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        if(!role.code?.trim()) {
+
+
+
+            throw new Error(
+
+                "Role code is required."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        if(!role.type) {
+
+
+
+            throw new Error(
+
+                "Role type is required."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        if(!role.level) {
+
+
+
+            throw new Error(
+
+                "Role level is required."
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private validateId(
+
+        id:string,
+
+        entity:string,
+
+    ) {
+
+
+
+        if(!id?.trim()) {
+
+
+
+            throw new Error(
+
+                `${entity} id is required.`
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+
 
 }

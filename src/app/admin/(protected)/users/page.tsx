@@ -1,147 +1,134 @@
-import {
-    UsersRepository,
-} from "@/repositories/admin/UsersRepository";
-
-
-import {
-    UsersService,
-} from "@/services/admin/UsersService";
-
-
-import {
-    createClient,
-} from "@/lib/supabase/server";
+﻿import {
+    getUsers,
+} from "./page-actions";
 
 
 import UsersClient
 from "@/components/admin/users/UsersClient";
 
 
-
-
-export const dynamic =
-    "force-dynamic";
-
-
-
-/**
- * ADS Admin Users Management
- *
- * Server Component
- *
- * Responsibilities:
- * - Authentication boundary
- * - Data loading
- * - Tenant scoped repository access
- *
- * Client responsibilities:
- * - CRUD actions
- * - Dialog state
- * - UI interactions
- */
-export default async function UsersPage(){
-
-
-    const supabase =
-        await createClient();
+import type {
+    AdminUser,
+} from "@/types/admin/User";
 
 
 
-    const repository =
-        new UsersRepository(
-            supabase,
-        );
 
 
 
-    const service =
-        new UsersService(
-            repository,
-        );
 
 
-let users: Awaited<ReturnType<typeof service.list>> = [];
 
-try {
+export default async function UsersPage() {
 
-    users =
-        await service.list();
 
-}
-catch (error) {
 
-    console.error(
-        "Failed to load users.",
-        error,
-    );
+    const users:AdminUser[] =
 
-}
+        await getUsers();
+
+
+
+
+
+
 
     return (
 
-        <main
+
+
+        <div
+
             className="
-            space-y-8
-            p-8
+
+                space-y-6
+
             "
+
         >
 
 
-            <section>
+
+            <div>
+
 
 
                 <h1
+
                     className="
-                    text-3xl
-                    font-bold
+
+                        text-2xl
+
+                        font-semibold
+
                     "
+
                 >
 
+
+
                     Users
+
+
 
                 </h1>
 
 
 
+
+
+
+
                 <p
+
                     className="
-                    text-muted-foreground
+
+                        text-sm
+
+                        text-muted-foreground
+
                     "
+
                 >
 
-                    Manage platform users,
-                    organization access,
-                    and identity settings.
+
+
+                    Manage organization users and access.
+
+
 
                 </p>
 
 
-            </section>
+
+            </div>
 
 
 
-            <section
-                className="
-                rounded-xl
-                border
-                p-6
-                "
-            >
-
-
-                <UsersClient
-
-                    users={users}
-
-                />
-
-
-            </section>
 
 
 
-        </main>
+
+
+
+            <UsersClient
+
+
+
+                initialUsers={users}
+
+
+
+            />
+
+
+
+        </div>
+
+
 
     );
+
+
 
 }

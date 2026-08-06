@@ -30,55 +30,123 @@ import {
 
 
 
+
+
+
+
+
+
 interface UsersClientProps {
 
-    users: AdminUser[];
+
+
+    initialUsers:AdminUser[];
+
+
 
 }
 
 
 
+
+
+
+
+
+
 export default function UsersClient({
 
-    users,
 
-}: UsersClientProps) {
+
+    initialUsers,
+
+
+
+}:UsersClientProps) {
+
 
 
     const router =
+
         useRouter();
 
 
 
+
+
+
+
     const [
+
+        users,
+
+        setUsers,
+
+    ] = useState<AdminUser[]>(
+
+        initialUsers,
+
+    );
+
+
+
+
+
+
+
+    const [
+
         selectedUser,
-        setSelectedUser
-    ] =
-    useState<AdminUser | undefined>();
+
+        setSelectedUser,
+
+    ] = useState<AdminUser | undefined>();
+
+
+
+
 
 
 
     const [
+
         dialogOpen,
-        setDialogOpen
-    ] =
-    useState(false);
+
+        setDialogOpen,
+
+    ] = useState(false);
+
+
+
+
 
 
 
     const [
+
         loading,
-        setLoading
-    ] =
-    useState(false);
+
+        setLoading,
+
+    ] = useState(false);
+
+
+
+
 
 
 
     const [
+
         error,
-        setError
-    ] =
-    useState<string | null>(null);
+
+        setError,
+
+    ] = useState<string | null>(null);
+
+
+
+
 
 
 
@@ -86,19 +154,37 @@ export default function UsersClient({
 
     function openCreate() {
 
+
+
         setSelectedUser(
-            undefined
+
+            undefined,
+
         );
 
-        setError(
-            null
-        );
+
 
         setDialogOpen(
-            true
+
+            true,
+
         );
 
+
+
+        setError(
+
+            null,
+
+        );
+
+
+
     }
+
+
+
+
 
 
 
@@ -106,27 +192,41 @@ export default function UsersClient({
 
     function openEdit(
 
-        user: AdminUser,
+        user:AdminUser,
 
     ) {
 
 
+
         setSelectedUser(
-            user
+
+            user,
+
         );
 
-
-        setError(
-            null
-        );
 
 
         setDialogOpen(
-            true
+
+            true,
+
         );
 
 
+
+        setError(
+
+            null,
+
+        );
+
+
+
     }
+
+
+
+
 
 
 
@@ -135,17 +235,28 @@ export default function UsersClient({
     function closeDialog() {
 
 
+
         setDialogOpen(
-            false
+
+            false,
+
         );
+
 
 
         setSelectedUser(
-            undefined
+
+            undefined,
+
         );
 
 
+
     }
+
+
+
+
 
 
 
@@ -153,41 +264,82 @@ export default function UsersClient({
 
     async function handleDelete(
 
-        id: string,
+        id:string,
 
     ) {
 
 
-        const confirmed =
-            window.confirm(
-                "Are you sure you want to delete this user?"
-            );
+
+        if(
+
+            !window.confirm(
+
+                "Delete this user?"
+
+            )
+
+        ) {
 
 
-        if (!confirmed) {
 
             return;
 
+
+
         }
+
+
+
+
 
 
 
         try {
 
 
-            setLoading(
-                true
-            );
+
+            setLoading(true);
 
 
-            setError(
-                null
-            );
+
+            setError(null);
+
+
+
+
+
 
 
             await deleteUser(
-                id
+
+                id,
+
             );
+
+
+
+
+
+
+
+            setUsers(
+
+                previous =>
+
+                    previous.filter(
+
+                        item =>
+
+                            item.id !== id,
+
+                    ),
+
+            );
+
+
+
+
+
 
 
             router.refresh();
@@ -195,30 +347,39 @@ export default function UsersClient({
 
 
         }
-        catch (error) {
+
+        catch(error) {
+
 
 
             setError(
+
+
 
                 error instanceof Error
 
                 ? error.message
 
-                : "Unable to delete user"
+                : "Unable to delete user."
+
+
 
             );
 
 
+
         }
+
         finally {
 
 
-            setLoading(
-                false
-            );
+
+            setLoading(false);
+
 
 
         }
+
 
 
     }
@@ -227,101 +388,162 @@ export default function UsersClient({
 
 
 
+
+
+
+
     return (
 
+
+
         <div
+
             className="space-y-6"
+
         >
 
 
-            <section
+
+            <div
+
                 className="
-                flex
-                items-center
-                justify-between
+
+                    flex
+
+                    items-center
+
+                    justify-between
+
                 "
+
             >
+
+
 
                 <div>
 
-                    <h1
+
+
+                    <h2
+
                         className="
-                        text-2xl
-                        font-semibold
+
+                            text-xl
+
+                            font-semibold
+
                         "
+
                     >
 
-                        Users
-
-                    </h1>
 
 
-                    <p
-                        className="
-                        text-sm
-                        text-muted-foreground
-                        "
-                    >
+                        User Registry
 
-                        Manage organization users,
-                        identity and access.
 
-                    </p>
+
+                    </h2>
+
 
 
                 </div>
 
 
 
+
+
+
+
                 <button
+
+
 
                     type="button"
 
+
+
                     onClick={openCreate}
 
+
+
                     className="
-                    rounded-md
-                    bg-primary
-                    px-4
-                    py-2
-                    text-primary-foreground
+
+                        rounded-md
+
+                        bg-primary
+
+                        px-4
+
+                        py-2
+
+                        text-primary-foreground
+
                     "
+
+
 
                 >
 
+
+
                     Add User
+
+
 
                 </button>
 
 
-            </section>
+
+            </div>
+
+
+
+
 
 
 
 
 
             {
+
                 error && (
+
+
 
                     <div
 
                         className="
-                        rounded-md
-                        border
-                        border-destructive
-                        p-3
-                        text-sm
-                        text-destructive
+
+                            rounded-md
+
+                            border
+
+                            border-destructive
+
+                            p-3
+
+                            text-destructive
+
                         "
 
                     >
 
+
+
                         {error}
+
+
 
                     </div>
 
+
+
                 )
+
             }
+
+
+
 
 
 
@@ -330,11 +552,19 @@ export default function UsersClient({
 
             <UsersTable
 
+
+
                 users={users}
+
+
 
                 onEdit={openEdit}
 
+
+
                 onDelete={handleDelete}
+
+
 
             />
 
@@ -344,18 +574,44 @@ export default function UsersClient({
 
 
 
+
+
             {
+
                 dialogOpen && (
+
+
 
                     <UserDialog
 
+
+
                         user={selectedUser}
 
-                        onClose={closeDialog}
+
+
+                        onClose={() => {
+
+
+
+                            closeDialog();
+
+
+
+                            router.refresh();
+
+
+
+                        }}
+
+
 
                     />
 
+
+
                 )
+
             }
 
 
@@ -363,35 +619,63 @@ export default function UsersClient({
 
 
 
+
+
+
             {
+
                 loading && (
+
+
 
                     <div
 
                         className="
-                        fixed
-                        bottom-6
-                        right-6
-                        rounded-md
-                        border
-                        bg-background
-                        px-4
-                        py-2
-                        shadow
+
+                            fixed
+
+                            bottom-6
+
+                            right-6
+
+                            rounded-md
+
+                            border
+
+                            bg-background
+
+                            px-4
+
+                            py-2
+
+                            shadow
+
                         "
 
                     >
 
+
+
                         Processing...
+
+
 
                     </div>
 
+
+
                 )
+
             }
+
 
 
         </div>
 
+
+
     );
+
+
 
 }

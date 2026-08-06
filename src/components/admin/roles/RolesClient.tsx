@@ -16,85 +16,211 @@ import type {
 } from "@/types/admin/Role";
 
 
-import type {
-    Permission,
-} from "@/types/admin/Permission";
-
-
-import type {
-    RolePermission,
-} from "@/types/admin/RolePermission";
-
-
 import RolesTable
 from "./RolesTable";
-
-
-import RolePermissionAssignment
-from "./RolePermissionAssignment";
 
 
 import RoleDialog
 from "./RoleDialog";
 
 
+import {
+    deleteRole,
+} from "@/app/admin/(protected)/roles/actions";
+
+
+
+
+
+
+
+
 
 interface RolesClientProps {
 
-    roles: Role[];
 
-    permissions: Permission[];
 
-    rolePermissions: RolePermission[];
+    initialRoles:Role[];
+
+
 
 }
 
 
 
+
+
+
+
+
+
 export default function RolesClient({
 
-    roles,
 
-    permissions,
 
-    rolePermissions,
+    initialRoles,
 
-}: RolesClientProps) {
+
+
+}:RolesClientProps) {
+
 
 
     const router =
+
         useRouter();
 
 
 
+
+
+
+
     const [
+
+        roles,
+
+        setRoles,
+
+    ] = useState<Role[]>(
+
+        initialRoles,
+
+    );
+
+
+
+
+
+
+
+    const [
+
         selectedRole,
+
         setSelectedRole,
-    ] =
-    useState<Role | null>(null);
+
+    ] = useState<Role | undefined>();
+
+
+
+
 
 
 
     const [
-        permissionOpen,
-        setPermissionOpen,
-    ] =
-    useState(false);
+
+        dialogOpen,
+
+        setDialogOpen,
+
+    ] = useState(false);
 
 
 
 
-    function openPermissions(
-        role: Role,
+
+
+
+    const [
+
+        loading,
+
+        setLoading,
+
+    ] = useState(false);
+
+
+
+
+
+
+
+    const [
+
+        error,
+
+        setError,
+
+    ] = useState<string | null>(null);
+
+
+
+
+
+
+
+
+
+    function openCreate() {
+
+
+
+        setSelectedRole(
+
+            undefined,
+
+        );
+
+
+
+        setDialogOpen(
+
+            true,
+
+        );
+
+
+
+        setError(
+
+            null,
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    function openEdit(
+
+        role:Role,
+
     ) {
 
+
+
         setSelectedRole(
+
             role,
+
         );
 
-        setPermissionOpen(
+
+
+        setDialogOpen(
+
             true,
+
         );
+
+
+
+        setError(
+
+            null,
+
+        );
+
+
 
     }
 
@@ -102,77 +228,343 @@ export default function RolesClient({
 
 
 
-    function closePermissions() {
+
+
+
+
+    function closeDialog() {
+
+
+
+        setDialogOpen(
+
+            false,
+
+        );
+
+
 
         setSelectedRole(
-            null,
+
+            undefined,
+
         );
 
-        setPermissionOpen(
-            false,
-        );
+
 
     }
 
 
 
 
-    function saved() {
 
-        closePermissions();
 
-        router.refresh();
+
+
+
+    async function handleDelete(
+
+        id:string,
+
+    ) {
+
+
+
+        if(
+
+            !window.confirm(
+
+                "Delete this role?"
+
+            )
+
+        ) {
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        try {
+
+
+
+            setLoading(true);
+
+
+
+            setError(null);
+
+
+
+
+
+
+
+            await deleteRole(
+
+                id,
+
+            );
+
+
+
+
+
+
+
+            setRoles(
+
+                previous =>
+
+                    previous.filter(
+
+                        item =>
+
+                            item.id !== id,
+
+                    ),
+
+            );
+
+
+
+
+
+
+
+            router.refresh();
+
+
+
+        }
+
+        catch(error) {
+
+
+
+            setError(
+
+
+
+                error instanceof Error
+
+                ? error.message
+
+                : "Unable to delete role."
+
+
+
+            );
+
+
+
+        }
+
+        finally {
+
+
+
+            setLoading(false);
+
+
+
+        }
+
+
 
     }
+
+
+
+
+
 
 
 
 
     return (
 
-        <div className="space-y-8">
 
 
-            <section
+        <div
+
+            className="space-y-6"
+
+        >
+
+
+
+            <div
+
                 className="
-                flex
-                items-center
-                justify-between
+
+                    flex
+
+                    items-center
+
+                    justify-between
+
                 "
+
             >
+
+
 
                 <div>
 
-                    <h1 className="text-3xl font-bold">
-                        Roles
-                    </h1>
 
 
-                    <p className="text-muted-foreground">
-                        Manage platform and organization roles.
-                    </p>
+                    <h2
+
+                        className="
+
+                            text-xl
+
+                            font-semibold
+
+                        "
+
+                    >
+
+
+
+                        Role Registry
+
+
+
+                    </h2>
+
 
 
                 </div>
 
 
-                <RoleDialog />
 
 
-            </section>
+
+
+
+                <button
+
+
+
+                    type="button"
+
+
+
+                    onClick={openCreate}
+
+
+
+                    className="
+
+                        rounded-md
+
+                        bg-primary
+
+                        px-4
+
+                        py-2
+
+                        text-primary-foreground
+
+                    "
+
+
+
+                >
+
+
+
+                    Add Role
+
+
+
+                </button>
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+            {
+
+                error && (
+
+
+
+                    <div
+
+                        className="
+
+                            rounded-md
+
+                            border
+
+                            border-destructive
+
+                            p-3
+
+                            text-destructive
+
+                        "
+
+                    >
+
+
+
+                        {error}
+
+
+
+                    </div>
+
+
+
+                )
+
+            }
+
+
+
+
+
 
 
 
 
             <RolesTable
 
+
+
                 roles={roles}
 
-                onEdit={() => {}}
 
-                onManagePermissions={
-                    openPermissions
-                }
+
+                onEdit={openEdit}
+
+
+
+                onDelete={handleDelete}
+
+
 
             />
 
@@ -180,49 +572,110 @@ export default function RolesClient({
 
 
 
+
+
+
+
             {
-                permissionOpen &&
-                selectedRole && (
 
-                    <RolePermissionAssignment
-
-                        roleId={
-                            selectedRole.id
-                        }
+                dialogOpen && (
 
 
-                        permissions={
-                            permissions
-                        }
+
+                    <RoleDialog
 
 
-                        assignedPermissions={
-                            rolePermissions.filter(
 
-                                (item) =>
-                                    item.roleId === selectedRole.id
-
-                            )
-                        }
+                        role={selectedRole}
 
 
-                        onClose={
-                            closePermissions
-                        }
+
+                        onClose={() => {
 
 
-                        onSaved={
-                            saved
-                        }
+
+                            closeDialog();
+
+
+
+                            router.refresh();
+
+
+
+                        }}
+
+
 
                     />
 
+
+
                 )
+
             }
+
+
+
+
+
+
+
+
+
+            {
+
+                loading && (
+
+
+
+                    <div
+
+                        className="
+
+                            fixed
+
+                            bottom-6
+
+                            right-6
+
+                            rounded-md
+
+                            border
+
+                            bg-background
+
+                            px-4
+
+                            py-2
+
+                            shadow
+
+                        "
+
+                    >
+
+
+
+                        Processing...
+
+
+
+                    </div>
+
+
+
+                )
+
+            }
+
 
 
         </div>
 
+
+
     );
+
+
 
 }

@@ -1,122 +1,220 @@
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
+
+
+
+
+
+
+
 /**
  * ============================================================================
- * Role
- * Enterprise Platform RBAC
- * CRM + ERP Compatible
- * Production Contract
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Role Domain Contract
+ *
+ * RBAC Foundation
+ *
  * ============================================================================
  */
 
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+
+
+
+
 
 
 export type RoleType =
+
     | "System"
+
     | "Organization"
+
     | "Custom";
 
 
-export type RoleLevel =
-    | "Platform"
-    | "Organization"
-    | "Department"
-    | "Module";
+
+
+
+
+
 
 
 export type RoleStatus =
+
     | "Active"
-    | "Inactive"
-    | "Archived";
+
+    | "Inactive";
 
 
-export interface Role extends BaseEntity {
-
-    organizationId?: string;
 
 
-    parentRoleId?: string;
 
 
-    name: string;
 
 
-    code: string;
+
+export type RoleLevel =
+
+    | "Platform"
+
+    | "Application"
+
+    | "Organization"
+
+    | "Department"
+
+    | "Team";
 
 
-    description?: string;
 
 
-    type: RoleType;
 
 
-    level: RoleLevel;
 
 
-    status: RoleStatus;
+
+export interface Role
+
+    extends BaseEntity {
 
 
-    permissionIds: string[];
+
+    organizationId?:string;
 
 
-    moduleIds?: string[];
+
+    name:string;
 
 
-    isSystem: boolean;
+
+    code:string;
 
 
-    isDefault: boolean;
+
+    description?:string;
 
 
-    isActive: boolean;
+
+    type:RoleType;
 
 
-    metadata?: Record<string, unknown>;
+
+    level:RoleLevel;
 
 
-    createdBy?: string;
+
+    status:RoleStatus;
 
 
-    updatedBy?: string;
+
+    permissionIds:string[];
 
 
-    deletedAt?: string;
+
+    isSystem:boolean;
+
+
+
+    isDefault:boolean;
+
+
+
+    isActive:boolean;
+
+
+
+    metadata?:Record<string,unknown>;
+
+
 
 }
 
 
-export interface RoleAssignment extends BaseEntity {
-
-    organizationId: string;
 
 
-    userId: string;
 
 
-    roleId: string;
 
 
-    assignedBy?: string;
+
+/**
+ * User ↔ Role assignment
+ */
+
+export interface RoleAssignment {
 
 
-    assignedAt: string;
+
+    id:string;
 
 
-    expiresAt?: string;
+
+    organizationId?:string;
 
 
-    metadata?: Record<string, unknown>;
+
+    userId:string;
+
+
+
+    roleId:string;
+
+
+
+    assignedBy?:string;
+
+
+
+    assignedAt:string;
+
+
+
+    expiresAt?:string;
+
+
+
+    isActive:boolean;
+
+
 
 }
 
+
+
+
+
+
+
+
+
+/**
+ * Role hierarchy mapping
+ */
 
 export interface RoleHierarchy {
 
-    roleId: string;
 
 
-    parentRoleId?: string;
+    id:string;
 
 
-    level: RoleLevel;
+
+    parentRoleId:string;
+
+
+
+    childRoleId:string;
+
+
+
+    organizationId?:string;
+
+
+
+    createdAt:string;
+
+
 
 }

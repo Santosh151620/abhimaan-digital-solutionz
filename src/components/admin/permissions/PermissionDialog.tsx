@@ -1,8 +1,15 @@
 "use client";
 
+
 import {
+    useEffect,
     useState,
 } from "react";
+
+
+import {
+    useRouter,
+} from "next/navigation";
 
 
 import type {
@@ -11,421 +18,1047 @@ import type {
 } from "@/types/admin/Permission";
 
 
+import {
+    createPermission,
+    updatePermission,
+} from "@/app/admin/(protected)/permissions/actions";
+
+
+
+
+
+
+
 interface PermissionDialogProps {
 
-    initialData?: Permission;
 
-    onSubmit: (
-        permission: Permission,
-    ) => Promise<void>;
 
-    onClose: () => void;
+    permission?:Permission;
 
-    saving?: boolean;
+
+
+    onClose:()=>void;
+
+
 
 }
 
-const defaultPermission: Partial<Permission> = {
 
-    module: "",
 
-    action: "",
 
-    key: "",
 
-    name: "",
 
-    description: "",
 
-    type: "System",
 
-    isSystem: true,
 
-    isActive: true,
+const defaultForm:Partial<Permission> = {
+
+
+
+    key:"",
+
+
+
+    name:"",
+
+
+
+    description:"",
+
+
+
+    module:"",
+
+
+
+    action:"",
+
+
+
+    type:"Custom",
+
+
+
+    isSystem:false,
+
+
+
+    isActive:true,
+
+
 
 };
 
 
+
+
+
+
+
+
+
 export default function PermissionDialog({
 
-    initialData,
-    onSubmit,
+
+
+    permission,
+
+
+
     onClose,
-    saving = false,
-}: PermissionDialogProps) {
 
-   
-    const [loading, setLoading] =
-        useState(false);
 
-    const [form, setForm] =
-        useState<Partial<Permission>>(
-            initialData ?? defaultPermission
-        );
 
-    function update<K extends keyof Permission>(
-        key: K,
-        value: Permission[K],
+}:PermissionDialogProps) {
+
+
+
+    const router =
+
+        useRouter();
+
+
+
+
+
+
+
+    const [
+
+        loading,
+
+        setLoading,
+
+    ] = useState(false);
+
+
+
+
+
+
+
+    const [
+
+        error,
+
+        setError,
+
+    ] = useState<string | null>(null);
+
+
+
+
+
+
+
+    const [
+
+        form,
+
+        setForm,
+
+    ] = useState<Partial<Permission>>(
+
+        defaultForm,
+
+    );
+
+
+
+
+
+
+
+
+
+    useEffect(() => {
+
+
+
+        setForm({
+
+
+
+            ...defaultForm,
+
+
+
+            ...permission,
+
+
+
+        });
+
+
+
+    },[permission]);
+
+
+
+
+
+
+
+
+
+    function updateField<K extends keyof Permission>(
+
+
+
+        key:K,
+
+
+
+        value:Permission[K],
+
+
+
     ) {
 
-        setForm(previous => ({
-            ...previous,
-            [key]: value,
-        }));
+
+
+        setForm(
+
+            previous => ({
+
+
+
+                ...previous,
+
+
+
+                [key]:value,
+
+
+
+            }),
+
+        );
+
+
 
     }
 
+
+
+
+
+
+
+
+
     async function submit() {
-        setLoading(true);
+
+
+
+        setError(null);
+
+
+
+
+
+
+
+        if(!form.key?.trim()) {
+
+
+
+            setError(
+
+                "Permission key is required."
+
+            );
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        if(!form.name?.trim()) {
+
+
+
+            setError(
+
+                "Permission name is required."
+
+            );
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        if(!form.module?.trim()) {
+
+
+
+            setError(
+
+                "Module is required."
+
+            );
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        if(!form.action?.trim()) {
+
+
+
+            setError(
+
+                "Action is required."
+
+            );
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
         try {
-           await onSubmit(
-    {
-        ...form,
 
-        id:
-            form.id ??
-            crypto.randomUUID(),
 
-        module:
-            form.module ?? "",
 
-        action:
-            form.action ?? "",
+            setLoading(true);
 
-        key:
-            form.key ?? "",
 
-        name:
-            form.name ?? "",
 
-        type:
-            form.type ?? "System",
 
-        isSystem:
-            form.isSystem ?? true,
 
-        isActive:
-            form.isActive ?? true,
 
-    } as Permission,
-);
+
+            if(permission) {
+
+
+
+                await updatePermission(
+
+                    {
+
+                        ...permission,
+
+                        ...form,
+
+                    } as Permission,
+
+                );
+
+
+
+            }
+
+            else {
+
+
+
+                await createPermission(
+
+                    form,
+
+                );
+
+
+
+            }
+
+
+
+
+
+
+
+            router.refresh();
+
+
+
+            onClose();
+
+
+
+        }
+
+        catch(error) {
+
+
+
+            setError(
+
+
+
+                error instanceof Error
+
+                ? error.message
+
+                : "Unable to save permission."
+
+
+
+            );
+
+
 
         }
 
         finally {
 
+
+
             setLoading(false);
 
+
+
         }
+
+
 
     }
 
 
-return (
 
-    <>
+
+
+
+
+
+
+    return (
+
+
 
         <div
+
             className="
-            fixed
-            inset-0
-            z-50
-            flex
-            items-center
-            justify-center
-            bg-black/40
+
+                fixed
+
+                inset-0
+
+                z-50
+
+                flex
+
+                items-center
+
+                justify-center
+
+                bg-black/40
+
+                p-4
+
             "
+
         >
 
 
-                    <div
+
+            <div
+
+                className="
+
+                    w-full
+
+                    max-w-xl
+
+                    rounded-xl
+
+                    bg-background
+
+                    p-6
+
+                    space-y-5
+
+                    shadow-xl
+
+                "
+
+            >
+
+
+
+                <div>
+
+
+
+                    <h2
+
                         className="
-                        w-full
-                        max-w-lg
-                        space-y-5
-                        rounded-xl
-                        bg-background
-                        p-6
-                        shadow-xl
+
+                            text-xl
+
+                            font-semibold
+
                         "
+
                     >
 
 
-                        <h2 className="text-xl font-semibold">
 
-                            Create Permission
+                        {
 
-                        </h2>
+                            permission
 
+                            ? "Edit Permission"
 
+                            : "Create Permission"
 
-                        <div>
+                        }
 
 
-                            <label className="text-sm font-medium">
 
-                                Name
+                    </h2>
 
-                            </label>
 
 
-                            <input
-
-                                value={
-                                    form.name ?? ""
-                                }
-
-                                onChange={(e) =>
-                                    update(
-                                        "name",
-                                        e.target.value,
-                                    )
-                                }
-
-                                className="
-                                mt-1
-                                w-full
-                                rounded-md
-                                border
-                                p-2
-                                "
-
-                            />
-
-                        </div>
-
-
-
-
-                        <div>
-
-
-                            <label className="text-sm font-medium">
-
-                                Permission Key
-
-                            </label>
-
-
-                            <input
-
-                                value={
-                                    form.key ?? ""
-                                }
-
-                                onChange={(e) =>
-                                    update(
-                                        "key",
-                                        e.target.value,
-                                    )
-                                }
-
-
-                                className="
-                                mt-1
-                                w-full
-                                rounded-md
-                                border
-                                p-2
-                                "
-
-                            />
-
-
-                        </div>
-
-
-
-
-
-                        <div className="grid gap-4 md:grid-cols-2">
-
-
-                            <div>
-
-                                <label className="text-sm font-medium">
-
-                                    Module
-
-                                </label>
-
-
-                                <input
-
-                                    value={
-                                        form.module ?? ""
-                                    }
-
-
-                                    onChange={(e) =>
-                                        update(
-                                            "module",
-                                            e.target.value,
-                                        )
-                                    }
-
-
-                                    className="
-                                    mt-1
-                                    w-full
-                                    rounded-md
-                                    border
-                                    p-2
-                                    "
-
-                                />
-
-                            </div>
-
-
-
-
-                            <div>
-
-                                <label className="text-sm font-medium">
-
-                                    Action
-
-                                </label>
-
-
-                                <input
-
-                                    value={
-                                        form.action ?? ""
-                                    }
-
-
-                                    onChange={(e) =>
-                                        update(
-                                            "action",
-                                            e.target.value,
-                                        )
-                                    }
-
-
-                                    className="
-                                    mt-1
-                                    w-full
-                                    rounded-md
-                                    border
-                                    p-2
-                                    "
-
-                                />
-
-                            </div>
-
-
-                        </div>
-
-
-
-
-
-                        <div>
-
-
-                            <label className="text-sm font-medium">
-
-                                Type
-
-                            </label>
-
-
-                            <select
-
-                                value={
-                                    form.type
-                                }
-
-                                onChange={(e) =>
-                                    update(
-                                        "type",
-                                        e.target.value as PermissionType,
-                                    )
-                                }
-
-                                className="
-                                mt-1
-                                w-full
-                                rounded-md
-                                border
-                                p-2
-                                "
-
-                            >
-
-                                <option value="System">
-                                    System
-                                </option>
-
-                                <option value="Custom">
-                                    Custom
-                                </option>
-
-                                                    </select>
-
-
-                        </div>
-
-
-
-
-                        <div className="flex justify-end gap-3">
-
-
-                            <button
-
-                                type="button"
-
-                               onClick={onClose}
-
-                                className="
-                                rounded-md
-                                border
-                                px-4
-                                py-2
-                                "
-
-                            >
-
-                                Cancel
-
-                            </button>
-
-
-
-                            <button
-
-                                type="button"
-
-                                disabled={loading || saving}
-
-                                onClick={submit}
-
-                                className="
-                                rounded-md
-                                bg-primary
-                                px-4
-                                py-2
-                                text-primary-foreground
-                                "
-
-                            >
-
-                                {
-                                    saving
-                                        ? "Saving..."
-                                        : "Save"
-                                }
-
-                            </button>
-
-                        </div>
-                    </div>
                 </div>
-                    </>
+
+
+
+
+
+
+
+
+
+                {
+
+                    error && (
+
+
+
+                        <div
+
+                            className="
+
+                                rounded-md
+
+                                border
+
+                                border-destructive
+
+                                p-3
+
+                                text-destructive
+
+                            "
+
+                        >
+
+
+
+                            {error}
+
+
+
+                        </div>
+
+
+
+                    )
+
+                }
+
+
+
+
+
+
+
+
+
+                <input
+
+
+
+                    className="
+
+                        w-full
+
+                        rounded-md
+
+                        border
+
+                        p-2
+
+                    "
+
+
+
+                    placeholder="Permission Key"
+
+
+
+                    disabled={permission?.isSystem}
+
+
+
+                    value={form.key ?? ""}
+
+
+
+                    onChange={event =>
+
+                        updateField(
+
+                            "key",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <input
+
+
+
+                    className="
+
+                        w-full
+
+                        rounded-md
+
+                        border
+
+                        p-2
+
+                    "
+
+
+
+                    placeholder="Permission Name"
+
+
+
+                    value={form.name ?? ""}
+
+
+
+                    onChange={event =>
+
+                        updateField(
+
+                            "name",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <input
+
+
+
+                    className="
+
+                        w-full
+
+                        rounded-md
+
+                        border
+
+                        p-2
+
+                    "
+
+
+
+                    placeholder="Module"
+
+
+
+                    value={form.module ?? ""}
+
+
+
+                    onChange={event =>
+
+                        updateField(
+
+                            "module",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <input
+
+
+
+                    className="
+
+                        w-full
+
+                        rounded-md
+
+                        border
+
+                        p-2
+
+                    "
+
+
+
+                    placeholder="Action"
+
+
+
+                    value={form.action ?? ""}
+
+
+
+                    onChange={event =>
+
+                        updateField(
+
+                            "action",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <textarea
+
+
+
+                    className="
+
+                        w-full
+
+                        rounded-md
+
+                        border
+
+                        p-2
+
+                    "
+
+
+
+                    placeholder="Description"
+
+
+
+                    value={form.description ?? ""}
+
+
+
+                    onChange={event =>
+
+                        updateField(
+
+                            "description",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+
+
+                />
+
+
+
+
+
+
+
+
+
+                <select
+
+
+
+                    className="
+
+                        w-full
+
+                        rounded-md
+
+                        border
+
+                        p-2
+
+                    "
+
+
+
+                    value={form.type ?? "Custom"}
+
+
+
+                    onChange={event =>
+
+                        updateField(
+
+                            "type",
+
+                            event.target.value as PermissionType,
+
+                        )
+
+                    }
+
+
+
+                    disabled={permission?.isSystem}
+
+
+
+                >
+
+
+
+                    <option value="System">
+
+                        System
+
+                    </option>
+
+
+
+                    <option value="Custom">
+
+                        Custom
+
+                    </option>
+
+
+
+                </select>
+
+
+
+
+
+
+
+
+
+                <div
+
+                    className="
+
+                        flex
+
+                        justify-end
+
+                        gap-3
+
+                    "
+
+                >
+
+
+
+                    <button
+
+
+
+                        type="button"
+
+
+
+                        onClick={onClose}
+
+
+
+                        disabled={loading}
+
+
+
+                        className="
+
+                            rounded-md
+
+                            border
+
+                            px-4
+
+                            py-2
+
+                        "
+
+
+
+                    >
+
+
+
+                        Cancel
+
+
+
+                    </button>
+
+
+
+
+
+
+
+
+
+                    <button
+
+
+
+                        type="button"
+
+
+
+                        onClick={submit}
+
+
+
+                        disabled={loading}
+
+
+
+                        className="
+
+                            rounded-md
+
+                            bg-primary
+
+                            px-4
+
+                            py-2
+
+                            text-primary-foreground
+
+                        "
+
+
+
+                    >
+
+
+
+                        {
+
+                            loading
+
+                            ? "Saving..."
+
+                            : "Save"
+
+                        }
+
+
+
+                    </button>
+
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
     );
+
+
 
 }

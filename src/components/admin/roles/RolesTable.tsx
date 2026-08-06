@@ -7,86 +7,187 @@ import type {
 
 
 
+
+
+
+
 interface RolesTableProps {
 
-    roles: Role[];
 
 
-    onEdit?: (
-        role: Role,
-    ) => void;
+    roles:Role[];
 
 
-   onDelete?: (
-    id: string,
-) => Promise<{
-        success: boolean;
-    }>;
 
 
-    onManagePermissions?: (
-        role: Role,
-    ) => void;
+
+    onEdit?:
+
+        (
+
+            role:Role,
+
+        ) => void;
+
+
+
+
+
+    onDelete?:
+
+        (
+
+            id:string,
+
+        ) => Promise<void>;
+
+
 
 }
 
 
 
 
+
+
+
+
+
 export default function RolesTable({
+
+
 
     roles,
 
+
+
     onEdit,
+
+
 
     onDelete,
 
-    onManagePermissions,
 
-}: RolesTableProps) {
+
+}:RolesTableProps) {
+
 
 
     return (
 
-        <div className="overflow-x-auto rounded-xl border">
 
 
-            <table className="min-w-full">
+        <div
+
+            className="
+
+                overflow-x-auto
+
+                rounded-xl
+
+                border
+
+            "
+
+        >
 
 
-                <thead>
 
-                    <tr className="border-b bg-muted/30">
+            <table
+
+                className="
+
+                    min-w-full
+
+                    divide-y
+
+                "
+
+            >
 
 
-                        <th className="p-3 text-left">
+
+                <thead
+
+                    className="
+
+                        bg-muted/30
+
+                    "
+
+                >
+
+
+
+                    <tr>
+
+
+
+                        <th className="p-3 text-left font-medium">
+
                             Name
+
                         </th>
 
 
-                        <th className="p-3 text-left">
+
+                        <th className="p-3 text-left font-medium">
+
                             Code
+
                         </th>
 
 
-                        <th className="p-3 text-left">
+
+                        <th className="p-3 text-left font-medium">
+
+                            Type
+
+                        </th>
+
+
+
+                        <th className="p-3 text-left font-medium">
+
                             Level
+
                         </th>
 
 
-                        <th className="p-3 text-left">
+
+                        <th className="p-3 text-left font-medium">
+
                             Status
+
                         </th>
 
 
-                        <th className="p-3 text-right">
+
+                        <th className="p-3 text-left font-medium">
+
+                            System
+
+                        </th>
+
+
+
+                        <th className="p-3 text-right font-medium">
+
                             Actions
+
                         </th>
+
 
 
                     </tr>
 
+
+
                 </thead>
+
+
+
+
 
 
 
@@ -95,26 +196,55 @@ export default function RolesTable({
                 <tbody>
 
 
+
                     {
+
                         roles.length === 0 && (
+
+
 
                             <tr>
 
+
+
                                 <td
 
-                                    colSpan={5}
 
-                                    className="p-6 text-center text-muted-foreground"
+
+                                    colSpan={7}
+
+
+
+                                    className="
+
+                                        p-8
+
+                                        text-center
+
+                                        text-muted-foreground
+
+                                    "
+
+
 
                                 >
 
+
+
                                     No roles found.
+
+
 
                                 </td>
 
+
+
                             </tr>
 
+
+
                         )
+
                     }
 
 
@@ -122,125 +252,253 @@ export default function RolesTable({
 
 
 
+
+
+
                     {
+
                         roles.map(
 
-                            (role) => (
+
+
+                            role => (
+
+
 
                                 <tr
 
+
+
                                     key={role.id}
 
-                                    className="border-b"
+
+
+                                    className="
+
+                                        border-t
+
+                                        hover:bg-muted/20
+
+                                    "
+
+
 
                                 >
 
 
 
-                                    <td className="p-3 font-medium">
+                                    <td
+
+                                        className="
+
+                                            p-3
+
+                                            font-medium
+
+                                        "
+
+                                    >
+
+
 
                                         {role.name}
 
+
+
                                     </td>
 
 
 
 
-                                    <td className="p-3">
+
+
+
+
+
+                                    <td
+
+                                        className="
+
+                                            p-3
+
+                                            font-mono
+
+                                            text-sm
+
+                                        "
+
+                                    >
+
+
 
                                         {role.code}
 
-                                    </td>
 
-
-
-
-                                    <td className="p-3">
-
-                                        {role.level ?? "Organization"}
 
                                     </td>
 
 
 
 
+
+
+
+
+
                                     <td className="p-3">
+
+
+
+                                        {role.type}
+
+
+
+                                    </td>
+
+
+
+
+
+
+
+
+
+                                    <td className="p-3">
+
+
+
+                                        {role.level}
+
+
+
+                                    </td>
+
+
+
+
+
+
+
+
+
+                                    <td className="p-3">
+
+
 
                                         {role.status}
 
+
+
                                     </td>
 
 
 
 
 
-                                    <td className="p-3 text-right">
 
 
-                                        <div className="flex justify-end gap-2">
 
 
+                                    <td className="p-3">
+
+
+
+                                        {
+
+                                            role.isSystem
+
+                                            ? "Yes"
+
+                                            : "No"
+
+                                        }
+
+
+
+                                    </td>
+
+
+
+
+
+
+
+
+
+                                    <td className="p-3">
+
+
+
+                                        <div
+
+                                            className="
+
+                                                flex
+
+                                                justify-end
+
+                                                gap-2
+
+                                            "
+
+                                        >
 
 
 
                                             {
-                                                onManagePermissions && (
 
-                                                    <button
-
-                                                        type="button"
-
-                                                        onClick={() =>
-                                                            onManagePermissions(role)
-                                                        }
-
-                                                        className="
-                                                        rounded
-                                                        border
-                                                        px-3
-                                                        py-1
-                                                        "
-
-                                                    >
-
-                                                        Permissions
-
-                                                    </button>
-
-                                                )
-                                            }
-
-
-
-
-
-
-
-                                            {
                                                 onEdit && (
 
+
+
                                                     <button
+
+
 
                                                         type="button"
 
+
+
                                                         onClick={() =>
-                                                            onEdit(role)
+
+                                                            onEdit(
+
+                                                                role,
+
+                                                            )
+
                                                         }
 
+
+
                                                         className="
-                                                        rounded
-                                                        border
-                                                        px-3
-                                                        py-1
+
+                                                            rounded-md
+
+                                                            border
+
+                                                            px-3
+
+                                                            py-1
+
                                                         "
 
+
+
                                                     >
+
+
 
                                                         Edit
 
+
+
                                                     </button>
 
+
+
                                                 )
+
                                             }
 
 
@@ -249,32 +507,66 @@ export default function RolesTable({
 
 
 
+
+
                                             {
-                                                onDelete && (
+
+                                                onDelete &&
+
+                                                !role.isSystem && (
+
+
 
                                                     <button
 
+
+
                                                         type="button"
 
+
+
                                                         onClick={() =>
-                                                            void onDelete(role.id)
+
+                                                            void onDelete(
+
+                                                                role.id,
+
+                                                            )
+
                                                         }
 
+
+
                                                         className="
-                                                        rounded
-                                                        border
-                                                        px-3
-                                                        py-1
-                                                        text-destructive
+
+                                                            rounded-md
+
+                                                            border
+
+                                                            px-3
+
+                                                            py-1
+
+                                                            text-destructive
+
                                                         "
+
+
 
                                                     >
 
+
+
                                                         Delete
+
+
 
                                                     </button>
 
+
+
                                                 )
+
                                             }
 
 
@@ -282,14 +574,19 @@ export default function RolesTable({
                                         </div>
 
 
+
                                     </td>
+
 
 
                                 </tr>
 
+
+
                             )
 
                         )
+
                     }
 
 
@@ -297,11 +594,17 @@ export default function RolesTable({
                 </tbody>
 
 
+
             </table>
+
 
 
         </div>
 
+
+
     );
+
+
 
 }

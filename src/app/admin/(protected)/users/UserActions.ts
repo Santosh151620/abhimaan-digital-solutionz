@@ -1,59 +1,136 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+
+import {
+    createClient,
+} from "@/lib/supabase/server";
+
 
 import {
     UserRoleRepository,
 } from "@/repositories/admin/UserRoleRepository";
 
+
 import {
     UserRoleService,
 } from "@/services/admin/UserRoleService";
+
 
 import type {
     UserRole,
 } from "@/types/admin/UserRole";
 
+
+
+
+
+
+
+
+
 async function getService() {
 
+
+
     const supabase =
+
         await createClient();
+
+
+
+
+
+
+
+    const repository =
+
+        new UserRoleRepository(
+
+            supabase,
+
+        );
+
+
+
+
+
+
 
     return new UserRoleService(
 
-        new UserRoleRepository(
-            supabase,
-        ),
+        repository,
 
     );
 
+
+
 }
+
+
+
+
+
+
+
+
 
 export async function getUserRoles(
-    userId: string,
-): Promise<UserRole[]> {
+
+    userId:string,
+
+):
+
+Promise<UserRole[]> {
+
+
 
     const service =
+
         await getService();
 
+
+
+
+
+
+
     return service.rolesForUser(
+
         userId,
+
     );
 
+
+
 }
+
+
+
+
+
+
+
+
 
 export async function assignRole(
 
-    userId: string,
+    userId:string,
 
-    roleId: string,
+    roleId:string,
 
-): Promise<{
-    success: boolean;
-}> {
+) {
+
+
 
     const service =
+
         await getService();
+
+
+
+
+
+
 
     await service.assignRole(
 
@@ -63,26 +140,49 @@ export async function assignRole(
 
     );
 
+
+
+
+
+
+
     return {
 
-        success: true,
+        success:true,
 
     };
 
+
+
 }
+
+
+
+
+
+
+
+
 
 export async function removeRole(
 
-    userId: string,
+    userId:string,
 
-    roleId: string,
+    roleId:string,
 
-): Promise<{
-    success: boolean;
-}> {
+) {
+
+
 
     const service =
+
         await getService();
+
+
+
+
+
+
 
     await service.removeRole(
 
@@ -92,26 +192,49 @@ export async function removeRole(
 
     );
 
+
+
+
+
+
+
     return {
 
-        success: true,
+        success:true,
 
     };
 
+
+
 }
+
+
+
+
+
+
+
+
 
 export async function replaceRoles(
 
-    userId: string,
+    userId:string,
 
-    roleIds: string[],
+    roleIds:string[],
 
-): Promise<{
-    success: boolean;
-}> {
+) {
+
+
 
     const service =
+
         await getService();
+
+
+
+
+
+
 
     await service.replaceRoles(
 
@@ -121,26 +244,49 @@ export async function replaceRoles(
 
     );
 
+
+
+
+
+
+
     return {
 
-        success: true,
+        success:true,
 
     };
 
+
+
 }
+
+
+
+
+
+
+
+
 
 export async function setPrimaryRole(
 
-    userId: string,
+    userId:string,
 
-    roleId: string,
+    roleId:string,
 
-): Promise<{
-    success: boolean;
-}> {
+) {
+
+
 
     const service =
+
         await getService();
+
+
+
+
+
+
 
     await service.setPrimaryRole(
 
@@ -150,10 +296,18 @@ export async function setPrimaryRole(
 
     );
 
+
+
+
+
+
+
     return {
 
-        success: true,
+        success:true,
 
     };
+
+
 
 }

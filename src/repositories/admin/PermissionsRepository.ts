@@ -13,305 +13,813 @@ import type {
 } from "@/types/admin/Permission";
 
 
+
+
+
+
+
 type PermissionRow = {
 
-    id: string;
 
-    permission_key: string;
 
-    module_name: string;
+    id:string;
 
-    action_name: string;
 
-    description: string | null;
 
-    metadata: Record<string, unknown> | null;
+    organization_id:string | null;
 
-    is_system_permission: boolean | null;
 
-    created_at: string;
 
-    updated_at: string;
+    key:string;
+
+
+
+    name:string;
+
+
+
+    description:string | null;
+
+
+
+    module:string;
+
+
+
+    action:string;
+
+
+
+    type:string;
+
+
+
+    is_system:boolean | null;
+
+
+
+    is_active:boolean | null;
+
+
+
+    metadata:Record<string,unknown> | null;
+
+
+
+    created_at:string;
+
+
+
+    updated_at:string;
+
+
 
 };
+
+
+
+
+
+
+
+
 
 export interface IPermissionsRepository {
 
 
-    list():Promise<Permission[]>;
+
+    list():
+
+        Promise<Permission[]>;
+
+
+
+
+
+    active():
+
+        Promise<Permission[]>;
+
+
+
 
 
     findById(
+
         id:string,
-    ):Promise<Permission|null>;
+
+    ):
+
+        Promise<Permission | null>;
+
+
+
 
 
     findByKey(
+
         key:string,
-    ):Promise<Permission|null>;
+
+    ):
+
+        Promise<Permission | null>;
+
+
+
+
+
+    search(
+
+        keyword:string,
+
+    ):
+
+        Promise<Permission[]>;
+
+
+
 
 
     save(
+
         permission:Permission,
-    ):Promise<void>;
+
+    ):
+
+        Promise<void>;
+
+
+
 
 
     delete(
+
         id:string,
-    ):Promise<void>;
+
+    ):
+
+        Promise<void>;
+
+
 
 }
+
+
+
+
+
 
 
 
 
 export class PermissionsRepository
-extends BaseRepository<Permission>
-implements IPermissionsRepository {
 
+    extends BaseRepository<Permission>
 
-constructor(
-supabase:SupabaseClient,
-){
+    implements IPermissionsRepository {
 
-super(
-supabase,
-"admin_permissions",
-);
 
-}
 
 
 
-async list():Promise<Permission[]> {
 
 
-const {
-data,
-error,
+    constructor(
 
-}=await this
-.tableRef()
-.select("*")
-.order(
-"module_name",
-{
-ascending:true,
-}
-);
+        supabase:SupabaseClient,
 
+    ) {
 
 
-if(error)
-throw error;
 
-return (data ?? []).map(
-    (item) => this.mapPermission(item as PermissionRow),
-);
+        super(
 
+            supabase,
 
+            "permissions",
 
-}
+        );
 
 
 
+    }
 
-async findById(
-id:string,
-)
-:Promise<Permission|null>{
 
 
-const {
-data,
-error,
 
-}=await this
-.tableRef()
-.select("*")
-.eq(
-"id",
-id,
-)
-.maybeSingle();
 
 
 
-if(error)
-throw error;
 
 
+    async list():
 
-return data
-? this.mapPermission(data)
-:null;
+        Promise<Permission[]> {
 
 
-}
 
+        const {
 
+            data,
 
+            error,
 
+        } = await this
 
-async findByKey(
-key:string,
-)
-:Promise<Permission|null>{
+            .tableRef()
 
+            .select("*")
 
-const {
-data,
-error,
+            .order(
 
-}=await this
-.tableRef()
-.select("*")
-.eq(
-"permission_key",
-key,
-)
-.maybeSingle();
+                "module",
 
+                {
 
+                    ascending:true,
 
-if(error)
-throw error;
+                },
 
+            );
 
 
-return data
-? this.mapPermission(data)
-:null;
 
 
-}
 
 
 
+        if(error)
 
-async save(
-permission:Permission,
-)
-:Promise<void>{
+            throw error;
 
 
 
-const {
-error,
 
-}=await this
-.tableRef()
-.upsert({
 
-id:
-permission.id,
 
 
-permission_key:
-permission.key,
+        return (data ?? [])
 
+            .map(
 
-module_name:
-permission.module,
+                row =>
 
+                    this.mapPermission(
 
-action_name:
-permission.action,
+                        row as PermissionRow,
 
+                    ),
 
-description:
-permission.description,
+            );
 
 
-is_system_permission:
-permission.isSystem,
 
+    }
 
-metadata:
-permission.metadata ?? {},
 
-});
 
 
 
-if(error)
-throw error;
 
 
-}
 
 
+    async active():
 
+        Promise<Permission[]> {
 
-async delete(
-id:string,
-)
-:Promise<void>{
 
 
-await super.delete(id);
+        const {
 
+            data,
 
-}
+            error,
 
+        } = await this
 
-private mapPermission(
-    item: PermissionRow,
-): Permission {
+            .tableRef()
 
+            .select("*")
 
-return {
+            .eq(
 
+                "is_active",
 
-id:item.id,
+                true,
 
+            );
 
-key:
-item.permission_key,
 
 
-module:
-item.module_name,
 
 
-action:
-item.action_name,
 
 
-name:
-item.permission_key,
+        if(error)
 
-description: item.description ?? undefined,
+            throw error;
 
-type:
-item.is_system_permission
-?"System"
-:"Custom",
 
 
-isSystem:
-item.is_system_permission ?? false,
 
 
-isActive:true,
 
 
-metadata:
-item.metadata ?? {},
+        return (data ?? [])
 
+            .map(
 
-createdAt:
-item.created_at,
+                row =>
 
+                    this.mapPermission(
 
-updatedAt:
-item.updated_at,
+                        row as PermissionRow,
 
+                    ),
 
-};
+            );
 
 
-}
+
+    }
+
+
+
+
+
+
+
+
+
+    async findById(
+
+        id:string,
+
+    ):
+
+        Promise<Permission | null> {
+
+
+
+        const {
+
+            data,
+
+            error,
+
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .eq(
+
+                "id",
+
+                id,
+
+            )
+
+            .maybeSingle();
+
+
+
+
+
+
+
+        if(error)
+
+            throw error;
+
+
+
+
+
+
+
+        return data
+
+            ? this.mapPermission(
+
+                data as PermissionRow,
+
+            )
+
+            : null;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async findByKey(
+
+        key:string,
+
+    ):
+
+        Promise<Permission | null> {
+
+
+
+        const {
+
+            data,
+
+            error,
+
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .eq(
+
+                "key",
+
+                key,
+
+            )
+
+            .maybeSingle();
+
+
+
+
+
+
+
+        if(error)
+
+            throw error;
+
+
+
+
+
+
+
+        return data
+
+            ? this.mapPermission(
+
+                data as PermissionRow,
+
+            )
+
+            : null;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async search(
+
+        keyword:string,
+
+    ):
+
+        Promise<Permission[]> {
+
+
+
+        const {
+
+            data,
+
+            error,
+
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .or(
+
+                [
+
+                    `name.ilike.%${keyword}%`,
+
+                    `module.ilike.%${keyword}%`,
+
+                    `action.ilike.%${keyword}%`,
+
+                    `key.ilike.%${keyword}%`,
+
+                ]
+
+                .join(","),
+
+            );
+
+
+
+
+
+
+
+        if(error)
+
+            throw error;
+
+
+
+
+
+
+
+        return (data ?? [])
+
+            .map(
+
+                row =>
+
+                    this.mapPermission(
+
+                        row as PermissionRow,
+
+                    ),
+
+            );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async save(
+
+        permission:Permission,
+
+    ):
+
+        Promise<void> {
+
+
+
+        const {
+
+            error,
+
+        } = await this
+
+            .tableRef()
+
+            .upsert({
+
+
+
+                id:
+
+                    permission.id,
+
+
+
+                organization_id:
+
+                    permission.organizationId ?? null,
+
+
+
+                key:
+
+                    permission.key,
+
+
+
+                name:
+
+                    permission.name,
+
+
+
+                description:
+
+                    permission.description ?? null,
+
+
+
+                module:
+
+                    permission.module,
+
+
+
+                action:
+
+                    permission.action,
+
+
+
+                type:
+
+                    permission.type,
+
+
+
+                is_system:
+
+                    permission.isSystem,
+
+
+
+                is_active:
+
+                    permission.isActive,
+
+
+
+                metadata:
+
+                    permission.metadata ?? {},
+
+
+
+                updated_at:
+
+                    permission.updatedAt,
+
+
+
+            });
+
+
+
+
+
+
+
+        if(error)
+
+            throw error;
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async delete(
+
+        id:string,
+
+    ):
+
+        Promise<void> {
+
+
+
+        await super.delete(
+
+            id,
+
+        );
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private mapPermission(
+
+        row:PermissionRow,
+
+    ):Permission {
+
+
+
+        return {
+
+
+
+            id:
+
+                row.id,
+
+
+
+            organizationId:
+
+                row.organization_id
+
+                ?? undefined,
+
+
+
+            key:
+
+                row.key,
+
+
+
+            name:
+
+                row.name,
+
+
+
+            description:
+
+                row.description
+
+                ?? undefined,
+
+
+
+            module:
+
+                row.module,
+
+
+
+            action:
+
+                row.action,
+
+
+
+            type:
+
+                row.type as Permission["type"],
+
+
+
+            isSystem:
+
+                row.is_system ?? false,
+
+
+
+            isActive:
+
+                row.is_active ?? false,
+
+
+
+            metadata:
+
+                row.metadata ?? {},
+
+
+
+            createdAt:
+
+                row.created_at,
+
+
+
+            updatedAt:
+
+                row.updated_at,
+
+
+
+        };
+
+
+
+    }
+
 
 
 }

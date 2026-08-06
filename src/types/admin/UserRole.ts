@@ -1,46 +1,111 @@
-/**
- * ============================================================================
- * ADS Enterprise Platform
- * User Role Assignment
- * ============================================================================
- */
-
 import type {
     BaseEntity,
 } from "@/types/platform/BaseEntity";
 
 
 
+
+
+
+
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * User Role Assignment Contract
+ *
+ * Organization Scoped
+ * RBAC Ready
+ * Audit Ready
+ *
+ * Mirrors:
+ * admin.user_roles
+ *
+ * ============================================================================
+ */
+
+
+
+
+
+
+
 export interface UserRole
+
     extends BaseEntity {
 
-    /**
-     * Organization ownership
-     */
-    organization_id?: string;
+
 
     /**
-     * Profile/User
+     * Tenant ownership
      */
-    user_id: string;
+    organizationId:string;
+
+
+
+
 
     /**
-     * Assigned Role
+     * Identity mapping
      */
-    role_id: string;
+    userId:string;
+
+
+
+
 
     /**
-     * Primary Role
+     * Assigned role
      */
-    is_primary: boolean;
+    roleId:string;
+
+
+
+
+
+    /**
+     * Primary role
+     *
+     * User may have multiple roles,
+     * but one primary role.
+     */
+    isPrimary:boolean;
+
+
+
+
+
+    /**
+     * Assignment state
+     */
+    isActive:boolean;
+
+
+
+
 
     /**
      * Audit
      */
-    assigned_by?: string;
+    assignedBy?:string;
 
-    created_at?: string;
 
-    updated_at?: string;
+
+
+
+    assignedAt:string;
+
+
+
+
+
+
+
+    /**
+     * Extension
+     */
+    metadata?:Record<string, unknown>;
+
+
 
 }

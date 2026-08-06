@@ -14,68 +14,149 @@ import type {
 
 
 
+
+
+
+
 type RoleRow = {
 
-    id: string;
 
-    organization_id: string | null;
 
-    role_name: string;
+    id:string;
 
-    role_key: string;
 
-    description: string | null;
 
-    is_system_role: boolean | null;
+    organization_id:string | null;
 
-    status: string | null;
 
-    created_at: string;
 
-    updated_at: string;
+    name:string;
+
+
+
+    code:string;
+
+
+
+    description:string | null;
+
+
+
+    type:string;
+
+
+
+    level:string;
+
+
+
+    status:string;
+
+
+
+    permission_ids:string[] | null;
+
+
+
+    is_system:boolean | null;
+
+
+
+    is_default:boolean | null;
+
+
+
+    is_active:boolean | null;
+
+
+
+    metadata:Record<string,unknown> | null;
+
+
+
+    created_at:string;
+
+
+
+    updated_at:string;
+
+
 
 };
 
 
 
 
+
+
+
+
+
 export interface IRolesRepository {
 
-    list(): Promise<Role[]>;
 
-    active(): Promise<Role[]>;
 
-    systemRoles(): Promise<Role[]>;
+    list():
 
-    customRoles(): Promise<Role[]>;
+        Promise<Role[]>;
 
-    search(
-        keyword: string,
-    ): Promise<Role[]>;
+
+
+
+
+    active():
+
+        Promise<Role[]>;
+
+
+
+
 
     findById(
-        id: string,
-    ): Promise<Role | null>;
+
+        id:string,
+
+    ):
+
+        Promise<Role | null>;
+
+
+
+
 
     findByCode(
-        code: string,
-    ): Promise<Role | null>;
 
-    existsByCode(
-        code: string,
-    ): Promise<boolean>;
+        code:string,
 
-    existsByName(
-        name: string,
-    ): Promise<boolean>;
+    ):
+
+        Promise<Role | null>;
+
+
+
+
 
     save(
-        role: Role,
-    ): Promise<void>;
+
+        role:Role,
+
+    ):
+
+        Promise<void>;
+
+
+
+
 
     delete(
-        id: string,
-    ): Promise<void>;
+
+        id:string,
+
+    ):
+
+        Promise<void>;
+
+
 
 }
 
@@ -83,455 +164,620 @@ export interface IRolesRepository {
 
 
 
+
+
+
+
 export class RolesRepository
-extends BaseRepository<Role>
-implements IRolesRepository {
+
+    extends BaseRepository<Role>
+
+    implements IRolesRepository {
+
+
+
+
+
 
 
     constructor(
-        supabase: SupabaseClient,
+
+        supabase:SupabaseClient,
+
     ) {
 
+
+
         super(
+
             supabase,
-            "admin_roles",
+
+            "roles",
+
         );
 
+
+
     }
 
 
 
 
-    async list(): Promise<Role[]> {
+
+
+
+
+
+    async list():
+
+        Promise<Role[]> {
+
 
 
         const {
+
             data,
+
             error,
-        } =
-        await this
+
+        } = await this
+
             .tableRef()
+
             .select("*")
+
             .order(
-                "role_name",
+
+                "name",
+
                 {
-                    ascending: true,
+
+                    ascending:true,
+
                 },
+
             );
+
+
+
+
+
 
 
         if(error)
+
             throw error;
 
 
+
+
+
+
+
         return (data ?? [])
+
             .map(
-                item =>
+
+                row =>
+
                     this.mapRole(
-                        item as RoleRow,
+
+                        row as RoleRow,
+
                     ),
+
             );
+
+
 
     }
 
 
 
 
-    async active(): Promise<Role[]> {
+
+
+
+
+
+    async active():
+
+        Promise<Role[]> {
+
 
 
         const {
+
             data,
+
             error,
-        } =
-        await this
+
+        } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
-                "status",
-                "active",
-            );
 
+                "is_active",
 
-        if(error)
-            throw error;
-
-
-        return (data ?? [])
-            .map(
-                item =>
-                    this.mapRole(
-                        item as RoleRow,
-                    ),
-            );
-
-    }
-
-
-
-
-    async systemRoles(): Promise<Role[]> {
-
-
-        const {
-            data,
-            error,
-        } =
-        await this
-            .tableRef()
-            .select("*")
-            .eq(
-                "is_system_role",
                 true,
+
+            )
+
+            .order(
+
+                "name",
+
+                {
+
+                    ascending:true,
+
+                },
+
             );
+
+
+
+
+
 
 
         if(error)
+
             throw error;
 
 
+
+
+
+
+
         return (data ?? [])
+
             .map(
-                item =>
+
+                row =>
+
                     this.mapRole(
-                        item as RoleRow,
+
+                        row as RoleRow,
+
                     ),
+
             );
+
+
 
     }
 
 
 
 
-    async customRoles(): Promise<Role[]> {
-
-
-        const {
-            data,
-            error,
-        } =
-        await this
-            .tableRef()
-            .select("*")
-            .eq(
-                "is_system_role",
-                false,
-            );
-
-
-        if(error)
-            throw error;
-
-
-        return (data ?? [])
-            .map(
-                item =>
-                    this.mapRole(
-                        item as RoleRow,
-                    ),
-            );
-
-    }
-
-
-
-
-
-    async search(
-        keyword:string,
-    ):Promise<Role[]> {
-
-
-        const {
-            data,
-            error,
-        } =
-        await this
-            .tableRef()
-            .select("*")
-            .or(
-                `role_name.ilike.%${keyword}%,role_key.ilike.%${keyword}%`,
-            );
-
-
-        if(error)
-            throw error;
-
-
-        return (data ?? [])
-            .map(
-                item =>
-                    this.mapRole(
-                        item as RoleRow,
-                    ),
-            );
-
-    }
 
 
 
 
 
     async findById(
+
         id:string,
-    ):Promise<Role|null>{
+
+    ):
+
+        Promise<Role | null> {
+
 
 
         const {
+
             data,
+
             error,
-        } =
-        await this
+
+        } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
+
                 "id",
+
                 id,
+
             )
+
             .maybeSingle();
 
 
+
+
+
+
+
         if(error)
+
             throw error;
 
 
+
+
+
+
+
         return data
+
             ? this.mapRole(
+
                 data as RoleRow,
+
             )
+
             : null;
 
+
+
     }
+
+
+
+
 
 
 
 
 
     async findByCode(
+
         code:string,
-    ):Promise<Role|null>{
+
+    ):
+
+        Promise<Role | null> {
+
 
 
         const {
+
             data,
+
             error,
-        } =
-        await this
+
+        } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
-                "role_key",
-                code,
+
+                "code",
+
+                code
+
+                    .trim()
+
+                    .toLowerCase(),
+
             )
+
             .maybeSingle();
 
 
+
+
+
+
+
         if(error)
+
             throw error;
+
+
+
+
+
 
 
         return data
+
             ? this.mapRole(
+
                 data as RoleRow,
+
             )
+
             : null;
 
-    }
 
-
-
-
-
-    async existsByCode(
-        code:string,
-    ):Promise<boolean>{
-
-
-        const {
-            count,
-            error,
-        } =
-        await this
-            .tableRef()
-            .select(
-                "id",
-                {
-                    count:"exact",
-                    head:true,
-                },
-            )
-            .eq(
-                "role_key",
-                code,
-            );
-
-
-        if(error)
-            throw error;
-
-
-        return (count ?? 0) > 0;
 
     }
 
 
 
 
-
-    async existsByName(
-        name:string,
-    ):Promise<boolean>{
-
-
-        const {
-            count,
-            error,
-        } =
-        await this
-            .tableRef()
-            .select(
-                "id",
-                {
-                    count:"exact",
-                    head:true,
-                },
-            )
-            .ilike(
-                "role_name",
-                name,
-            );
-
-
-        if(error)
-            throw error;
-
-
-        return (count ?? 0) > 0;
-
-    }
 
 
 
 
 
     async save(
+
         role:Role,
-    ):Promise<void>{
+
+    ):
+
+        Promise<void> {
+
 
 
         const {
+
             error,
-        } =
-        await this
+
+        } = await this
+
             .tableRef()
+
             .upsert({
 
+
+
                 id:
+
                     role.id,
 
-                organization_id:
-                    role.organizationId,
 
-                role_name:
+
+                organization_id:
+
+                    role.organizationId ?? null,
+
+
+
+                name:
+
                     role.name,
 
-                role_key:
-                    role.code,
+
+
+                code:
+
+                    role.code
+
+                    .trim()
+
+                    .toLowerCase(),
+
+
 
                 description:
+
                     role.description ?? null,
 
-                is_system_role:
-                    role.isSystem,
+
+
+                type:
+
+                    role.type,
+
+
+
+                level:
+
+                    role.level,
+
+
 
                 status:
-                    role.isActive
-                    ? "active"
-                    : "inactive",
+
+                    role.status,
+
+
+
+                permission_ids:
+
+                    role.permissionIds ?? [],
+
+
+
+                is_system:
+
+                    role.isSystem,
+
+
+
+                is_default:
+
+                    role.isDefault,
+
+
+
+                is_active:
+
+                    role.isActive,
+
+
+
+                metadata:
+
+                    role.metadata ?? {},
+
+
+
+                updated_at:
+
+                    role.updatedAt,
+
+
 
             });
 
 
+
+
+
+
+
         if(error)
+
             throw error;
 
+
+
     }
+
+
+
+
 
 
 
 
 
     async delete(
+
         id:string,
-    ):Promise<void>{
+
+    ):
+
+        Promise<void> {
+
 
 
         await super.delete(
+
             id,
+
         );
 
+
+
     }
+
+
+
+
 
 
 
 
 
     private mapRole(
-        item:RoleRow,
+
+        row:RoleRow,
+
     ):Role {
+
 
 
         return {
 
+
+
             id:
-                item.id,
+
+                row.id,
+
+
 
             organizationId:
-                item.organization_id ?? undefined,
+
+                row.organization_id
+
+                ?? undefined,
+
+
 
             name:
-                item.role_name,
+
+                row.name,
+
+
 
             code:
-                item.role_key,
+
+                row.code,
+
+
 
             description:
-                item.description ?? undefined,
+
+                row.description
+
+                ?? undefined,
+
+
 
             type:
-                item.is_system_role
-                ? "System"
-                : "Organization",
+
+                row.type as Role["type"],
+
+
 
             level:
-                "Organization",
+
+                row.level as Role["level"],
+
+
 
             status:
-                item.status === "active"
-                ? "Active"
-                : "Inactive",
+
+                row.status as Role["status"],
+
+
 
             permissionIds:
-                [],
+
+                row.permission_ids ?? [],
+
+
 
             isSystem:
-                item.is_system_role ?? false,
+
+                row.is_system ?? false,
+
+
 
             isDefault:
-                false,
+
+                row.is_default ?? false,
+
+
 
             isActive:
-                item.status === "active",
+
+                row.is_active ?? false,
+
+
+
+            metadata:
+
+                row.metadata ?? {},
+
+
 
             createdAt:
-                item.created_at,
+
+                row.created_at,
+
+
 
             updatedAt:
-                item.updated_at,
+
+                row.updated_at,
+
+
 
         };
 
+
+
     }
+
 
 
 }

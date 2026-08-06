@@ -1,48 +1,134 @@
 import {
-    createClient,
-} from "@/lib/supabase/server";
+    getPermissions,
+} from "./page-actions";
 
-import {
-    PermissionsRepository,
-} from "@/repositories/admin/PermissionsRepository";
-
-import {
-    PermissionsService,
-} from "@/services/admin/PermissionsService";
 
 import PermissionsClient
 from "@/components/admin/permissions/PermissionsClient";
 
-export const dynamic = "force-dynamic";
+
+import type {
+    Permission,
+} from "@/types/admin/Permission";
+
+
+
+
+
+
+
+
 
 export default async function PermissionsPage() {
 
-    const supabase =
-        await createClient();
 
-    const repository =
-        new PermissionsRepository(
-            supabase,
-        );
 
-    const service =
-        new PermissionsService(
-            repository,
-        );
+    const permissions:Permission[] =
 
-    const permissions =
-        await service.list();
+        await getPermissions();
+
+
+
+
+
+
 
     return (
 
-        <main className="p-8">
+
+
+        <div
+
+            className="
+
+                space-y-6
+
+            "
+
+        >
+
+
+
+            <div>
+
+
+
+                <h1
+
+                    className="
+
+                        text-2xl
+
+                        font-semibold
+
+                    "
+
+                >
+
+
+
+                    Permissions
+
+
+
+                </h1>
+
+
+
+
+
+
+
+                <p
+
+                    className="
+
+                        text-sm
+
+                        text-muted-foreground
+
+                    "
+
+                >
+
+
+
+                    Manage platform and organization permissions.
+
+
+
+                </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+
 
             <PermissionsClient
-                permissions={permissions}
+
+
+
+                initialPermissions={permissions}
+
+
+
             />
 
-        </main>
+
+
+        </div>
+
+
 
     );
+
+
 
 }

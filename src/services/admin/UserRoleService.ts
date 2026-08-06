@@ -2,96 +2,454 @@ import type {
     UserRole,
 } from "@/types/admin/UserRole";
 
+
 import type {
     IUserRoleRepository,
 } from "@/repositories/admin/UserRoleRepository";
 
 
 
+
+
+
+
 export class UserRoleService {
 
+
+
     constructor(
-        private readonly repository: IUserRoleRepository,
+
+        private readonly repository:
+            IUserRoleRepository,
+
     ) {}
 
 
 
-    rolesForUser(
-        userId: string,
-    ): Promise<UserRole[]> {
 
-        return this.repository.rolesForUser(
+
+
+
+
+
+    async rolesForUser(
+
+        userId:string,
+
+    ):
+
+    Promise<UserRole[]> {
+
+
+
+        this.validateId(
+
             userId,
+
+            "User",
+
         );
 
+
+
+
+
+
+
+        return this.repository.rolesForUser(
+
+            userId,
+
+        );
+
+
+
     }
+
+
+
+
+
+
 
 
 
     async assignRole(
 
-        userId: string,
+        userId:string,
 
-        roleId: string,
+        roleId:string,
 
-    ): Promise<void> {
+    ):
 
-        await this.repository.assignRole(
+    Promise<void> {
+
+
+
+        this.validateId(
+
             userId,
-            roleId,
+
+            "User",
+
         );
 
+
+
+
+
+
+
+        this.validateId(
+
+            roleId,
+
+            "Role",
+
+        );
+
+
+
+
+
+
+
+
+
+        const existing =
+
+            await this.repository.rolesForUser(
+
+                userId,
+
+            );
+
+
+
+
+
+
+
+        const alreadyAssigned =
+
+            existing.some(
+
+                item =>
+
+                    item.roleId === roleId
+
+                    && item.isActive,
+
+            );
+
+
+
+
+
+
+
+        if(alreadyAssigned) {
+
+
+
+            return;
+
+
+
+        }
+
+
+
+
+
+
+
+        await this.repository.assignRole(
+
+            userId,
+
+            roleId,
+
+        );
+
+
+
     }
+
+
+
+
+
+
 
 
 
     async removeRole(
 
-        userId: string,
+        userId:string,
 
-        roleId: string,
+        roleId:string,
 
-    ): Promise<void> {
+    ):
 
-        await this.repository.removeRole(
+    Promise<void> {
+
+
+
+        this.validateId(
+
             userId,
-            roleId,
+
+            "User",
+
         );
 
+
+
+
+
+
+
+        this.validateId(
+
+            roleId,
+
+            "Role",
+
+        );
+
+
+
+
+
+
+
+        await this.repository.removeRole(
+
+            userId,
+
+            roleId,
+
+        );
+
+
+
     }
+
+
+
+
+
+
 
 
 
     async replaceRoles(
 
-        userId: string,
+        userId:string,
 
-        roleIds: string[],
+        roleIds:string[],
 
-    ): Promise<void> {
+    ):
 
-        await this.repository.replaceRoles(
+    Promise<void> {
+
+
+
+        this.validateId(
+
             userId,
-            roleIds,
+
+            "User",
+
         );
 
+
+
+
+
+
+
+
+
+        const uniqueRoles =
+
+            Array.from(
+
+                new Set(
+
+                    roleIds
+
+                ),
+
+            );
+
+
+
+
+
+
+
+        await this.repository.replaceRoles(
+
+            userId,
+
+            uniqueRoles,
+
+        );
+
+
+
     }
+
+
+
+
+
+
 
 
 
     async setPrimaryRole(
 
-        userId: string,
+        userId:string,
 
-        roleId: string,
+        roleId:string,
 
-    ): Promise<void> {
+    ):
 
-        await this.repository.setPrimaryRole(
+    Promise<void> {
+
+
+
+        this.validateId(
+
             userId,
-            roleId,
+
+            "User",
+
         );
 
+
+
+
+
+
+
+        this.validateId(
+
+            roleId,
+
+            "Role",
+
+        );
+
+
+
+
+
+
+
+        const roles =
+
+            await this.repository.rolesForUser(
+
+                userId,
+
+            );
+
+
+
+
+
+
+
+        const assigned =
+
+            roles.some(
+
+                role =>
+
+                    role.roleId === roleId
+
+                    && role.isActive,
+
+            );
+
+
+
+
+
+
+
+        if(!assigned) {
+
+
+
+            throw new Error(
+
+                "Cannot set primary role before assignment."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        await this.repository.setPrimaryRole(
+
+            userId,
+
+            roleId,
+
+        );
+
+
+
     }
+
+
+
+
+
+
+
+
+
+    private validateId(
+
+        id:string,
+
+        entity:string,
+
+    ) {
+
+
+
+        if(!id?.trim()) {
+
+
+
+            throw new Error(
+
+                `${entity} id is required.`
+
+            );
+
+
+
+        }
+
+
+
+    }
+
+
 
 }

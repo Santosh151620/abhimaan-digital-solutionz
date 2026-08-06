@@ -1,5 +1,6 @@
 "use server";
 
+
 import {
     createClient,
 } from "@/lib/supabase/server";
@@ -15,290 +16,552 @@ import {
 } from "@/services/admin/RolesService";
 
 
-import {
-    RolePermissionRepository,
-} from "@/repositories/admin/RolePermissionRepository";
-
-
-import {
-    RolePermissionService,
-} from "@/services/admin/RolePermissionService";
-
-
 import type {
     Role,
 } from "@/types/admin/Role";
 
 
 
-async function getRolesService(): Promise<RolesService> {
+
+
+
+
+
+
+async function getService() {
+
+
 
     const supabase =
+
         await createClient();
+
+
+
+
+
+
+
+    const repository =
+
+        new RolesRepository(
+
+            supabase,
+
+        );
+
+
+
+
+
 
 
     return new RolesService(
 
-        new RolesRepository(
-            supabase,
-        ),
+        repository,
 
     );
+
+
 
 }
 
 
 
-async function getRolePermissionService(): Promise<RolePermissionService> {
-
-    const supabase =
-        await createClient();
 
 
-    return new RolePermissionService(
 
-        new RolePermissionRepository(
-            supabase,
-        ),
-
-    );
-
-}
 
 
 
 export async function createRole(
-    data: Partial<Role>,
-): Promise<{ success: boolean }> {
+
+    data:Partial<Role>,
+
+) {
+
 
 
     const service =
-        await getRolesService();
+
+        await getService();
 
 
 
-    if (!data.name?.trim()) {
-
-        throw new Error(
-            "Role name is required.",
-        );
-
-    }
 
 
 
-    if (!data.code?.trim()) {
 
-        throw new Error(
-            "Role code is required.",
-        );
+    const now =
 
-    }
+        new Date()
 
-
-
-    if (
-        await service.existsByCode(
-            data.code,
-        )
-    ) {
-
-        throw new Error(
-            "Role code already exists.",
-        );
-
-    }
+        .toISOString();
 
 
 
-    if (
-        await service.existsByName(
-            data.name,
-        )
-    ) {
 
-        throw new Error(
-            "Role name already exists.",
-        );
 
-    }
+
+
+    const role:Role = {
+
+
+
+        id:
+
+            crypto.randomUUID(),
+
+
+
+
+
+        organizationId:
+
+            data.organizationId,
+
+
+
+
+
+        name:
+
+            data.name ?? "",
+
+
+
+
+
+        code:
+
+            data.code ?? "",
+
+
+
+
+
+        description:
+
+            data.description,
+
+
+
+
+
+        type:
+
+            data.type ?? "Custom",
+
+
+
+
+
+        level:
+
+            data.level ?? "Organization",
+
+
+
+
+
+        status:
+
+            data.status ?? "Active",
+
+
+
+
+
+        permissionIds:
+
+            data.permissionIds ?? [],
+
+
+
+
+
+        isSystem:
+
+            false,
+
+
+
+
+
+        isDefault:
+
+            data.isDefault ?? false,
+
+
+
+
+
+        isActive:
+
+            true,
+
+
+
+
+
+        metadata:
+
+            data.metadata ?? {},
+
+
+
+
+
+        createdAt:
+
+            now,
+
+
+
+
+
+        updatedAt:
+
+            now,
+
+
+
+    };
+
+
+
+
 
 
 
     await service.save(
-        data as Role,
+
+        role,
+
     );
 
 
 
+
+
+
+
     return {
-        success: true,
+
+
+
+        success:true,
+
+        id:role.id,
+
+
+
     };
 
+
+
 }
+
+
+
+
+
 
 
 
 
 export async function updateRole(
-    data: Role,
-): Promise<{ success: boolean }> {
+
+    role:Role,
+
+) {
+
 
 
     const service =
-        await getRolesService();
+
+        await getService();
+
+
+
+
+
 
 
     await service.save(
-        data,
+
+        {
+
+            ...role,
+
+            updatedAt:
+
+                new Date()
+
+                .toISOString(),
+
+        },
+
     );
 
 
+
+
+
+
+
     return {
-        success: true,
+
+
+
+        success:true,
+
+
+
     };
 
+
+
 }
+
+
+
+
+
 
 
 
 
 export async function deleteRole(
-    id: string,
-): Promise<{ success: boolean }> {
+
+    id:string,
+
+) {
+
 
 
     const service =
-        await getRolesService();
+
+        await getService();
+
+
+
+
+
 
 
     await service.delete(
+
         id,
+
     );
+
+
+
+
+
 
 
     return {
-        success: true,
+
+
+
+        success:true,
+
+
+
     };
 
-}
 
-
-
-
-export async function searchRoles(
-    keyword: string,
-): Promise<Role[]> {
-
-
-    const service =
-        await getRolesService();
-
-
-    return service.search(
-        keyword,
-    );
 
 }
 
 
 
 
-export async function listActiveRoles(): Promise<Role[]> {
 
-
-    const service =
-        await getRolesService();
-
-
-    return service.active();
-
-}
-
-
-
-
-export async function listSystemRoles(): Promise<Role[]> {
-
-
-    const service =
-        await getRolesService();
-
-
-    return service.systemRoles();
-
-}
-
-
-
-
-export async function listCustomRoles(): Promise<Role[]> {
-
-
-    const service =
-        await getRolesService();
-
-
-    return service.customRoles();
-
-}
 
 
 
 
 export async function assignRolePermission(
-    roleId: string,
-    permissionId: string,
-): Promise<{ success: boolean }> {
+
+    roleId:string,
+
+    permissionId:string,
+
+) {
 
 
-    const service =
-        await getRolePermissionService();
+
+    const supabase =
+
+        await createClient();
 
 
 
-    await service.assign(
 
-        roleId,
 
-        permissionId,
 
-    );
+
+    const {
+
+        error,
+
+    } = await supabase
+
+        .from(
+
+            "role_permissions",
+
+        )
+
+        .upsert({
+
+
+
+            id:
+
+                crypto.randomUUID(),
+
+
+
+            role_id:
+
+                roleId,
+
+
+
+            permission_id:
+
+                permissionId,
+
+
+
+            created_at:
+
+                new Date()
+
+                .toISOString(),
+
+
+
+        });
+
+
+
+
+
+
+
+    if(error)
+
+        throw error;
+
+
+
+
 
 
 
     return {
-        success: true,
+
+
+
+        success:true,
+
+
+
     };
+
+
 
 }
 
 
 
 
+
+
+
+
+
 export async function revokeRolePermission(
-    roleId: string,
-    permissionId: string,
-): Promise<{ success: boolean }> {
+
+    roleId:string,
+
+    permissionId:string,
+
+) {
 
 
-    const service =
-        await getRolePermissionService();
+
+    const supabase =
+
+        await createClient();
 
 
 
-    await service.revoke(
 
-        roleId,
 
-        permissionId,
 
-    );
+
+    const {
+
+        error,
+
+    } = await supabase
+
+        .from(
+
+            "role_permissions",
+
+        )
+
+        .delete()
+
+        .eq(
+
+            "role_id",
+
+            roleId,
+
+        )
+
+        .eq(
+
+            "permission_id",
+
+            permissionId,
+
+        );
+
+
+
+
+
+
+
+    if(error)
+
+        throw error;
+
+
+
+
 
 
 
     return {
-        success: true,
+
+
+
+        success:true,
+
+
+
     };
+
+
 
 }

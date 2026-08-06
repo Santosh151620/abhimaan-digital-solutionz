@@ -1,111 +1,122 @@
-import {
-    RolesRepository,
-} from "@/repositories/admin/RolesRepository";
+﻿import {
+    getRoles,
+} from "./page-actions";
 
 
-import {
-    RolesService,
-} from "@/services/admin/RolesService";
+import RolesClient
+from "@/components/admin/roles/RolesClient";
 
 
-import RolesTable
-from "@/components/admin/roles/RolesTable";
+import type {
+    Role,
+} from "@/types/admin/Role";
 
 
-import RoleDialog
-from "@/components/admin/roles/RoleDialog";
 
 
-import {
-    createClient,
-} from "@/lib/supabase/server";
 
 
-import {
-    deleteRole,
-} from "./actions";
-
-
-export const dynamic =
-    "force-dynamic";
 
 
 
 export default async function RolesPage() {
 
 
-    const supabase =
-        await createClient();
+
+    const roles:Role[] =
+
+        await getRoles();
 
 
 
-    const repository =
-        new RolesRepository(
-            supabase,
-        );
 
-
-
-    const service =
-        new RolesService(
-            repository,
-        );
-
-
-
-    const roles =
-        await service.list();
 
 
 
     return (
 
-        <main className="space-y-8 p-8">
 
 
-            <section className="flex items-center justify-between">
+        <div
 
+            className="space-y-6"
 
-                <div>
-
-                    <h1 className="text-3xl font-bold">
-                        Roles
-                    </h1>
-
-
-                    <p className="text-muted-foreground">
-                        Manage platform and organization roles.
-                    </p>
-
-                </div>
+        >
 
 
 
-                <RoleDialog />
-
-
-            </section>
+            <div>
 
 
 
+                <h1
 
-            <section className="rounded-xl border overflow-x-auto">
+                    className="
+
+                        text-2xl
+
+                        font-semibold
+
+                    "
+
+                >
+
+                    Roles
+
+                </h1>
 
 
-                <RolesTable
-
-                    roles={roles}
-
-                    onDelete={deleteRole}
-
-                />
 
 
-            </section>
 
 
-        </main>
+
+                <p
+
+                    className="
+
+                        text-sm
+
+                        text-muted-foreground
+
+                    "
+
+                >
+
+                    Manage platform and organization roles.
+
+                </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+            <RolesClient
+
+
+
+                initialRoles={roles}
+
+
+
+            />
+
+
+
+        </div>
+
+
 
     );
+
+
 
 }

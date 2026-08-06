@@ -1,46 +1,97 @@
 "use client";
 
+
 import {
+    useEffect,
     useState,
-    useTransition,
 } from "react";
+
+
+import {
+    assignRole,
+    removeRole,
+    replaceRoles,
+    setPrimaryRole,
+} from "@/app/admin/(protected)/users/UserActions";
+
 
 import type {
     Role,
 } from "@/types/admin/Role";
 
-import {
-    replaceRoles,
-    setPrimaryRole,
-} from "@/app/admin/(protected)/users/UserActions";
+
+
+
+
+
 
 interface UserRoleAssignmentProps {
 
-    userId: string;
 
-    roles: Role[];
 
-    selectedRoleIds: string[];
+    userId:string;
 
-    primaryRoleId?: string;
 
-    onSaved?: () => void;
+
+    roles:Role[];
+
+
+
+
+
+    selectedRoleIds:string[];
+
+
+
+
+
+    primaryRoleId?:string;
+
+
+
+
+
+    onSaved:()=>void;
+
+
 
 }
 
+
+
+
+
+
+
+
+
 export default function UserRoleAssignment({
+
+
 
     userId,
 
+
+
     roles,
+
+
 
     selectedRoleIds,
 
+
+
     primaryRoleId,
+
+
 
     onSaved,
 
-}: UserRoleAssignmentProps) {
+
+
+}:UserRoleAssignmentProps) {
+
+
 
     const [
 
@@ -54,305 +105,710 @@ export default function UserRoleAssignment({
 
     );
 
+
+
+
+
+
+
     const [
 
         primary,
 
         setPrimary,
 
-    ] = useState(
+    ] = useState<string | undefined>(
 
-        primaryRoleId ??
-        selectedRoleIds[0] ??
-        "",
+        primaryRoleId,
 
     );
 
+
+
+
+
+
+
     const [
 
-        pending,
+        loading,
 
-        startTransition,
+        setLoading,
 
-    ] = useTransition();
+    ] = useState(false);
 
-    function toggle(
-        roleId: string,
+
+
+
+
+
+
+    const [
+
+        error,
+
+        setError,
+
+    ] = useState<string | null>(null);
+
+
+
+
+
+
+
+
+
+    useEffect(() => {
+
+
+
+        setSelected(
+
+            selectedRoleIds,
+
+        );
+
+
+
+        setPrimary(
+
+            primaryRoleId,
+
+        );
+
+
+
+    },[
+
+        selectedRoleIds,
+
+        primaryRoleId,
+
+    ]);
+
+
+
+
+
+
+
+
+
+    function toggleRole(
+
+        roleId:string,
+
     ) {
+
+
 
         setSelected(
 
             previous =>
 
+
+
                 previous.includes(roleId)
 
-                    ? previous.filter(
+                ? previous.filter(
 
-                        id =>
+                    id => id !== roleId,
 
-                            id !== roleId,
+                )
 
-                    )
+                : [
 
-                    : [
+                    ...previous,
 
-                        ...previous,
+                    roleId,
 
-                        roleId,
-
-                    ],
+                ],
 
         );
 
+
+
     }
 
-    function save() {
 
-        startTransition(
 
-            async () => {
 
-                await replaceRoles(
+
+
+
+
+
+    async function save() {
+
+
+
+        try {
+
+
+
+            setLoading(true);
+
+
+
+            setError(null);
+
+
+
+
+
+
+
+            await replaceRoles(
+
+                userId,
+
+                selected,
+
+            );
+
+
+
+
+
+
+
+            if(primary) {
+
+
+
+                await setPrimaryRole(
 
                     userId,
 
-                    selected,
+                    primary,
 
                 );
 
-                if (
 
-                    primary &&
-                    selected.includes(primary)
 
-                ) {
+            }
 
-                    await setPrimaryRole(
 
-                        userId,
 
-                        primary,
 
-                    );
 
-                }
 
-                onSaved?.();
 
-            },
+            onSaved();
 
-        );
+
+
+        }
+
+        catch(error) {
+
+
+
+            setError(
+
+
+
+                error instanceof Error
+
+                ? error.message
+
+                : "Unable to update roles."
+
+
+
+            );
+
+
+
+        }
+
+        finally {
+
+
+
+            setLoading(false);
+
+
+
+        }
+
+
 
     }
 
+
+
+
+
+
+
+
+
     return (
 
-        <div className="rounded-xl border bg-background p-6 space-y-6">
 
-            <div>
 
-                <h2 className="text-xl font-semibold">
+        <div
 
-                    User Roles
+            className="
 
-                </h2>
+                fixed
 
-                <p className="text-sm text-muted-foreground">
+                inset-0
 
-                    Assign one or more roles. Select one primary role.
+                z-50
 
-                </p>
+                flex
 
-            </div>
+                items-center
 
-            <div className="max-h-[500px] overflow-y-auto rounded-md border">
+                justify-center
 
-                <table className="min-w-full">
+                bg-black/40
 
-                    <thead>
+                p-4
 
-                        <tr className="border-b bg-muted/40">
+            "
 
-                            <th className="w-14 p-3">
+        >
 
-                                Assigned
 
-                            </th>
 
-                            <th className="w-20 p-3">
+            <div
 
-                                Primary
+                className="
 
-                            </th>
+                    w-full
 
-                            <th className="p-3 text-left">
+                    max-w-xl
 
-                                Role
+                    rounded-xl
 
-                            </th>
+                    bg-background
 
-                            <th className="p-3 text-left">
+                    p-6
 
-                                Code
+                    space-y-5
 
-                            </th>
+                    shadow-xl
 
-                            <th className="p-3 text-left">
+                "
 
-                                Type
+            >
 
-                            </th>
 
-                        </tr>
 
-                    </thead>
+                <div>
 
-                    <tbody>
 
-                        {
 
-                            roles.map(
+                    <h2
 
-                                role => (
+                        className="
 
-                                    <tr
+                            text-xl
 
-                                        key={role.id}
+                            font-semibold
 
-                                        className="border-b"
+                        "
 
-                                    >
+                    >
 
-                                        <td className="p-3">
 
-                                            <input
 
-                                                type="checkbox"
+                        Assign Roles
 
-                                                checked={
 
-                                                    selected.includes(
 
-                                                        role.id,
+                    </h2>
 
-                                                    )
 
-                                                }
 
-                                                onChange={() =>
+                </div>
 
-                                                    toggle(
 
-                                                        role.id,
 
-                                                    )
 
-                                                }
 
-                                            />
 
-                                        </td>
 
-                                        <td className="p-3">
 
-                                            <input
 
-                                                type="radio"
+                {
 
-                                                name="primaryRole"
+                    error && (
 
-                                                checked={
 
-                                                    primary === role.id
 
-                                                }
+                        <div
 
-                                                disabled={
+                            className="
 
-                                                    !selected.includes(
+                                rounded-md
 
-                                                        role.id,
+                                border
 
-                                                    )
+                                border-destructive
 
-                                                }
+                                p-3
 
-                                                onChange={() =>
+                                text-destructive
 
-                                                    setPrimary(
+                            "
 
-                                                        role.id,
+                        >
 
-                                                    )
 
-                                                }
 
-                                            />
+                            {error}
 
-                                        </td>
 
-                                        <td className="p-3 font-medium">
 
-                                            {role.name}
+                        </div>
 
-                                        </td>
 
-                                        <td className="p-3">
 
-                                            {role.code}
+                    )
 
-                                        </td>
+                }
 
-                                        <td className="p-3">
 
-                                            {role.type}
 
-                                        </td>
 
-                                    </tr>
 
-                                ),
 
-                            )
 
-                        }
 
-                    </tbody>
 
-                </table>
+                <div
 
-            </div>
+                    className="
 
-            <div className="flex justify-end">
+                        space-y-3
 
-                <button
-
-                    type="button"
-
-                    disabled={pending}
-
-                    onClick={save}
-
-                    className="rounded-md bg-primary px-5 py-2 text-primary-foreground"
+                    "
 
                 >
 
+
+
                     {
 
-                        pending
+                        roles.map(
 
-                            ? "Saving..."
+                            role => (
 
-                            : "Save Roles"
+
+
+                                <label
+
+                                    key={role.id}
+
+                                    className="
+
+                                        flex
+
+                                        items-center
+
+                                        justify-between
+
+                                        rounded-md
+
+                                        border
+
+                                        p-3
+
+                                    "
+
+                                >
+
+
+
+                                    <div
+
+                                        className="
+
+                                            flex
+
+                                            gap-3
+
+                                            items-center
+
+                                        "
+
+                                    >
+
+
+
+                                        <input
+
+
+
+                                            type="checkbox"
+
+
+
+                                            checked={
+
+                                                selected.includes(
+
+                                                    role.id,
+
+                                                )
+
+                                            }
+
+
+
+                                            onChange={() =>
+
+                                                toggleRole(
+
+                                                    role.id,
+
+                                                )
+
+                                            }
+
+
+
+                                        />
+
+
+
+
+
+                                        <span>
+
+
+
+                                            {role.name}
+
+
+
+                                        </span>
+
+
+
+                                    </div>
+
+
+
+
+
+
+
+
+
+                                    <button
+
+
+
+                                        type="button"
+
+
+
+                                        onClick={() =>
+
+                                            setPrimary(
+
+                                                role.id,
+
+                                            )
+
+                                        }
+
+
+
+                                        className="
+
+                                            rounded-md
+
+                                            border
+
+                                            px-2
+
+                                            py-1
+
+                                            text-xs
+
+                                        "
+
+
+
+                                    >
+
+
+
+                                        {
+
+                                            primary === role.id
+
+                                            ? "Primary"
+
+                                            : "Make Primary"
+
+                                        }
+
+
+
+                                    </button>
+
+
+
+                                </label>
+
+
+
+                            )
+
+                        )
 
                     }
 
-                </button>
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                <div
+
+                    className="
+
+                        flex
+
+                        justify-end
+
+                        gap-3
+
+                    "
+
+                >
+
+
+
+                    <button
+
+
+
+                        type="button"
+
+
+
+                        onClick={onSaved}
+
+
+
+                        disabled={loading}
+
+
+
+                        className="
+
+                            rounded-md
+
+                            border
+
+                            px-4
+
+                            py-2
+
+                        "
+
+
+
+                    >
+
+
+
+                        Cancel
+
+
+
+                    </button>
+
+
+
+
+
+
+
+
+
+                    <button
+
+
+
+                        type="button"
+
+
+
+                        onClick={save}
+
+
+
+                        disabled={loading}
+
+
+
+                        className="
+
+                            rounded-md
+
+                            bg-primary
+
+                            px-4
+
+                            py-2
+
+                            text-primary-foreground
+
+                        "
+
+
+
+                    >
+
+
+
+                        {
+
+                            loading
+
+                            ? "Saving..."
+
+                            : "Save"
+
+                        }
+
+
+
+                    </button>
+
+
+
+                </div>
+
+
 
             </div>
 
+
+
         </div>
 
+
+
     );
+
+
 
 }

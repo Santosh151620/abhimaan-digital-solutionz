@@ -1,115 +1,250 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
+
+import {
+    createClient,
+} from "@/lib/supabase/server";
+
 
 import {
     UsersRepository,
 } from "@/repositories/admin/UsersRepository";
 
+
 import {
     UsersService,
 } from "@/services/admin/UsersService";
+
 
 import type {
     AdminUser,
 } from "@/types/admin/User";
 
 
-async function getService(){
+
+
+
+
+
+
+
+async function getService() {
+
+
 
     const supabase =
+
         await createClient();
 
 
+
+
+
+
+
     const repository =
+
         new UsersRepository(
-            supabase
+
+            supabase,
+
         );
 
 
+
+
+
+
+
     return new UsersService(
-        repository
+
+        repository,
+
     );
 
+
+
 }
+
+
+
+
+
+
 
 
 
 export async function createUser(
-    data: Partial<AdminUser>
-){
+
+    data:AdminUser,
+
+) {
+
+
 
     const service =
+
         await getService();
 
 
-    const user = {
+
+
+
+
+
+    const now =
+
+        new Date()
+
+        .toISOString();
+
+
+
+
+
+
+
+    const user:AdminUser = {
+
+
+
+        ...data,
+
+
 
         id:
+
+            data.id ??
+
             crypto.randomUUID(),
 
-        organizationId:
-            data.organizationId ?? "",
 
-        fullName:
-            data.fullName ?? "",
 
-        email:
-            data.email ?? "",
 
-        userType:
-            data.userType ?? "Internal",
-
-        status:
-            data.status ?? "Pending",
-
-        roleIds:
-            data.roleIds ?? [],
-
-        isActive:
-            data.status === "Active",
 
         createdAt:
-            new Date().toISOString(),
+
+            data.createdAt ??
+
+            now,
+
+
+
+
 
         updatedAt:
-            new Date().toISOString(),
 
-    } as AdminUser;
+            now,
+
+
+
+
+
+        isActive:
+
+            data.status === "Active",
+
+
+
+    };
+
+
+
+
 
 
 
     await service.save(
-        user
+
+        user,
+
     );
 
 
+
+
+
+
+
     return {
-        success:true
+
+
+
+        success:true,
+
+        id:user.id,
+
+
+
     };
 
+
+
 }
+
+
+
+
 
 
 
 
 
 export async function updateUser(
-    data: AdminUser
-){
+
+    user:AdminUser,
+
+) {
+
+
 
     const service =
+
         await getService();
 
 
+
+
+
+
+
     await service.save(
-        data
+
+        {
+
+            ...user,
+
+            updatedAt:
+
+                new Date()
+
+                .toISOString(),
+
+            isActive:
+
+                user.status === "Active",
+
+        },
+
     );
 
 
+
+
+
+
+
     return {
-        success:true
+
+
+
+        success:true,
+
+
+
     };
+
+
 
 }
 
@@ -117,21 +252,50 @@ export async function updateUser(
 
 
 
+
+
+
+
 export async function deleteUser(
-    id:string
-){
+
+    id:string,
+
+) {
+
+
 
     const service =
+
         await getService();
 
 
+
+
+
+
+
     await service.delete(
-        id
+
+        id,
+
     );
 
 
+
+
+
+
+
     return {
-        success:true
+
+
+
+        success:true,
+
+
+
     };
+
+
 
 }
