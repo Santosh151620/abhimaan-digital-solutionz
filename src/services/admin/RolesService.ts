@@ -2,15 +2,21 @@ import type {
     Role,
 } from "@/types/admin/Role";
 
+
 import type {
     IRolesRepository,
 } from "@/repositories/admin/RolesRepository";
 
+
+
 export class RolesService {
+
 
     constructor(
         private readonly repository: IRolesRepository,
     ) {}
+
+
 
     list(): Promise<Role[]> {
 
@@ -18,11 +24,15 @@ export class RolesService {
 
     }
 
+
+
     active(): Promise<Role[]> {
 
         return this.repository.active();
 
     }
+
+
 
     systemRoles(): Promise<Role[]> {
 
@@ -30,11 +40,15 @@ export class RolesService {
 
     }
 
+
+
     customRoles(): Promise<Role[]> {
 
         return this.repository.customRoles();
 
     }
+
+
 
     search(
         keyword: string,
@@ -46,6 +60,8 @@ export class RolesService {
 
     }
 
+
+
     findById(
         id: string,
     ): Promise<Role | null> {
@@ -56,7 +72,9 @@ export class RolesService {
 
     }
 
-    async existsByCode(
+
+
+    existsByCode(
         code: string,
     ): Promise<boolean> {
 
@@ -66,7 +84,9 @@ export class RolesService {
 
     }
 
-    async existsByName(
+
+
+    existsByName(
         name: string,
     ): Promise<boolean> {
 
@@ -76,12 +96,15 @@ export class RolesService {
 
     }
 
+
+
     async save(
         role: Role,
     ): Promise<void> {
 
+
         if (
-            role.name.trim() === ""
+            !role.name.trim()
         ) {
 
             throw new Error(
@@ -90,8 +113,10 @@ export class RolesService {
 
         }
 
+
+
         if (
-            role.code.trim() === ""
+            !role.code.trim()
         ) {
 
             throw new Error(
@@ -100,15 +125,21 @@ export class RolesService {
 
         }
 
+
+
         await this.repository.save(
             role,
         );
 
     }
 
+
+
+
     async delete(
         id: string,
     ): Promise<void> {
+
 
         await this.repository.delete(
             id,
