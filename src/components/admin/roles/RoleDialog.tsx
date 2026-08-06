@@ -2,8 +2,7 @@
 
 
 import {
-    useEffect,
-    useState,
+        useState,
 } from "react";
 
 
@@ -37,11 +36,11 @@ interface RoleDialogProps {
 
 
 
-    role?:Role;
+    role?: Role;
 
 
 
-    onClose:()=>void;
+    onClose: () => void;
 
 
 
@@ -55,173 +54,93 @@ interface RoleDialogProps {
 
 
 
-const defaultForm:Partial<Role> = {
+const defaultForm: Partial<Role> = {
 
 
 
-    name:"",
+    name: "",
 
 
 
-    code:"",
+    code: "",
 
 
 
-    description:"",
+    description: "",
 
 
 
-    type:"Custom",
+    type: "Custom",
 
 
 
-    level:"Organization",
+    level: "Organization",
 
 
 
-    status:"Active",
+    status: "Active",
 
 
 
-    permissionIds:[],
+    permissionIds: [],
 
 
 
-    isSystem:false,
+    isSystem: false,
 
 
 
-    isDefault:false,
+    isDefault: false,
 
 
 
-    isActive:true,
+    isActive: true,
 
 
 
 };
 
 
-
-
-
-
-
-
-
 export default function RoleDialog({
-
-
-
     role,
-
-
 
     onClose,
 
-
-
-}:RoleDialogProps) {
-
-
+}: RoleDialogProps) {
 
     const router =
-
         useRouter();
-
-
-
-
-
-
-
-    const [
-
-        form,
-
-        setForm,
-
-    ] = useState<Partial<Role>>(
-
-        defaultForm,
-
-    );
-
-
-
-
-
+  const [
+    form,
+    setForm,
+] = useState<Partial<Role>>(
+    {
+        ...defaultForm,
+        ...role,
+    }
+);
 
 
     const [
-
         loading,
-
         setLoading,
-
     ] = useState(false);
 
-
-
-
-
-
-
     const [
-
         error,
-
         setError,
-
     ] = useState<string | null>(null);
 
-
-
-
-
-
-
-
-
-    useEffect(() => {
-
-
-
-        setForm({
-
-
-
-            ...defaultForm,
-
-
-
-            ...role,
-
-
-
-        });
-
-
-
-    },[role]);
-
-
-
-
-
-
-
-
-
+    
     function updateField<K extends keyof Role>(
 
 
 
-        key:K,
+        key: K,
 
 
 
-        value:Role[K],
+        value: Role[K],
 
 
 
@@ -239,7 +158,7 @@ export default function RoleDialog({
 
 
 
-                [key]:value,
+                [key]: value,
 
 
 
@@ -271,7 +190,7 @@ export default function RoleDialog({
 
 
 
-        if(!form.name?.trim()) {
+        if (!form.name?.trim()) {
 
 
 
@@ -295,7 +214,7 @@ export default function RoleDialog({
 
 
 
-        if(!form.code?.trim()) {
+        if (!form.code?.trim()) {
 
 
 
@@ -331,7 +250,7 @@ export default function RoleDialog({
 
 
 
-            if(role) {
+            if (role) {
 
 
 
@@ -381,7 +300,7 @@ export default function RoleDialog({
 
         }
 
-        catch(error) {
+        catch (error) {
 
 
 
@@ -391,9 +310,9 @@ export default function RoleDialog({
 
                 error instanceof Error
 
-                ? error.message
+                    ? error.message
 
-                : "Unable to save role."
+                    : "Unable to save role."
 
 
 
@@ -501,9 +420,9 @@ export default function RoleDialog({
 
                             role
 
-                            ? "Edit Role"
+                                ? "Edit Role"
 
-                            : "Create Role"
+                                : "Create Role"
 
                         }
 
@@ -1053,32 +972,14 @@ export default function RoleDialog({
 
                             loading
 
-                            ? "Saving..."
+                                ? "Saving..."
 
-                            : "Save"
+                                : "Save"
 
                         }
-
-
-
                     </button>
-
-
-
                 </div>
-
-
-
             </div>
-
-
-
         </div>
-
-
-
     );
-
-
-
 }

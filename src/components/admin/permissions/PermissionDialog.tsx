@@ -2,8 +2,7 @@
 
 
 import {
-    useEffect,
-    useState,
+        useState,
 } from "react";
 
 
@@ -145,790 +144,248 @@ export default function PermissionDialog({
 
     ] = useState<string | null>(null);
 
+ const [
 
-
-
-
-
-
-    const [
-
-        form,
-
-        setForm,
-
-    ] = useState<Partial<Permission>>(
-
-        defaultForm,
-
-    );
-
-
-
-
-
-
-
-
-
-    useEffect(() => {
-
-
-
-        setForm({
-
-
-
-            ...defaultForm,
-
-
-
-            ...permission,
-
-
-
-        });
-
-
-
-    },[permission]);
-
-
-
-
-
-
-
-
+    form,
+    setForm,
+] = useState<Partial<Permission>>(
+    {
+        ...defaultForm,
+        ...permission,
+    }
+);
 
     function updateField<K extends keyof Permission>(
-
-
-
         key:K,
-
-
-
         value:Permission[K],
-
-
-
     ) {
-
-
-
         setForm(
 
             previous => ({
-
-
-
                 ...previous,
-
-
-
                 [key]:value,
-
-
-
             }),
-
         );
-
-
-
     }
-
-
-
-
-
-
-
-
-
     async function submit() {
-
-
-
         setError(null);
-
-
-
-
-
-
-
         if(!form.key?.trim()) {
-
-
-
             setError(
-
                 "Permission key is required."
-
             );
-
-
-
             return;
-
-
-
         }
-
-
-
-
-
-
-
         if(!form.name?.trim()) {
-
-
-
             setError(
-
                 "Permission name is required."
-
             );
-
-
-
             return;
-
-
-
         }
-
-
-
-
-
-
-
         if(!form.module?.trim()) {
-
-
-
             setError(
-
                 "Module is required."
-
             );
-
-
-
             return;
-
-
-
         }
-
-
-
-
-
-
-
         if(!form.action?.trim()) {
-
-
-
             setError(
-
                 "Action is required."
-
             );
-
-
-
             return;
-
-
-
         }
-
-
-
-
-
-
-
         try {
-
-
-
             setLoading(true);
-
-
-
-
-
-
-
             if(permission) {
-
-
-
-                await updatePermission(
-
+               await updatePermission(
                     {
-
                         ...permission,
-
                         ...form,
-
                     } as Permission,
-
                 );
-
-
-
             }
-
             else {
-
-
-
                 await createPermission(
-
                     form,
-
                 );
-
-
-
             }
-
-
-
-
-
-
-
             router.refresh();
-
-
-
             onClose();
-
-
-
         }
-
         catch(error) {
-
-
-
             setError(
-
-
-
                 error instanceof Error
-
                 ? error.message
-
                 : "Unable to save permission."
-
-
-
             );
-
-
-
         }
-
         finally {
-
-
-
             setLoading(false);
-
-
-
         }
-
-
-
     }
-
-
-
-
-
-
-
-
-
     return (
-
-
-
         <div
-
             className="
-
                 fixed
-
                 inset-0
-
                 z-50
-
                 flex
-
                 items-center
-
                 justify-center
-
                 bg-black/40
-
                 p-4
-
             "
-
         >
-
-
-
             <div
-
                 className="
-
                     w-full
-
                     max-w-xl
-
                     rounded-xl
-
                     bg-background
-
                     p-6
-
                     space-y-5
-
                     shadow-xl
-
                 "
-
             >
-
-
-
                 <div>
-
-
-
                     <h2
-
                         className="
-
                             text-xl
-
                             font-semibold
-
                         "
-
                     >
-
-
-
                         {
-
                             permission
-
                             ? "Edit Permission"
-
                             : "Create Permission"
-
                         }
-
-
-
                     </h2>
-
-
-
                 </div>
-
-
-
-
-
-
-
-
-
                 {
-
                     error && (
-
-
-
                         <div
-
                             className="
-
                                 rounded-md
-
                                 border
-
                                 border-destructive
-
                                 p-3
-
                                 text-destructive
-
                             "
-
                         >
-
-
-
                             {error}
 
-
-
-                        </div>
-
-
-
+                       </div>
                     )
-
                 }
-
-
-
-
-
-
-
-
-
                 <input
-
-
-
-                    className="
-
+                   className="
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
-
-
-
                     placeholder="Permission Key"
-
-
-
                     disabled={permission?.isSystem}
-
-
-
                     value={form.key ?? ""}
-
-
-
                     onChange={event =>
-
                         updateField(
-
                             "key",
-
                             event.target.value,
-
                         )
-
                     }
-
-
-
                 />
-
-
-
-
-
-
-
-
-
                 <input
-
-
-
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
-
-
-
                     placeholder="Permission Name"
-
-
-
                     value={form.name ?? ""}
-
-
-
                     onChange={event =>
-
                         updateField(
-
                             "name",
-
                             event.target.value,
-
                         )
-
                     }
-
-
-
                 />
-
-
-
-
-
-
-
-
-
                 <input
-
-
-
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
-
-
-
                     placeholder="Module"
-
-
-
                     value={form.module ?? ""}
-
-
-
                     onChange={event =>
-
                         updateField(
-
                             "module",
-
                             event.target.value,
-
                         )
-
                     }
-
-
-
                 />
-
-
-
-
-
-
-
-
-
                 <input
-
-
-
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
-                    "
-
-
-
+                   "
                     placeholder="Action"
-
-
-
                     value={form.action ?? ""}
-
-
-
                     onChange={event =>
-
                         updateField(
-
                             "action",
-
                             event.target.value,
-
                         )
-
                     }
-
-
-
                 />
-
-
-
-
-
-
-
-
-
                 <textarea
-
-
-
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
-
-
-
-                    placeholder="Description"
-
-
-
+                   placeholder="Description"
                     value={form.description ?? ""}
-
-
-
                     onChange={event =>
-
                         updateField(
-
                             "description",
-
                             event.target.value,
-
                         )
 
-                    }
-
-
+                   }
 
                 />
-
-
-
-
-
-
-
-
-
                 <select
-
-
-
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
-
-
-
                     value={form.type ?? "Custom"}
-
-
-
                     onChange={event =>
-
                         updateField(
-
                             "type",
-
                             event.target.value as PermissionType,
 
                         )
 
                     }
-
-
-
                     disabled={permission?.isSystem}
-
-
-
                 >
-
-
-
                     <option value="System">
 
                         System
 
                     </option>
-
-
-
                     <option value="Custom">
-
                         Custom
-
                     </option>
-
-
-
                 </select>
-
-
-
-
-
-
-
-
-
                 <div
 
                     className="

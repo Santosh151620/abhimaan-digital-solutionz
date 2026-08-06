@@ -2,14 +2,11 @@
 
 
 import {
-    useEffect,
     useState,
 } from "react";
 
 
 import {
-    assignRole,
-    removeRole,
     replaceRoles,
     setPrimaryRole,
 } from "@/app/admin/(protected)/users/UserActions";
@@ -27,33 +24,15 @@ import type {
 
 interface UserRoleAssignmentProps {
 
-
-
     userId:string;
-
-
 
     roles:Role[];
 
-
-
-
-
     selectedRoleIds:string[];
-
-
-
-
 
     primaryRoleId?:string;
 
-
-
-
-
     onSaved:()=>void;
-
-
 
 }
 
@@ -64,30 +43,17 @@ interface UserRoleAssignmentProps {
 
 
 
-
 export default function UserRoleAssignment({
-
-
 
     userId,
 
-
-
     roles,
-
-
 
     selectedRoleIds,
 
-
-
     primaryRoleId,
 
-
-
     onSaved,
-
-
 
 }:UserRoleAssignmentProps) {
 
@@ -159,42 +125,6 @@ export default function UserRoleAssignment({
 
 
 
-    useEffect(() => {
-
-
-
-        setSelected(
-
-            selectedRoleIds,
-
-        );
-
-
-
-        setPrimary(
-
-            primaryRoleId,
-
-        );
-
-
-
-    },[
-
-        selectedRoleIds,
-
-        primaryRoleId,
-
-    ]);
-
-
-
-
-
-
-
-
-
     function toggleRole(
 
         roleId:string,
@@ -206,8 +136,6 @@ export default function UserRoleAssignment({
         setSelected(
 
             previous =>
-
-
 
                 previous.includes(roleId)
 
@@ -226,8 +154,6 @@ export default function UserRoleAssignment({
                 ],
 
         );
-
-
 
     }
 
@@ -248,8 +174,6 @@ export default function UserRoleAssignment({
 
 
             setLoading(true);
-
-
 
             setError(null);
 
@@ -285,8 +209,6 @@ export default function UserRoleAssignment({
 
                 );
 
-
-
             }
 
 
@@ -307,19 +229,13 @@ export default function UserRoleAssignment({
 
             setError(
 
-
-
                 error instanceof Error
 
                 ? error.message
 
                 : "Unable to update roles."
 
-
-
             );
-
-
 
         }
 
@@ -329,11 +245,7 @@ export default function UserRoleAssignment({
 
             setLoading(false);
 
-
-
         }
-
-
 
     }
 
@@ -346,8 +258,6 @@ export default function UserRoleAssignment({
 
 
     return (
-
-
 
         <div
 
@@ -401,8 +311,6 @@ export default function UserRoleAssignment({
 
                 <div>
 
-
-
                     <h2
 
                         className="
@@ -415,19 +323,11 @@ export default function UserRoleAssignment({
 
                     >
 
-
-
                         Assign Roles
-
-
 
                     </h2>
 
-
-
                 </div>
-
-
 
 
 
@@ -438,8 +338,6 @@ export default function UserRoleAssignment({
                 {
 
                     error && (
-
-
 
                         <div
 
@@ -459,21 +357,13 @@ export default function UserRoleAssignment({
 
                         >
 
-
-
                             {error}
 
-
-
                         </div>
-
-
 
                     )
 
                 }
-
-
 
 
 
@@ -491,15 +381,11 @@ export default function UserRoleAssignment({
 
                 >
 
-
-
                     {
 
                         roles.map(
 
                             role => (
-
-
 
                                 <label
 
@@ -523,8 +409,6 @@ export default function UserRoleAssignment({
 
                                 >
 
-
-
                                     <div
 
                                         className="
@@ -539,15 +423,9 @@ export default function UserRoleAssignment({
 
                                     >
 
-
-
                                         <input
 
-
-
                                             type="checkbox"
-
-
 
                                             checked={
 
@@ -559,8 +437,6 @@ export default function UserRoleAssignment({
 
                                             }
 
-
-
                                             onChange={() =>
 
                                                 toggleRole(
@@ -571,25 +447,15 @@ export default function UserRoleAssignment({
 
                                             }
 
-
-
                                         />
-
-
 
 
 
                                         <span>
 
-
-
                                             {role.name}
 
-
-
                                         </span>
-
-
 
                                     </div>
 
@@ -599,15 +465,9 @@ export default function UserRoleAssignment({
 
 
 
-
-
                                     <button
 
-
-
                                         type="button"
-
-
 
                                         onClick={() =>
 
@@ -618,8 +478,6 @@ export default function UserRoleAssignment({
                                             )
 
                                         }
-
-
 
                                         className="
 
@@ -635,11 +493,7 @@ export default function UserRoleAssignment({
 
                                         "
 
-
-
                                     >
-
-
 
                                         {
 
@@ -651,15 +505,9 @@ export default function UserRoleAssignment({
 
                                         }
 
-
-
                                     </button>
 
-
-
                                 </label>
-
-
 
                             )
 
@@ -667,11 +515,7 @@ export default function UserRoleAssignment({
 
                     }
 
-
-
                 </div>
-
-
 
 
 
@@ -693,23 +537,13 @@ export default function UserRoleAssignment({
 
                 >
 
-
-
                     <button
-
-
 
                         type="button"
 
-
-
                         onClick={onSaved}
 
-
-
                         disabled={loading}
-
-
 
                         className="
 
@@ -723,15 +557,9 @@ export default function UserRoleAssignment({
 
                         "
 
-
-
                     >
 
-
-
                         Cancel
-
-
 
                     </button>
 
@@ -741,23 +569,13 @@ export default function UserRoleAssignment({
 
 
 
-
-
                     <button
-
-
 
                         type="button"
 
-
-
                         onClick={save}
 
-
-
                         disabled={loading}
-
-
 
                         className="
 
@@ -773,11 +591,7 @@ export default function UserRoleAssignment({
 
                         "
 
-
-
                     >
-
-
 
                         {
 
@@ -789,11 +603,7 @@ export default function UserRoleAssignment({
 
                         }
 
-
-
                     </button>
-
-
 
                 </div>
 
@@ -801,14 +611,8 @@ export default function UserRoleAssignment({
 
             </div>
 
-
-
         </div>
 
-
-
     );
-
-
 
 }

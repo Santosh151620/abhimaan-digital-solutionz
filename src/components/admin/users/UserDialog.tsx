@@ -2,7 +2,6 @@
 
 
 import {
-    useEffect,
     useState,
 } from "react";
 
@@ -29,20 +28,11 @@ import {
 
 
 
-
-
-
 interface UserDialogProps {
 
-
-
-    user?:AdminUser;
-
-
+    user?: AdminUser;
 
     onClose:()=>void;
-
-
 
 }
 
@@ -51,36 +41,19 @@ interface UserDialogProps {
 
 
 
-
-
-
 const defaultForm:Partial<AdminUser> = {
-
-
 
     fullName:"",
 
-
-
     email:"",
-
-
 
     userType:"Internal",
 
-
-
     status:"Pending",
-
-
 
     roleIds:[],
 
-
-
     isActive:false,
-
-
 
 };
 
@@ -90,19 +63,11 @@ const defaultForm:Partial<AdminUser> = {
 
 
 
-
-
 export default function UserDialog({
-
-
 
     user,
 
-
-
     onClose,
-
-
 
 }:UserDialogProps) {
 
@@ -126,7 +91,13 @@ export default function UserDialog({
 
     ] = useState<Partial<AdminUser>>(
 
-        defaultForm,
+        {
+
+            ...defaultForm,
+
+            ...user,
+
+        }
 
     );
 
@@ -165,48 +136,11 @@ export default function UserDialog({
 
 
 
-
-    useEffect(() => {
-
-
-
-        setForm({
-
-
-
-            ...defaultForm,
-
-
-
-            ...user,
-
-
-
-        });
-
-
-
-    },[user]);
-
-
-
-
-
-
-
-
-
     function updateField<K extends keyof AdminUser>(
-
-
 
         key:K,
 
-
-
         value:AdminUser[K],
-
-
 
     ) {
 
@@ -216,21 +150,13 @@ export default function UserDialog({
 
             previous => ({
 
-
-
                 ...previous,
-
-
 
                 [key]:value,
 
-
-
-            }),
+            })
 
         );
-
-
 
     }
 
@@ -264,11 +190,7 @@ export default function UserDialog({
 
             );
 
-
-
             return;
-
-
 
         }
 
@@ -288,11 +210,7 @@ export default function UserDialog({
 
             );
 
-
-
             return;
-
-
 
         }
 
@@ -338,13 +256,11 @@ export default function UserDialog({
 
 
 
-
-
                 organizationId:
 
-                    user?.organizationId ?? "",
+                    user?.organizationId ??
 
-
+                    "",
 
 
 
@@ -354,13 +270,9 @@ export default function UserDialog({
 
 
 
-
-
                 authUserId:
 
                     form.authUserId,
-
-
 
 
 
@@ -370,13 +282,9 @@ export default function UserDialog({
 
 
 
-
-
                 firstName:
 
                     form.firstName,
-
-
 
 
 
@@ -386,13 +294,9 @@ export default function UserDialog({
 
 
 
-
-
                 displayName:
 
                     form.displayName,
-
-
 
 
 
@@ -402,13 +306,9 @@ export default function UserDialog({
 
 
 
-
-
                 phone:
 
                     form.phone,
-
-
 
 
 
@@ -418,13 +318,9 @@ export default function UserDialog({
 
 
 
-
-
                 jobTitle:
 
                     form.jobTitle,
-
-
 
 
 
@@ -434,13 +330,9 @@ export default function UserDialog({
 
 
 
-
-
                 employeeCode:
 
                     form.employeeCode,
-
-
 
 
 
@@ -450,13 +342,9 @@ export default function UserDialog({
 
 
 
-
-
                 status:
 
                     form.status as UserStatus,
-
-
 
 
 
@@ -466,13 +354,9 @@ export default function UserDialog({
 
 
 
-
-
                 primaryRoleId:
 
                     form.primaryRoleId,
-
-
 
 
 
@@ -482,13 +366,9 @@ export default function UserDialog({
 
 
 
-
-
                 emailVerified:
 
                     form.emailVerified ?? false,
-
-
 
 
 
@@ -498,13 +378,9 @@ export default function UserDialog({
 
 
 
-
-
                 lastLoginAt:
 
                     form.lastLoginAt,
-
-
 
 
 
@@ -514,13 +390,9 @@ export default function UserDialog({
 
 
 
-
-
                 passwordChangedAt:
 
                     form.passwordChangedAt,
-
-
 
 
 
@@ -530,13 +402,9 @@ export default function UserDialog({
 
 
 
-
-
                 lockedUntil:
 
                     form.lockedUntil,
-
-
 
 
 
@@ -546,13 +414,9 @@ export default function UserDialog({
 
 
 
-
-
                 timezone:
 
                     form.timezone,
-
-
 
 
 
@@ -562,13 +426,9 @@ export default function UserDialog({
 
 
 
-
-
                 createdBy:
 
                     user?.createdBy,
-
-
 
 
 
@@ -578,21 +438,17 @@ export default function UserDialog({
 
 
 
-
-
                 createdAt:
 
-                    user?.createdAt ?? now,
+                    user?.createdAt ??
 
-
+                    now,
 
 
 
                 updatedAt:
 
                     now,
-
-
 
             };
 
@@ -612,8 +468,6 @@ export default function UserDialog({
 
                 );
 
-
-
             }
 
             else {
@@ -626,8 +480,6 @@ export default function UserDialog({
 
                 );
 
-
-
             }
 
 
@@ -637,8 +489,6 @@ export default function UserDialog({
 
 
             router.refresh();
-
-
 
             onClose();
 
@@ -652,19 +502,13 @@ export default function UserDialog({
 
             setError(
 
-
-
                 error instanceof Error
 
                 ? error.message
 
                 : "Unable to save user."
 
-
-
             );
-
-
 
         }
 
@@ -674,11 +518,7 @@ export default function UserDialog({
 
             setLoading(false);
 
-
-
         }
-
-
 
     }
 
@@ -691,8 +531,6 @@ export default function UserDialog({
 
 
     return (
-
-
 
         <div
 
@@ -717,8 +555,6 @@ export default function UserDialog({
             "
 
         >
-
-
 
             <div
 
@@ -756,23 +592,9 @@ export default function UserDialog({
 
                 >
 
-
-
-                    {
-
-                        user
-
-                        ? "Edit User"
-
-                        : "Create User"
-
-                    }
-
-
+                    {user ? "Edit User" : "Create User"}
 
                 </h2>
-
-
 
 
 
@@ -783,8 +605,6 @@ export default function UserDialog({
                 {
 
                     error && (
-
-
 
                         <div
 
@@ -804,15 +624,9 @@ export default function UserDialog({
 
                         >
 
-
-
                             {error}
 
-
-
                         </div>
-
-
 
                     )
 
@@ -824,11 +638,7 @@ export default function UserDialog({
 
 
 
-
-
                 <input
-
-
 
                     className="
 
@@ -842,15 +652,9 @@ export default function UserDialog({
 
                     "
 
-
-
                     placeholder="Full Name"
 
-
-
                     value={form.fullName ?? ""}
-
-
 
                     onChange={event =>
 
@@ -864,8 +668,6 @@ export default function UserDialog({
 
                     }
 
-
-
                 />
 
 
@@ -874,11 +676,7 @@ export default function UserDialog({
 
 
 
-
-
                 <input
-
-
 
                     className="
 
@@ -892,19 +690,11 @@ export default function UserDialog({
 
                     "
 
-
-
                     placeholder="Email"
-
-
 
                     type="email"
 
-
-
                     value={form.email ?? ""}
-
-
 
                     onChange={event =>
 
@@ -918,8 +708,6 @@ export default function UserDialog({
 
                     }
 
-
-
                 />
 
 
@@ -928,11 +716,7 @@ export default function UserDialog({
 
 
 
-
-
                 <select
-
-
 
                     className="
 
@@ -946,11 +730,7 @@ export default function UserDialog({
 
                     "
 
-
-
                     value={form.userType ?? "Internal"}
-
-
 
                     onChange={event =>
 
@@ -964,11 +744,7 @@ export default function UserDialog({
 
                     }
 
-
-
                 >
-
-
 
                     <option value="Internal">
 
@@ -976,15 +752,11 @@ export default function UserDialog({
 
                     </option>
 
-
-
                     <option value="External">
 
                         External
 
                     </option>
-
-
 
                     <option value="System">
 
@@ -992,15 +764,11 @@ export default function UserDialog({
 
                     </option>
 
-
-
                     <option value="Service">
 
                         Service
 
                     </option>
-
-
 
                 </select>
 
@@ -1010,11 +778,7 @@ export default function UserDialog({
 
 
 
-
-
                 <select
-
-
 
                     className="
 
@@ -1028,11 +792,7 @@ export default function UserDialog({
 
                     "
 
-
-
                     value={form.status ?? "Pending"}
-
-
 
                     onChange={event =>
 
@@ -1046,11 +806,7 @@ export default function UserDialog({
 
                     }
 
-
-
                 >
-
-
 
                     <option value="Pending">
 
@@ -1058,15 +814,11 @@ export default function UserDialog({
 
                     </option>
 
-
-
                     <option value="Active">
 
                         Active
 
                     </option>
-
-
 
                     <option value="Inactive">
 
@@ -1074,15 +826,11 @@ export default function UserDialog({
 
                     </option>
 
-
-
                     <option value="Suspended">
 
                         Suspended
 
                     </option>
-
-
 
                     <option value="Locked">
 
@@ -1090,19 +838,13 @@ export default function UserDialog({
 
                     </option>
 
-
-
                     <option value="Archived">
 
                         Archived
 
                     </option>
 
-
-
                 </select>
-
-
 
 
 
@@ -1124,23 +866,13 @@ export default function UserDialog({
 
                 >
 
-
-
                     <button
-
-
 
                         type="button"
 
-
-
                         onClick={onClose}
 
-
-
                         disabled={loading}
-
-
 
                         className="
 
@@ -1154,15 +886,9 @@ export default function UserDialog({
 
                         "
 
-
-
                     >
 
-
-
                         Cancel
-
-
 
                     </button>
 
@@ -1172,23 +898,13 @@ export default function UserDialog({
 
 
 
-
-
                     <button
-
-
 
                         type="button"
 
-
-
                         onClick={submit}
 
-
-
                         disabled={loading}
-
-
 
                         className="
 
@@ -1204,27 +920,11 @@ export default function UserDialog({
 
                         "
 
-
-
                     >
 
-
-
-                        {
-
-                            loading
-
-                            ? "Saving..."
-
-                            : "Save"
-
-                        }
-
-
+                        {loading ? "Saving..." : "Save"}
 
                     </button>
-
-
 
                 </div>
 
@@ -1232,14 +932,8 @@ export default function UserDialog({
 
             </div>
 
-
-
         </div>
 
-
-
     );
-
-
 
 }
