@@ -6,656 +6,459 @@
  *
  * Architecture:
  *
- * NotificationService
+ * Server Action / Service
  *        ↓
  * NotificationsRepository
  *        ↓
  * TenantContextManager
  *        ↓
+ * Supabase Server Client
+ *        ↓
  * notifications
  *
+ * Production rules:
+ * - Server-only Supabase client
+ * - Tenant isolation on every operation
+ * - Organization ID never accepted from caller
+ * - Organization ID always comes from TenantContextManager
+ * - Strong input validation
+ * - Stable domain mapping
  * ============================================================================
  */
-
 
 import {
     TenantContextManager,
 } from "@/lib/tenant/tenantContext";
 
-
 import {
     createSupabaseServerClient,
 } from "@/lib/supabase/server-client";
-
 
 import type {
     Notification,
 } from "@/types/admin/Notification";
 
 
-
-
-
 type NotificationRow = {
+    id: string;
 
-    id:string;
+    organization_id: string;
 
-    organization_id:string;
+    user_id: string | null;
 
-    user_id:string | null;
+    title: string;
 
-    title:string;
+    message: string;
 
-    message:string;
+    type: Notification["type"] | null;
 
-    type:Notification["type"] | null;
+    status: Notification["status"] | null;
 
-    status:Notification["status"] | null;
+    entity_type: string | null;
 
-    entity_type:string | null;
+    entity_id: string | null;
 
-    entity_id:string | null;
+    action_url: string | null;
 
-    action_url:string | null;
+    metadata: Record<string, unknown> | null;
 
-    metadata:Record<string,unknown> | null;
+    created_at: string;
 
-    created_at:string;
-
-    read_at:string | null;
-
+    read_at: string | null;
 };
-
-
-
 
 
 export interface INotificationsRepository {
 
-
-    findAll():
-        Promise<Notification[]>;
-
-
+    findAll(): Promise<Notification[]>;
 
     findById(
-        id:string,
-    ):
-        Promise<Notification | null>;
-
-
+        id: string,
+    ): Promise<Notification | null>;
 
     findByUser(
-        userId:string,
-    ):
-        Promise<Notification[]>;
-
-
+        userId: string,
+    ): Promise<Notification[]>;
 
     create(
-        notification:Partial<Notification>,
-    ):
-        Promise<Notification>;
-
-
+        notification: Partial<Notification>,
+    ): Promise<Notification>;
 
     markAsRead(
-        id:string,
-    ):
-        Promise<void>;
-
-
+        id: string,
+    ): Promise<void>;
 
     delete(
-        id:string,
-    ):
-        Promise<void>;
-
+        id: string,
+    ): Promise<void>;
 }
 
 
-
-
-
 export class NotificationsRepository
-
     implements INotificationsRepository {
 
-
-    private async client(){
-
-        return await createSupabaseServerClient();
-
+    private async client() {
+        return createSupabaseServerClient();
     }
 
 
-
-
-
-    private get organizationId():string {
-
+    private get organizationId(): string {
         return TenantContextManager
             .require()
             .organizationId;
-
     }
 
 
-
-
-
-    static async create():
-
-        Promise<NotificationsRepository> {
-
+    static async create(): Promise<NotificationsRepository> {
         return new NotificationsRepository();
-
     }
 
 
-
-
-
-    async findAll():
-
-        Promise<Notification[]> {
-
+    async findAll(): Promise<Notification[]> {
 
         const supabase =
             await this.client();
 
-
-
         const {
             data,
             error,
-
-        } =
-            await supabase
-
-                .from("notifications")
-
-                .select("*")
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .order(
-                    "created_at",
-                    {
-                        ascending:false,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapNotification(
-                        row as NotificationRow,
-                    ),
+        } = await supabase
+            .from("notifications")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            (row) =>
+                this.mapNotification(
+                    row as NotificationRow,
+                ),
+        );
     }
-
-
-
-
-
 
 
     async findById(
-        id:string,
-    ):
-        Promise<Notification | null> {
+        id: string,
+    ): Promise<Notification | null> {
 
+        const normalizedId =
+            this.requireId(id);
 
         const supabase =
             await this.client();
 
-
-
         const {
             data,
             error,
+        } = await supabase
+            .from("notifications")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            )
+            .maybeSingle();
 
-        } =
-            await supabase
-
-                .from("notifications")
-
-                .select("*")
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .eq(
-                    "id",
-                    id,
-                )
-
-                .maybeSingle();
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
-
+        }
 
         return data
             ? this.mapNotification(
                 data as NotificationRow,
             )
             : null;
-
     }
-
-
-
-
-
 
 
     async findByUser(
-        userId:string,
-    ):
-        Promise<Notification[]> {
+        userId: string,
+    ): Promise<Notification[]> {
 
+        const normalizedUserId =
+            this.requireId(
+                userId,
+                "Notification user id",
+            );
 
         const supabase =
             await this.client();
 
-
-
         const {
             data,
             error,
-
-        } =
-            await supabase
-
-                .from("notifications")
-
-                .select("*")
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .eq(
-                    "user_id",
-                    userId,
-                )
-
-                .order(
-                    "created_at",
-                    {
-                        ascending:false,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapNotification(
-                        row as NotificationRow,
-                    ),
+        } = await supabase
+            .from("notifications")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "user_id",
+                normalizedUserId,
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            (row) =>
+                this.mapNotification(
+                    row as NotificationRow,
+                ),
+        );
     }
 
 
-
-
-
-
-
     async create(
-        notification:Partial<Notification>,
-    ):
-        Promise<Notification> {
+        notification: Partial<Notification>,
+    ): Promise<Notification> {
 
+        if (!notification) {
+            throw new Error(
+                "Notification is required.",
+            );
+        }
 
-        if(!notification.title?.trim()){
+        const title =
+            notification.title?.trim();
 
+        if (!title) {
             throw new Error(
                 "Notification title is required.",
             );
-
         }
 
+        const message =
+            notification.message?.trim();
 
-
-        if(!notification.message?.trim()){
-
+        if (!message) {
             throw new Error(
                 "Notification message is required.",
             );
-
         }
 
+        const now =
+            new Date().toISOString();
 
+        const payload = {
+            id:
+                notification.id,
+
+            organization_id:
+                this.organizationId,
+
+            user_id:
+                notification.userId ?? null,
+
+            title,
+
+            message,
+
+            type:
+                notification.type ?? "INFO",
+
+            status:
+                notification.status ?? "UNREAD",
+
+            entity_type:
+                notification.entityType ?? null,
+
+            entity_id:
+                notification.entityId ?? null,
+
+            action_url:
+                notification.actionUrl ?? null,
+
+            metadata:
+                notification.metadata ?? {},
+
+            created_at:
+                notification.createdAt ?? now,
+        };
 
         const supabase =
             await this.client();
 
-
-
-        const now =
-            new Date()
-                .toISOString();
-
-
-
         const {
             data,
             error,
+        } = await supabase
+            .from("notifications")
+            .upsert(
+                payload,
+                {
+                    onConflict: "id",
+                },
+            )
+            .select("*")
+            .single();
 
-        } =
-            await supabase
-
-                .from("notifications")
-
-                .upsert(
-
-                    {
-
-                        id:
-                            notification.id,
-
-
-                        organization_id:
-                            this.organizationId,
-
-
-                        user_id:
-                            notification.userId
-                            ??
-                            null,
-
-
-                        title:
-                            notification.title
-                                .trim(),
-
-
-                        message:
-                            notification.message
-                                .trim(),
-
-
-                        type:
-                            notification.type
-                            ??
-                            "INFO",
-
-
-                        status:
-                            notification.status
-                            ??
-                            "UNREAD",
-
-
-                        entity_type:
-                            notification.entityType
-                            ??
-                            null,
-
-
-                        entity_id:
-                            notification.entityId
-                            ??
-                            null,
-
-
-                        action_url:
-                            notification.actionUrl
-                            ??
-                            null,
-
-
-                        metadata:
-                            notification.metadata
-                            ??
-                            {},
-
-
-                        created_at:
-                            notification.createdAt
-                            ??
-                            now,
-
-
-                    },
-
-                    {
-                        onConflict:"id",
-                    },
-
-                )
-
-                .select()
-
-                .single();
-
-
-
-        if(error)
+        if (error) {
             throw error;
+        }
 
-
+        if (!data) {
+            throw new Error(
+                "Notification creation returned no data.",
+            );
+        }
 
         return this.mapNotification(
             data as NotificationRow,
         );
-
     }
-
-
-
-
-
 
 
     async markAsRead(
-        id:string,
-    ):
-        Promise<void> {
+        id: string,
+    ): Promise<void> {
 
+        const normalizedId =
+            this.requireId(id);
 
         const supabase =
             await this.client();
 
-
-
         const {
             error,
+        } = await supabase
+            .from("notifications")
+            .update({
+                status: "READ",
+                read_at:
+                    new Date().toISOString(),
+            })
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            );
 
-        } =
-            await supabase
-
-                .from("notifications")
-
-                .update(
-
-                    {
-
-                        status:
-                            "READ",
-
-
-                        read_at:
-                            new Date()
-                                .toISOString(),
-
-                    },
-
-                )
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .eq(
-                    "id",
-                    id,
-                );
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
+        }
     }
-
-
-
-
-
 
 
     async delete(
-        id:string,
-    ):
-        Promise<void> {
+        id: string,
+    ): Promise<void> {
 
+        const normalizedId =
+            this.requireId(id);
 
         const supabase =
             await this.client();
 
-
-
         const {
             error,
+        } = await supabase
+            .from("notifications")
+            .delete()
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            );
 
-        } =
-            await supabase
-
-                .from("notifications")
-
-                .delete()
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .eq(
-                    "id",
-                    id,
-                );
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
+        }
     }
 
 
+    private requireId(
+        id: string,
+        fieldName = "Notification id",
+    ): string {
 
+        const normalizedId =
+            id?.trim();
 
+        if (!normalizedId) {
+            throw new Error(
+                `${fieldName} is required.`,
+            );
+        }
 
+        return normalizedId;
+    }
 
 
     private mapNotification(
-        row:NotificationRow,
-    ):
-        Notification {
-
+        row: NotificationRow,
+    ): Notification {
 
         return {
-
             id:
                 row.id,
-
 
             organizationId:
                 row.organization_id,
 
-
             userId:
-                row.user_id
-                ??
-                undefined,
-
+                row.user_id ?? undefined,
 
             title:
                 row.title,
 
-
             message:
                 row.message,
 
-
             type:
-                row.type
-                ??
-                "INFO",
-
+                row.type ?? "INFO",
 
             status:
-                row.status
-                ??
-                "UNREAD",
-
+                row.status ?? "UNREAD",
 
             entityType:
-                row.entity_type
-                ??
-                undefined,
-
+                row.entity_type ?? undefined,
 
             entityId:
-                row.entity_id
-                ??
-                undefined,
-
+                row.entity_id ?? undefined,
 
             actionUrl:
-                row.action_url
-                ??
-                undefined,
-
+                row.action_url ?? undefined,
 
             metadata:
-                row.metadata
-                ??
-                {},
-
+                row.metadata ?? {},
 
             createdAt:
                 row.created_at,
 
-
             readAt:
-                row.read_at
-                ??
-                undefined,
-
+                row.read_at ?? undefined,
         };
-
     }
-
-
 }
