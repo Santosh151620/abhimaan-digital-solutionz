@@ -2,13 +2,8 @@
 
 
 import {
-    createOpportunitiesService,
+    opportunitiesService,
 } from '@/services/crm/OpportunitiesService';
-
-
-import {
-    createClient,
-} from '@/lib/supabase/server';
 
 
 import type {
@@ -18,25 +13,9 @@ import type {
 
 
 
-async function service() {
-
-    const supabase =
-        await createClient();
-
-
-    return createOpportunitiesService(
-        supabase,
-    );
-
-}
-
-
-
 export async function getOpportunities() {
 
-    return (
-        await service()
-    ).list();
+    return opportunitiesService.list();
 
 }
 
@@ -44,9 +23,7 @@ export async function getOpportunities() {
 
 export async function getOpportunitySummary() {
 
-    return (
-        await service()
-    ).summary();
+    return opportunitiesService.summary();
 
 }
 
@@ -56,9 +33,7 @@ export async function getOpportunity(
     id: string,
 ) {
 
-    return (
-        await service()
-    ).details(
+    return opportunitiesService.details(
         id,
     );
 
@@ -70,9 +45,7 @@ export async function createOpportunity(
     values: CreateOpportunityInput,
 ) {
 
-    return (
-        await service()
-    ).create(
+    return opportunitiesService.create(
         values,
     );
 
@@ -85,9 +58,7 @@ export async function updateOpportunity(
     values: UpdateOpportunityInput,
 ) {
 
-    return (
-        await service()
-    ).update(
+    return opportunitiesService.update(
 
         id,
 
@@ -103,9 +74,7 @@ export async function deleteOpportunity(
     id: string,
 ) {
 
-    return (
-        await service()
-    ).delete(
+    return opportunitiesService.delete(
         id,
     );
 

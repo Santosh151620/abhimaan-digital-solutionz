@@ -1,8 +1,3 @@
-import type {
-    SupabaseClient,
-} from "@supabase/supabase-js";
-
-
 import {
     createClient,
 } from "@/lib/supabase/server";
@@ -10,12 +5,12 @@ import {
 
 import {
     createOpportunitiesRepository,
-    OpportunitiesRepository,
 } from "@/repositories/crm/OpportunitiesRepository";
 
 
 import type {
     Opportunity,
+    OpportunitySearchFilters,
     OpportunitySummary,
 } from "@/types/crm/Opportunities";
 
@@ -24,27 +19,42 @@ import type {
 export class OpportunitiesService {
 
 
-    constructor(
-        private readonly repository:
-            OpportunitiesRepository,
-    ) {}
+    private async repository() {
+
+        const supabase =
+            await createClient();
+
+
+        return createOpportunitiesRepository(
+            supabase,
+        );
+
+    }
 
 
 
-    async list():Promise<Opportunity[]> {
+    async list(): Promise<Opportunity[]> {
 
-        return this.repository.list();
+        const repository =
+            await this.repository();
+
+
+        return repository.list();
 
     }
 
 
 
     async details(
-        id:string,
-    ):Promise<Opportunity | null> {
+        id: string,
+    ): Promise<Opportunity | null> {
 
-        return this.repository.details(
-            id,
+        const repository =
+            await this.repository();
+
+
+        return repository.details(
+            this.requireId(id),
         );
 
     }
@@ -52,8 +62,8 @@ export class OpportunitiesService {
 
 
     async get(
-        id:string,
-    ):Promise<Opportunity | null> {
+        id: string,
+    ): Promise<Opportunity | null> {
 
         return this.details(
             id,
@@ -63,211 +73,237 @@ export class OpportunitiesService {
 
 
 
-async create(
-    data: Partial<Opportunity>,
-): Promise<Opportunity> {
+    async search(
+        filters?: OpportunitySearchFilters,
+    ): Promise<Opportunity[]> {
+
+        const repository =
+            await this.repository();
 
 
-    return this.repository.create({
+        return repository.search(
+            filters,
+        );
 
-        ...data,
-
-
-        entityType:
-            "Opportunity",
-
-
-        stage:
-            data.stage ?? 
-            "New",
-
-
-        status:
-            data.status ??
-            "Open",
-
-
-        value:
-            data.value ??
-            0,
-
-
-        probability:
-            data.probability ??
-            0,
-
-    });
-
-}
+    }
 
 
 
-async update(
-    id: string,
-    data: Partial<Opportunity>,
-): Promise<Opportunity> {
+    async create(
+        data: Partial<Opportunity>,
+    ): Promise<Opportunity> {
 
 
-    return this.repository.update(
+        if (!data) {
 
-        id,
+            throw new Error(
+                "Opportunity data is required.",
+            );
 
-        {
+        }
+
+
+
+        const name =
+            data.name?.trim()
+            ??
+            data.title?.trim();
+
+
+
+        if (!name) {
+
+            throw new Error(
+                "Opportunity name is required.",
+            );
+
+        }
+
+
+
+        const value =
+            Number(
+                data.value ?? 0,
+            );
+
+
+
+        if (value < 0) {
+
+            throw new Error(
+                "Opportunity value cannot be negative.",
+            );
+
+        }
+
+
+
+        const probability =
+            Number(
+                data.probability ?? 0,
+            );
+
+
+
+        if (
+            probability < 0 ||
+            probability > 100
+        ) {
+
+            throw new Error(
+                "Opportunity probability must be between 0 and 100.",
+            );
+
+        }
+
+
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.create({
 
             ...data,
+
+            name,
+
+            title:
+                name,
 
 
             entityType:
                 "Opportunity",
 
-        },
 
-    );
+            stage:
+                data.stage
+                ??
+                "New",
 
-}
 
-    async delete(
-        id:string,
-    ):Promise<void> {
+            status:
+                data.status
+                ??
+                "Open",
 
-        return this.repository.delete(
-            id,
+
+            value,
+
+            probability,
+
+        });
+
+    }
+
+
+
+    async update(
+        id: string,
+        data: Partial<Opportunity>,
+    ): Promise<Opportunity> {
+
+
+        const repository =
+            await this.repository();
+
+
+
+        return repository.update(
+
+            this.requireId(id),
+
+            {
+
+                ...data,
+
+                entityType:
+                    "Opportunity",
+
+            },
+
         );
 
     }
 
 
 
-    async summary():Promise<OpportunitySummary> {
+    async delete(
+        id: string,
+    ): Promise<void> {
 
-        return this.repository.summary();
+        const repository =
+            await this.repository();
+
+
+
+        await repository.delete(
+            this.requireId(id),
+        );
+
+    }
+
+
+
+    async summary(): Promise<OpportunitySummary> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.summary();
+
+    }
+
+
+
+    private requireId(
+        id: string,
+    ): string {
+
+        const normalized =
+            id?.trim();
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Opportunity id is required.",
+            );
+
+        }
+
+
+        return normalized;
 
     }
 
 }
-
-
-
-
-export function createOpportunitiesService(
-    supabase:SupabaseClient,
-) {
-
-    return new OpportunitiesService(
-
-        createOpportunitiesRepository(
-            supabase,
-        ),
-
-    );
-
-}
-
-
-
-
-
-export function getOpportunitiesService(
-    supabase:SupabaseClient,
-) {
-
-    return createOpportunitiesService(
-        supabase,
-    );
-
-}
-
 
 
 
 /**
- * Server-safe service facade.
- *
- * Existing consumers continue using:
- *
- * opportunitiesService
- * OpportunitiesServiceInstance
- *
- * without importing Supabase directly.
+ * Production factory
  */
-export const opportunitiesService = {
+export function createOpportunitiesService() {
 
-    async list() {
-        const service =
-            await serverService();
-        return service.list();
-    },
+    return new OpportunitiesService();
 
-    async details(
-        id:string,
-    ) {
-
-        const service =
-            await serverService();
-        return service.details(
-            id,
-        );
-    },
-
-    async get(
-        id:string,
-    ) {
-
-        const service =
-            await serverService();
-        return service.get(
-            id,
-        );
-    },
-
-    async create(
-        data:Partial<Opportunity>,
-    ) {
-
-        const service =
-            await serverService();
-        return service.create(
-            data,
-        );
-    },
-
-    async update(
-        id:string,
-        data:Partial<Opportunity>,
-    ) {
-
-        const service =
-            await serverService();
-        return service.update(
-            id,
-            data,
-        );
-    },
-
-    async delete(
-        id:string,
-    ) {
-
-        const service =
-            await serverService();
-        return service.delete(
-            id,
-        );
-    },
-
-    async summary() {
-        const service =
-            await serverService();
-        return service.summary();
-    },
-};
-
-async function serverService() {
-
-    return createOpportunitiesService(
-        await createClient(),
-
-    );
 }
+
+
+
+/**
+ * Server-safe service facade
+ */
+export const opportunitiesService =
+    new OpportunitiesService();
+
+
+
+/**
+ * Compatibility export
+ */
 export const OpportunitiesServiceInstance =
     opportunitiesService;

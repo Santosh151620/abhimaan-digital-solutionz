@@ -10,42 +10,55 @@ import {
 
 import type {
     Opportunity,
-    OpportunitySummary,
     OpportunitySearchFilters,
+    OpportunitySummary,
 } from "@/types/crm/Opportunities";
 
 
 
 interface OpportunityRow {
+
     id: string;
-    entity_id?: string | null;
+
     organization_id?: string | null;
 
+    entity_id?: string | null;
+
     opportunity_number?: string | null;
+
     opportunity_name?: string | null;
 
     description?: string | null;
 
     company_id?: string | null;
+
     primary_contact_id?: string | null;
+
     owner_user_id?: string | null;
 
     status?: Opportunity["status"];
+
     stage?: Opportunity["stage"];
 
     amount?: number | null;
+
     probability?: number | null;
 
     expected_close_date?: string | null;
 
     metadata?: Record<string, unknown> | null;
 
-    is_deleted?: boolean;
+    is_deleted?: boolean | null;
+
     deleted_at?: string | null;
 
     created_at: string;
+
     updated_at: string;
+
 }
+
+
 
 export class OpportunitiesRepository
     extends BaseRepository<Opportunity> {
@@ -64,79 +77,59 @@ export class OpportunitiesRepository
     }
 
 
-    private mapToDomain(
-        row: OpportunityRow,
-    ): Opportunity {
 
-        return {
+    async list(): Promise<Opportunity[]> {
 
-            id:
-                row.id,
-            entityType:
-                "Opportunity",
-            entityId:
-                row.entity_id ??
-                row.id,
-            organizationId:
-                row.organization_id ?? undefined,
-            opportunityNumber:
-                row.opportunity_number ??
-                "",
-            name:
-                row.opportunity_name ??
-                "Untitled Opportunity",
-            title:
-                row.opportunity_name ??
-                "Untitled Opportunity",
-            description:
-                row.description ?? undefined,
-            companyId:
-                row.company_id || undefined,
-            contactId:
-                row.primary_contact_id || undefined,
-            ownerId:
-                row.owner_user_id || undefined,
-            status:
-                row.status ??
-                "Open",
-            stage:
-                row.stage ??
-                "New",
-            value:
-                Number(
-                    row.amount ??
-                    0,
-                ),
-            probability:
-                Number(
-                    row.probability ??
-                    0,
-                ),
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "is_deleted",
+                    false,
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false,
+                    },
+                );
 
-            expectedCloseDate:
-                row.expected_close_date || undefined,
-            metadata:
-                row.metadata ?? {},
-            isDeleted:
-                row.is_deleted ??
-                false,
-            deletedAt:
-                row.deleted_at ?? undefined,
-            createdAt:
-                row.created_at,
-            updatedAt:
-                row.updated_at,
 
-        };
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        return (data ?? [])
+            .map(
+                row =>
+                    this.mapToDomain(
+                        row as OpportunityRow,
+                    ),
+            );
 
     }
 
 
 
+    async details(
+        id: string,
+    ): Promise<Opportunity | null> {
 
 
-
-    async list(): Promise<Opportunity[]> {
+        const normalizedId =
+            this.requireId(
+                id,
+            );
 
 
         const {
@@ -149,12 +142,15 @@ export class OpportunitiesRepository
                     "organization_id",
                     this.organizationId,
                 )
-                .order(
-                    "created_at",
-                    {
-                        ascending: false,
-                    },
-                );
+                .eq(
+                    "id",
+                    normalizedId,
+                )
+                .eq(
+                    "is_deleted",
+                    false,
+                )
+                .maybeSingle();
 
 
 
@@ -166,55 +162,13 @@ export class OpportunitiesRepository
 
 
 
-        return (
-
-            data ?? []
-
-        ).map(
-
-            item =>
-                this.mapToDomain(
-                    item,
-                ),
-
-        );
+        return data
+            ? this.mapToDomain(
+                data as OpportunityRow,
+            )
+            : null;
 
     }
-
-
-
-
-
-
-
-    async details(
-        id: string,
-    ): Promise<Opportunity | null> {
-
-
-        const opportunity =
-            await super.findById(
-                id,
-            );
-
-
-
-        if (!opportunity) {
-
-            return null;
-
-        }
-
-        return this.mapToDomain(
-            opportunity as unknown as OpportunityRow,
-        );
-
-    }
-
-
-
-
-
 
 
 
@@ -223,87 +177,127 @@ export class OpportunitiesRepository
     ): Promise<Opportunity> {
 
 
-        const payload = {
+        const name =
+            (
+                data.name
+                ??
+                data.title
+            )
+            ?.trim();
 
+
+
+        if (!name) {
+
+            throw new Error(
+                "Opportunity name is required.",
+            );
+
+        }
+
+
+
+        const amount =
+            Number(
+                data.value ?? 0,
+            );
+
+
+
+        if (amount < 0) {
+
+            throw new Error(
+                "Opportunity amount cannot be negative.",
+            );
+
+        }
+
+
+
+        const probability =
+            Number(
+                data.probability ?? 0,
+            );
+
+
+
+        const payload = {
 
             entity_type:
                 "Opportunity",
 
             entity_id:
-                data.entityId ??
+                data.entityId
+                ??
                 crypto.randomUUID(),
 
+
             opportunity_number:
-                data.opportunityNumber ??
+                data.opportunityNumber
+                ??
                 `OPP-${Date.now()}`,
 
 
-
             opportunity_name:
-                data.name ??
-                data.title ??
-                "Untitled Opportunity",
-
-
-
-            company_id:
-                data.companyId ??
-                null,
-
-
-
-            primary_contact_id:
-                data.contactId ??
-                null,
-
-
-
-            owner_user_id:
-                data.ownerId ??
-                null,
-
-
-
-            stage:
-                data.stage ??
-                "New",
-
-
-
-            status:
-                data.status ??
-                "Open",
-
-
-
-            amount:
-                data.value ??
-                0,
-
-
-
-            probability:
-                data.probability ??
-                0,
-
-
-
-            expected_close_date:
-                data.expectedCloseDate ??
-                null,
-
+                name,
 
 
             description:
-                data.description ??
+                data.description
+                ??
                 null,
 
 
+            company_id:
+                data.companyId
+                ??
+                null,
+
+
+            primary_contact_id:
+                data.contactId
+                ??
+                null,
+
+
+            owner_user_id:
+                data.ownerId
+                ??
+                null,
+
+
+            stage:
+                data.stage
+                ??
+                "New",
+
+
+            status:
+                data.status
+                ??
+                "Open",
+
+
+            amount,
+
+
+            probability:
+                probability >= 0 &&
+                probability <= 100
+                    ? probability
+                    : 0,
+
+
+            expected_close_date:
+                data.expectedCloseDate
+                ??
+                null,
+
 
             metadata:
-                data.metadata ??
+                data.metadata
+                ??
                 {},
-
 
         };
 
@@ -324,26 +318,34 @@ export class OpportunitiesRepository
 
 
 
-
-
-
-
     async update(
         id: string,
         data: Partial<Opportunity>,
     ): Promise<Opportunity> {
 
 
+        const normalizedId =
+            this.requireId(
+                id,
+            );
+
+
+
         const result =
             await super.update(
 
-                id,
+                normalizedId,
 
                 {
 
                     opportunity_name:
-                        data.name ??
+                        data.name
+                        ??
                         data.title,
+
+
+                    description:
+                        data.description,
 
 
                     company_id:
@@ -378,10 +380,6 @@ export class OpportunitiesRepository
                         data.expectedCloseDate,
 
 
-                    description:
-                        data.description,
-
-
                     metadata:
                         data.metadata,
 
@@ -394,29 +392,43 @@ export class OpportunitiesRepository
 
             );
 
+
+
         return this.mapToDomain(
             result as unknown as OpportunityRow,
         );
 
     }
 
+
+
     async delete(
         id: string,
     ): Promise<void> {
 
+
         await super.update(
-            id,
+
+            this.requireId(id),
+
             {
-                is_deleted: true,
+
+                is_deleted:
+                    true,
+
                 deleted_at:
-                    new Date().toISOString(),
+                    new Date()
+                        .toISOString(),
+
                 updated_at:
-                    new Date().toISOString(),
+                    new Date()
+                        .toISOString(),
+
             } as Partial<Opportunity>,
+
         );
 
     }
-
 
 
 
@@ -435,7 +447,8 @@ export class OpportunitiesRepository
                 .eq(
                     "is_deleted",
                     false,
-                )
+                );
+
 
 
         if (filters?.status) {
@@ -474,19 +487,21 @@ export class OpportunitiesRepository
 
 
 
-        if (filters?.search) {
+        if (filters?.search?.trim()) {
+
+            const search =
+                filters.search
+                    .trim();
 
 
             query =
                 query.or(
 
                     [
-
-                        `opportunity_name.ilike.%${filters.search}%`,
-
-                        `opportunity_number.ilike.%${filters.search}%`,
-
-                    ].join(","),
+                        `opportunity_name.ilike.%${search}%`,
+                        `opportunity_number.ilike.%${search}%`,
+                    ]
+                    .join(","),
 
                 );
 
@@ -510,25 +525,15 @@ export class OpportunitiesRepository
 
 
 
-        return (
-
-            data ?? []
-
-        ).map(
-
-            item =>
-                this.mapToDomain(
-                    item,
-                ),
-
-        );
+        return (data ?? [])
+            .map(
+                row =>
+                    this.mapToDomain(
+                        row as OpportunityRow,
+                    ),
+            );
 
     }
-
-
-
-
-
 
 
 
@@ -544,11 +549,11 @@ export class OpportunitiesRepository
             opportunities.reduce(
 
                 (
-                    sum,
+                    total,
                     item,
                 ) =>
 
-                    sum +
+                    total +
                     item.value,
 
                 0,
@@ -559,7 +564,6 @@ export class OpportunitiesRepository
 
         return {
 
-
             total:
                 opportunities.length,
 
@@ -568,21 +572,24 @@ export class OpportunitiesRepository
                 opportunities.filter(
                     item =>
                         item.status === "Open",
-                ).length,
+                )
+                .length,
 
 
             won:
                 opportunities.filter(
                     item =>
                         item.status === "Won",
-                ).length,
+                )
+                .length,
 
 
             lost:
                 opportunities.filter(
                     item =>
                         item.status === "Lost",
-                ).length,
+                )
+                .length,
 
 
             pipelineValue:
@@ -593,11 +600,11 @@ export class OpportunitiesRepository
                 opportunities.reduce(
 
                     (
-                        sum,
+                        total,
                         item,
                     ) =>
 
-                        sum +
+                        total +
                         (
                             item.value *
                             item.probability /
@@ -615,8 +622,164 @@ export class OpportunitiesRepository
 
     }
 
-}
 
+
+    private mapToDomain(
+        row: OpportunityRow,
+    ): Opportunity {
+
+
+        return {
+
+            id:
+                row.id,
+
+
+            entityType:
+                "Opportunity",
+
+
+            entityId:
+                row.entity_id
+                ??
+                row.id,
+
+
+            organizationId:
+                row.organization_id
+                ??
+                undefined,
+
+
+            opportunityNumber:
+                row.opportunity_number
+                ??
+                "",
+
+
+            name:
+                row.opportunity_name
+                ??
+                "Untitled Opportunity",
+
+
+            title:
+                row.opportunity_name
+                ??
+                "Untitled Opportunity",
+
+
+            description:
+                row.description
+                ??
+                undefined,
+
+
+            companyId:
+                row.company_id
+                ??
+                undefined,
+
+
+            contactId:
+                row.primary_contact_id
+                ??
+                undefined,
+
+
+            ownerId:
+                row.owner_user_id
+                ??
+                undefined,
+
+
+            status:
+                row.status
+                ??
+                "Open",
+
+
+            stage:
+                row.stage
+                ??
+                "New",
+
+
+            value:
+                Number(
+                    row.amount
+                    ??
+                    0,
+                ),
+
+
+            probability:
+                Number(
+                    row.probability
+                    ??
+                    0,
+                ),
+
+
+            expectedCloseDate:
+                row.expected_close_date
+                ??
+                undefined,
+
+
+            metadata:
+                row.metadata
+                ??
+                {},
+
+
+            isDeleted:
+                row.is_deleted
+                ??
+                false,
+
+
+            deletedAt:
+                row.deleted_at
+                ??
+                undefined,
+
+
+            createdAt:
+                row.created_at,
+
+
+            updatedAt:
+                row.updated_at,
+
+        };
+
+    }
+
+
+
+    private requireId(
+        id: string,
+    ): string {
+
+        const normalized =
+            id?.trim();
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Opportunity id is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+}
 
 
 
@@ -629,10 +792,3 @@ export function createOpportunitiesRepository(
     );
 
 }
-
-
-/**
- * Standard export
- */
-export const OpportunitiesRepositoryInstance =
-    createOpportunitiesRepository;
