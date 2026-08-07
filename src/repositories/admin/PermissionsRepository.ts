@@ -75,6 +75,7 @@ type PermissionRow = {
 
 
 
+
 export interface IPermissionsRepository {
 
 
@@ -82,8 +83,10 @@ export interface IPermissionsRepository {
         Promise<Permission[]>;
 
 
+
     active():
         Promise<Permission[]>;
+
 
 
     findById(
@@ -92,10 +95,12 @@ export interface IPermissionsRepository {
         Promise<Permission | null>;
 
 
+
     findByKey(
         key:string,
     ):
         Promise<Permission | null>;
+
 
 
     search(
@@ -104,10 +109,12 @@ export interface IPermissionsRepository {
         Promise<Permission[]>;
 
 
+
     save(
         permission:Permission,
     ):
-        Promise<void>;
+        Promise<Permission>;
+
 
 
     delete(
@@ -121,17 +128,11 @@ export interface IPermissionsRepository {
 
 
 
-
-
-
 export class PermissionsRepository
 
     extends BaseRepository<Permission>
 
     implements IPermissionsRepository {
-
-
-
 
 
     constructor(
@@ -144,7 +145,6 @@ export class PermissionsRepository
         );
 
     }
-
 
 
 
@@ -172,9 +172,8 @@ export class PermissionsRepository
 
 
 
-
-
     async list():
+
         Promise<Permission[]> {
 
 
@@ -198,6 +197,7 @@ export class PermissionsRepository
                 );
 
 
+
         if(error)
             throw error;
 
@@ -211,7 +211,6 @@ export class PermissionsRepository
                     ),
             );
 
-
     }
 
 
@@ -220,9 +219,8 @@ export class PermissionsRepository
 
 
 
-
-
     async active():
+
         Promise<Permission[]> {
 
 
@@ -264,10 +262,7 @@ export class PermissionsRepository
                     ),
             );
 
-
     }
-
-
 
 
 
@@ -279,7 +274,6 @@ export class PermissionsRepository
         id:string,
     ):
         Promise<Permission | null> {
-
 
 
         const {
@@ -308,17 +302,12 @@ export class PermissionsRepository
 
 
         return data
-            ?
-                this.mapPermission(
-                    data as PermissionRow,
-                )
-            :
-                null;
-
+            ? this.mapPermission(
+                data as PermissionRow,
+            )
+            : null;
 
     }
-
-
 
 
 
@@ -330,7 +319,6 @@ export class PermissionsRepository
         key:string,
     ):
         Promise<Permission | null> {
-
 
 
         const normalizedKey =
@@ -366,17 +354,12 @@ export class PermissionsRepository
 
 
         return data
-            ?
-                this.mapPermission(
-                    data as PermissionRow,
-                )
-            :
-                null;
-
+            ? this.mapPermission(
+                data as PermissionRow,
+            )
+            : null;
 
     }
-
-
 
 
 
@@ -388,7 +371,6 @@ export class PermissionsRepository
         keyword:string,
     ):
         Promise<Permission[]> {
-
 
 
         const search =
@@ -440,10 +422,7 @@ export class PermissionsRepository
                     ),
             );
 
-
     }
-
-
 
 
 
@@ -454,8 +433,7 @@ export class PermissionsRepository
     async save(
         permission:Permission,
     ):
-        Promise<void> {
-
+        Promise<Permission> {
 
 
         const now =
@@ -465,6 +443,7 @@ export class PermissionsRepository
 
 
         const {
+            data,
             error,
 
         } =
@@ -473,7 +452,6 @@ export class PermissionsRepository
                 .upsert(
 
                     {
-
 
                         id:
                             permission.id,
@@ -537,14 +515,17 @@ export class PermissionsRepository
                         updated_at:
                             now,
 
-
                     },
 
                     {
                         onConflict:"id",
                     },
 
-                );
+                )
+
+                .select()
+
+                .single();
 
 
 
@@ -552,9 +533,12 @@ export class PermissionsRepository
             throw error;
 
 
+
+        return this.mapPermission(
+            data as PermissionRow,
+        );
+
     }
-
-
 
 
 
@@ -566,7 +550,6 @@ export class PermissionsRepository
         id:string,
     ):
         Promise<void> {
-
 
 
         const {
@@ -590,10 +573,7 @@ export class PermissionsRepository
         if(error)
             throw error;
 
-
     }
-
-
 
 
 
@@ -607,9 +587,7 @@ export class PermissionsRepository
         Permission {
 
 
-
         return {
-
 
             id:
                 row.id,
@@ -672,11 +650,8 @@ export class PermissionsRepository
             updatedAt:
                 row.updated_at,
 
-
         };
 
-
     }
-
 
 }
