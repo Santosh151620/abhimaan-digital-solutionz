@@ -1,12 +1,8 @@
 "use server";
 
-
 import type {
-
     Workflow,
-
-} from "@/types/admin/Workflow";
-
+} from "@/types/workflow/Workflow";
 
 
 import {

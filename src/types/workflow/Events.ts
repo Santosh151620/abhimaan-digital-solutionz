@@ -1,68 +1,49 @@
 export const WorkflowEvents = {
 
-    LeadCreated: "lead.created",
-    LeadUpdated: "lead.updated",
-    LeadConverted: "lead.converted",
-    LeadDeleted: "lead.deleted",
 
-    CompanyCreated: "company.created",
-    CompanyUpdated: "company.updated",
-    CompanyDeleted: "company.deleted",
+    EntityCreated:
+        "entity.created",
 
-    ContactCreated: "contact.created",
-    ContactUpdated: "contact.updated",
-    ContactDeleted: "contact.deleted",
 
-    OpportunityCreated: "opportunity.created",
-    OpportunityUpdated: "opportunity.updated",
-    OpportunityWon: "opportunity.won",
-    OpportunityLost: "opportunity.lost",
+    EntityUpdated:
+        "entity.updated",
 
-    PipelineStageChanged: "pipeline.stage.changed",
 
-    QuotationCreated: "quotation.created",
-    QuotationSent: "quotation.sent",
-    QuotationAccepted: "quotation.accepted",
-    QuotationRejected: "quotation.rejected",
+    EntityDeleted:
+        "entity.deleted",
 
-    ContractCreated: "contract.created",
-    ContractSigned: "contract.signed",
 
-    InvoiceCreated: "invoice.created",
-    InvoicePaid: "invoice.paid",
-    InvoiceCancelled: "invoice.cancelled",
+    EntityAssigned:
+        "entity.assigned",
 
-    PaymentReceived: "payment.received",
 
-    ProjectCreated: "project.created",
-    ProjectUpdated: "project.updated",
-    ProjectCompleted: "project.completed",
+    EntityStatusChanged:
+        "entity.status.changed",
 
-    TaskCreated: "task.created",
-    TaskAssigned: "task.assigned",
-    TaskCompleted: "task.completed",
 
-    TicketCreated: "ticket.created",
-    TicketAssigned: "ticket.assigned",
-    TicketClosed: "ticket.closed",
+    EntityCompleted:
+        "entity.completed",
 
-    NoteAdded: "note.added",
 
-    AttachmentUploaded: "attachment.uploaded",
+    EntityApproved:
+        "entity.approved",
 
-    NotificationCreated: "notification.created",
 
-    UserCreated: "user.created",
+    EntityRejected:
+        "entity.rejected",
 
-    UserUpdated: "user.updated",
 
-    UserInvited: "user.invited",
+    EntityPublished:
+        "entity.published",
 
-    OrganizationCreated: "organization.created",
 
-    OrganizationUpdated: "organization.updated"
+    EntityArchived:
+        "entity.archived",
+
 
 } as const;
+
+
 
 export type WorkflowEventName =
     typeof WorkflowEvents[keyof typeof WorkflowEvents];

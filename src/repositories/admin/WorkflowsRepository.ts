@@ -1,7 +1,6 @@
 import type {
     Workflow,
-} from "@/types/admin/Workflow";
-
+} from "@/types/workflow/Workflow";
 
 import {
     createSupabaseServerClient,
@@ -473,13 +472,12 @@ export class WorkflowsRepository
            triggerType:
     (row.trigger_type ?? "Manual") as Workflow["triggerType"],
 
+entityType:
+    row.entity_type ?? null,
 
-            entityType:
-                row.entity_type ?? undefined,
 
-
-            actionType:
-                row.action_type ?? undefined,
+actionType:
+    row.action_type ?? null,
 
 
             configuration:

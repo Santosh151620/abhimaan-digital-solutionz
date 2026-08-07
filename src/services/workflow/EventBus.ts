@@ -6,6 +6,7 @@ import type {
     WorkflowEventName,
 } from "@/types/workflow/Events";
 
+
 export interface WorkflowEvent {
 
     name: WorkflowEventName;
@@ -14,12 +15,17 @@ export interface WorkflowEvent {
 
 }
 
+
+
 export type WorkflowEventHandler =
     (
         event: WorkflowEvent
     ) => Promise<void> | void;
 
+
+
 class EventBus {
+
 
     private readonly handlers =
         new Map<
@@ -27,30 +33,65 @@ class EventBus {
             WorkflowEventHandler[]
         >();
 
+
+
     subscribe(
+
         event: WorkflowEventName,
-        handler: WorkflowEventHandler
+
+        handler: WorkflowEventHandler,
+
     ): void {
+
 
         const handlers =
             this.handlers.get(event) ?? [];
 
-        handlers.push(handler);
+
+
+        if (
+            handlers.includes(handler)
+        ) {
+
+            return;
+
+        }
+
+
+
+        handlers.push(
+
+            handler,
+
+        );
+
+
 
         this.handlers.set(
+
             event,
-            handlers
+
+            handlers,
+
         );
 
     }
 
+
+
     unsubscribe(
+
         event: WorkflowEventName,
-        handler: WorkflowEventHandler
+
+        handler: WorkflowEventHandler,
+
     ): void {
+
 
         const handlers =
             this.handlers.get(event);
+
+
 
         if (!handlers) {
 
@@ -58,37 +99,76 @@ class EventBus {
 
         }
 
+
+
         this.handlers.set(
+
             event,
+
             handlers.filter(
-                h => h !== handler
-            )
+
+                existing => existing !== handler,
+
+            ),
+
         );
 
     }
 
+
+
     async publish(
-        event: WorkflowEvent
+
+        event: WorkflowEvent,
+
     ): Promise<void> {
 
-        const handlers =
-            this.handlers.get(event.name);
 
-        if (!handlers?.length) {
+        const handlers = [
 
-            return;
+            ...(this.handlers.get(event.name) ?? []),
 
-        }
+        ];
+
+
 
         for (const handler of handlers) {
 
-            await handler(event);
+
+            try {
+
+                await handler(event);
+
+            }
+
+            catch (error) {
+
+
+                console.error(
+
+                    "Workflow event handler failed",
+
+                    {
+
+                        event:
+                            event.name,
+
+                        error,
+
+                    },
+
+                );
+
+            }
 
         }
 
     }
 
+
 }
+
+
 
 export const eventBus =
     new EventBus();

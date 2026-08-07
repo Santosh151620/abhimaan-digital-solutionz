@@ -6,7 +6,9 @@ import type {
     WorkflowEventName,
 } from "@/types/workflow/Events";
 
+
 class WorkflowRegistry {
+
 
     private readonly rules =
         new Map<
@@ -14,29 +16,77 @@ class WorkflowRegistry {
             WorkflowRule[]
         >();
 
+
+
     register(
-        rule: WorkflowRule
+
+        rule: WorkflowRule,
+
     ): void {
 
-        const rules =
-            this.rules.get(rule.event) ?? [];
 
-        rules.push(rule);
+        const rules =
+            this.rules.get(
+                rule.event,
+            ) ?? [];
+
+
+
+        const exists =
+            rules.some(
+
+                existing =>
+
+                    existing.id === rule.id,
+
+            );
+
+
+
+        if (exists) {
+
+            return;
+
+        }
+
+
+
+        rules.push(
+
+            rule,
+
+        );
+
+
 
         this.rules.set(
+
             rule.event,
-            rules
+
+            rules,
+
         );
 
     }
 
+
+
     getRules(
-        event: WorkflowEventName
+
+        event: WorkflowEventName,
+
     ): WorkflowRule[] {
 
-        return this.rules.get(event) ?? [];
+
+        return [
+
+            ...(this.rules.get(event) ?? []),
+
+        ];
 
     }
+
+
 
     clear(): void {
 
@@ -44,7 +94,10 @@ class WorkflowRegistry {
 
     }
 
+
 }
+
+
 
 export const workflowRegistry =
     new WorkflowRegistry();

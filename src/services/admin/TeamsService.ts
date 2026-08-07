@@ -15,7 +15,7 @@ export class TeamsService {
 
     ) {}
 
-    async list():
+    async getAll():
 
     Promise<Team[]> {
 

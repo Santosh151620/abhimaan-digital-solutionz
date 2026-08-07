@@ -14,15 +14,18 @@ import {
     workflowEngine,
 } from "./WorkflowEngine";
 
+
 export class WorkflowService {
+
 
     async publish(
 
         event: WorkflowEventName,
 
-        context: WorkflowContext
+        context: WorkflowContext,
 
     ): Promise<void> {
+
 
         await eventBus.publish({
 
@@ -32,17 +35,20 @@ export class WorkflowService {
 
         });
 
+
         await workflowEngine.execute(
 
             event,
 
-            context
+            context,
 
         );
 
     }
 
+
 }
+
 
 export const workflowService =
     new WorkflowService();

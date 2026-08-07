@@ -7,12 +7,12 @@ export {
 } from "./AnnouncementsService";
 
 export {
-    AuditService,
-} from "./AuditService";
-
-export {
     AuditLogsService,
 } from "./AuditLogsService";
+
+export {
+    AuditService,
+} from "./AuditService";
 
 export {
     BranchesService,

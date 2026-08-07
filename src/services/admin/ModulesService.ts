@@ -308,23 +308,22 @@ export class ModulesService {
 
         );
 
-        const module =
-            await this.repository.findById(
-                id,
-            );
+        const existingModule =
+    await this.repository.findById(
+        id,
+    );
 
-        if(!module) {
-            throw new Error(
-                "Module not found.",
-            );
-        }
+if(!existingModule) {
+    throw new Error(
+        "Module not found.",
+    );
+}
 
-        if(module.isSystem) {
-            throw new Error(
-                "System modules cannot be deleted.",
-            );
-        }
-
+if(existingModule.isSystem) {
+    throw new Error(
+        "System modules cannot be deleted.",
+    );
+}
         await this.repository.delete(
             id,
 
