@@ -14,61 +14,73 @@ import type {
 
 
 
+type OrganizationRow = {
+
+    id:string;
+
+    name:string;
+
+    code:string;
+
+    description:string | null;
+
+    type:string | null;
+
+    status:string | null;
+
+    is_system:boolean | null;
+
+    is_active:boolean | null;
+
+    created_at:string;
+
+    updated_at:string;
+
+};
+
+
+
+
 export interface IOrganizationsRepository {
 
 
     list():
-
         Promise<Organization[]>;
 
 
 
     active():
-
         Promise<Organization[]>;
 
 
 
     findById(
-
-        id: string,
-
+        id:string,
     ):
-
         Promise<Organization | null>;
 
 
 
     findByCode(
-
-        code: string,
-
+        code:string,
     ):
-
         Promise<Organization | null>;
 
 
 
     save(
-
-        organization: Organization,
-
+        organization:Organization,
     ):
-
         Promise<Organization>;
 
 
 
     delete(
-
-        id: string,
-
+        id:string,
     ):
-
         Promise<void>;
 
 }
-
 
 
 
@@ -81,17 +93,12 @@ export class OrganizationsRepository
 
 
     constructor(
-
-        supabase: SupabaseClient,
-
-    ) {
+        supabase:SupabaseClient,
+    ){
 
         super(
-
             supabase,
-
             "organizations",
-
         );
 
     }
@@ -99,15 +106,13 @@ export class OrganizationsRepository
 
 
 
-    async list():
 
+    async list():
         Promise<Organization[]> {
 
 
         const {
-
             data,
-
             error,
 
         } = await this
@@ -117,32 +122,27 @@ export class OrganizationsRepository
             .select("*")
 
             .order(
-
                 "name",
-
                 {
-
-                    ascending: true,
-
+                    ascending:true,
                 },
-
             );
 
 
 
-        if (error) {
-
+        if(error)
             throw error;
 
-        }
 
 
+        return (data ?? [])
 
-        return (
-
-            data ?? []
-
-        ) as Organization[];
+            .map(
+                row =>
+                    this.mapOrganization(
+                        row as OrganizationRow,
+                    ),
+            );
 
     }
 
@@ -151,14 +151,11 @@ export class OrganizationsRepository
 
 
     async active():
-
         Promise<Organization[]> {
 
 
         const {
-
             data,
-
             error,
 
         } = await this
@@ -168,40 +165,32 @@ export class OrganizationsRepository
             .select("*")
 
             .eq(
-
                 "is_active",
-
                 true,
-
             )
 
             .order(
-
                 "name",
-
                 {
-
-                    ascending: true,
-
+                    ascending:true,
                 },
-
             );
 
 
 
-        if (error) {
-
+        if(error)
             throw error;
 
-        }
 
 
+        return (data ?? [])
 
-        return (
-
-            data ?? []
-
-        ) as Organization[];
+            .map(
+                row =>
+                    this.mapOrganization(
+                        row as OrganizationRow,
+                    ),
+            );
 
     }
 
@@ -210,39 +199,13 @@ export class OrganizationsRepository
 
 
     async findById(
-
-        id: string,
-
+        id:string,
     ):
-
-        Promise<Organization | null> {
-
-
-        return super.findById(
-
-            id,
-
-        );
-
-    }
-
-
-
-
-
-    async findByCode(
-
-        code: string,
-
-    ):
-
         Promise<Organization | null> {
 
 
         const {
-
             data,
-
             error,
 
         } = await this
@@ -252,34 +215,72 @@ export class OrganizationsRepository
             .select("*")
 
             .eq(
-
-                "code",
-
-                code
-
-                    .trim()
-
-                    .toUpperCase(),
-
+                "id",
+                id,
             )
 
             .maybeSingle();
 
 
 
-        if (error) {
-
+        if(error)
             throw error;
 
-        }
+
+
+        return data
+
+            ? this.mapOrganization(
+                data as OrganizationRow,
+            )
+
+            : null;
+
+    }
 
 
 
-        return (
 
-            data as Organization
 
-        ) ?? null;
+    async findByCode(
+        code:string,
+    ):
+        Promise<Organization | null> {
+
+
+        const {
+            data,
+            error,
+
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .eq(
+                "code",
+                code
+                    .trim()
+                    .toUpperCase(),
+            )
+
+            .maybeSingle();
+
+
+
+        if(error)
+            throw error;
+
+
+
+        return data
+
+            ? this.mapOrganization(
+                data as OrganizationRow,
+            )
+
+            : null;
 
     }
 
@@ -288,18 +289,13 @@ export class OrganizationsRepository
 
 
     async save(
-
-        organization: Organization,
-
+        organization:Organization,
     ):
-
         Promise<Organization> {
 
 
         const {
-
             data,
-
             error,
 
         } = await this
@@ -308,7 +304,39 @@ export class OrganizationsRepository
 
             .upsert(
 
-                organization,
+                {
+
+                    id:
+                        organization.id,
+
+                    name:
+                        organization.name,
+
+                    code:
+                        organization.code,
+
+                    description:
+                        organization.description,
+
+                    type:
+                        organization.type,
+
+                    status:
+                        organization.status,
+
+                    is_system:
+                        organization.isSystem,
+
+                    is_active:
+                        organization.isActive,
+
+                    created_at:
+                        organization.createdAt,
+
+                    updated_at:
+                        organization.updatedAt,
+
+                },
 
             )
 
@@ -318,15 +346,14 @@ export class OrganizationsRepository
 
 
 
-        if (error) {
-
+        if(error)
             throw error;
 
-        }
 
 
-
-        return data as Organization;
+        return this.mapOrganization(
+            data as OrganizationRow,
+        );
 
     }
 
@@ -335,16 +362,12 @@ export class OrganizationsRepository
 
 
     async delete(
-
-        id: string,
-
+        id:string,
     ):
-
         Promise<void> {
 
 
         const {
-
             error,
 
         } = await this
@@ -354,20 +377,69 @@ export class OrganizationsRepository
             .delete()
 
             .eq(
-
                 "id",
-
                 id,
-
             );
 
 
 
-        if (error) {
-
+        if(error)
             throw error;
 
-        }
+    }
+
+
+
+
+
+    private mapOrganization(
+        row:OrganizationRow,
+    ):
+        Organization {
+
+
+        return {
+
+            id:
+                row.id,
+
+
+            name:
+                row.name,
+
+
+            code:
+                row.code,
+
+
+            description:
+                row.description ?? "",
+
+
+            type:
+                (row.type ?? "Organization") as Organization["type"],
+
+
+            status:
+                (row.status ?? "Active") as Organization["status"],
+
+
+            isSystem:
+                row.is_system ?? false,
+
+
+            isActive:
+                row.is_active ?? false,
+
+
+            createdAt:
+                row.created_at,
+
+
+            updatedAt:
+                row.updated_at,
+
+        };
 
     }
 

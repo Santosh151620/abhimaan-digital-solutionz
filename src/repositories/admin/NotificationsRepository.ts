@@ -1,6 +1,31 @@
+/**
+ * ============================================================================
+ * Notifications Repository
+ *
+ * Admin Notification Registry
+ *
+ * Architecture:
+ *
+ * NotificationService
+ *        ↓
+ * NotificationsRepository
+ *        ↓
+ * TenantContextManager
+ *        ↓
+ * notifications
+ *
+ * ============================================================================
+ */
+
+
 import {
     TenantContextManager,
 } from "@/lib/tenant/tenantContext";
+
+
+import {
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
 
 
 import type {
@@ -8,9 +33,6 @@ import type {
 } from "@/types/admin/Notification";
 
 
-import {
-    createSupabaseServerClient,
-} from "@/lib/supabase/server-client";
 
 
 
@@ -46,7 +68,58 @@ type NotificationRow = {
 
 
 
-export class NotificationsRepository {
+
+
+export interface INotificationsRepository {
+
+
+    findAll():
+        Promise<Notification[]>;
+
+
+
+    findById(
+        id:string,
+    ):
+        Promise<Notification | null>;
+
+
+
+    findByUser(
+        userId:string,
+    ):
+        Promise<Notification[]>;
+
+
+
+    create(
+        notification:Partial<Notification>,
+    ):
+        Promise<Notification>;
+
+
+
+    markAsRead(
+        id:string,
+    ):
+        Promise<void>;
+
+
+
+    delete(
+        id:string,
+    ):
+        Promise<void>;
+
+}
+
+
+
+
+
+export class NotificationsRepository
+
+    implements INotificationsRepository {
 
 
     private async client(){
@@ -54,6 +127,8 @@ export class NotificationsRepository {
         return await createSupabaseServerClient();
 
     }
+
+
 
 
 
@@ -69,7 +144,20 @@ export class NotificationsRepository {
 
 
 
+    static async create():
+
+        Promise<NotificationsRepository> {
+
+        return new NotificationsRepository();
+
+    }
+
+
+
+
+
     async findAll():
+
         Promise<Notification[]> {
 
 
@@ -81,6 +169,7 @@ export class NotificationsRepository {
         const {
             data,
             error,
+
         } =
             await supabase
 
@@ -121,10 +210,12 @@ export class NotificationsRepository {
 
 
 
+
+
     async findById(
         id:string,
     ):
-        Promise<Notification | null>{
+        Promise<Notification | null> {
 
 
         const supabase =
@@ -135,6 +226,7 @@ export class NotificationsRepository {
         const {
             data,
             error,
+
         } =
             await supabase
 
@@ -174,6 +266,7 @@ export class NotificationsRepository {
 
 
 
+
     async findByUser(
         userId:string,
     ):
@@ -188,6 +281,7 @@ export class NotificationsRepository {
         const {
             data,
             error,
+
         } =
             await supabase
 
@@ -238,7 +332,27 @@ export class NotificationsRepository {
     async create(
         notification:Partial<Notification>,
     ):
-        Promise<Notification>{
+        Promise<Notification> {
+
+
+        if(!notification.title?.trim()){
+
+            throw new Error(
+                "Notification title is required.",
+            );
+
+        }
+
+
+
+        if(!notification.message?.trim()){
+
+            throw new Error(
+                "Notification message is required.",
+            );
+
+        }
+
 
 
         const supabase =
@@ -246,67 +360,97 @@ export class NotificationsRepository {
 
 
 
-        if(!notification.title?.trim())
-            throw new Error(
-                "Notification title is required.",
-            );
-
-
-        if(!notification.message?.trim())
-            throw new Error(
-                "Notification message is required.",
-            );
+        const now =
+            new Date()
+                .toISOString();
 
 
 
         const {
             data,
             error,
+
         } =
             await supabase
 
                 .from("notifications")
 
                 .upsert(
+
                     {
 
                         id:
                             notification.id,
 
+
                         organization_id:
                             this.organizationId,
 
+
                         user_id:
-                            notification.userId ?? null,
+                            notification.userId
+                            ??
+                            null,
+
 
                         title:
-                            notification.title.trim(),
+                            notification.title
+                                .trim(),
+
 
                         message:
-                            notification.message.trim(),
+                            notification.message
+                                .trim(),
+
 
                         type:
-                            notification.type ?? "INFO",
+                            notification.type
+                            ??
+                            "INFO",
+
 
                         status:
-                            notification.status ?? "UNREAD",
+                            notification.status
+                            ??
+                            "UNREAD",
+
 
                         entity_type:
-                            notification.entityType ?? null,
+                            notification.entityType
+                            ??
+                            null,
+
 
                         entity_id:
-                            notification.entityId ?? null,
+                            notification.entityId
+                            ??
+                            null,
+
 
                         action_url:
-                            notification.actionUrl ?? null,
+                            notification.actionUrl
+                            ??
+                            null,
+
 
                         metadata:
-                            notification.metadata ?? {},
+                            notification.metadata
+                            ??
+                            {},
+
+
+                        created_at:
+                            notification.createdAt
+                            ??
+                            now,
+
 
                     },
+
                     {
                         onConflict:"id",
                     },
+
                 )
 
                 .select()
@@ -332,11 +476,10 @@ export class NotificationsRepository {
 
 
 
-
     async markAsRead(
         id:string,
     ):
-        Promise<void>{
+        Promise<void> {
 
 
         const supabase =
@@ -346,22 +489,26 @@ export class NotificationsRepository {
 
         const {
             error,
+
         } =
             await supabase
 
                 .from("notifications")
 
                 .update(
+
                     {
 
                         status:
                             "READ",
+
 
                         read_at:
                             new Date()
                                 .toISOString(),
 
                     },
+
                 )
 
                 .eq(
@@ -390,7 +537,7 @@ export class NotificationsRepository {
     async delete(
         id:string,
     ):
-        Promise<void>{
+        Promise<void> {
 
 
         const supabase =
@@ -400,6 +547,7 @@ export class NotificationsRepository {
 
         const {
             error,
+
         } =
             await supabase
 
@@ -430,7 +578,6 @@ export class NotificationsRepository {
 
 
 
-
     private mapNotification(
         row:NotificationRow,
     ):
@@ -448,7 +595,9 @@ export class NotificationsRepository {
 
 
             userId:
-                row.user_id ?? undefined,
+                row.user_id
+                ??
+                undefined,
 
 
             title:
@@ -460,27 +609,39 @@ export class NotificationsRepository {
 
 
             type:
-                row.type ?? "INFO",
+                row.type
+                ??
+                "INFO",
 
 
             status:
-                row.status ?? "UNREAD",
+                row.status
+                ??
+                "UNREAD",
 
 
             entityType:
-                row.entity_type ?? undefined,
+                row.entity_type
+                ??
+                undefined,
 
 
             entityId:
-                row.entity_id ?? undefined,
+                row.entity_id
+                ??
+                undefined,
 
 
             actionUrl:
-                row.action_url ?? undefined,
+                row.action_url
+                ??
+                undefined,
 
 
             metadata:
-                row.metadata ?? {},
+                row.metadata
+                ??
+                {},
 
 
             createdAt:
@@ -488,7 +649,9 @@ export class NotificationsRepository {
 
 
             readAt:
-                row.read_at ?? undefined,
+                row.read_at
+                ??
+                undefined,
 
         };
 
