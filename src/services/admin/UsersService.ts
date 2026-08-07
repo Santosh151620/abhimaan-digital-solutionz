@@ -130,9 +130,9 @@ export class UsersService {
 
             email
 
-            .trim()
+                .trim()
 
-            .toLowerCase(),
+                .toLowerCase(),
 
         );
 
@@ -170,11 +170,25 @@ export class UsersService {
 
 
 
+        const normalizedEmail =
+
+            user.email
+
+                .trim()
+
+                .toLowerCase();
+
+
+
+
+
+
+
         const existing =
 
             await this.repository.findByEmail(
 
-                user.email,
+                normalizedEmail,
 
             );
 
@@ -216,13 +230,11 @@ export class UsersService {
 
                 ...user,
 
+
                 email:
 
-                    user.email
+                    normalizedEmail,
 
-                    .trim()
-
-                    .toLowerCase(),
 
                 updatedAt:
 
@@ -381,6 +393,50 @@ export class UsersService {
             throw new Error(
 
                 "Email is required."
+
+            );
+
+
+
+        }
+
+
+
+
+
+
+
+        const email =
+
+            user.email
+
+                .trim()
+
+                .toLowerCase();
+
+
+
+
+
+
+
+        const emailRegex =
+
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+
+
+
+
+
+        if(!emailRegex.test(email)) {
+
+
+
+            throw new Error(
+
+                "Invalid email address."
 
             );
 

@@ -255,140 +255,63 @@ export default function PermissionsClient({
     }
 
 
+async function handleDelete(
 
+    id:string,
 
+) {
 
+    try {
 
+        setLoading(true);
 
+        setError(null);
 
+        await deletePermission(
 
-    async function handleDelete(
+            id,
 
-        id:string,
+        );
 
-    ) {
+        setPermissions(
 
+            previous =>
 
+                previous.filter(
 
-        if(
+                    item =>
 
-            !window.confirm(
+                        item.id !== id,
 
-                "Delete this permission?"
+                ),
 
-            )
+        );
 
-        ) {
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-
-
-        try {
-
-
-
-            setLoading(true);
-
-
-
-            setError(null);
-
-
-
-
-
-
-
-            await deletePermission(
-
-                id,
-
-            );
-
-
-
-
-
-
-
-            setPermissions(
-
-                previous =>
-
-                    previous.filter(
-
-                        item =>
-
-                            item.id !== id,
-
-                    ),
-
-            );
-
-
-
-
-
-
-
-            router.refresh();
-
-
-
-        }
-
-        catch(error) {
-
-
-
-            setError(
-
-
-
-                error instanceof Error
-
-                ? error.message
-
-                : "Unable to delete permission."
-
-
-
-            );
-
-
-
-        }
-
-        finally {
-
-
-
-            setLoading(false);
-
-
-
-        }
-
-
+        router.refresh();
 
     }
 
+    catch(error) {
 
+        setError(
 
+            error instanceof Error
 
+                ? error.message
 
+                : "Unable to delete permission.",
 
+        );
+
+    }
+
+    finally {
+
+        setLoading(false);
+
+    }
+
+}
 
 
 

@@ -1,28 +1,42 @@
 import type { UserSession } from "./rbac";
 
+
 /**
  * Ensures data isolation per tenant (SaaS core rule)
  */
 export function assertTenantAccess(
-  user: UserSession,
-  tenantId: string
+    user: UserSession,
+    tenantId: string,
 ) {
- 
-  if (user.role === "SUPER_ADMIN") {
+
+    /**
+     * Platform administrators
+     * can cross tenant boundaries
+     */
+    if (
+        user.role === "SUPER_ADMIN"
+    ) {
+
+        return true;
+
+    }
+
+
+    /**
+     * Normal users must stay
+     * inside their tenant
+     */
+    if (
+        user.tenantId !== tenantId
+    ) {
+
+        throw new Error(
+            "Tenant access denied",
+        );
+
+    }
+
 
     return true;
 
 }
-
-  if (user.tenantId !== tenantId) {
-    throw new Error("TENANT_ACCESS_DENIED");
-  }
-
-  return true;
-}
-
-
-
-
-
-

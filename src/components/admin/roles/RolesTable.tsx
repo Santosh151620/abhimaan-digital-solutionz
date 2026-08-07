@@ -15,7 +15,7 @@ interface RolesTableProps {
 
 
 
-    roles:Role[];
+    roles: Role[];
 
 
 
@@ -23,11 +23,11 @@ interface RolesTableProps {
 
     onEdit?:
 
-        (
+    (
 
-            role:Role,
+        role: Role,
 
-        ) => void;
+    ) => void;
 
 
 
@@ -35,11 +35,11 @@ interface RolesTableProps {
 
     onDelete?:
 
-        (
+    (
 
-            id:string,
+        id: string,
 
-        ) => Promise<void>;
+    ) => Promise<void>;
 
 
 
@@ -69,7 +69,7 @@ export default function RolesTable({
 
 
 
-}:RolesTableProps) {
+}: RolesTableProps) {
 
 
 
@@ -246,227 +246,66 @@ export default function RolesTable({
                         )
 
                     }
-
-
-
-
-
-
-
-
-
                     {
-
                         roles.map(
-
-
-
                             role => (
-
-
-
                                 <tr
-
-
-
                                     key={role.id}
-
-
-
                                     className="
-
                                         border-t
-
                                         hover:bg-muted/20
-
                                     "
-
-
-
                                 >
-
-
-
                                     <td
-
                                         className="
-
                                             p-3
-
                                             font-medium
-
                                         "
-
                                     >
-
-
-
                                         {role.name}
 
-
-
                                     </td>
-
-
-
-
-
-
-
-
-
                                     <td
-
                                         className="
-
                                             p-3
-
                                             font-mono
-
                                             text-sm
-
                                         "
-
                                     >
-
-
-
                                         {role.code}
-
-
-
                                     </td>
-
-
-
-
-
-
-
-
-
                                     <td className="p-3">
-
-
-
                                         {role.type}
-
-
-
                                     </td>
-
-
-
-
-
-
-
-
-
                                     <td className="p-3">
-
-
-
                                         {role.level}
-
-
-
                                     </td>
-
-
-
-
-
-
-
-
-
                                     <td className="p-3">
-
-
-
                                         {role.status}
-
-
-
                                     </td>
-
-
-
-
-
-
-
-
-
                                     <td className="p-3">
-
-
-
                                         {
-
                                             role.isSystem
-
-                                            ? "Yes"
-
-                                            : "No"
-
+                                                ? "Yes"
+                                                : "No"
                                         }
-
-
-
                                     </td>
-
-
-
-
-
-
-
-
-
                                     <td className="p-3">
-
-
-
                                         <div
-
                                             className="
-
                                                 flex
-
                                                 justify-end
-
                                                 gap-2
-
                                             "
-
                                         >
-
-
-
                                             {
-
                                                 onEdit && (
-
-
-
                                                     <button
-
-
-
                                                         type="button"
-
-
-
                                                         onClick={() =>
-
                                                             onEdit(
-
                                                                 role,
-
                                                             )
-
                                                         }
 
 
@@ -515,96 +354,55 @@ export default function RolesTable({
 
                                                 !role.isSystem && (
 
+<button
+    type="button"
+    disabled={!onDelete}
+    onClick={async () => {
 
+        if (!onDelete) {
 
-                                                    <button
+            return;
 
+        }
 
+        const confirmed = window.confirm(
+            `Delete role "${role.name}"?`
+        );
 
-                                                        type="button"
+        if (!confirmed) {
 
+            return;
 
+        }
 
-                                                        onClick={() =>
+        await onDelete(
+            role.id,
+        );
 
-                                                            void onDelete(
-
-                                                                role.id,
-
-                                                            )
-
-                                                        }
-
-
-
-                                                        className="
-
-                                                            rounded-md
-
-                                                            border
-
-                                                            px-3
-
-                                                            py-1
-
-                                                            text-destructive
-
-                                                        "
-
-
-
-                                                    >
-
-
-
-                                                        Delete
-
-
-
-                                                    </button>
-
-
+    }}
+    className="
+        rounded-md
+        border
+        px-3
+        py-1
+        text-destructive
+        disabled:cursor-not-allowed
+        disabled:opacity-50
+    "
+>
+    Delete
+</button>
 
                                                 )
-
                                             }
-
-
-
                                         </div>
-
-
-
                                     </td>
-
-
-
                                 </tr>
-
-
-
                             )
-
                         )
-
                     }
-
-
-
                 </tbody>
-
-
-
             </table>
-
-
-
         </div>
-
-
-
     );
-
-
-
 }

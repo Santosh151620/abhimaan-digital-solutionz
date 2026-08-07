@@ -22,155 +22,94 @@ type PermissionRow = {
 
 
 
-    id:string;
+    id: string;
 
 
 
-    organization_id:string | null;
+    organization_id: string | null;
 
 
 
-    key:string;
+    key: string;
 
 
 
-    name:string;
+    name: string;
 
 
 
-    description:string | null;
+    description: string | null;
 
 
 
-    module:string;
+    module: string;
 
 
 
-    action:string;
+    action: string;
 
 
 
-    type:string;
+    type: string;
 
 
 
-    is_system:boolean | null;
+    is_system: boolean | null;
 
 
 
-    is_active:boolean | null;
+    is_active: boolean | null;
 
 
 
-    metadata:Record<string,unknown> | null;
+    metadata: Record<string, unknown> | null;
 
 
 
-    created_at:string;
+    created_at: string;
 
 
 
-    updated_at:string;
+    updated_at: string;
 
 
 
 };
 
-
-
-
-
-
-
-
-
 export interface IPermissionsRepository {
 
-
-
     list():
-
         Promise<Permission[]>;
-
-
-
-
 
     active():
-
         Promise<Permission[]>;
-
-
-
-
 
     findById(
-
         id:string,
-
     ):
-
         Promise<Permission | null>;
-
-
-
-
 
     findByKey(
-
         key:string,
-
     ):
-
         Promise<Permission | null>;
 
-
-
-
-
     search(
-
         keyword:string,
-
     ):
-
         Promise<Permission[]>;
 
-
-
-
-
     save(
-
         permission:Permission,
-
     ):
-
         Promise<void>;
-
-
-
-
 
     delete(
-
         id:string,
-
     ):
-
         Promise<void>;
 
-
-
 }
-
-
-
-
-
-
-
-
 
 export class PermissionsRepository
 
@@ -186,7 +125,7 @@ export class PermissionsRepository
 
     constructor(
 
-        supabase:SupabaseClient,
+        supabase: SupabaseClient,
 
     ) {
 
@@ -236,7 +175,7 @@ export class PermissionsRepository
 
                 {
 
-                    ascending:true,
+                    ascending: true,
 
                 },
 
@@ -248,7 +187,7 @@ export class PermissionsRepository
 
 
 
-        if(error)
+        if (error)
 
             throw error;
 
@@ -266,7 +205,7 @@ export class PermissionsRepository
 
                     this.mapPermission(
 
-                        row as PermissionRow,
+                        row as unknown as PermissionRow,
 
                     ),
 
@@ -316,7 +255,7 @@ export class PermissionsRepository
 
 
 
-        if(error)
+        if (error)
 
             throw error;
 
@@ -334,7 +273,7 @@ export class PermissionsRepository
 
                     this.mapPermission(
 
-                        row as PermissionRow,
+                        row as unknown as PermissionRow,
 
                     ),
 
@@ -354,7 +293,7 @@ export class PermissionsRepository
 
     async findById(
 
-        id:string,
+        id: string,
 
     ):
 
@@ -390,7 +329,7 @@ export class PermissionsRepository
 
 
 
-        if(error)
+        if (error)
 
             throw error;
 
@@ -404,7 +343,7 @@ export class PermissionsRepository
 
             ? this.mapPermission(
 
-                data as PermissionRow,
+                data as unknown as PermissionRow,
 
             )
 
@@ -414,169 +353,70 @@ export class PermissionsRepository
 
     }
 
+async findByKey(
+    key:string,
+):
+    Promise<Permission | null> {
 
+    const {
+        data,
+        error,
+    } = await this
+        .tableRef()
+        .select("*")
+        .eq(
+            "key",
+            key.trim().toLowerCase(),
+        )
+        .maybeSingle();
 
+    if(error)
+        throw error;
 
-
-
-
-
-
-    async findByKey(
-
-        key:string,
-
-    ):
-
-        Promise<Permission | null> {
-
-
-
-        const {
-
-            data,
-
-            error,
-
-        } = await this
-
-            .tableRef()
-
-            .select("*")
-
-            .eq(
-
-                "key",
-
-                key,
-
-            )
-
-            .maybeSingle();
-
-
-
-
-
-
-
-        if(error)
-
-            throw error;
-
-
-
-
-
-
-
-        return data
-
-            ? this.mapPermission(
-
-                data as PermissionRow,
-
-            )
-
-            : null;
-
-
-
-    }
-
-
-
-
-
-
-
-
+    return data
+        ? this.mapPermission(
+            data as PermissionRow,
+        )
+        : null;
+}
 
     async search(
+        keyword: string,
+    ): Promise<Permission[]> {
 
-        keyword:string,
-
-    ):
-
-        Promise<Permission[]> {
-
-
+        const search =
+            keyword.trim();
 
         const {
-
             data,
-
             error,
-
         } = await this
-
             .tableRef()
-
             .select("*")
-
             .or(
-
                 [
-
-                    `name.ilike.%${keyword}%`,
-
-                    `module.ilike.%${keyword}%`,
-
-                    `action.ilike.%${keyword}%`,
-
-                    `key.ilike.%${keyword}%`,
-
-                ]
-
-                .join(","),
-
+                    `name.ilike.%${search}%`,
+                    `module.ilike.%${search}%`,
+                    `action.ilike.%${search}%`,
+                    `key.ilike.%${search}%`,
+                ].join(","),
             );
 
-
-
-
-
-
-
-        if(error)
-
+        if (error) {
             throw error;
+        }
 
-
-
-
-
-
-
-        return (data ?? [])
-
-            .map(
-
-                row =>
-
-                    this.mapPermission(
-
-                        row as PermissionRow,
-
-                    ),
-
-            );
-
-
-
+        return (data ?? []).map(
+            row =>
+                this.mapPermission(
+                    row as unknown as PermissionRow,
+                ),
+        );
     }
-
-
-
-
-
-
-
-
 
     async save(
 
-        permission:Permission,
+        permission: Permission,
 
     ):
 
@@ -594,89 +434,63 @@ export class PermissionsRepository
 
             .upsert({
 
-
-
                 id:
 
                     permission.id,
-
-
 
                 organization_id:
 
                     permission.organizationId ?? null,
 
-
-
                 key:
 
-                    permission.key,
-
-
+                    permission.key
+                        .trim()
+                        .toLowerCase(),
 
                 name:
 
-                    permission.name,
-
-
+                    permission.name.trim(),
 
                 description:
 
                     permission.description ?? null,
 
-
-
                 module:
 
-                    permission.module,
-
-
+                    permission.module.trim(),
 
                 action:
 
-                    permission.action,
-
-
+                    permission.action.trim(),
 
                 type:
 
                     permission.type,
 
-
-
                 is_system:
 
                     permission.isSystem,
-
-
 
                 is_active:
 
                     permission.isActive,
 
-
-
                 metadata:
 
                     permission.metadata ?? {},
 
+                created_at:
 
+                    permission.createdAt,
 
                 updated_at:
 
                     permission.updatedAt,
 
-
-
             });
 
-
-
-
-
-
-
-        if(error)
+        if (error)
 
             throw error;
 
@@ -694,7 +508,7 @@ export class PermissionsRepository
 
     async delete(
 
-        id:string,
+        id: string,
 
     ):
 
@@ -713,113 +527,37 @@ export class PermissionsRepository
     }
 
 
-
-
-
-
-
-
-
     private mapPermission(
+        row: PermissionRow,
 
-        row:PermissionRow,
-
-    ):Permission {
-
-
-
+    ): Permission {
         return {
-
-
-
             id:
-
                 row.id,
-
-
-
             organizationId:
-
-                row.organization_id
-
-                ?? undefined,
-
-
-
+                row.organization_id ?? "",
             key:
-
                 row.key,
-
-
-
             name:
-
                 row.name,
-
-
-
             description:
-
-                row.description
-
-                ?? undefined,
-
-
-
+                row.description ?? "",
             module:
-
                 row.module,
-
-
-
             action:
-
                 row.action,
-
-
-
             type:
-
                 row.type as Permission["type"],
-
-
-
             isSystem:
-
                 row.is_system ?? false,
-
-
-
             isActive:
-
                 row.is_active ?? false,
-
-
-
             metadata:
-
                 row.metadata ?? {},
-
-
-
             createdAt:
-
                 row.created_at,
-
-
-
             updatedAt:
-
                 row.updated_at,
-
-
-
         };
-
-
-
     }
-
-
-
 }

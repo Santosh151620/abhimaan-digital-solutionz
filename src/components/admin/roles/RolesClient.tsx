@@ -268,32 +268,6 @@ export default function RolesClient({
 
     ) {
 
-
-
-        if(
-
-            !window.confirm(
-
-                "Delete this role?"
-
-            )
-
-        ) {
-
-
-
-            return;
-
-
-
-        }
-
-
-
-
-
-
-
         try {
 
 
@@ -625,57 +599,23 @@ export default function RolesClient({
             {
 
                 loading && (
-
-
-
                     <div
-
                         className="
-
                             fixed
-
                             bottom-6
-
                             right-6
-
                             rounded-md
-
                             border
-
                             bg-background
-
                             px-4
-
                             py-2
-
                             shadow
-
                         "
-
                     >
-
-
-
                         Processing...
-
-
-
                     </div>
-
-
-
                 )
-
             }
-
-
-
         </div>
-
-
-
     );
-
-
-
 }

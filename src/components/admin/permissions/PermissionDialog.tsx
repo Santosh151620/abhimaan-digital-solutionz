@@ -196,17 +196,25 @@ export default function PermissionDialog({
         try {
             setLoading(true);
             if(permission) {
-               await updatePermission(
-                    {
-                        ...permission,
-                        ...form,
-                    } as Permission,
-                );
+             await updatePermission({
+    ...permission,
+    ...form,
+    key: form.key?.trim(),
+    name: form.name?.trim(),
+    module: form.module?.trim(),
+    action: form.action?.trim(),
+    description: form.description?.trim(),
+} as Permission);
             }
             else {
-                await createPermission(
-                    form,
-                );
+              await createPermission({
+    ...form,
+    key: form.key?.trim(),
+    name: form.name?.trim(),
+    module: form.module?.trim(),
+    action: form.action?.trim(),
+    description: form.description?.trim(),
+});
             }
             router.refresh();
             onClose();

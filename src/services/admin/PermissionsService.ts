@@ -173,14 +173,9 @@ export class PermissionsService {
     Promise<Permission[]> {
 
 
-
-        return this.repository.search(
-
-            keyword,
-
-        );
-
-
+return this.repository.search(
+    keyword.trim(),
+);
 
     }
 
@@ -214,14 +209,15 @@ export class PermissionsService {
 
 
 
-        const existing =
+        const normalizedKey =
+    permission.key
+        .trim()
+        .toLowerCase();
 
-            await this.repository.findByKey(
-
-                permission.key,
-
-            );
-
+const existing =
+    await this.repository.findByKey(
+        normalizedKey,
+    );
 
 
 
@@ -248,37 +244,29 @@ export class PermissionsService {
 
         }
 
+ await this.repository.save({
 
+    ...permission,
 
+    key:
+        permission.key
+            .trim()
+            .toLowerCase(),
 
+    name:
+        permission.name.trim(),
 
+    module:
+        permission.module.trim(),
 
+    action:
+        permission.action.trim(),
 
-        await this.repository.save(
+    updatedAt:
+        new Date()
+            .toISOString(),
 
-            {
-
-                ...permission,
-
-                key:
-
-                    permission.key
-
-                    .trim()
-
-                    .toLowerCase(),
-
-                updatedAt:
-
-                    new Date()
-
-                    .toISOString(),
-
-            },
-
-        );
-
-
+});
 
     }
 
@@ -406,12 +394,6 @@ export class PermissionsService {
 
         }
 
-
-
-
-
-
-
         if(!permission.name?.trim()) {
 
 
@@ -426,84 +408,32 @@ export class PermissionsService {
 
         }
 
-
-
-
-
-
-
         if(!permission.module?.trim()) {
-
-
-
             throw new Error(
-
                 "Permission module is required."
-
             );
 
-
-
         }
-
-
-
-
-
-
-
         if(!permission.action?.trim()) {
-
-
-
             throw new Error(
-
                 "Permission action is required."
-
             );
-
-
-
         }
+        if (!permission.type) {
 
+    throw new Error(
+        "Permission type is required.",
+    );
 
-
+}
     }
-
-
-
-
-
-
-
-
-
     private validateId(
-
         id:string,
-
     ) {
-
-
-
         if(!id?.trim()) {
-
-
-
             throw new Error(
-
                 "Permission id is required."
-
             );
-
-
-
         }
-
-
-
     }
-
-
-
 }

@@ -505,55 +505,51 @@ export default function PermissionsTable({
 
                                                 !permission.isSystem && (
 
+<button
 
+    type="button"
 
-                                                    <button
+    onClick={() => {
 
+        if (
 
+            window.confirm(
 
-                                                        type="button"
+                `Delete permission "${permission.name}"?`
 
+            )
 
+        ) {
 
-                                                        onClick={() =>
+            void onDelete(
 
-                                                            void onDelete(
+                permission.id,
 
-                                                                permission.id,
+            );
 
-                                                            )
+        }
 
-                                                        }
+    }}
 
+    className="
 
+        rounded-md
 
-                                                        className="
+        border
 
-                                                            rounded-md
+        px-3
 
-                                                            border
+        py-1
 
-                                                            px-3
+        text-destructive
 
-                                                            py-1
+    "
 
-                                                            text-destructive
+>
 
-                                                        "
+    Delete
 
-
-
-                                                    >
-
-
-
-                                                        Delete
-
-
-
-                                                    </button>
-
-
+</button>
 
                                                 )
 

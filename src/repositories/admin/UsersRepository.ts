@@ -20,7 +20,7 @@ import type {
 
 
 
-interface UserRow {
+type UserRow = {
 
 
 
@@ -156,7 +156,11 @@ interface UserRow {
 
 
 
-}
+};
+
+
+
+
 
 
 
@@ -178,6 +182,8 @@ export interface IUsersRepository {
 
 
 
+
+
     findById(
 
         id:string,
@@ -185,6 +191,8 @@ export interface IUsersRepository {
     ):
 
         Promise<AdminUser | null>;
+
+
 
 
 
@@ -202,6 +210,8 @@ export interface IUsersRepository {
 
 
 
+
+
     save(
 
         user:AdminUser,
@@ -209,6 +219,8 @@ export interface IUsersRepository {
     ):
 
         Promise<void>;
+
+
 
 
 
@@ -225,6 +237,10 @@ export interface IUsersRepository {
 
 
 }
+
+
+
+
 
 
 
@@ -265,16 +281,7 @@ export class UsersRepository
 
 
     }
-
-
-
-
-
-
-
-
-
-    async list():
+        async list():
 
         Promise<AdminUser[]> {
 
@@ -337,6 +344,10 @@ export class UsersRepository
 
 
     }
+
+
+
+
 
 
 
@@ -416,6 +427,10 @@ export class UsersRepository
 
 
 
+
+
+
+
     async findByEmail(
 
         email:string,
@@ -423,6 +438,20 @@ export class UsersRepository
     ):
 
         Promise<AdminUser | null> {
+
+
+
+        const normalizedEmail =
+
+            email
+
+            .trim()
+
+            .toLowerCase();
+
+
+
+
 
 
 
@@ -442,11 +471,7 @@ export class UsersRepository
 
                 "email",
 
-                email
-
-                .trim()
-
-                .toLowerCase(),
+                normalizedEmail,
 
             )
 
@@ -490,6 +515,10 @@ export class UsersRepository
 
 
 
+
+
+
+
     async save(
 
         user:AdminUser,
@@ -497,6 +526,18 @@ export class UsersRepository
     ):
 
         Promise<void> {
+
+
+
+        const now =
+
+            new Date()
+
+            .toISOString();
+
+
+
+
 
 
 
@@ -508,213 +549,413 @@ export class UsersRepository
 
             .tableRef()
 
-            .upsert({
+            .upsert(
 
+                {
 
 
-                id:
 
-                    user.id,
+                    id:
 
+                        user.id,
 
 
-                organization_id:
 
-                    user.organizationId ?? null,
 
 
 
-                profile_id:
 
-                    user.profileId ?? null,
+                    organization_id:
 
+                        user.organizationId
 
+                        ?? null,
 
-                auth_user_id:
 
-                    user.authUserId ?? null,
 
 
 
-                full_name:
 
-                    user.fullName,
 
+                    profile_id:
 
+                        user.profileId
 
-                first_name:
+                        ?? null,
 
-                    user.firstName ?? null,
 
 
 
-                last_name:
 
-                    user.lastName ?? null,
 
 
+                    auth_user_id:
 
-                display_name:
+                        user.authUserId
 
-                    user.displayName ?? null,
+                        ?? null,
 
 
 
-                email:
 
-                    user.email
 
-                    .trim()
 
-                    .toLowerCase(),
 
+                    full_name:
 
+                        user.fullName
 
-                phone:
+                        .trim(),
 
-                    user.phone ?? null,
 
 
 
-                avatar_url:
 
-                    user.avatarUrl ?? null,
 
 
+                    first_name:
 
-                job_title:
+                        user.firstName
 
-                    user.jobTitle ?? null,
+                        ?? null,
 
 
 
-                department:
 
-                    user.department ?? null,
 
 
 
-                employee_code:
+                    last_name:
 
-                    user.employeeCode ?? null,
+                        user.lastName
 
+                        ?? null,
 
 
-                user_type:
 
-                    user.userType,
 
 
 
-                status:
 
-                    user.status,
+                    display_name:
 
+                        user.displayName
 
+                        ?? null,
 
-                role_ids:
 
-                    user.roleIds ?? [],
 
 
 
-                primary_role_id:
 
-                    user.primaryRoleId ?? null,
 
+                    email:
 
+                        user.email
 
-                is_active:
+                        .trim()
 
-                    user.isActive,
+                        .toLowerCase(),
 
 
 
-                email_verified:
 
-                    user.emailVerified ?? false,
 
 
 
-                phone_verified:
+                    phone:
 
-                    user.phoneVerified ?? false,
+                        user.phone
 
+                        ?? null,
 
 
-                last_login_at:
 
-                    user.lastLoginAt ?? null,
 
 
 
-                last_activity_at:
 
-                    user.lastActivityAt ?? null,
+                    avatar_url:
 
+                        user.avatarUrl
 
+                        ?? null,
 
-                password_changed_at:
 
-                    user.passwordChangedAt ?? null,
 
 
 
-                failed_login_attempts:
 
-                    user.failedLoginAttempts ?? 0,
 
+                    job_title:
 
+                        user.jobTitle
 
-                locked_until:
+                        ?? null,
 
-                    user.lockedUntil ?? null,
 
 
 
-                locale:
 
-                    user.locale ?? null,
 
 
+                    department:
 
-                timezone:
+                        user.department
 
-                    user.timezone ?? null,
+                        ?? null,
 
 
 
-                metadata:
 
-                    user.metadata ?? {},
 
 
 
-                created_by:
+                    employee_code:
 
-                    user.createdBy ?? null,
+                        user.employeeCode
 
+                        ?? null,
 
 
-                updated_by:
 
-                    user.updatedBy ?? null,
 
 
 
-                created_at:
 
-                    user.createdAt,
+                    user_type:
 
+                        user.userType,
 
 
-                updated_at:
 
-                    user.updatedAt,
 
 
 
-            });
+
+                    status:
+
+                        user.status,
+
+
+
+
+
+
+
+                    role_ids:
+
+                        user.roleIds
+
+                        ?? [],
+
+
+
+
+
+
+
+                    primary_role_id:
+
+                        user.primaryRoleId
+
+                        ?? null,
+
+
+
+
+
+
+
+                    is_active:
+
+                        user.isActive,
+
+
+
+
+
+
+
+                    email_verified:
+
+                        user.emailVerified
+
+                        ?? false,
+
+
+
+
+
+
+
+                    phone_verified:
+
+                        user.phoneVerified
+
+                        ?? false,
+
+
+
+
+
+
+
+                    last_login_at:
+
+                        user.lastLoginAt
+
+                        ?? null,
+
+
+
+
+
+
+
+                    last_activity_at:
+
+                        user.lastActivityAt
+
+                        ?? null,
+
+
+
+
+
+
+
+                    password_changed_at:
+
+                        user.passwordChangedAt
+
+                        ?? null,
+
+
+
+
+
+
+
+                    failed_login_attempts:
+
+                        user.failedLoginAttempts
+
+                        ?? 0,
+
+
+
+
+
+
+
+                    locked_until:
+
+                        user.lockedUntil
+
+                        ?? null,
+
+
+
+
+
+
+
+                    locale:
+
+                        user.locale
+
+                        ?? null,
+
+
+
+
+
+
+
+                    timezone:
+
+                        user.timezone
+
+                        ?? null,
+
+
+
+
+
+
+
+                    metadata:
+
+                        user.metadata
+
+                        ?? {},
+
+
+
+
+
+
+
+                    created_by:
+
+                        user.createdBy
+
+                        ?? null,
+
+
+
+
+
+
+
+                    updated_by:
+
+                        user.updatedBy
+
+                        ?? null,
+
+
+
+
+
+
+
+                    created_at:
+
+                        user.createdAt
+
+                        ?? now,
+
+
+
+
+
+
+
+                    updated_at:
+
+                        user.updatedAt
+
+                        ?? now,
+
+
+
+                },
+
+                {
+
+
+
+                    onConflict:
+
+                        "id",
+
+
+
+                },
+
+            );
 
 
 
@@ -729,16 +970,7 @@ export class UsersRepository
 
 
     }
-
-
-
-
-
-
-
-
-
-    async delete(
+        async delete(
 
         id:string,
 
@@ -766,6 +998,10 @@ export class UsersRepository
 
 
 
+
+
+
+
     private mapUser(
 
         row:UserRow,
@@ -784,21 +1020,40 @@ export class UsersRepository
 
 
 
-            organizationId:
 
-                row.organization_id ?? "",
+
+
+organizationId:
+    row.organization_id
+    ?? "",
+
+
+
+
 
 
 
             profileId:
 
-                row.profile_id ?? undefined,
+                row.profile_id
+
+                ?? undefined,
+
+
+
+
 
 
 
             authUserId:
 
-                row.auth_user_id ?? undefined,
+                row.auth_user_id
+
+                ?? undefined,
+
+
+
+
 
 
 
@@ -808,21 +1063,43 @@ export class UsersRepository
 
 
 
+
+
+
+
             firstName:
 
-                row.first_name ?? undefined,
+                row.first_name
+
+                ?? undefined,
+
+
+
+
 
 
 
             lastName:
 
-                row.last_name ?? undefined,
+                row.last_name
+
+                ?? undefined,
+
+
+
+
 
 
 
             displayName:
 
-                row.display_name ?? undefined,
+                row.display_name
+
+                ?? undefined,
+
+
+
+
 
 
 
@@ -832,33 +1109,67 @@ export class UsersRepository
 
 
 
+
+
+
+
             phone:
 
-                row.phone ?? undefined,
+                row.phone
+
+                ?? undefined,
+
+
+
+
 
 
 
             avatarUrl:
 
-                row.avatar_url ?? undefined,
+                row.avatar_url
+
+                ?? undefined,
+
+
+
+
 
 
 
             jobTitle:
 
-                row.job_title ?? undefined,
+                row.job_title
+
+                ?? undefined,
+
+
+
+
 
 
 
             department:
 
-                row.department ?? undefined,
+                row.department
+
+                ?? undefined,
+
+
+
+
 
 
 
             employeeCode:
 
-                row.employee_code ?? undefined,
+                row.employee_code
+
+                ?? undefined,
+
+
+
+
 
 
 
@@ -868,105 +1179,207 @@ export class UsersRepository
 
 
 
+
+
+
+
             status:
 
                 row.status as AdminUser["status"],
 
 
 
+
+
+
+
             roleIds:
 
-                row.role_ids ?? [],
+                row.role_ids
+
+                ?? [],
+
+
+
+
 
 
 
             primaryRoleId:
 
-                row.primary_role_id ?? undefined,
+                row.primary_role_id
+
+                ?? undefined,
+
+
+
+
 
 
 
             isActive:
 
-                row.is_active ?? false,
+                row.is_active
+
+                ?? false,
+
+
+
+
 
 
 
             emailVerified:
 
-                row.email_verified ?? false,
+                row.email_verified
+
+                ?? false,
+
+
+
+
 
 
 
             phoneVerified:
 
-                row.phone_verified ?? false,
+                row.phone_verified
+
+                ?? false,
+
+
+
+
 
 
 
             lastLoginAt:
 
-                row.last_login_at ?? undefined,
+                row.last_login_at
+
+                ?? undefined,
+
+
+
+
 
 
 
             lastActivityAt:
 
-                row.last_activity_at ?? undefined,
+                row.last_activity_at
+
+                ?? undefined,
+
+
+
+
 
 
 
             passwordChangedAt:
 
-                row.password_changed_at ?? undefined,
+                row.password_changed_at
+
+                ?? undefined,
+
+
+
+
 
 
 
             failedLoginAttempts:
 
-                row.failed_login_attempts ?? 0,
+                row.failed_login_attempts
+
+                ?? 0,
+
+
+
+
 
 
 
             lockedUntil:
 
-                row.locked_until ?? undefined,
+                row.locked_until
+
+                ?? undefined,
+
+
+
+
 
 
 
             locale:
 
-                row.locale ?? undefined,
+                row.locale
+
+                ?? undefined,
+
+
+
+
 
 
 
             timezone:
 
-                row.timezone ?? undefined,
+                row.timezone
+
+                ?? undefined,
+
+
+
+
 
 
 
             metadata:
 
-                row.metadata ?? {},
+                row.metadata
+
+                ?? {},
+
+
+
+
 
 
 
             createdBy:
 
-                row.created_by ?? undefined,
+                row.created_by
+
+                ?? undefined,
+
+
+
+
 
 
 
             updatedBy:
 
-                row.updated_by ?? undefined,
+                row.updated_by
+
+                ?? undefined,
+
+
+
+
 
 
 
             createdAt:
 
                 row.created_at,
+
+
+
+
 
 
 
