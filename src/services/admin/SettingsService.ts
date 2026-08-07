@@ -13,7 +13,6 @@ import type {
 export class SettingsService {
 
 
-
     constructor(
 
         private readonly repository:
@@ -41,8 +40,6 @@ export class SettingsService {
 
 
 
-
-
     async find(
 
         category: SettingCategory,
@@ -54,21 +51,14 @@ export class SettingsService {
     Promise<PlatformSetting | null> {
 
 
-
         this.validateCategory(
-
             category,
-
         );
-
 
 
         this.validateKey(
-
             key,
-
         );
-
 
 
         return this.repository.find(
@@ -88,6 +78,58 @@ export class SettingsService {
 
 
 
+    async findByCategory(
+
+        category: SettingCategory,
+
+    ) {
+
+
+        this.validateCategory(
+            category,
+        );
+
+
+        return this.repository.findByCategory(
+
+            category,
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    async findByKey(
+
+        key:string,
+
+    ) {
+
+
+        this.validateKey(
+            key,
+        );
+
+
+        return this.repository.findByKey(
+
+            key.trim(),
+
+        );
+
+
+    }
+
+
+
+
+
 
 
     async save(
@@ -99,11 +141,8 @@ export class SettingsService {
     Promise<void> {
 
 
-
         this.validateSetting(
-
             setting,
-
         );
 
 
@@ -114,9 +153,15 @@ export class SettingsService {
 
                 ...setting,
 
+
+                category:
+                    setting.category,
+
+
                 key:
                     setting.key
                         .trim(),
+
 
                 updatedAt:
                     new Date()
@@ -135,74 +180,6 @@ export class SettingsService {
 
 
 
-
-
-    async findByCategory(
-
-        category: SettingCategory,
-
-    ) {
-
-
-
-        this.validateCategory(
-
-            category,
-
-        );
-
-
-
-        return this.repository.findByCategory(
-
-            category,
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async findByKey(
-
-        key:string,
-
-    ) {
-
-
-
-        this.validateKey(
-
-            key,
-
-        );
-
-
-
-        return this.repository.findByKey(
-
-            key.trim(),
-
-        );
-
-
-    }
-
-
-
-
-
-
-
-
-
     private validateSetting(
 
         setting: PlatformSetting,
@@ -210,14 +187,10 @@ export class SettingsService {
     ) {
 
 
-
-        if(!setting.category) {
-
+        if(!setting) {
 
             throw new Error(
-
-                "Setting category is required.",
-
+                "Setting is required.",
             );
 
         }
@@ -247,8 +220,6 @@ export class SettingsService {
 
 
 
-
-
     private validateCategory(
 
         category: SettingCategory,
@@ -256,22 +227,24 @@ export class SettingsService {
     ) {
 
 
+        if(
 
-        if(!category) {
+            !category ||
+
+            !String(category).trim()
+
+        ) {
 
 
             throw new Error(
-
                 "Setting category is required.",
-
             );
+
 
         }
 
 
     }
-
-
 
 
 
@@ -286,14 +259,11 @@ export class SettingsService {
     ) {
 
 
-
         if(!key?.trim()) {
 
 
             throw new Error(
-
                 "Setting key is required.",
-
             );
 
 
@@ -301,7 +271,6 @@ export class SettingsService {
 
 
     }
-
 
 
 }
