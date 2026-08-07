@@ -36,3 +36,23 @@ export {
 export {
     PermissionsService,
 } from "./PermissionsService";
+
+
+export {
+    DepartmentsService,
+} from "./DepartmentsService";
+
+
+export {
+    DesignationsService,
+} from "./DesignationsService";
+
+
+export {
+    UserRoleService,
+} from "./UserRoleService";
+
+
+export {
+    RolePermissionService,
+} from "./RolePermissionService";

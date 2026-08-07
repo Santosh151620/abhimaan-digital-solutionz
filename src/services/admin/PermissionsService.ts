@@ -8,60 +8,19 @@ import type {
 } from "@/repositories/admin/PermissionsRepository";
 
 
-
-
-
-
-
 export class PermissionsService {
-
-
-
     constructor(
-
         private readonly repository:
             IPermissionsRepository,
-
     ) {}
 
-
-
-
-
-
-
-
-
     async list():
-
     Promise<Permission[]> {
-
-
-
         return this.repository.list();
-
-
-
     }
-
-
-
-
-
-
-
-
-
     async active():
-
     Promise<Permission[]> {
-
-
-
         return this.repository.active();
-
-
-
     }
 
     async findById(

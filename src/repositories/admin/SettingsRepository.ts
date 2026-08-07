@@ -29,32 +29,66 @@ import {
 
 import type {
     PlatformSetting,
+    SettingCategory,
 } from "@/types/admin/Settings";
-
-
-
 
 export interface ISettingsRepository {
 
     list():
+
         Promise<PlatformSetting[]>;
 
 
+
     find(
-        category:string,
-        key:string,
+
+        category: SettingCategory,
+
+        key: string,
+
     ):
+
         Promise<PlatformSetting | null>;
 
 
+
     save(
-        setting:PlatformSetting,
+
+        setting: PlatformSetting,
+
     ):
+
         Promise<void>;
 
+
+
+    findByCategory(
+
+        category: SettingCategory,
+
+    ):
+
+
+
+        Promise<{
+
+            category: SettingCategory;
+
+            settings: PlatformSetting[];
+
+        }>;
+
+
+
+    findByKey(
+
+        key:string,
+
+    ):
+
+        Promise<PlatformSetting | null>;
+
 }
-
-
 
 
 type OrganizationSettingRow = {

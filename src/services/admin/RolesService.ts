@@ -9,79 +9,25 @@ import type {
 
 
 
-
-
-
-
 export class RolesService {
-
-
-
     constructor(
-
         private readonly repository:
             IRolesRepository,
-
     ) {}
 
-
-
-
-
-
-
-
-
     async list():
-
     Promise<Role[]> {
-
-
-
         return this.repository.list();
-
-
-
     }
-
-
-
-
-
-
-
-
-
     async active():
-
     Promise<Role[]> {
-
-
-
         return this.repository.active();
-
-
-
     }
-
-
-
-
-
-
-
-
 
     async findById(
-
         id:string,
-
     ):
-
     Promise<Role | null> {
-
-
-
         this.validateId(
 
             id,
