@@ -64,84 +64,29 @@ export class PermissionsService {
 
     }
 
-
-
-
-
-
-
-
-
     async findById(
-
         id:string,
-
     ):
 
     Promise<Permission | null> {
-
-
-
         this.validateId(
-
             id,
-
         );
-
-
-
-
-
-
-
         return this.repository.findById(
-
             id,
-
         );
-
-
-
     }
 
-
-
-
-
-
-
-
-
     async findByKey(
-
         key:string,
-
     ):
 
     Promise<Permission | null> {
-
-
-
         if(!key?.trim()) {
-
-
-
             throw new Error(
-
                 "Permission key is required."
-
             );
-
-
-
         }
-
-
-
-
-
-
-
         return this.repository.findByKey(
 
             key
@@ -218,12 +163,6 @@ const existing =
     await this.repository.findByKey(
         normalizedKey,
     );
-
-
-
-
-
-
         if(
 
             existing &&
@@ -294,25 +233,10 @@ const existing =
 
         );
 
-
-
-
-
-
-
         const permission =
-
             await this.repository.findById(
-
                 id,
-
             );
-
-
-
-
-
-
 
         if(!permission) {
 

@@ -1,38 +1,149 @@
-import { SettingsForm } from "@/components/admin/settings/SettingsForm";
+import {
+
+    getSettings,
+
+} from "./page-actions";
 
 
-export const dynamic = "force-dynamic";
+
+import SettingDialog from "@/components/admin/settings/SettingDialog";
 
 
-export default function SettingsPage() {
+
+import SettingTable from "@/components/admin/settings/SettingTable";
+
+
+
+
+
+
+
+export default async function SettingsPage(){
+
+
+
+    const settings =
+
+        await getSettings();
+
+
+
+
+
 
 
     return (
 
-        <main className="space-y-8 p-8">
 
 
-            <section>
-
-                <h1 className="text-3xl font-bold">
-                    Platform Settings
-                </h1>
-
-
-                <p className="text-muted-foreground">
-                    Manage administrative configuration.
-                </p>
-
-
-            </section>
+        <div className="space-y-6">
 
 
 
-            <SettingsForm />
 
 
-        </main>
+
+
+            <div className="flex items-center justify-between">
+
+
+
+
+
+
+
+                <div>
+
+
+
+
+
+
+
+                    <h1 className="text-3xl font-bold">
+
+
+
+                        Platform Settings
+
+
+
+                    </h1>
+
+
+
+
+
+
+
+
+
+                    <p className="text-sm text-gray-500">
+
+
+
+                        Manage enterprise configuration and organization settings.
+
+
+
+                    </p>
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                <SettingDialog />
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+            <SettingTable
+
+
+
+                items={settings}
+
+
+
+            />
+
+
+
+
+
+
+
+        </div>
+
+
 
     );
+
+
 
 }

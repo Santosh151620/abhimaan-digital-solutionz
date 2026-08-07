@@ -847,135 +847,46 @@ export default function RoleDialog({
                         Inactive
 
                     </option>
-
-
-
                     <option value="Suspended">
-
                         Suspended
-
-                    </option>
-
-
-
+                  </option>
                 </select>
-
-
-
-
-
-
-
-
-
                 <div
-
-                    className="
-
+                   className="
                         flex
-
                         justify-end
-
-                        gap-3
-
-                    "
-
-                >
-
-
-
+                     gap-3
+                  "
+               >
                     <button
-
-
-
                         type="button"
-
-
-
                         onClick={onClose}
-
-
-
                         disabled={loading}
-
-
-
                         className="
-
                             rounded-md
-
                             border
-
                             px-4
-
                             py-2
-
                         "
-
-
-
                     >
-
-
-
                         Cancel
-
-
-
                     </button>
-
-
-
-
-
-
-
-
-
                     <button
-
-
-
                         type="button"
-
-
-
                         onClick={submit}
-
-
-
                         disabled={loading}
-
-
-
                         className="
-
                             rounded-md
-
                             bg-primary
-
                             px-4
-
                             py-2
-
                             text-primary-foreground
-
                         "
-
-
-
                     >
-
-
-
                         {
-
                             loading
-
                                 ? "Saving..."
-
                                 : "Save"
-
                         }
                     </button>
                 </div>

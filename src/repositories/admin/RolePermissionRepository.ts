@@ -1,10 +1,19 @@
+/**
+ * ============================================================================
+ * ADS Role Permission Repository
+ * Production RBAC Repository
+ * ============================================================================
+ */
+
 import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
 
+
 import {
     BaseRepository,
 } from "@/lib/db/base-repository";
+
 
 import type {
     RolePermission,
@@ -12,42 +21,72 @@ import type {
 
 
 
+
+
+type RolePermissionRow = {
+
+    id:string;
+
+    organization_id:string;
+
+    role_id:string;
+
+    permission_id:string;
+
+    created_at:string;
+
+    updated_at:string;
+
+};
+
+
+
+
+
 export interface IRolePermissionRepository {
 
+
     listByRole(
-        roleId: string,
-    ): Promise<RolePermission[]>;
+        roleId:string,
+    ):Promise<RolePermission[]>;
+
 
 
     assign(
-        roleId: string,
-        permissionId: string,
-    ): Promise<void>;
+        roleId:string,
+        permissionId:string,
+    ):Promise<void>;
+
 
 
     revoke(
-        roleId: string,
-        permissionId: string,
-    ): Promise<void>;
+        roleId:string,
+        permissionId:string,
+    ):Promise<void>;
+
 
 
     replace(
-        roleId: string,
-        permissionIds: string[],
-    ): Promise<void>;
+        roleId:string,
+        permissionIds:string[],
+    ):Promise<void>;
 
 }
 
 
 
+
 export class RolePermissionRepository
+
     extends BaseRepository<RolePermission>
+
     implements IRolePermissionRepository {
 
 
+
     constructor(
-        supabase: SupabaseClient,
-    ) {
+        supabase:SupabaseClient,
+    ){
 
         super(
             supabase,
@@ -58,9 +97,14 @@ export class RolePermissionRepository
 
 
 
+
+
+
+
     async listByRole(
-        roleId: string,
-    ): Promise<RolePermission[]> {
+        roleId:string,
+    ):
+        Promise<RolePermission[]> {
 
 
         const {
@@ -68,74 +112,80 @@ export class RolePermissionRepository
             error,
         } =
             await this
+
                 .tableRef()
+
                 .select("*")
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
                 .eq(
                     "role_id",
                     roleId,
                 )
+
                 .order(
                     "created_at",
                     {
-                        ascending: true,
+                        ascending:true,
                     },
                 );
 
 
-        if (error) {
 
+        if(error)
             throw error;
 
-        }
 
 
-
-        return (
-            data ?? []
-        ).map(
-            (item) => ({
-
-                id: item.id,
-
-                roleId:
-                    item.role_id,
-
-                permissionId:
-                    item.permission_id,
-
-                organizationId:
-                    item.organization_id,
-
-                createdAt:
-                    item.created_at,
-
-                updatedAt:
-                    item.updated_at,
-
-            })
-        ) as RolePermission[];
+        return (data ?? [])
+            .map(
+                row =>
+                    this.mapRolePermission(
+                        row as RolePermissionRow,
+                    ),
+            );
 
     }
 
 
 
+
+
+
+
+
     async assign(
-        roleId: string,
-        permissionId: string,
-    ): Promise<void> {
+        roleId:string,
+        permissionId:string,
+    ):
+        Promise<void> {
 
 
         const {
             error,
         } =
             await this
+
                 .tableRef()
+
                 .upsert(
                     {
-                        role_id: roleId,
 
-                        permission_id: permissionId,
+                        organization_id:
+                            this.organizationId,
+
+                        role_id:
+                            roleId,
+
+                        permission_id:
+                            permissionId,
+
                     },
+
                     {
                         onConflict:
                             "role_id,permission_id",
@@ -143,77 +193,110 @@ export class RolePermissionRepository
                 );
 
 
-        if (error) {
 
+        if(error)
             throw error;
-
-        }
 
     }
 
 
 
+
+
+
+
+
     async revoke(
-        roleId: string,
-        permissionId: string,
-    ): Promise<void> {
+        roleId:string,
+        permissionId:string,
+    ):
+        Promise<void> {
+
 
 
         const {
             error,
         } =
             await this
+
                 .tableRef()
+
                 .delete()
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
                 .eq(
                     "role_id",
                     roleId,
                 )
+
                 .eq(
                     "permission_id",
                     permissionId,
                 );
 
 
-        if (error) {
 
+        if(error)
             throw error;
-
-        }
 
     }
 
 
 
+
+
+
+
+
     async replace(
-        roleId: string,
-        permissionIds: string[],
-    ): Promise<void> {
+        roleId:string,
+        permissionIds:string[],
+    ):
+        Promise<void> {
 
 
         const {
-            error: deleteError,
+            error:deleteError,
         } =
             await this
+
                 .tableRef()
+
                 .delete()
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
                 .eq(
                     "role_id",
-                    roleId,
-                );
+                    roleId);
 
 
-        if (deleteError) {
 
+        if(deleteError)
             throw deleteError;
 
-        }
 
 
 
-        if (
-            permissionIds.length === 0
-        ) {
+        const uniquePermissionIds =
+            [
+                ...new Set(
+                    permissionIds,
+                ),
+            ];
+
+
+
+        if(
+            uniquePermissionIds.length === 0
+        ){
 
             return;
 
@@ -221,11 +304,13 @@ export class RolePermissionRepository
 
 
 
+
         const rows =
-            permissionIds.map(
-                (
-                    permissionId,
-                ) => ({
+            uniquePermissionIds.map(
+                permissionId => ({
+
+                    organization_id:
+                        this.organizationId,
 
                     role_id:
                         roleId,
@@ -242,18 +327,64 @@ export class RolePermissionRepository
             error,
         } =
             await this
+
                 .tableRef()
+
                 .insert(
                     rows,
                 );
 
 
-        if (error) {
 
+        if(error)
             throw error;
 
-        }
+    }
+
+
+
+
+
+
+
+    private mapRolePermission(
+        row:RolePermissionRow,
+    ):
+        RolePermission {
+
+
+        return {
+
+
+            id:
+                row.id,
+
+
+            organizationId:
+                row.organization_id,
+
+
+            roleId:
+                row.role_id,
+
+
+            permissionId:
+                row.permission_id,
+
+
+            createdAt:
+                row.created_at,
+
+
+            updatedAt:
+                row.updated_at,
+
+
+        };
+
 
     }
+
+
 
 }

@@ -354,33 +354,33 @@ export default function RolesTable({
 
                                                 !role.isSystem && (
 
-<button
-    type="button"
-    disabled={!onDelete}
-    onClick={async () => {
+                                                    <button
+                                                        type="button"
+                                                        disabled={!onDelete}
+                                                        onClick={async () => {
 
-        if (!onDelete) {
+                                                            if (!onDelete) {
 
-            return;
+                                                                return;
 
-        }
+                                                            }
 
-        const confirmed = window.confirm(
-            `Delete role "${role.name}"?`
-        );
+                                                            const confirmed = window.confirm(
+                                                                `Delete role "${role.name}"?`
+                                                            );
 
-        if (!confirmed) {
+                                                            if (!confirmed) {
 
-            return;
+                                                                return;
 
-        }
+                                                            }
 
-        await onDelete(
-            role.id,
-        );
+                                                            await onDelete(
+                                                                role.id,
+                                                            );
 
-    }}
-    className="
+                                                        }}
+                                                        className="
         rounded-md
         border
         px-3
@@ -389,9 +389,9 @@ export default function RolesTable({
         disabled:cursor-not-allowed
         disabled:opacity-50
     "
->
-    Delete
-</button>
+                                                    >
+                                                        Delete
+                                                    </button>
 
                                                 )
                                             }
