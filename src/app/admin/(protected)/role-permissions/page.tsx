@@ -1,4 +1,4 @@
-import {
+﻿import {
     createClient,
 } from "@/lib/supabase/server";
 
@@ -39,9 +39,7 @@ export default async function RolePermissionsPage() {
 
     const rolesService =
         new RolesService(
-            new RolesRepository(
-                supabase,
-            ),
+            new RolesRepository(),
         );
 
     const permissionsService =

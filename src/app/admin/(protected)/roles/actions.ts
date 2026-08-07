@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import {
     revalidatePath,
@@ -26,9 +26,7 @@ async function getService() {
         await createClient();
 
     const repository =
-        new RolesRepository(
-            supabase,
-        );
+        new RolesRepository();
 
     return new RolesService(
         repository,

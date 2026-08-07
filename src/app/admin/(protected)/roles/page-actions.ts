@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 
 import {
@@ -44,11 +44,7 @@ async function getService() {
 
     const repository =
 
-        new RolesRepository(
-
-            supabase,
-
-        );
+        new RolesRepository();
 
 
 
