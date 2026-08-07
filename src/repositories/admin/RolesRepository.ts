@@ -1,790 +1,544 @@
 /**
  * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
  * Roles Repository
  *
- * Admin RBAC Role Registry
+ * Responsibilities:
+ * - Tenant-scoped RBAC role registry
+ * - Role lookup and persistence
+ * - Permission ID normalization
+ * - System-role protection
  *
- * Architecture:
+ * Database:
+ * - roles
  *
- * RoleService
- *        ↓
- * RolesRepository
- *        ↓
- * BaseRepository
- *        ↓
- * roles
- *
+ * Security:
+ * - Every tenant query is organization scoped
+ * - organization_id is always supplied from TenantContextManager
+ * - System roles cannot be deleted
  * ============================================================================
  */
 
-
-import type {
-    SupabaseClient,
-} from "@supabase/supabase-js";
-
+import {
+    TenantContextManager,
+} from "@/lib/tenant/tenantContext";
 
 import {
-    BaseRepository,
-} from "@/lib/db/base-repository";
-
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
 
 import type {
     Role,
 } from "@/types/admin/Role";
 
-
-
-
 type RoleRow = {
-
-    id:string;
-
-    organization_id:string | null;
-
-    name:string;
-
-    code:string;
-
-    description:string | null;
-
-    type:string;
-
-    level:string;
-
-    status:string;
-
-    permission_ids:string[] | null;
-
-    is_system:boolean | null;
-
-    is_default:boolean | null;
-
-    is_active:boolean | null;
-
-    metadata:Record<string,unknown> | null;
-
-    created_at:string;
-
-    updated_at:string;
-
+    id: string;
+    organization_id: string | null;
+    name: string;
+    code: string;
+    description: string | null;
+    type: string | null;
+    level: string | null;
+    status: string | null;
+    permission_ids: string[] | null;
+    is_system: boolean | null;
+    is_default: boolean | null;
+    is_active: boolean | null;
+    metadata: Record<string, unknown> | null;
+    created_at: string;
+    updated_at: string;
 };
 
-
-
-
-
 export interface IRolesRepository {
+    list(): Promise<Role[]>;
 
-
-    list():
-        Promise<Role[]>;
-
-
-
-    active():
-        Promise<Role[]>;
-
-
+    active(): Promise<Role[]>;
 
     findById(
-        id:string,
-    ):
-        Promise<Role | null>;
-
-
+        id: string,
+    ): Promise<Role | null>;
 
     findByCode(
-        code:string,
-    ):
-        Promise<Role | null>;
-
-
+        code: string,
+    ): Promise<Role | null>;
 
     save(
-        role:Partial<Role>,
-    ):
-        Promise<Role>;
-
-
+        role: Partial<Role>,
+    ): Promise<Role>;
 
     delete(
-        id:string,
-    ):
-        Promise<void>;
-
+        id: string,
+    ): Promise<void>;
 }
 
-
-
-
-
-
-
 export class RolesRepository
-
-    extends BaseRepository<Role>
-
-    implements IRolesRepository {
-
-
-
-
-
-    constructor(
-        supabase:SupabaseClient,
-    ){
-
-        super(
-            supabase,
-            "roles",
-        );
-
+    implements IRolesRepository
+{
+    private async client() {
+        return createSupabaseServerClient();
     }
 
+    private get organizationId(): string {
+        return TenantContextManager
+            .require()
+            .organizationId;
+    }
 
-
-
-
-
-
-
-
-    async list():
-
-        Promise<Role[]> {
-
-
+    async list(): Promise<Role[]> {
+        const supabase =
+            await this.client();
 
         const {
             data,
             error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .order(
-                    "name",
-                    {
-                        ascending:true,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapRole(
-                        row as RoleRow,
-                    ),
+        } = await supabase
+            .from("roles")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
             );
 
-
-    }
-
-
-
-
-
-
-
-
-
-    async active():
-
-        Promise<Role[]> {
-
-
-
-        const {
-            data,
-            error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "is_active",
-                    true,
-                )
-                .order(
-                    "name",
-                    {
-                        ascending:true,
-                    },
-                );
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapRole(
-                        row as RoleRow,
-                    ),
-            );
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async findById(
-        id:string,
-    ):
-        Promise<Role | null> {
-
-
-
-        const {
-            data,
-            error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "id",
-                    id,
-                )
-                .maybeSingle();
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return data
-            ?
-                this.mapRole(
-                    data as RoleRow,
-                )
-            :
-                null;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async findByCode(
-        code:string,
-    ):
-        Promise<Role | null> {
-
-
-
-        const normalizedCode =
-            code
-                .trim()
-                .toLowerCase();
-
-
-
-        const {
-            data,
-            error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "code",
-                    normalizedCode,
-                )
-                .maybeSingle();
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return data
-            ?
-                this.mapRole(
-                    data as RoleRow,
-                )
-            :
-                null;
-
-
-    }
-
-
-
-
-
-
-
-
-
-    async save(
-        role:Partial<Role>,
-    ):
-        Promise<Role> {
-
-
-
-        if(!role.name?.trim()) {
-
-            throw new Error(
-                "Role name is required.",
-            );
-
         }
 
+        return (data ?? []).map(
+            (row) =>
+                this.mapRole(
+                    row as RoleRow,
+                ),
+        );
+    }
 
+    async active(): Promise<Role[]> {
+        const supabase =
+            await this.client();
 
-        if(!role.code?.trim()) {
+        const {
+            data,
+            error,
+        } = await supabase
+            .from("roles")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "is_active",
+                true,
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
+            );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            (row) =>
+                this.mapRole(
+                    row as RoleRow,
+                ),
+        );
+    }
+
+    async findById(
+        id: string,
+    ): Promise<Role | null> {
+        const normalizedId =
+            id.trim();
+
+        if (!normalizedId) {
+            throw new Error(
+                "Role id is required.",
+            );
+        }
+
+        const supabase =
+            await this.client();
+
+        const {
+            data,
+            error,
+        } = await supabase
+            .from("roles")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            )
+            .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        return data
+            ? this.mapRole(
+                  data as RoleRow,
+              )
+            : null;
+    }
+
+    async findByCode(
+        code: string,
+    ): Promise<Role | null> {
+        const normalizedCode =
+            code.trim().toLowerCase();
+
+        if (!normalizedCode) {
             throw new Error(
                 "Role code is required.",
             );
-
         }
 
-
-
-
-
-        const now =
-            new Date()
-                .toISOString();
-
-
-
-
+        const supabase =
+            await this.client();
 
         const {
             data,
             error,
+        } = await supabase
+            .from("roles")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "code",
+                normalizedCode,
+            )
+            .maybeSingle();
 
-        } =
-            await this
-                .tableRef()
-                .upsert(
-
-                    {
-
-
-                        id:
-                            role.id
-                            ??
-                            crypto.randomUUID(),
-
-
-
-                        organization_id:
-                            this.organizationId,
-
-
-
-                        name:
-                            role.name
-                                .trim(),
-
-
-
-                        code:
-                            role.code
-                                .trim()
-                                .toLowerCase(),
-
-
-
-                        description:
-                            role.description
-                            ??
-                            null,
-
-
-
-                        type:
-                            this.resolveType(
-                                role.type,
-                            ),
-
-
-
-                        level:
-                            this.resolveLevel(
-                                role.level ?? null,
-                            ),
-
-
-
-                        status:
-                            this.resolveStatus(
-                                role.status,
-                            ),
-
-
-
-                        permission_ids:
-                            Array.from(
-                                new Set(
-                                    role.permissionIds
-                                    ??
-                                    [],
-                                ),
-                            ),
-
-
-
-                        is_system:
-                            role.isSystem
-                            ??
-                            false,
-
-
-
-                        is_default:
-                            role.isDefault
-                            ??
-                            false,
-
-
-
-                        is_active:
-                            role.isActive
-                            ??
-                            true,
-
-
-
-                        metadata:
-                            role.metadata
-                            ??
-                            {},
-
-
-
-                        created_at:
-                            role.createdAt
-                            ??
-                            now,
-
-
-
-                        updated_at:
-                            now,
-
-
-                    },
-
-                    {
-                        onConflict:"id",
-                    },
-
-                )
-                .select()
-                .single();
-
-
-
-
-
-        if(error)
+        if (error) {
             throw error;
+        }
 
+        return data
+            ? this.mapRole(
+                  data as RoleRow,
+              )
+            : null;
+    }
 
+    async save(
+        role: Partial<Role>,
+    ): Promise<Role> {
+        const name =
+            role.name?.trim();
 
+        const code =
+            role.code
+                ?.trim()
+                .toLowerCase();
 
+        if (!name) {
+            throw new Error(
+                "Role name is required.",
+            );
+        }
+
+        if (!code) {
+            throw new Error(
+                "Role code is required.",
+            );
+        }
+
+        const supabase =
+            await this.client();
+
+        const now =
+            new Date().toISOString();
+
+        const permissionIds =
+            Array.from(
+                new Set(
+                    (role.permissionIds ?? [])
+                        .map(
+                            (permissionId) =>
+                                permissionId?.trim(),
+                        )
+                        .filter(
+                            (
+                                permissionId,
+                            ): permissionId is string =>
+                                Boolean(
+                                    permissionId,
+                                ),
+                        ),
+                ),
+            );
+
+        const payload = {
+            id:
+                role.id ??
+                crypto.randomUUID(),
+
+            organization_id:
+                this.organizationId,
+
+            name,
+
+            code,
+
+            description:
+                role.description?.trim()
+                || null,
+
+            type:
+                this.resolveType(
+                    role.type,
+                ),
+
+            level:
+                this.resolveLevel(
+                    role.level ?? null,
+                ),
+
+            status:
+                this.resolveStatus(
+                    role.status,
+                ),
+
+            permission_ids:
+                permissionIds,
+
+            is_system:
+                role.isSystem ?? false,
+
+            is_default:
+                role.isDefault ?? false,
+
+            is_active:
+                role.isActive ?? true,
+
+            metadata:
+                role.metadata ?? {},
+
+            created_at:
+                role.createdAt ?? now,
+
+            updated_at:
+                now,
+        };
+
+        const {
+            data,
+            error,
+        } = await supabase
+            .from("roles")
+            .upsert(
+                payload,
+                {
+                    onConflict: "id",
+                },
+            )
+            .select("*")
+            .single();
+
+        if (error) {
+            throw error;
+        }
 
         return this.mapRole(
             data as RoleRow,
         );
-
-
     }
-
-
-
-
-
-
-
-
 
     async delete(
-        id:string,
-    ):
-        Promise<void> {
+        id: string,
+    ): Promise<void> {
+        const normalizedId =
+            id.trim();
 
+        if (!normalizedId) {
+            throw new Error(
+                "Role id is required.",
+            );
+        }
 
+        const supabase =
+            await this.client();
 
         const {
+            data,
             error,
+        } = await supabase
+            .from("roles")
+            .select(
+                "id,is_system",
+            )
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            )
+            .maybeSingle();
 
-        } =
-            await this
-                .tableRef()
-                .delete()
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "id",
-                    id,
-                );
-
-
-
-        if(error)
+        if (error) {
             throw error;
+        }
 
+        if (!data) {
+            return;
+        }
 
+        if (data.is_system === true) {
+            throw new Error(
+                "System roles cannot be deleted.",
+            );
+        }
+
+        const {
+            error: deleteError,
+        } = await supabase
+            .from("roles")
+            .delete()
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            )
+            .eq(
+                "is_system",
+                false,
+            );
+
+        if (deleteError) {
+            throw deleteError;
+        }
     }
-
-
-
-
-
-
-
-
 
     private resolveType(
-        value:Role["type"] | undefined,
-    ):
-        Role["type"] {
-
-
-
-        return value
-            ??
-            "Custom";
-
-
+        value: Role["type"] | undefined,
+    ): Role["type"] {
+        return (
+            value ??
+            "Custom"
+        );
     }
 
-private resolveLevel(
-    value: string | null,
-):
-    Role["level"] {
+    private resolveLevel(
+        value: string | null,
+    ): Role["level"] {
+        switch (
+            value?.trim().toUpperCase()
+        ) {
+            case "PLATFORM":
+            case "PLATFORM_OWNER":
+                return "Platform";
 
+            case "APPLICATION":
+            case "APPLICATION_ADMIN":
+                return "Application";
 
-    switch (
-        value?.toUpperCase()
-    ) {
+            case "ORGANIZATION":
+            case "ORGANIZATION_ADMIN":
+            case "ORG_ADMIN":
+                return "Organization";
 
+            case "DEPARTMENT":
+            case "DEPARTMENT_ADMIN":
+                return "Department";
 
-        case "PLATFORM":
-        case "PLATFORM_OWNER":
+            case "TEAM":
+            case "TEAM_LEAD":
+                return "Team";
 
-            return "Platform";
-
-
-        case "APPLICATION":
-        case "APPLICATION_ADMIN":
-
-            return "Application";
-
-
-        case "ORGANIZATION":
-        case "ORGANIZATION_ADMIN":
-        case "ORG_ADMIN":
-
-            return "Organization";
-
-
-        case "DEPARTMENT":
-        case "DEPARTMENT_ADMIN":
-
-            return "Department";
-
-
-        case "TEAM":
-        case "TEAM_LEAD":
-
-            return "Team";
-
-
-        default:
-
-            return "Organization";
-
+            default:
+                return "Organization";
+        }
     }
-
-}
 
     private resolveStatus(
-        value:Role["status"] | undefined,
-    ):
-        Role["status"] {
-
-
-
-        return value
-            ??
-            "Active";
-
-
+        value: Role["status"] | undefined,
+    ): Role["status"] {
+        return (
+            value ??
+            "Active"
+        );
     }
 
-
-
-
-
-
-
-
-
     private mapRole(
-        row:RoleRow,
-    ):
-        Role {
-
-
-
+        row: RoleRow,
+    ): Role {
         return {
-
-
             id:
                 row.id,
 
-
-
             organizationId:
-                row.organization_id
-                ??
+                row.organization_id ??
                 "",
-
-
 
             name:
                 row.name,
 
-
-
             code:
                 row.code,
 
-
-
             description:
-                row.description
-                ??
+                row.description ??
                 undefined,
-
-
 
             type:
                 this.resolveType(
                     row.type as Role["type"],
                 ),
 
-
-
             level:
                 this.resolveLevel(
-                    row.level as Role["level"],
+                    row.level,
                 ),
-
-
 
             status:
                 this.resolveStatus(
                     row.status as Role["status"],
                 ),
 
-
-
             permissionIds:
-                row.permission_ids
-                ??
-                [],
-
-
+                row.permission_ids ?? [],
 
             isSystem:
-                row.is_system
-                ??
-                false,
-
-
+                row.is_system ?? false,
 
             isDefault:
-                row.is_default
-                ??
-                false,
-
-
+                row.is_default ?? false,
 
             isActive:
-                row.is_active
-                ??
-                false,
-
-
+                row.is_active ?? false,
 
             metadata:
-                row.metadata
-                ??
-                {},
-
-
+                row.metadata ?? {},
 
             createdAt:
                 row.created_at,
 
-
-
             updatedAt:
                 row.updated_at,
-
-
         };
-
-
     }
-
-
 }

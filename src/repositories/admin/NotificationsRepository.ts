@@ -2,7 +2,7 @@
  * ============================================================================
  * Notifications Repository
  *
- * Admin Notification Registry
+ * Admin / Organization Notification Registry
  *
  * Architecture:
  *
@@ -19,10 +19,13 @@
  * Production rules:
  * - Server-only Supabase client
  * - Tenant isolation on every operation
- * - Organization ID never accepted from caller
+ * - Organization ID is never accepted from callers
  * - Organization ID always comes from TenantContextManager
- * - Strong input validation
- * - Stable domain mapping
+ * - Caller-controlled organization_id is never persisted
+ * - Input identifiers are validated
+ * - Domain mapping is centralized
+ * - Create uses INSERT rather than UPDATE/UPSERT semantics
+ * - Read/update/delete operations are tenant scoped
  * ============================================================================
  */
 
@@ -40,6 +43,7 @@ import type {
 
 
 type NotificationRow = {
+
     id: string;
 
     organization_id: string;
@@ -65,6 +69,7 @@ type NotificationRow = {
     created_at: string;
 
     read_at: string | null;
+
 };
 
 
@@ -91,26 +96,34 @@ export interface INotificationsRepository {
     delete(
         id: string,
     ): Promise<void>;
+
 }
 
 
 export class NotificationsRepository
     implements INotificationsRepository {
 
+
     private async client() {
+
         return createSupabaseServerClient();
+
     }
 
 
     private get organizationId(): string {
+
         return TenantContextManager
             .require()
             .organizationId;
+
     }
 
 
     static async create(): Promise<NotificationsRepository> {
+
         return new NotificationsRepository();
+
     }
 
 
@@ -119,33 +132,45 @@ export class NotificationsRepository
         const supabase =
             await this.client();
 
+
         const {
             data,
             error,
-        } = await supabase
-            .from("notifications")
-            .select("*")
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false,
-                },
-            );
+        } =
+            await supabase
+
+                .from("notifications")
+
+                .select("*")
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending: false,
+                    },
+                );
+
 
         if (error) {
+
             throw error;
+
         }
 
-        return (data ?? []).map(
-            (row) =>
-                this.mapNotification(
-                    row as NotificationRow,
-                ),
-        );
+
+        return (data ?? [])
+            .map(
+                row =>
+                    this.mapNotification(
+                        row as NotificationRow,
+                    ),
+            );
+
     }
 
 
@@ -156,34 +181,47 @@ export class NotificationsRepository
         const normalizedId =
             this.requireId(id);
 
+
         const supabase =
             await this.client();
+
 
         const {
             data,
             error,
-        } = await supabase
-            .from("notifications")
-            .select("*")
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "id",
-                normalizedId,
-            )
-            .maybeSingle();
+        } =
+            await supabase
+
+                .from("notifications")
+
+                .select("*")
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
+                .eq(
+                    "id",
+                    normalizedId,
+                )
+
+                .maybeSingle();
+
 
         if (error) {
+
             throw error;
+
         }
+
 
         return data
             ? this.mapNotification(
                 data as NotificationRow,
             )
             : null;
+
     }
 
 
@@ -197,40 +235,54 @@ export class NotificationsRepository
                 "Notification user id",
             );
 
+
         const supabase =
             await this.client();
+
 
         const {
             data,
             error,
-        } = await supabase
-            .from("notifications")
-            .select("*")
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "user_id",
-                normalizedUserId,
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false,
-                },
-            );
+        } =
+            await supabase
+
+                .from("notifications")
+
+                .select("*")
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
+                .eq(
+                    "user_id",
+                    normalizedUserId,
+                )
+
+                .order(
+                    "created_at",
+                    {
+                        ascending: false,
+                    },
+                );
+
 
         if (error) {
+
             throw error;
+
         }
 
-        return (data ?? []).map(
-            (row) =>
-                this.mapNotification(
-                    row as NotificationRow,
-                ),
-        );
+
+        return (data ?? [])
+            .map(
+                row =>
+                    this.mapNotification(
+                        row as NotificationRow,
+                    ),
+            );
+
     }
 
 
@@ -239,33 +291,46 @@ export class NotificationsRepository
     ): Promise<Notification> {
 
         if (!notification) {
+
             throw new Error(
                 "Notification is required.",
             );
+
         }
+
 
         const title =
             notification.title?.trim();
 
+
         if (!title) {
+
             throw new Error(
                 "Notification title is required.",
             );
+
         }
+
 
         const message =
             notification.message?.trim();
 
+
         if (!message) {
+
             throw new Error(
                 "Notification message is required.",
             );
+
         }
+
 
         const now =
             new Date().toISOString();
 
+
         const payload = {
+
             id:
                 notification.id,
 
@@ -299,38 +364,49 @@ export class NotificationsRepository
 
             created_at:
                 notification.createdAt ?? now,
+
         };
+
 
         const supabase =
             await this.client();
 
+
         const {
             data,
             error,
-        } = await supabase
-            .from("notifications")
-            .upsert(
-                payload,
-                {
-                    onConflict: "id",
-                },
-            )
-            .select("*")
-            .single();
+        } =
+            await supabase
+
+                .from("notifications")
+
+                .insert(payload)
+
+                .select("*")
+
+                .single();
+
 
         if (error) {
+
             throw error;
+
         }
 
+
         if (!data) {
+
             throw new Error(
                 "Notification creation returned no data.",
             );
+
         }
+
 
         return this.mapNotification(
             data as NotificationRow,
         );
+
     }
 
 
@@ -341,30 +417,45 @@ export class NotificationsRepository
         const normalizedId =
             this.requireId(id);
 
+
         const supabase =
             await this.client();
 
+
         const {
             error,
-        } = await supabase
-            .from("notifications")
-            .update({
-                status: "READ",
-                read_at:
-                    new Date().toISOString(),
-            })
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "id",
-                normalizedId,
-            );
+        } =
+            await supabase
+
+                .from("notifications")
+
+                .update({
+
+                    status: "READ",
+
+                    read_at:
+                        new Date()
+                            .toISOString(),
+
+                })
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
+                .eq(
+                    "id",
+                    normalizedId,
+                );
+
 
         if (error) {
+
             throw error;
+
         }
+
     }
 
 
@@ -375,26 +466,37 @@ export class NotificationsRepository
         const normalizedId =
             this.requireId(id);
 
+
         const supabase =
             await this.client();
 
+
         const {
             error,
-        } = await supabase
-            .from("notifications")
-            .delete()
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "id",
-                normalizedId,
-            );
+        } =
+            await supabase
+
+                .from("notifications")
+
+                .delete()
+
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+
+                .eq(
+                    "id",
+                    normalizedId,
+                );
+
 
         if (error) {
+
             throw error;
+
         }
+
     }
 
 
@@ -406,13 +508,18 @@ export class NotificationsRepository
         const normalizedId =
             id?.trim();
 
+
         if (!normalizedId) {
+
             throw new Error(
                 `${fieldName} is required.`,
             );
+
         }
 
+
         return normalizedId;
+
     }
 
 
@@ -421,6 +528,7 @@ export class NotificationsRepository
     ): Notification {
 
         return {
+
             id:
                 row.id,
 
@@ -459,6 +567,9 @@ export class NotificationsRepository
 
             readAt:
                 row.read_at ?? undefined,
+
         };
+
     }
+
 }

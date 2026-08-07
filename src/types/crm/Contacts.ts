@@ -1,15 +1,30 @@
 /**
- * CRM Contacts Domain Contract
+ * ============================================================================
+ * ADS CRM Contact Domain Contract
  *
  * Single source of truth for:
  * - ContactsRepository
  * - ContactsService
  * - CRM UI
+ * - Server Actions
  * - API routes
  *
- * Entity-driven CRM architecture.
+ * Architecture:
+ * - Entity-driven CRM contract.
+ * - Mirrors the existing contacts database schema.
+ * - Supports nullable database lifecycle fields.
+ * - Preserves entityType/entityId for the shared entity engine.
+ * ============================================================================
  */
 
+
+
+
+/**
+ * ============================================================================
+ * CONTACT STATUS
+ * ============================================================================
+ */
 
 export type ContactStatus =
     | 'ACTIVE'
@@ -20,51 +35,69 @@ export type ContactStatus =
 
 
 
+
 /**
- * Core Contact Entity
+ * ============================================================================
+ * CONTACT ENTITY
+ * ============================================================================
  */
+
 export interface Contact {
 
-
+    /**
+     * Primary identity.
+     */
     id: string;
 
-
-    /**
-     * Universal entity identity
-     */
     entityType: 'Contact';
 
     entityId: string;
 
 
-
     /**
-     * Multi tenant ownership
+     * Tenant ownership.
      */
     organizationId?: string;
 
 
-
     /**
-     * CRM relationship
+     * CRM relationship.
      */
     companyId?: string;
 
 
+    /**
+     * Contact numbering.
+     */
+    contactCode?: string;
+
 
     /**
-     * Identity
+     * Identity.
      */
     firstName: string;
+
+    middleName?: string;
 
     lastName: string;
 
     fullName?: string;
 
+    displayName?: string;
 
 
     /**
-     * Communication
+     * Professional information.
+     */
+    jobTitle?: string;
+
+    designation?: string;
+
+    department?: string;
+
+
+    /**
+     * Communication.
      */
     email?: string;
 
@@ -72,122 +105,145 @@ export interface Contact {
 
     mobile?: string;
 
+    whatsapp?: string;
+
+    linkedinUrl?: string;
 
 
     /**
-     * Professional
+     * Personal dates.
      */
-    designation?: string;
+    dateOfBirth?: string | null;
 
-    department?: string;
-
+    anniversary?: string | null;
 
 
     /**
-     * Lifecycle
+     * Lifecycle.
      */
     status: ContactStatus;
 
+    isActive?: boolean;
 
-
-    /**
-     * Ownership
-     */
-    ownerId?: string;
-
-    assignedTo?: string;
-
-
-
-    /**
-     * Address
-     */
-    city?: string;
-
-    state?: string;
-
-    country?: string;
-
-
-
-    /**
-     * Extension
-     */
-    notes?: string;
-
-    metadata?: Record<string, unknown>;
-
-
-
-    /**
-     * Soft delete
-     */
     isDeleted?: boolean;
 
+
+    /**
+     * Soft deletion.
+     *
+     * Nullable because the database columns are nullable.
+     */
     deletedAt?: string | null;
 
     deletedBy?: string | null;
 
 
+    /**
+     * Ownership.
+     */
+    ownerId?: string;
+
+    assignedTo?: string;
+
 
     /**
-     * Audit
+     * Address.
      */
+    address?: string;
+
+    city?: string;
+
+    state?: string;
+
+    country?: string;
+
+    postalCode?: string;
+
+
+    /**
+     * Extension.
+     */
+    notes?: string;
+
+    metadata?: Record<string, unknown>;
+
+
+    /**
+     * Audit.
+     */
+    createdBy?: string;
+
+    updatedBy?: string;
+
     createdAt: string;
 
     updatedAt: string;
 
+
+    /**
+     * Optimistic/version tracking.
+     */
+    version?: number;
+
 }
 
 
 
+
 /**
- * CRM Detail View Model
- *
- * Used by:
- * - Contact detail page
- * - Tables
- * - Workspace views
+ * ============================================================================
+ * CONTACT DETAILS
+ * ============================================================================
  */
+
 export interface ContactDetails
     extends Contact {
 
-
     companyName?: string;
-
 
     opportunities?: number;
 
-
     lastActivity?: string;
 
+    ownerName?: string;
+
+    assignedToName?: string;
 
 }
 
 
 
+
 /**
- * Backward compatibility alias
+ * ============================================================================
+ * BACKWARD COMPATIBILITY
+ * ============================================================================
  */
+
 export type Contacts =
     ContactDetails;
 
 
 
+
 /**
- * Create contract
+ * ============================================================================
+ * CREATE CONTACT INPUT
+ * ============================================================================
  */
+
 export interface CreateContactInput {
 
-
     firstName: string;
+
+    middleName?: string;
 
     lastName: string;
 
 
-
     companyId?: string;
 
+    contactCode?: string;
 
 
     email?: string;
@@ -196,16 +252,24 @@ export interface CreateContactInput {
 
     mobile?: string;
 
+    whatsapp?: string;
 
+    linkedinUrl?: string;
+
+
+    jobTitle?: string;
 
     designation?: string;
 
     department?: string;
 
 
+    dateOfBirth?: string | null;
+
+    anniversary?: string | null;
+
 
     status?: ContactStatus;
-
 
 
     ownerId?: string;
@@ -213,6 +277,7 @@ export interface CreateContactInput {
     assignedTo?: string;
 
 
+    address?: string;
 
     city?: string;
 
@@ -220,13 +285,12 @@ export interface CreateContactInput {
 
     country?: string;
 
+    postalCode?: string;
 
 
     notes?: string;
 
-
     metadata?: Record<string, unknown>;
-
 
 
     entityType?: 'Contact';
@@ -234,6 +298,7 @@ export interface CreateContactInput {
     entityId?: string;
 
 
+    isActive?: boolean;
 
     isDeleted?: boolean;
 
@@ -241,13 +306,22 @@ export interface CreateContactInput {
 
     deletedBy?: string | null;
 
+
+    createdBy?: string;
+
+    updatedBy?: string;
+
 }
 
 
 
+
 /**
- * Update contract
+ * ============================================================================
+ * UPDATE CONTACT INPUT
+ * ============================================================================
  */
+
 export type UpdateContactInput =
     Partial<CreateContactInput>;
 
@@ -255,27 +329,30 @@ export type UpdateContactInput =
 
 
 /**
- * Search filters
+ * ============================================================================
+ * CONTACT SEARCH FILTERS
+ * ============================================================================
  */
-export interface ContactSearchFilters {
 
+export interface ContactSearchFilters {
 
     search?: string;
 
-
     status?: ContactStatus;
-
 
     companyId?: string;
 
-
     ownerId?: string;
-
 
     assignedTo?: string;
 
-
     includeArchived?: boolean;
+
+    includeInactive?: boolean;
+
+    page?: number;
+
+    pageSize?: number;
 
 }
 
@@ -283,26 +360,98 @@ export interface ContactSearchFilters {
 
 
 /**
- * Dashboard summary
+ * ============================================================================
+ * CONTACT SUMMARY
+ * ============================================================================
  */
-export interface ContactsSummary {
 
+export interface ContactsSummary {
 
     total: number;
 
-
     active: number;
-
 
     inactive: number;
 
-
     leads: number;
-
 
     customers: number;
 
-
     archived: number;
+
+}
+
+
+
+
+/**
+ * ============================================================================
+ * CONTACT ACTIVITY
+ * ============================================================================
+ */
+
+export type ContactActivityType =
+    | 'CALL'
+    | 'EMAIL'
+    | 'MEETING'
+    | 'NOTE'
+    | 'TASK';
+
+
+export interface ContactActivity {
+
+    id: string;
+
+    type: ContactActivityType;
+
+    title: string;
+
+    description?: string;
+
+    createdAt: string;
+
+}
+
+
+
+
+/**
+ * ============================================================================
+ * CONTACT OPPORTUNITY
+ * ============================================================================
+ */
+
+export interface ContactOpportunity {
+
+    id: string;
+
+    title: string;
+
+    value?: number;
+
+    stage?: string;
+
+    probability?: number;
+
+}
+
+
+
+
+/**
+ * ============================================================================
+ * CONTACT RELATIONSHIP SUMMARY
+ * ============================================================================
+ */
+
+export interface ContactRelationshipSummary {
+
+    companyName?: string;
+
+    opportunities: number;
+
+    activities: number;
+
+    lastActivity?: string;
 
 }

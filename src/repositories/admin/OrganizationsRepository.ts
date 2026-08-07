@@ -16,25 +16,25 @@ import type {
 
 type OrganizationRow = {
 
-    id:string;
+    id: string;
 
-    name:string;
+    name: string;
 
-    code:string;
+    code: string;
 
-    description:string | null;
+    description: string | null;
 
-    type:string | null;
+    type: string | null;
 
-    status:string | null;
+    status: string | null;
 
-    is_system:boolean | null;
+    is_system: boolean | null;
 
-    is_active:boolean | null;
+    is_active: boolean | null;
 
-    created_at:string;
+    created_at: string;
 
-    updated_at:string;
+    updated_at: string;
 
 };
 
@@ -55,28 +55,28 @@ export interface IOrganizationsRepository {
 
 
     findById(
-        id:string,
+        id: string,
     ):
         Promise<Organization | null>;
 
 
 
     findByCode(
-        code:string,
+        code: string,
     ):
         Promise<Organization | null>;
 
 
 
     save(
-        organization:Organization,
+        organization: Organization,
     ):
         Promise<Organization>;
 
 
 
     delete(
-        id:string,
+        id: string,
     ):
         Promise<void>;
 
@@ -93,8 +93,8 @@ export class OrganizationsRepository
 
 
     constructor(
-        supabase:SupabaseClient,
-    ){
+        supabase: SupabaseClient,
+    ) {
 
         super(
             supabase,
@@ -124,13 +124,13 @@ export class OrganizationsRepository
             .order(
                 "name",
                 {
-                    ascending:true,
+                    ascending: true,
                 },
             );
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -172,13 +172,13 @@ export class OrganizationsRepository
             .order(
                 "name",
                 {
-                    ascending:true,
+                    ascending: true,
                 },
             );
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -199,7 +199,7 @@ export class OrganizationsRepository
 
 
     async findById(
-        id:string,
+        id: string,
     ):
         Promise<Organization | null> {
 
@@ -223,7 +223,7 @@ export class OrganizationsRepository
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -243,7 +243,7 @@ export class OrganizationsRepository
 
 
     async findByCode(
-        code:string,
+        code: string,
     ):
         Promise<Organization | null> {
 
@@ -269,7 +269,7 @@ export class OrganizationsRepository
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -289,7 +289,7 @@ export class OrganizationsRepository
 
 
     async save(
-        organization:Organization,
+        organization: Organization,
     ):
         Promise<Organization> {
 
@@ -338,6 +338,10 @@ export class OrganizationsRepository
 
                 },
 
+                {
+                    onConflict: "id",
+                },
+
             )
 
             .select()
@@ -346,7 +350,7 @@ export class OrganizationsRepository
 
 
 
-        if(error)
+        if (error)
             throw error;
 
 
@@ -362,7 +366,7 @@ export class OrganizationsRepository
 
 
     async delete(
-        id:string,
+        id: string,
     ):
         Promise<void> {
 
@@ -383,7 +387,7 @@ export class OrganizationsRepository
 
 
 
-        if(error)
+        if (error)
             throw error;
 
     }
@@ -393,7 +397,7 @@ export class OrganizationsRepository
 
 
     private mapOrganization(
-        row:OrganizationRow,
+        row: OrganizationRow,
     ):
         Organization {
 
@@ -417,8 +421,7 @@ export class OrganizationsRepository
 
 
             type:
-                (row.type ?? "Organization") as Organization["type"],
-
+                (row.type ?? "Customer") as Organization["type"],
 
             status:
                 (row.status ?? "Active") as Organization["status"],

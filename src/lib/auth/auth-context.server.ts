@@ -2,21 +2,17 @@ import {
     getCurrentUser,
 } from "./user";
 
-
 import type {
     Role,
 } from "@/types/auth/role";
-
 
 import {
     PERMISSIONS,
 } from "@/shared/permissions";
 
-
 import type {
     Permission,
 } from "@/shared/permissions";
-
 
 
 export interface AuthContext {
@@ -34,16 +30,10 @@ export interface AuthContext {
 }
 
 
-
-export async function getAuthContext():
-
-
-Promise<AuthContext | null> {
-
+export async function getAuthContext(): Promise<AuthContext | null> {
 
     const user =
         await getCurrentUser();
-
 
 
     if (!user) {
@@ -53,10 +43,39 @@ Promise<AuthContext | null> {
     }
 
 
+    const roleValue =
+        user.organization.role;
 
+
+    /**
+     * Validate the role before constructing
+     * an authorization context.
+     */
     const role =
-        user.organization.role as Role;
+        Object.prototype.hasOwnProperty.call(
+            {
+                PLATFORM_OWNER: true,
+                PLATFORM_ADMIN: true,
+                ORGANIZATION_ADMIN: true,
+                DEPARTMENT_ADMIN: true,
+                TEAM_LEAD: true,
+                USER: true,
+                VIEWER: true,
+                SUPER_ADMIN: true,
+                ADMIN: true,
+                MANAGER: true,
+            },
+            roleValue,
+        )
+            ? roleValue as Role
+            : null;
 
+
+    if (!role) {
+
+        return null;
+
+    }
 
 
     return {
@@ -64,17 +83,13 @@ Promise<AuthContext | null> {
         userId:
             user.id,
 
-
         email:
             user.email,
-
 
         organizationId:
             user.organization.id,
 
-
         role,
-
 
         permissions:
             [...PERMISSIONS],
@@ -82,24 +97,21 @@ Promise<AuthContext | null> {
     };
 
 }
-export async function requireAuthContext():
 
-Promise<AuthContext> {
 
+export async function requireAuthContext(): Promise<AuthContext> {
 
     const context =
         await getAuthContext();
 
 
-
     if (!context) {
 
         throw new Error(
-            "Unauthorized"
+            "Unauthorized",
         );
 
     }
-
 
 
     return context;

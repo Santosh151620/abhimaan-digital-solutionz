@@ -17,7 +17,9 @@ import {
 
 import type {
     Contact,
+    ContactStatus,
     ContactsSummary as ContactsSummaryModel,
+    CreateContactInput,
 } from '@/types/crm/Contacts';
 
 
@@ -26,7 +28,6 @@ interface Props {
     initialContacts: Contact[];
 
 }
-
 
 
 function buildSummary(
@@ -73,7 +74,6 @@ function buildSummary(
 }
 
 
-
 export default function ContactsClient({
 
     initialContacts,
@@ -99,25 +99,31 @@ export default function ContactsClient({
         useState(false);
 
 
-
     const summary =
         buildSummary(
             contacts,
         );
 
 
-
     async function handleCreate(
-        values: Partial<Contact>,
+        values: CreateContactInput,
     ) {
 
+        const firstName =
+            values.firstName.trim();
 
-        if (
-            !values.firstName?.trim()
-        ) {
 
+        const lastName =
+            values.lastName.trim();
+
+
+        if (!firstName) {
             return;
+        }
 
+
+        if (!lastName) {
+            return;
         }
 
 
@@ -129,53 +135,15 @@ export default function ContactsClient({
             const created =
                 await createContact({
 
-                    firstName:
-                        values.firstName,
+                    ...values,
 
-                    lastName:
-                        values.lastName ?? '',
+                    firstName,
 
-                    companyId:
-                        values.companyId,
-
-                    email:
-                        values.email,
-
-                    phone:
-                        values.phone,
-
-                    mobile:
-                        values.mobile,
-
-                    designation:
-                        values.designation,
-
-                    department:
-                        values.department,
+                    lastName,
 
                     status:
-                        values.status ?? 'ACTIVE',
-
-                    ownerId:
-                        values.ownerId,
-
-                    assignedTo:
-                        values.assignedTo,
-
-                    city:
-                        values.city,
-
-                    state:
-                        values.state,
-
-                    country:
-                        values.country,
-
-                    notes:
-                        values.notes,
-
-                    metadata:
-                        values.metadata,
+                        values.status
+                        ?? 'ACTIVE',
 
                 });
 
@@ -188,13 +156,17 @@ export default function ContactsClient({
             );
 
 
-            setShowForm(false);
+            setShowForm(
+                false,
+            );
 
 
         }
         finally {
 
-            setIsSaving(false);
+            setIsSaving(
+                false,
+            );
 
         }
 
@@ -202,15 +174,11 @@ export default function ContactsClient({
 
 
     async function handleUpdate(
-        values: Partial<Contact>,
+        values: CreateContactInput,
     ) {
 
-        if (
-            !selectedContact
-        ) {
-
+        if (!selectedContact) {
             return;
-
         }
 
 
@@ -232,15 +200,11 @@ export default function ContactsClient({
             setContacts(
 
                 previous =>
-
                     previous.map(
 
                         item =>
-
                             item.id === updated.id
-
                                 ? updated
-
                                 : item,
 
                     ),
@@ -259,15 +223,15 @@ export default function ContactsClient({
 
 
         }
-
         finally {
 
-            setIsSaving(false);
+            setIsSaving(
+                false,
+            );
 
         }
 
     }
-
 
 
     function startCreate() {
@@ -276,12 +240,12 @@ export default function ContactsClient({
             undefined,
         );
 
+
         setShowForm(
             true,
         );
 
     }
-
 
 
     return (
@@ -301,24 +265,15 @@ export default function ContactsClient({
 
 
                 <button
-
                     type="button"
-
                     onClick={startCreate}
-
                     disabled={isSaving}
-
                     className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
-
                 >
-
                     New Contact
-
                 </button>
 
-
             </div>
-
 
 
             {
@@ -346,6 +301,7 @@ export default function ContactsClient({
                                 undefined,
                             );
 
+
                             setShowForm(
                                 false,
                             );
@@ -358,13 +314,8 @@ export default function ContactsClient({
             }
 
 
-
             <ContactsTable
-
-                contacts={
-                    contacts
-                }
-
+                contacts={contacts}
             />
 
         </div>
@@ -372,3 +323,4 @@ export default function ContactsClient({
     );
 
 }
+

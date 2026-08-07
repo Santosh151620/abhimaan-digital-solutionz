@@ -1,280 +1,326 @@
 /**
  * ============================================================================
  * ADS Admin Supabase Repository
- * Production Dashboard Data Provider
- * ============================================================================
+ *
+ * Production Admin Dashboard Data Provider
  *
  * Responsibilities:
- * - Admin dashboard metrics
- * - Tenant scoped queries
- * - Uses existing repository schema conventions
- * - No hardcoded production values
- *
+ * - Tenant-scoped dashboard metrics
+ * - Explicit Supabase error handling
+ * - No caller-controlled organization scope
+ * - Accurate total / active user metrics
+ * - Stable AdminDashboard mapping
  * ============================================================================
  */
-
 
 import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
 
-
 import type {
     AdminDashboard,
 } from "@/types/admin/Admin";
 
-
 import type {
     IAdminRepository,
 } from "./AdminRepository";
-
 
 import {
     TenantContextManager,
 } from "@/lib/tenant/tenantContext";
 
 
-
+type CountResult = {
+    count: number | null;
+    error: unknown;
+};
 
 
 export class SupabaseAdminRepository
-
     implements IAdminRepository {
-
 
     constructor(
         private readonly supabase: SupabaseClient,
     ) {}
 
 
-
-
-
     private get organizationId(): string {
-
         return TenantContextManager
             .require()
             .organizationId;
-
     }
 
 
-
-
-
-
-
-    async dashboard():
-
-        Promise<AdminDashboard> {
-
+    async dashboard(): Promise<AdminDashboard> {
 
         const organizationId =
             this.organizationId;
 
 
-
         const [
-
-            organizations,
-
-            users,
-
-            roles,
-
-            permissions,
-
-            audits,
-
-            modules,
-
+            organizationResult,
+            usersResult,
+            activeUsersResult,
+            rolesResult,
+            permissionsResult,
+            auditsResult,
+            modulesResult,
+            enabledModulesResult,
         ] = await Promise.all([
+            this.count(
+                this.supabase
+                    .from("organizations")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "id",
+                        organizationId,
+                    ),
+            ),
 
+            this.count(
+                this.supabase
+                    .from("profiles")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "organization_id",
+                        organizationId,
+                    ),
+            ),
 
+            this.count(
+                this.supabase
+                    .from("profiles")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "organization_id",
+                        organizationId,
+                    )
+                    .eq(
+                        "is_active",
+                        true,
+                    ),
+            ),
 
-            this.supabase
+            this.count(
+                this.supabase
+                    .from("roles")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "organization_id",
+                        organizationId,
+                    ),
+            ),
 
-                .from("organizations")
+            this.count(
+                this.supabase
+                    .from("permissions")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "organization_id",
+                        organizationId,
+                    ),
+            ),
 
-                .select("*", {
-                    head:true,
-                    count:"exact",
-                }),
+            this.count(
+                this.supabase
+                    .from("audit_logs")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "organization_id",
+                        organizationId,
+                    ),
+            ),
 
+            this.count(
+                this.supabase
+                    .from("module_registry")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    ),
+            ),
 
-
-
-            this.supabase
-
-                .from("profiles")
-
-                .select("*", {
-                    head:true,
-                    count:"exact",
-                })
-
-                .eq(
-                    "organization_id",
-                    organizationId,
-                ),
-
-
-
-
-            this.supabase
-
-                .from("roles")
-
-                .select("*", {
-                    head:true,
-                    count:"exact",
-                })
-
-                .eq(
-                    "organization_id",
-                    organizationId,
-                ),
-
-
-
-
-            this.supabase
-
-                .from("permissions")
-
-                .select("*", {
-                    head:true,
-                    count:"exact",
-                })
-
-                .eq(
-                    "organization_id",
-                    organizationId,
-                ),
-
-
-
-
-            this.supabase
-
-                .from("audit_logs")
-
-                .select("*", {
-                    head:true,
-                    count:"exact",
-                })
-
-                .eq(
-                    "organization_id",
-                    organizationId,
-                ),
-
-
-
-
-            this.supabase
-
-                .from("module_registry")
-
-                .select("*", {
-                    head:true,
-                    count:"exact",
-                }),
-
-
-
+            this.count(
+                this.supabase
+                    .from("module_registry")
+                    .select(
+                        "id",
+                        {
+                            head: true,
+                            count: "exact",
+                        },
+                    )
+                    .eq(
+                        "is_enabled",
+                        true,
+                    ),
+            ),
         ]);
 
 
+        this.throwIfError(
+            organizationResult,
+            "Failed to load organization count.",
+        );
 
+        this.throwIfError(
+            usersResult,
+            "Failed to load user count.",
+        );
 
+        this.throwIfError(
+            activeUsersResult,
+            "Failed to load active user count.",
+        );
+
+        this.throwIfError(
+            rolesResult,
+            "Failed to load role count.",
+        );
+
+        this.throwIfError(
+            permissionsResult,
+            "Failed to load permission count.",
+        );
+
+        this.throwIfError(
+            auditsResult,
+            "Failed to load audit count.",
+        );
+
+        this.throwIfError(
+            modulesResult,
+            "Failed to load module count.",
+        );
+
+        this.throwIfError(
+            enabledModulesResult,
+            "Failed to load enabled module count.",
+        );
 
 
         return {
-
-
             generatedAt:
-
-                new Date()
-                    .toISOString(),
-
-
-
-
+                new Date().toISOString(),
 
             summary: {
-
-
                 organizations:
-
-                    organizations.count
-                    ??
-                    0,
-
-
+                    organizationResult.count ?? 0,
 
                 users:
-
-                    users.count
-                    ??
-                    0,
-
-
+                    usersResult.count ?? 0,
 
                 activeUsers:
-
-                    users.count
-                    ??
-                    0,
-
-
+                    activeUsersResult.count ?? 0,
 
                 modules:
-
-                    modules.count
-                    ??
-                    0,
-
-
+                    modulesResult.count ?? 0,
 
                 enabledModules:
-
-                    modules.count
-                    ??
-                    0,
-
-
+                    enabledModulesResult.count ?? 0,
 
                 roles:
-
-                    roles.count
-                    ??
-                    0,
-
-
+                    rolesResult.count ?? 0,
 
                 permissions:
-
-                    permissions.count
-                    ??
-                    0,
-
-
+                    permissionsResult.count ?? 0,
 
                 audits:
-
-                    audits.count
-                    ??
-                    0,
-
-
-
+                    auditsResult.count ?? 0,
             },
-
         };
-
-
     }
 
 
+    private async count(
+        query: PromiseLike<{
+            count: number | null;
+            error: unknown;
+        }>,
+    ): Promise<CountResult> {
+
+        const result =
+            await query;
+
+        return {
+            count:
+                result.count,
+
+            error:
+                result.error,
+        };
+    }
+
+
+    private throwIfError(
+        result: CountResult,
+        message: string,
+    ): void {
+
+        if (result.error) {
+            throw new Error(
+                `${message} ${this.errorMessage(result.error)}`,
+            );
+        }
+    }
+
+
+    private errorMessage(
+        error: unknown,
+    ): string {
+
+        if (error instanceof Error) {
+            return error.message;
+        }
+
+        if (
+            typeof error === "object" &&
+            error !== null &&
+            "message" in error &&
+            typeof error.message === "string"
+        ) {
+            return error.message;
+        }
+
+        return "Unknown Supabase error.";
+    }
 }

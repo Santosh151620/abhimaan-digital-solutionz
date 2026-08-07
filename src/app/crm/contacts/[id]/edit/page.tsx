@@ -19,38 +19,75 @@ import {
 } from '../../actions';
 
 import type {
-    ContactDetails,
+    CreateContactInput,
 } from '@/types/crm/Contacts';
 
 
-interface Props {
+
+interface EditContactPageProps {
+
     params: Promise<{
         id: string;
     }>;
+
 }
 
 
+
+/**
+ * Edit Contact Page
+ *
+ * Responsibilities:
+ * - Resolve route parameter safely.
+ * - Load tenant-scoped contact.
+ * - Render shared CRM contact form.
+ * - Persist updates through server action.
+ * - Redirect after successful update.
+ *
+ * Tenant isolation:
+ * Repository layer enforces organization scope.
+ */
 export default async function EditContactPage({
     params,
-}: Props) {
+}: EditContactPageProps) {
+
 
     const {
-        id,
+        id: rawId,
     } = await params;
 
 
-    const contact =
-        await ContactsServiceInstance.details(id);
+    if (!rawId?.trim()) {
 
-
-    if (!contact) {
         notFound();
+
     }
 
 
-    async function submit(
-        values: Partial<ContactDetails>
-    ) {
+    const id =
+        rawId.trim();
+
+
+
+    const contact =
+        await ContactsServiceInstance.details(
+            id,
+        );
+
+
+
+    if (!contact) {
+
+        notFound();
+
+    }
+
+
+
+    async function handleSubmit(
+        values: CreateContactInput,
+    ): Promise<void> {
+
         'use server';
 
 
@@ -61,32 +98,51 @@ export default async function EditContactPage({
 
 
         redirect(
-            `/crm/contacts/${id}`
+            `/crm/contacts/${id}`,
         );
 
     }
+
 
 
     return (
 
         <CRMPageLayout>
 
+
             <CRMHeader
+
                 title="Edit Contact"
+
                 description="Update CRM contact details."
+
                 actions={[
                     {
-                        label: "Back",
+                        label: 'Back',
                         href: `/crm/contacts/${id}`,
                     },
                 ]}
+
             />
+
 
 
             <ContactsForm
-                initialValues={contact}
-                onSubmit={submit}
+
+                initialValues={
+                    contact
+                }
+
+                loading={
+                    false
+                }
+
+                onSubmit={
+                    handleSubmit
+                }
+
             />
+
 
         </CRMPageLayout>
 

@@ -2,120 +2,99 @@ import {
     requireAuthContext,
 } from "./auth-context.server";
 
+import {
+    ROLE_HIERARCHY,
+} from "./role-hierarchy";
 
 import type {
     Role,
 } from "@/types/auth/role";
 
 
-import type {
-    Permission,
-} from "@/shared/permissions";
+export async function requireSecurityContext() {
 
-
-import {
-    ROLE_HIERARCHY,
-} from "./role-hierarchy";
-
-
-
-export async function requireUser() {
-
-
-    const auth =
-        await requireAuthContext();
-
-
-
-    if (!auth) {
-
-        throw new Error(
-            "Unauthorized"
-        );
-
-    }
-
-
-
-    return auth;
+    return requireAuthContext();
 
 }
 
 
-
-export async function requireRole(
-
-    minimumRole: Role,
-
+export async function requireRoleAccess(
+    minimumRole: Role = "USER",
 ) {
 
-
-    const auth =
-        await requireUser();
-
-
+    const context =
+        await requireAuthContext();
 
     const currentLevel =
-        ROLE_HIERARCHY[auth.role] ?? 0;
-
-
+        ROLE_HIERARCHY[context.role] ?? 0;
 
     const requiredLevel =
         ROLE_HIERARCHY[minimumRole] ?? 0;
 
-
-
     if (
-
         currentLevel < requiredLevel
-
     ) {
 
         throw new Error(
-            "Forbidden"
+            "Forbidden",
         );
 
     }
 
-
-
-    return auth;
+    return context;
 
 }
 
 
+export async function requirePlatformOwner() {
 
-export async function requirePermission(
+    return requireRoleAccess(
+        "PLATFORM_OWNER",
+    );
 
-    permission: Permission,
-
-) {
-
-
-    const auth =
-        await requireUser();
+}
 
 
+export async function requirePlatformAdmin() {
 
-    if (
+    return requireRoleAccess(
+        "PLATFORM_ADMIN",
+    );
 
-        !auth.permissions.includes(
-
-            permission
-
-        )
-
-    ) {
+}
 
 
-        throw new Error(
-            "Forbidden"
-        );
+export async function requireOrganizationAdmin() {
 
-    }
+    return requireRoleAccess(
+        "ORGANIZATION_ADMIN",
+    );
+
+}
 
 
+export async function requireDepartmentAdmin() {
 
-    return auth;
+    return requireRoleAccess(
+        "DEPARTMENT_ADMIN",
+    );
+
+}
+
+
+export async function requireTeamLead() {
+
+    return requireRoleAccess(
+        "TEAM_LEAD",
+    );
+
+}
+
+
+export async function requireAuthenticatedUser() {
+
+    return requireRoleAccess(
+        "USER",
+    );
 
 }

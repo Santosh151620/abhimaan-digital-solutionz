@@ -1,657 +1,567 @@
-/**
- * ============================================================================
- * Permissions Repository
- *
- * Admin RBAC Permission Registry
- *
- * Architecture:
- *
- * PermissionService
- *        ↓
- * PermissionsRepository
- *        ↓
- * BaseRepository
- *        ↓
- * permissions
- *
- * ============================================================================
- */
-
 
 import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
 
-
 import {
     BaseRepository,
 } from "@/lib/db/base-repository";
 
-
 import {
     createSupabaseServerClient,
 } from "@/lib/supabase/server-client";
-
 
 import type {
     Permission,
 } from "@/types/admin/Permission";
 
 
-
-
-
 type PermissionRow = {
 
-    id:string;
+    id: string;
 
-    organization_id:string | null;
+    organization_id: string | null;
 
-    key:string;
+    key: string;
 
-    name:string;
+    name: string;
 
-    description:string | null;
+    description: string | null;
 
-    module:string;
+    module: string;
 
-    action:string;
+    action: string;
 
-    type:string;
+    type: string;
 
-    is_system:boolean | null;
+    is_system: boolean | null;
 
-    is_active:boolean | null;
+    is_active: boolean | null;
 
-    metadata:Record<string,unknown> | null;
+    metadata: Record<string, unknown> | null;
 
-    created_at:string;
+    created_at: string;
 
-    updated_at:string;
+    updated_at: string;
 
 };
 
 
-
-
-
-
 export interface IPermissionsRepository {
 
+    list(): Promise<Permission[]>;
 
-    list():
-        Promise<Permission[]>;
-
-
-
-    active():
-        Promise<Permission[]>;
-
-
+    active(): Promise<Permission[]>;
 
     findById(
-        id:string,
-    ):
-        Promise<Permission | null>;
-
-
+        id: string,
+    ): Promise<Permission | null>;
 
     findByKey(
-        key:string,
-    ):
-        Promise<Permission | null>;
-
-
+        key: string,
+    ): Promise<Permission | null>;
 
     search(
-        keyword:string,
-    ):
-        Promise<Permission[]>;
-
-
+        keyword: string,
+    ): Promise<Permission[]>;
 
     save(
-        permission:Permission,
-    ):
-        Promise<Permission>;
-
-
+        permission: Permission,
+    ): Promise<Permission>;
 
     delete(
-        id:string,
-    ):
-        Promise<void>;
+        id: string,
+    ): Promise<void>;
 
 }
 
 
-
-
-
 export class PermissionsRepository
-
     extends BaseRepository<Permission>
-
     implements IPermissionsRepository {
 
-
     constructor(
-        supabase:SupabaseClient,
-    ){
-
+        supabase: SupabaseClient,
+    ) {
         super(
             supabase,
             "permissions",
         );
-
     }
 
 
-
-
-
-    static async create():
-
-        Promise<PermissionsRepository> {
-
+    static async create(): Promise<PermissionsRepository> {
 
         const supabase =
             await createSupabaseServerClient();
 
-
-
         return new PermissionsRepository(
             supabase,
         );
-
     }
 
 
-
-
-
-
-
-    async list():
-
-        Promise<Permission[]> {
-
+    async list(): Promise<Permission[]> {
 
         const {
             data,
             error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .order(
-                    "module",
-                    {
-                        ascending:true,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapPermission(
-                        row as PermissionRow,
-                    ),
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .order(
+                "module",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "action",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            row =>
+                this.mapPermission(
+                    row as PermissionRow,
+                ),
+        );
     }
 
 
-
-
-
-
-
-    async active():
-
-        Promise<Permission[]> {
-
+    async active(): Promise<Permission[]> {
 
         const {
             data,
             error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "is_active",
-                    true,
-                )
-                .order(
-                    "module",
-                    {
-                        ascending:true,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapPermission(
-                        row as PermissionRow,
-                    ),
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "is_active",
+                true,
+            )
+            .order(
+                "module",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "action",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            row =>
+                this.mapPermission(
+                    row as PermissionRow,
+                ),
+        );
     }
-
-
-
-
-
 
 
     async findById(
-        id:string,
-    ):
-        Promise<Permission | null> {
+        id: string,
+    ): Promise<Permission | null> {
 
+        const normalizedId =
+            this.requireId(id);
 
         const {
             data,
             error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            )
+            .maybeSingle();
 
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "id",
-                    id,
-                )
-                .maybeSingle();
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
-
+        }
 
         return data
             ? this.mapPermission(
                 data as PermissionRow,
             )
             : null;
-
     }
-
-
-
-
-
 
 
     async findByKey(
-        key:string,
-    ):
-        Promise<Permission | null> {
-
+        key: string,
+    ): Promise<Permission | null> {
 
         const normalizedKey =
-            key
-                .trim()
-                .toLowerCase();
-
-
+            this.normalizeKey(key);
 
         const {
             data,
             error,
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "key",
+                normalizedKey,
+            )
+            .maybeSingle();
 
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "key",
-                    normalizedKey,
-                )
-                .maybeSingle();
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
-
+        }
 
         return data
             ? this.mapPermission(
                 data as PermissionRow,
             )
             : null;
-
     }
-
-
-
-
-
 
 
     async search(
-        keyword:string,
-    ):
-        Promise<Permission[]> {
-
+        keyword: string,
+    ): Promise<Permission[]> {
 
         const search =
-            keyword.trim();
+            keyword?.trim() ?? "";
 
-
-
-        if(!search){
-
+        if (!search) {
             return this.list();
-
         }
 
-
+        const escapedSearch =
+            this.escapeIlikePattern(search);
 
         const {
             data,
             error,
-
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .or(
-                    [
-                        `name.ilike.%${search}%`,
-                        `module.ilike.%${search}%`,
-                        `action.ilike.%${search}%`,
-                        `key.ilike.%${search}%`,
-                    ].join(","),
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapPermission(
-                        row as PermissionRow,
-                    ),
+        } = await this
+            .tableRef()
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .or(
+                [
+                    `name.ilike.%${escapedSearch}%`,
+                    `module.ilike.%${escapedSearch}%`,
+                    `action.ilike.%${escapedSearch}%`,
+                    `key.ilike.%${escapedSearch}%`,
+                ].join(","),
+            )
+            .order(
+                "module",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "action",
+                {
+                    ascending: true,
+                },
+            )
+            .order(
+                "name",
+                {
+                    ascending: true,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            row =>
+                this.mapPermission(
+                    row as PermissionRow,
+                ),
+        );
     }
 
 
-
-
-
-
-
     async save(
-        permission:Permission,
-    ):
-        Promise<Permission> {
+        permission: Permission,
+    ): Promise<Permission> {
 
+        if (!permission) {
+            throw new Error(
+                "Permission is required.",
+            );
+        }
+
+        const id =
+            this.requireId(
+                permission.id,
+                "Permission id",
+            );
+
+        const key =
+            this.normalizeKey(
+                permission.key,
+            );
+
+        const name =
+            permission.name?.trim();
+
+        if (!name) {
+            throw new Error(
+                "Permission name is required.",
+            );
+        }
+
+        const moduleName =
+    permission.module?.trim();
+
+if (!moduleName) {
+    throw new Error(
+        "Permission module is required.",
+    );
+}
+
+        const action =
+            permission.action?.trim();
+
+        if (!action) {
+            throw new Error(
+                "Permission action is required.",
+            );
+        }
 
         const now =
-            new Date()
-                .toISOString();
-
-
+            new Date().toISOString();
 
         const {
             data,
             error,
+        } = await this
+            .tableRef()
+            .upsert(
+                {
+                    id,
 
-        } =
-            await this
-                .tableRef()
-                .upsert(
+                    organization_id:
+                        this.organizationId,
 
-                    {
+                    key,
 
-                        id:
-                            permission.id,
+                    name,
 
+                    description:
+                        permission.description?.trim()
+                        || null,
 
-                        organization_id:
-                            this.organizationId,
+                    module,
 
+                    action,
 
-                        key:
-                            permission.key
-                                .trim()
-                                .toLowerCase(),
+                    type:
+                        permission.type,
 
+                    is_system:
+                        permission.isSystem,
 
-                        name:
-                            permission.name
-                                .trim(),
+                    is_active:
+                        permission.isActive,
 
+                    metadata:
+                        permission.metadata ?? {},
 
-                        description:
-                            permission.description
-                            ??
-                            null,
+                    created_at:
+                        permission.createdAt
+                        ?? now,
 
+                    updated_at:
+                        now,
+                },
+                {
+                    onConflict: "id",
+                },
+            )
+            .select("*")
+            .single();
 
-                        module:
-                            permission.module
-                                .trim(),
-
-
-                        action:
-                            permission.action
-                                .trim(),
-
-
-                        type:
-                            permission.type,
-
-
-                        is_system:
-                            permission.isSystem,
-
-
-                        is_active:
-                            permission.isActive,
-
-
-                        metadata:
-                            permission.metadata
-                            ??
-                            {},
-
-
-                        created_at:
-                            permission.createdAt
-                            ??
-                            now,
-
-
-                        updated_at:
-                            now,
-
-                    },
-
-                    {
-                        onConflict:"id",
-                    },
-
-                )
-
-                .select()
-
-                .single();
-
-
-
-        if(error)
+        if (error) {
             throw error;
+        }
 
-
+        if (!data) {
+            throw new Error(
+                "Permission save returned no data.",
+            );
+        }
 
         return this.mapPermission(
             data as PermissionRow,
         );
-
     }
-
-
-
-
-
 
 
     async delete(
-        id:string,
-    ):
-        Promise<void> {
+        id: string,
+    ): Promise<void> {
 
+        const normalizedId =
+            this.requireId(id);
 
         const {
             error,
+        } = await this
+            .tableRef()
+            .delete()
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            );
 
-        } =
-            await this
-                .tableRef()
-                .delete()
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "id",
-                    id,
-                );
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
+        }
     }
 
 
+    private requireId(
+        id: string,
+        fieldName = "Permission id",
+    ): string {
+
+        const normalizedId =
+            id?.trim();
+
+        if (!normalizedId) {
+            throw new Error(
+                `${fieldName} is required.`,
+            );
+        }
+
+        return normalizedId;
+    }
 
 
+    private normalizeKey(
+        key: string,
+    ): string {
 
+        const normalizedKey =
+            key?.trim().toLowerCase();
+
+        if (!normalizedKey) {
+            throw new Error(
+                "Permission key is required.",
+            );
+        }
+
+        return normalizedKey;
+    }
+
+
+    private escapeIlikePattern(
+        value: string,
+    ): string {
+
+        return value
+            .replace(/\\/g, "\\\\")
+            .replace(/%/g, "\\%")
+            .replace(/_/g, "\\_")
+            .replace(/,/g, "\\,");
+    }
 
 
     private mapPermission(
-        row:PermissionRow,
-    ):
-        Permission {
-
+        row: PermissionRow,
+    ): Permission {
 
         return {
 
             id:
                 row.id,
 
-
             organizationId:
-                row.organization_id
-                ??
-                "",
-
+                row.organization_id ?? "",
 
             key:
                 row.key,
 
-
             name:
                 row.name,
 
-
             description:
-                row.description
-                ??
-                "",
-
+                row.description ?? "",
 
             module:
                 row.module,
 
-
             action:
                 row.action,
-
 
             type:
                 row.type as Permission["type"],
 
-
             isSystem:
-                row.is_system
-                ??
-                false,
-
+                row.is_system ?? false,
 
             isActive:
-                row.is_active
-                ??
-                false,
-
+                row.is_active ?? false,
 
             metadata:
-                row.metadata
-                ??
-                {},
-
+                row.metadata ?? {},
 
             createdAt:
                 row.created_at,
 
-
             updatedAt:
                 row.updated_at,
-
         };
-
     }
-
 }

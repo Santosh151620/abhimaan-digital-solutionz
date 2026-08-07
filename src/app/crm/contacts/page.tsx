@@ -1,106 +1,106 @@
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
-import CRMToolbar from '@/components/crm/shared/toolbar/CRMToolbar';
-import CRMTableContainer from '@/components/crm/shared/table/CRMTableContainer';
-import CRMEmptyState from '@/components/crm/shared/table/CRMEmptyState';
+    import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+    import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+    import CRMToolbar from '@/components/crm/shared/toolbar/CRMToolbar';
+    import CRMTableContainer from '@/components/crm/shared/table/CRMTableContainer';
+    import CRMEmptyState from '@/components/crm/shared/table/CRMEmptyState';
 
-import ContactsSummary from '@/components/crm/contacts/ContactsSummary';
-import ContactsTable from '@/components/crm/contacts/ContactsTable';
+    import ContactsSummary from '@/components/crm/contacts/ContactsSummary';
+    import ContactsTable from '@/components/crm/contacts/ContactsTable';
 
-import {
-    listContacts,
-    getContactsSummary,
-} from './actions';
-
-
-
-export default async function ContactsPage() {
-
-
-    const contacts =
-        await listContacts();
+    import {
+        listContacts,
+        getContactsSummary,
+    } from './actions';
 
 
 
-    const summary =
-        await getContactsSummary();
+    export default async function ContactsPage() {
+
+
+        const contacts =
+            await listContacts();
 
 
 
-    return (
+        const summary =
+            await getContactsSummary();
 
-        <CRMPageLayout>
 
 
-            <CRMHeader
+        return (
 
-                title="Contacts"
+            <CRMPageLayout>
 
-                description="Manage customer and business contacts."
 
-                actions={[
+                <CRMHeader
+
+                    title="Contacts"
+
+                    description="Manage customer and business contacts."
+
+                    actions={[
+                        {
+                            label: 'New Contact',
+                            href: '/crm/contacts/new',
+                        },
+                    ]}
+
+                />
+
+
+
+                <CRMToolbar
+
+                    title="Contacts"
+
+                    createHref="/crm/contacts/new"
+
+                    createLabel="New Contact"
+
+                />
+
+
+
+                <ContactsSummary
+
+                    summary={summary}
+
+                />
+
+
+
+                <CRMTableContainer
+
+                    title="Contacts"
+
+                    description="All CRM contacts."
+
+                >
+
+
                     {
-                        label: 'New Contact',
-                        href: '/crm/contacts/new',
-                    },
-                ]}
+                        contacts.length === 0 ? (
 
-            />
+                            <CRMEmptyState
 
+                                title="No contacts found"
 
+                                description="Create your first CRM contact to get started."
 
-            <CRMToolbar
+                                actionHref="/crm/contacts/new"
 
-                title="Contacts"
+                                actionLabel="Create Contact"
 
-                createHref="/crm/contacts/new"
+                            />
 
-                createLabel="New Contact"
+                        ) : (
 
-            />
-
-
-
-            <ContactsSummary
-
-                summary={summary}
-
-            />
-
-
-
-            <CRMTableContainer
-
-                title="Contacts"
-
-                description="All CRM contacts."
-
-            >
-
-
-                {
-                    contacts.length === 0 ? (
-
-                        <CRMEmptyState
-
-                            title="No contacts found"
-
-                            description="Create your first CRM contact to get started."
-
-                            actionHref="/crm/contacts/new"
-
-                            actionLabel="Create Contact"
-
-                        />
-
-                    ) : (
-
-                        <ContactsTable
-                            contacts={contacts}
-                        />
-                    )
-                }
-            </CRMTableContainer>
-        </CRMPageLayout>
-    );
-}
+                            <ContactsTable
+                                contacts={contacts}
+                            />
+                        )
+                    }
+                </CRMTableContainer>
+            </CRMPageLayout>
+        );
+    }

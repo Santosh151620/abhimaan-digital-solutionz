@@ -1,5 +1,8 @@
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import {
+    redirect,
+} from 'next/navigation';
 
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
 import {
@@ -10,10 +13,6 @@ import {
     createContact,
 } from '../actions';
 
-import {
-    redirect,
-} from 'next/navigation';
-
 import type {
     CreateContactInput,
 } from '@/types/crm/Contacts';
@@ -23,9 +22,9 @@ import type {
 export default function NewContactPage() {
 
 
-    async function submit(
+    async function handleSubmit(
         values: CreateContactInput,
-    ) {
+    ): Promise<void> {
 
         'use server';
 
@@ -47,16 +46,34 @@ export default function NewContactPage() {
 
         <CRMPageLayout>
 
+
             <CRMHeader
+
                 title="New Contact"
+
                 description="Create a new contact for your CRM."
+
+                actions={[
+                    {
+                        label: 'Back',
+                        href: '/crm/contacts',
+                    },
+                ]}
+
             />
+
+
             <ContactsForm
-                onSubmit={submit}
+
+                onSubmit={
+                    handleSubmit
+                }
+
             />
 
 
         </CRMPageLayout>
 
     );
+
 }

@@ -2,65 +2,55 @@ import type {
     AuditLog,
 } from "@/types/admin/AuditLog";
 
-
 import {
     createSupabaseServerClient,
 } from "@/lib/supabase/server-client";
-
 
 import {
     TenantContextManager,
 } from "@/lib/tenant/tenantContext";
 
 
-
 type AuditLogRow = {
 
-    id:string;
+    id: string;
 
-    organization_id:string | null;
+    organization_id: string | null;
 
-    user_id:string | null;
+    user_id: string | null;
 
-    user_name:string | null;
+    user_name: string | null;
 
-    action:string;
+    action: string;
 
-    entity_type:string;
+    entity_type: string;
 
-    entity_id:string | null;
+    entity_id: string | null;
 
-    description:string | null;
+    description: string | null;
 
-    metadata:Record<string,unknown> | null;
+    metadata: Record<string, unknown> | null;
 
-    ip_address:string | null;
+    ip_address: string | null;
 
-    user_agent:string | null;
+    user_agent: string | null;
 
-    created_at:string;
+    created_at: string;
 
 };
-
-
-
 
 
 export class AuditLogsRepository {
 
 
+    private async client() {
 
-    private async client(){
-
-        return await createSupabaseServerClient();
+        return createSupabaseServerClient();
 
     }
 
 
-
-
-
-    private get organizationId():string {
+    private get organizationId(): string {
 
         return TenantContextManager
             .require()
@@ -69,222 +59,181 @@ export class AuditLogsRepository {
     }
 
 
-
-
-
-
-
-    async findAll():
-
-        Promise<AuditLog[]> {
-
+    async findAll(): Promise<AuditLog[]> {
 
         const supabase =
             await this.client();
 
-
         const {
             data,
             error,
-
-        } =
-            await supabase
-
-                .from("audit_logs")
-
-                .select("*")
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .order(
-                    "created_at",
-                    {
-                        ascending:false,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapAuditLog(
-                        row as AuditLogRow,
-                    ),
+        } = await supabase
+            .from("audit_logs")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            row =>
+                this.mapAuditLog(
+                    row as AuditLogRow,
+                ),
+        );
     }
-
-
-
-
-
 
 
     async findByEntity(
+        entityType: string,
+        entityId: string,
+    ): Promise<AuditLog[]> {
 
-        entityType:string,
+        const normalizedEntityType =
+            this.requireValue(
+                entityType,
+                "Audit entity type",
+            );
 
-        entityId:string,
-
-    ):
-        Promise<AuditLog[]> {
-
+        const normalizedEntityId =
+            this.requireValue(
+                entityId,
+                "Audit entity id",
+            );
 
         const supabase =
             await this.client();
 
-
         const {
             data,
             error,
-
-        } =
-            await supabase
-
-                .from("audit_logs")
-
-                .select("*")
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .eq(
-                    "entity_type",
-                    entityType,
-                )
-
-                .eq(
-                    "entity_id",
-                    entityId,
-                )
-
-                .order(
-                    "created_at",
-                    {
-                        ascending:false,
-                    },
-                );
-
-
-
-        if(error)
-            throw error;
-
-
-
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapAuditLog(
-                        row as AuditLogRow,
-                    ),
+        } = await supabase
+            .from("audit_logs")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "entity_type",
+                normalizedEntityType,
+            )
+            .eq(
+                "entity_id",
+                normalizedEntityId,
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false,
+                },
             );
 
+        if (error) {
+            throw error;
+        }
+
+        return (data ?? []).map(
+            row =>
+                this.mapAuditLog(
+                    row as AuditLogRow,
+                ),
+        );
     }
 
 
-
-
-
-
-
     async findById(
-        id:string,
-    ):
-        Promise<AuditLog | null>{
+        id: string,
+    ): Promise<AuditLog | null> {
 
+        const normalizedId =
+            this.requireValue(
+                id,
+                "Audit log id",
+            );
 
         const supabase =
             await this.client();
 
-
-
         const {
             data,
             error,
+        } = await supabase
+            .from("audit_logs")
+            .select("*")
+            .eq(
+                "organization_id",
+                this.organizationId,
+            )
+            .eq(
+                "id",
+                normalizedId,
+            )
+            .maybeSingle();
 
-        } =
-            await supabase
-
-                .from("audit_logs")
-
-                .select("*")
-
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-
-                .eq(
-                    "id",
-                    id,
-                )
-
-                .maybeSingle();
-
-
-
-        if(error)
+        if (error) {
             throw error;
-
-
+        }
 
         return data
             ? this.mapAuditLog(
                 data as AuditLogRow,
             )
             : null;
-
     }
 
 
+    private requireValue(
+        value: string,
+        fieldName: string,
+    ): string {
 
+        const normalized =
+            value?.trim();
 
+        if (!normalized) {
+            throw new Error(
+                `${fieldName} is required.`,
+            );
+        }
 
+        return normalized;
+    }
 
 
     private mapAuditLog(
-        row:AuditLogRow,
-    ):
-        AuditLog {
-
+        row: AuditLogRow,
+    ): AuditLog {
 
         return {
 
             id:
                 row.id,
 
-
             organizationId:
                 row.organization_id ?? "",
-
 
             userId:
                 row.user_id ?? undefined,
 
-
             userName:
                 row.user_name ?? undefined,
 
-
-                        action:
+            action:
                 row.action as AuditLog["action"],
-
 
             entityType:
                 row.entity_type,
-
 
             entityId:
                 row.entity_id ?? "",
@@ -292,25 +241,19 @@ export class AuditLogsRepository {
             description:
                 row.description ?? undefined,
 
-
             metadata:
                 row.metadata ?? {},
-
 
             ipAddress:
                 row.ip_address ?? undefined,
 
-
             userAgent:
                 row.user_agent ?? undefined,
-
 
             createdAt:
                 row.created_at,
 
         };
-
     }
-
 
 }
