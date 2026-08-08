@@ -2,6 +2,8 @@ import type {
     Team,
 } from "@/types/admin/Team";
 
+import { createSupabaseServerClient } from "@/lib/supabase/server-client";
+
 import {
     TeamsRepository,
 } from "@/repositories/admin/TeamsRepository";
@@ -10,8 +12,7 @@ export class TeamsService {
 
     constructor(
 
-        private readonly repository =
-            new TeamsRepository(),
+        private readonly repository: TeamsRepository,
 
     ) {}
 
@@ -142,5 +143,3 @@ export class TeamsService {
 
 }
 
-export const teamsService =
-    new TeamsService();
