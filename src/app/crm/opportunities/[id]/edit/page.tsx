@@ -24,7 +24,7 @@ import {
 
 
 import type {
-    Opportunity,
+    UpdateOpportunityInput,
 } from "@/types/crm/Opportunities";
 
 
@@ -71,12 +71,9 @@ export default async function EditOpportunityPage({
 
 
 
-
-    async function submit(
-
-        values:Partial<Opportunity>
-
-    ) {
+async function submit(
+    values: UpdateOpportunityInput
+) {
 
         "use server";
 
