@@ -1,4 +1,4 @@
-import {
+﻿import {
     TenantContextManager,
 } from "@/lib/tenant/tenantContext";
 
@@ -10,21 +10,36 @@ import type {
     Team,
 } from "@/types/admin/Team";
 
+
 type TeamRow = {
+
     id: string;
+
     organization_id: string;
+
     department_id: string | null;
+
     team_code: string;
+
     team_name: string;
+
     description: string | null;
+
     team_lead_id: string | null;
+
     status: Team["status"] | null;
+
     metadata: Record<string, unknown> | null;
+
     created_at: string;
+
     updated_at: string;
+
 };
 
+
 export interface ITeamsRepository {
+
     findAll(): Promise<Team[]>;
 
     findById(
@@ -46,22 +61,29 @@ export interface ITeamsRepository {
     delete(
         id: string,
     ): Promise<void>;
+
 }
 
+
 export class TeamsRepository
-    implements ITeamsRepository
-{
+    implements ITeamsRepository {
+
     private async client() {
         return createSupabaseServerClient();
     }
 
+
     private get organizationId(): string {
+
         return TenantContextManager
             .require()
             .organizationId;
+
     }
 
+
     async findAll(): Promise<Team[]> {
+
         const supabase =
             await this.client();
 
@@ -94,9 +116,11 @@ export class TeamsRepository
         );
     }
 
+
     async findById(
         id: string,
     ): Promise<Team | null> {
+
         const normalizedId =
             id.trim();
 
@@ -131,14 +155,16 @@ export class TeamsRepository
 
         return data
             ? this.mapTeam(
-                  data as TeamRow,
-              )
+                data as TeamRow,
+            )
             : null;
     }
+
 
     async findByCode(
         code: string,
     ): Promise<Team | null> {
+
         const normalizedCode =
             code.trim().toUpperCase();
 
@@ -173,14 +199,16 @@ export class TeamsRepository
 
         return data
             ? this.mapTeam(
-                  data as TeamRow,
-              )
+                data as TeamRow,
+            )
             : null;
     }
+
 
     async findByDepartment(
         departmentId: string,
     ): Promise<Team[]> {
+
         const normalizedDepartmentId =
             departmentId.trim();
 
@@ -226,16 +254,19 @@ export class TeamsRepository
         );
     }
 
+
     async save(
         team: Partial<Team>,
     ): Promise<Team> {
+
         const teamCode =
             team.teamCode
                 ?.trim()
                 .toUpperCase();
 
         const teamName =
-            team.teamName?.trim();
+            team.teamName
+                ?.trim();
 
         if (!teamCode) {
             throw new Error(
@@ -256,27 +287,40 @@ export class TeamsRepository
             new Date().toISOString();
 
         const payload = {
-            id: team.id,
+
+            id:
+                team.id,
+
             organization_id:
                 this.organizationId,
+
             department_id:
                 team.departmentId ?? null,
+
             team_code:
                 teamCode,
+
             team_name:
                 teamName,
+
             description:
                 team.description ?? null,
+
             team_lead_id:
                 team.teamLeadId ?? null,
+
             status:
                 team.status ?? "Active",
+
             metadata:
                 team.metadata ?? {},
+
             created_at:
                 team.createdAt ?? now,
+
             updated_at:
                 now,
+
         };
 
         const {
@@ -302,9 +346,11 @@ export class TeamsRepository
         );
     }
 
+
     async delete(
         id: string,
     ): Promise<void> {
+
         const normalizedId =
             id.trim();
 
@@ -336,10 +382,13 @@ export class TeamsRepository
         }
     }
 
+
     private mapTeam(
         row: TeamRow,
     ): Team {
+
         return {
+
             id:
                 row.id,
 
@@ -372,6 +421,8 @@ export class TeamsRepository
 
             updatedAt:
                 row.updated_at,
+
         };
     }
+
 }

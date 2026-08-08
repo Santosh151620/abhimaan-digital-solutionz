@@ -1,85 +1,97 @@
 import Link from "next/link";
 
-import type { Company } from "@/types/crm/Companies";
-
-import { CompaniesServiceInstance } from "@/services/crm/CompaniesService";
-
 import DashboardCards from "@/components/admin/dashboard/DashboardCards";
 import SystemHealthCard from "@/components/admin/dashboard/SystemHealthCard";
+
+import type { AdminDashboard } from "@/types/admin/Admin";
+
+import { AdminService } from "@/services/admin/AdminService";
+import { SupabaseAdminRepository } from "@/repositories/admin/SupabaseAdminRepository";
+
+import { createSupabaseServerClient } from "@/lib/supabase/server-client";
 
 
 export const dynamic = "force-dynamic";
 
 
-export default async function DashboardPage() {
-
-
-    let companies: Company[] = [];
-
+async function getAdminDashboard(): Promise<AdminDashboard | null> {
 
     try {
 
-        companies =
-            await CompaniesServiceInstance.list();
+        const supabase =
+            await createSupabaseServerClient();
+
+        const repository =
+            new SupabaseAdminRepository(
+                supabase,
+            );
+
+        const service =
+            new AdminService(
+                repository,
+            );
+
+        return await service.dashboard();
+
+    } catch {
+
+        return null;
 
     }
 
-    catch {
-
-        companies = [];
-
-    }
+}
 
 
-    const activeCompanies =
-        companies.filter(
-            (company) =>
-                company.status === "ACTIVE"
-        ).length;
+export default async function DashboardPage() {
+
+    const dashboard =
+        await getAdminDashboard();
 
 
-    const prospects =
-        companies.filter(
-            (company) =>
-                company.status === "PROSPECT"
-        ).length;
-
+    const summary =
+        dashboard?.summary;
 
 
     const dashboardCards = [
 
         {
-            title: "Companies",
-            value: companies.length,
-            description: "Total registered companies",
+            title: "Organizations",
+            value:
+                summary?.organizations ?? 0,
+            description:
+                "Registered organizations",
         },
 
         {
-            title: "Active Companies",
-            value: activeCompanies,
-            description: "Currently active customers",
+            title: "Users",
+            value:
+                summary?.users ?? 0,
+            description:
+                "Organization users",
         },
 
         {
-            title: "Prospects",
-            value: prospects,
-            description: "Potential opportunities",
+            title: "Active Users",
+            value:
+                summary?.activeUsers ?? 0,
+            description:
+                "Currently active users",
         },
 
         {
-            title: "Open Leads",
-            value: 0,
-            description: "Lead pipeline tracking",
+            title: "Enabled Modules",
+            value:
+                summary?.enabledModules ?? 0,
+            description:
+                "Currently enabled platform modules",
         },
 
     ];
 
 
-
     return (
 
         <main className="space-y-8 p-8">
-
 
             <section>
 
@@ -87,14 +99,11 @@ export default async function DashboardPage() {
                     Admin Dashboard
                 </h1>
 
-
                 <p className="text-muted-foreground">
                     Platform overview and business administration summary.
                 </p>
 
-
             </section>
-
 
 
             <DashboardCards
@@ -102,174 +111,23 @@ export default async function DashboardPage() {
             />
 
 
-
             <SystemHealthCard
-                status="Healthy"
+              status={
+    dashboard
+        ? "Healthy"
+        : "Warning"
+}
                 lastChecked={
-                    new Date()
-                        .toLocaleString()
+                    dashboard?.generatedAt
+                        ? new Date(
+                            dashboard.generatedAt,
+                        ).toLocaleString()
+                        : new Date().toLocaleString()
                 }
             />
 
 
-
-            <section className="grid gap-6 xl:grid-cols-3">
-
-
-                <div
-                    className="
-                        rounded-xl
-                        border
-                        bg-background
-                        p-6
-                        xl:col-span-2
-                    "
-                >
-
-
-                    <div
-                        className="
-                            mb-5
-                            flex
-                            items-center
-                            justify-between
-                        "
-                    >
-
-                        <h2 className="text-xl font-semibold">
-                            Recent Companies
-                        </h2>
-
-
-                        <Link
-
-                            href="/crm/companies"
-
-                            className="
-                                text-primary
-                                hover:underline
-                            "
-
-                        >
-
-                            View All
-
-                        </Link>
-
-
-                    </div>
-
-
-
-                    <div className="overflow-x-auto">
-
-
-                        <table className="min-w-full">
-
-
-                            <thead>
-
-
-                                <tr className="border-b">
-
-
-                                    <th className="p-3 text-left">
-                                        Company
-                                    </th>
-
-
-                                    <th className="p-3 text-left">
-                                        Industry
-                                    </th>
-
-
-                                    <th className="p-3 text-left">
-                                        Status
-                                    </th>
-
-
-                                </tr>
-
-
-                            </thead>
-
-
-
-                            <tbody>
-
-                                {companies.length === 0 && (
-
-                                    <tr>
-
-                                        <td
-                                            colSpan={3}
-                                            className="p-6 text-center text-muted-foreground"
-                                        >
-
-                                            No companies found.
-
-                                        </td>
-
-                                    </tr>
-
-                                )}
-
-                                {companies
-                                    .slice(0, 5)
-                                    .map((company) => (
-
-                                        <tr
-                                            key={company.id}
-                                            className="
-                    border-b
-                    hover:bg-muted/20
-                "
-                                        >
-
-                                            <td className="p-3">
-
-                                                <Link
-                                                    href={`/crm/companies/${company.id}`}
-                                                    className="
-                            font-medium
-                            hover:text-primary
-                        "
-                                                >
-
-                                                    {company.name}
-
-                                                </Link>
-
-                                            </td>
-
-                                            <td className="p-3">
-
-                                                {company.industry ?? "—"}
-
-                                            </td>
-
-                                            <td className="p-3">
-
-                                                {company.status}
-
-                                            </td>
-
-                                        </tr>
-
-                                    ))}
-
-                            </tbody>
-
-                        </table>
-
-
-                    </div>
-
-
-                </div>
-
-
-
+            <section className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 
 
                 <div
@@ -280,23 +138,17 @@ export default async function DashboardPage() {
                         p-6
                     "
                 >
-
 
                     <h2 className="mb-5 text-xl font-semibold">
-
-                        Quick Actions
-
+                        Administration
                     </h2>
-
 
 
                     <div className="space-y-3">
 
 
                         <Link
-
-                            href="/crm/companies/new"
-
+                            href="/admin/users"
                             className="
                                 block
                                 rounded-lg
@@ -304,19 +156,13 @@ export default async function DashboardPage() {
                                 p-3
                                 hover:bg-muted
                             "
-
                         >
-
-                            ➕ New Company
-
+                            Users
                         </Link>
-
 
 
                         <Link
-
-                            href="/crm/companies"
-
+                            href="/admin/roles"
                             className="
                                 block
                                 rounded-lg
@@ -324,46 +170,189 @@ export default async function DashboardPage() {
                                 p-3
                                 hover:bg-muted
                             "
-
                         >
-
-                            🏢 Companies
-
+                            Roles
                         </Link>
 
 
-
-                        <div
+                        <Link
+                            href="/admin/permissions"
                             className="
+                                block
                                 rounded-lg
                                 border
                                 p-3
-                                text-muted-foreground
+                                hover:bg-muted
                             "
                         >
-
-                            👤 Leads (Coming Soon)
-
-                        </div>
+                            Permissions
+                        </Link>
 
 
-
-                        <div
+                        <Link
+                            href="/admin/organizations"
                             className="
+                                block
                                 rounded-lg
                                 border
                                 p-3
-                                text-muted-foreground
+                                hover:bg-muted
                             "
                         >
-
-                            💰 Revenue Analytics (Coming Soon)
-
-                        </div>
-
+                            Organizations
+                        </Link>
 
                     </div>
 
+                </div>
+
+
+                <div
+                    className="
+                        rounded-xl
+                        border
+                        bg-background
+                        p-6
+                    "
+                >
+
+                    <h2 className="mb-5 text-xl font-semibold">
+                        Platform
+                    </h2>
+
+
+                    <div className="space-y-3">
+
+
+                        <Link
+                            href="/admin/modules"
+                            className="
+                                block
+                                rounded-lg
+                                border
+                                p-3
+                                hover:bg-muted
+                            "
+                        >
+                            Modules
+                        </Link>
+
+
+                        <Link
+                            href="/admin/settings"
+                            className="
+                                block
+                                rounded-lg
+                                border
+                                p-3
+                                hover:bg-muted
+                            "
+                        >
+                            Settings
+                        </Link>
+
+
+                        <Link
+                            href="/admin/workflows"
+                            className="
+                                block
+                                rounded-lg
+                                border
+                                p-3
+                                hover:bg-muted
+                            "
+                        >
+                            Workflows
+                        </Link>
+
+
+                        <Link
+                            href="/admin/audit-logs"
+                            className="
+                                block
+                                rounded-lg
+                                border
+                                p-3
+                                hover:bg-muted
+                            "
+                        >
+                            Audit Logs
+                        </Link>
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    className="
+                        rounded-xl
+                        border
+                        bg-background
+                        p-6
+                    "
+                >
+
+                    <h2 className="mb-5 text-xl font-semibold">
+                        Dashboard Summary
+                    </h2>
+
+
+                    <dl className="space-y-4">
+
+
+                        <div className="flex items-center justify-between">
+
+                            <dt className="text-muted-foreground">
+                                Roles
+                            </dt>
+
+                            <dd className="font-semibold">
+                                {summary?.roles ?? 0}
+                            </dd>
+
+                        </div>
+
+
+                        <div className="flex items-center justify-between">
+
+                            <dt className="text-muted-foreground">
+                                Permissions
+                            </dt>
+
+                            <dd className="font-semibold">
+                                {summary?.permissions ?? 0}
+                            </dd>
+
+                        </div>
+
+
+                        <div className="flex items-center justify-between">
+
+                            <dt className="text-muted-foreground">
+                                Total Modules
+                            </dt>
+
+                            <dd className="font-semibold">
+                                {summary?.modules ?? 0}
+                            </dd>
+
+                        </div>
+
+
+                        <div className="flex items-center justify-between">
+
+                            <dt className="text-muted-foreground">
+                                Audit Records
+                            </dt>
+
+                            <dd className="font-semibold">
+                                {summary?.audits ?? 0}
+                            </dd>
+
+                        </div>
+
+                    </dl>
 
                 </div>
 
