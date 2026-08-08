@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import {
     useState,
@@ -17,7 +17,7 @@ import {
 
 import type {
     Contact,
-    ContactStatus,
+
     ContactsSummary as ContactsSummaryModel,
     CreateContactInput,
 } from '@/types/crm/Contacts';
@@ -323,4 +323,5 @@ export default function ContactsClient({
     );
 
 }
+
 

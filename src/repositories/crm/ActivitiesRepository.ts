@@ -1,6 +1,6 @@
 ﻿import type {
   SupabaseClient,
-  PostgrestFilterBuilder,
+
 } from "@supabase/supabase-js";
 
 import {
@@ -1128,6 +1128,7 @@ export function createActivitiesRepository(
 
 export const ActivitiesRepositoryInstance =
   createActivitiesRepository;
+
 
 
 

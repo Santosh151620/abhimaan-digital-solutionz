@@ -1,4 +1,4 @@
-/**
+﻿/**
  * CRM Notes Repository
  *
  * Production repository for the shared entity-driven notes engine.
