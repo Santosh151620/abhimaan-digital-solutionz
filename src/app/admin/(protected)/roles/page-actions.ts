@@ -1,84 +1,17 @@
 ﻿"use server";
 
+import { RolesRepository } from "@/repositories/admin/RolesRepository";
+import { RolesService } from "@/services/admin/RolesService";
+import type { Role } from "@/types/admin/Role";
 
-import {
-    createClient,
-} from "@/lib/supabase/server";
+async function getService(): Promise<RolesService> {
+    const repository = new RolesRepository();
 
-
-import {
-    RolesRepository,
-} from "@/repositories/admin/RolesRepository";
-
-
-import {
-    RolesService,
-} from "@/services/admin/RolesService";
-
-
-import type {
-    Role,
-} from "@/types/admin/Role";
-
-
-
-
-async function getService() {
-
-
-
-
-
-
-
-    const repository =
-
-        new RolesRepository();
-
-
-
-
-
-
-
-    return new RolesService(
-
-        repository,
-
-    );
-
-
-
+    return new RolesService(repository);
 }
 
-
-
-
-
-
-
-
-
-export async function getRoles():
-
-Promise<Role[]> {
-
-
-
-    const service =
-
-        await getService();
-
-
-
-
-
-
+export async function getRoles(): Promise<Role[]> {
+    const service = await getService();
 
     return service.list();
-
-
-
 }
-
-

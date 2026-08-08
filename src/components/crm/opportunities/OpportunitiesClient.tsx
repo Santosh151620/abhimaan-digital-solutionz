@@ -28,9 +28,6 @@ interface Props {
 export default function OpportunitiesClient({
 
     initialOpportunities = [],
-
-    locale: _locale,
-
 }: Props) {
 
 
@@ -407,4 +404,5 @@ export default function OpportunitiesClient({
     );
 
 }
+
 

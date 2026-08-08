@@ -38,14 +38,6 @@ interface NoteRow {
   created_by: string;
 }
 
-interface CreateNoteInput {
-  entityType: NoteEntityType;
-  entityId: string;
-  title?: string;
-  content?: string;
-  isPinned?: boolean;
-  createdBy?: string;
-}
 
 interface UpdateNoteInput {
   entityType?: NoteEntityType;
@@ -407,4 +399,5 @@ export function createNotesRepository(
  */
 export const NotesRepositoryInstance =
   createNotesRepository;
+
 
