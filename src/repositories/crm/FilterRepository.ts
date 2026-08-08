@@ -5,7 +5,7 @@ import {
 import type {
     FilterDefinition,
     SavedFilter,
-} from "@/types/crm/Filter";
+} from "@/types/shared/Filter";
 
 
 

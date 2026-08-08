@@ -13,7 +13,7 @@ import {
 
 import {
     CRM_ADMIN_ROLE,
-} from '@/shared/crmPermissions';
+} from '@/services/crm/crmPermissions';
 
 
 import type {

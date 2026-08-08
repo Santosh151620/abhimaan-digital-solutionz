@@ -3,7 +3,7 @@
 
 import type {
     FilterCondition,
-} from "@/types/crm/Filter";
+} from "@/types/shared/Filter";
 
 
 

@@ -3,7 +3,7 @@
 
 import type {
     FilterGroup as FilterGroupType,
-} from "@/types/crm/Filter";
+} from "@/types/shared/Filter";
 
 
 
