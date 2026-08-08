@@ -2,8 +2,6 @@ import type {
     Team,
 } from "@/types/admin/Team";
 
-import { createSupabaseServerClient } from "@/lib/supabase/server-client";
-
 import {
     TeamsRepository,
 } from "@/repositories/admin/TeamsRepository";

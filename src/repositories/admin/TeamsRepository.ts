@@ -1,45 +1,24 @@
-﻿import {
-    TenantContextManager,
-} from "@/lib/tenant/tenantContext";
+﻿import type { SupabaseClient } from "@supabase/supabase-js";
 
-import {
-    createSupabaseServerClient,
-} from "@/lib/supabase/server-client";
+import { BaseRepository } from "@/lib/db/base-repository";
 
-import type {
-    Team,
-} from "@/types/admin/Team";
-
+import type { Team } from "@/types/admin/Team";
 
 type TeamRow = {
-
     id: string;
-
     organization_id: string;
-
     department_id: string | null;
-
     team_code: string;
-
     team_name: string;
-
     description: string | null;
-
     team_lead_id: string | null;
-
     status: Team["status"] | null;
-
     metadata: Record<string, unknown> | null;
-
     created_at: string;
-
     updated_at: string;
-
 };
 
-
 export interface ITeamsRepository {
-
     findAll(): Promise<Team[]>;
 
     findById(
@@ -61,37 +40,27 @@ export interface ITeamsRepository {
     delete(
         id: string,
     ): Promise<void>;
-
 }
 
-
 export class TeamsRepository
-    implements ITeamsRepository {
-
-    private async client() {
-        return createSupabaseServerClient();
+    extends BaseRepository<Team>
+    implements ITeamsRepository
+{
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+        super(
+            supabase,
+            "teams",
+        );
     }
-
-
-    private get organizationId(): string {
-
-        return TenantContextManager
-            .require()
-            .organizationId;
-
-    }
-
 
     async findAll(): Promise<Team[]> {
-
-        const supabase =
-            await this.client();
-
         const {
             data,
             error,
-        } = await supabase
-            .from("teams")
+        } = await this
+            .tableRef()
             .select("*")
             .eq(
                 "organization_id",
@@ -116,28 +85,20 @@ export class TeamsRepository
         );
     }
 
-
     async findById(
         id: string,
     ): Promise<Team | null> {
-
         const normalizedId =
-            id.trim();
-
-        if (!normalizedId) {
-            throw new Error(
-                "Team id is required.",
+            this.requireValue(
+                id,
+                "Team id",
             );
-        }
-
-        const supabase =
-            await this.client();
 
         const {
             data,
             error,
-        } = await supabase
-            .from("teams")
+        } = await this
+            .tableRef()
             .select("*")
             .eq(
                 "organization_id",
@@ -160,28 +121,20 @@ export class TeamsRepository
             : null;
     }
 
-
     async findByCode(
         code: string,
     ): Promise<Team | null> {
-
         const normalizedCode =
-            code.trim().toUpperCase();
-
-        if (!normalizedCode) {
-            throw new Error(
-                "Team code is required.",
-            );
-        }
-
-        const supabase =
-            await this.client();
+            this.requireValue(
+                code,
+                "Team code",
+            ).toUpperCase();
 
         const {
             data,
             error,
-        } = await supabase
-            .from("teams")
+        } = await this
+            .tableRef()
             .select("*")
             .eq(
                 "organization_id",
@@ -204,28 +157,20 @@ export class TeamsRepository
             : null;
     }
 
-
     async findByDepartment(
         departmentId: string,
     ): Promise<Team[]> {
-
         const normalizedDepartmentId =
-            departmentId.trim();
-
-        if (!normalizedDepartmentId) {
-            throw new Error(
-                "Department id is required.",
+            this.requireValue(
+                departmentId,
+                "Department id",
             );
-        }
-
-        const supabase =
-            await this.client();
 
         const {
             data,
             error,
-        } = await supabase
-            .from("teams")
+        } = await this
+            .tableRef()
             .select("*")
             .eq(
                 "organization_id",
@@ -254,43 +199,34 @@ export class TeamsRepository
         );
     }
 
-
     async save(
         team: Partial<Team>,
     ): Promise<Team> {
+        if (!team) {
+            throw new Error(
+                "Team is required.",
+            );
+        }
 
         const teamCode =
-            team.teamCode
-                ?.trim()
-                .toUpperCase();
+            this.requireValue(
+                team.teamCode,
+                "Team code",
+            ).toUpperCase();
 
         const teamName =
-            team.teamName
-                ?.trim();
-
-        if (!teamCode) {
-            throw new Error(
-                "Team code is required.",
+            this.requireValue(
+                team.teamName,
+                "Team name",
             );
-        }
-
-        if (!teamName) {
-            throw new Error(
-                "Team name is required.",
-            );
-        }
-
-        const supabase =
-            await this.client();
 
         const now =
             new Date().toISOString();
 
-        const payload = {
-
-            id:
-                team.id,
-
+        const payload: Record<
+            string,
+            unknown
+        > = {
             organization_id:
                 this.organizationId,
 
@@ -320,14 +256,18 @@ export class TeamsRepository
 
             updated_at:
                 now,
-
         };
+
+        if (team.id) {
+            payload.id =
+                team.id;
+        }
 
         const {
             data,
             error,
-        } = await supabase
-            .from("teams")
+        } = await this
+            .tableRef()
             .upsert(
                 payload,
                 {
@@ -341,54 +281,51 @@ export class TeamsRepository
             throw error;
         }
 
+        if (!data) {
+            throw new Error(
+                "Team save returned no data.",
+            );
+        }
+
         return this.mapTeam(
             data as TeamRow,
         );
     }
 
-
     async delete(
         id: string,
     ): Promise<void> {
-
         const normalizedId =
-            id.trim();
-
-        if (!normalizedId) {
-            throw new Error(
-                "Team id is required.",
-            );
-        }
-
-        const supabase =
-            await this.client();
-
-        const {
-            error,
-        } = await supabase
-            .from("teams")
-            .delete()
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "id",
-                normalizedId,
+            this.requireValue(
+                id,
+                "Team id",
             );
 
-        if (error) {
-            throw error;
-        }
+        await super.delete(
+            normalizedId,
+        );
     }
 
+    private requireValue(
+        value: string | null | undefined,
+        fieldName: string,
+    ): string {
+        const normalized =
+            value?.trim();
+
+        if (!normalized) {
+            throw new Error(
+                `${fieldName} is required.`,
+            );
+        }
+
+        return normalized;
+    }
 
     private mapTeam(
         row: TeamRow,
     ): Team {
-
         return {
-
             id:
                 row.id,
 
@@ -396,7 +333,8 @@ export class TeamsRepository
                 row.organization_id,
 
             departmentId:
-                row.department_id,
+                row.department_id ??
+                undefined,
 
             teamCode:
                 row.team_code,
@@ -405,24 +343,26 @@ export class TeamsRepository
                 row.team_name,
 
             description:
-                row.description ?? null,
+                row.description ??
+                undefined,
 
             teamLeadId:
-                row.team_lead_id,
+                row.team_lead_id ??
+                undefined,
 
             status:
-                row.status ?? "Active",
+                row.status ??
+                "Active",
 
             metadata:
-                row.metadata ?? {},
+                row.metadata ??
+                {},
 
             createdAt:
                 row.created_at,
 
             updatedAt:
                 row.updated_at,
-
         };
     }
-
 }
