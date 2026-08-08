@@ -1,132 +1,117 @@
-import type {
-    SupabaseClient,
-} from "@supabase/supabase-js";
+﻿/**
+ * ============================================================================
+ * ADS CRM Attachments Service
+ * ============================================================================
+ *
+ * Compatibility facade for existing plural-service imports.
+ *
+ * Canonical implementation:
+ *   src/services/crm/AttachmentService.ts
+ *
+ * This class exists only to preserve the existing application/server-action
+ * contract while ensuring there is a single production implementation.
+ * ============================================================================
+ */
+
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 import {
-    createAttachmentRepository,
-} from "@/repositories/crm/AttachmentRepository";
+  AttachmentService,
+} from "@/services/crm/AttachmentService";
 
 import type {
-    Attachment,
-    AttachmentSearchFilters,
-    AttachmentSummary,
+  Attachment,
+  AttachmentSearchFilters,
+  AttachmentSummary,
 } from "@/types/crm/Attachment";
 
-
 export class AttachmentsService {
+  private readonly service: AttachmentService;
 
+  constructor(
+    supabase: SupabaseClient,
+  ) {
+    this.service =
+      new AttachmentService(
+        supabase,
+      );
+  }
 
-    private readonly repository;
+  async list(
+    entityType?: string,
+    entityId?: string,
+    includeArchived = false,
+    includeDeleted = false,
+  ): Promise<Attachment[]> {
+    return this.service.list(
+      entityType,
+      entityId,
+      includeArchived,
+      includeDeleted,
+    );
+  }
 
+  async details(
+    id: string,
+  ): Promise<Attachment | null> {
+    return this.service.details(
+      id,
+    );
+  }
 
-    constructor(
-        supabase: SupabaseClient,
-    ) {
+  async findByEntity(
+    entityType: string,
+    entityId: string,
+  ): Promise<Attachment[]> {
+    return this.service.listByEntity(
+      entityType,
+      entityId,
+    );
+  }
 
-        this.repository =
-            createAttachmentRepository(
-                supabase,
-            );
+  async search(
+    filters?: AttachmentSearchFilters,
+  ): Promise<Attachment[]> {
+    return this.service.search(
+      filters,
+    );
+  }
 
-    }
+  async create(
+    payload: Partial<Attachment>,
+  ): Promise<Attachment> {
+    return this.service.create(
+      payload,
+    );
+  }
 
+  async update(
+    id: string,
+    payload: Partial<Attachment>,
+  ): Promise<Attachment> {
+    return this.service.update(
+      id,
+      payload,
+    );
+  }
 
+  async delete(
+    id: string,
+  ): Promise<void> {
+    return this.service.delete(
+      id,
+    );
+  }
 
-    async list(
-        entityType?: string,
-        entityId?: string,
-    ): Promise<Attachment[]> {
+  async restore(
+    id: string,
+  ): Promise<Attachment | null> {
+    return this.service.restore(
+      id,
+    );
+  }
 
-        return this.repository.list(
-            entityType,
-            entityId,
-        );
-
-    }
-
-
-
-    async details(
-        id: string,
-    ): Promise<Attachment | null> {
-
-        return this.repository.findById(
-            id,
-        );
-
-    }
-
-
-
-    async findByEntity(
-        entityType: string,
-        entityId: string,
-    ): Promise<Attachment[]> {
-
-        return this.repository.listByEntity(
-            entityType,
-            entityId,
-        );
-
-    }
-
-
-
-    async search(
-        filters?: AttachmentSearchFilters,
-    ): Promise<Attachment[]> {
-
-        return this.repository.search(
-            filters,
-        );
-
-    }
-
-
-
-    async create(
-        payload: Partial<Attachment>,
-    ): Promise<Attachment> {
-
-        return this.repository.create(
-            payload,
-        );
-
-    }
-
-
-
-    async update(
-        id: string,
-        payload: Partial<Attachment>,
-    ): Promise<Attachment> {
-
-        return this.repository.update(
-            id,
-            payload,
-        );
-
-    }
-
-
-
-    async delete(
-        id: string,
-    ): Promise<void> {
-
-        return this.repository.delete(
-            id,
-        );
-
-    }
-
-
-
-    async summary(): Promise<AttachmentSummary> {
-
-        return this.repository.summary();
-
-    }
-
-
+  async summary(): Promise<AttachmentSummary> {
+    return this.service.summary();
+  }
 }

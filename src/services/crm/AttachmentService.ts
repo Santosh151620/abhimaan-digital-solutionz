@@ -1,301 +1,153 @@
+﻿/**
+ * ============================================================================
+ * ADS CRM Attachment Service
+ * ============================================================================
+ *
+ * Production application service for CRM attachments.
+ *
+ * Architecture:
+ *
+ *   UI / Server Action
+ *          |
+ *          v
+ *   AttachmentService
+ *          |
+ *          v
+ *   AttachmentRepository
+ *          |
+ *          v
+ *   Supabase / RLS
+ *
+ * IMPORTANT:
+ * - No in-memory attachment persistence.
+ * - No duplicate business storage.
+ * - Tenant isolation is enforced by repository + RLS.
+ * - Entity references use entityType + entityId.
+ * ============================================================================
+ */
+
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import {
+  AttachmentRepository,
+  createAttachmentRepository,
+} from "@/repositories/crm/AttachmentRepository";
+
 import type {
-    Attachment,
-} from '@/types/crm/Attachment';
-
-
-class AttachmentService {
-
-
-    private attachments =
-        new Map<string, Attachment>();
-
-
-
-    list(): Attachment[] {
-
-        return Array.from(
-            this.attachments.values(),
-        )
-            .filter(
-                item =>
-                    !item.archived,
-            );
-
-    }
-
-
-
-    listByEntity(
-        entityType: string,
-        entityId: string,
-    ): Attachment[] {
-
-        return this.list()
-            .filter(
-                item =>
-
-                    item.entityType === entityType
-
-                    &&
-
-                    item.entityId === entityId,
-
-            );
-
-    }
-
-
-
-    details(
-        id: string,
-    ): Attachment | null {
-
-        return (
-            this.attachments.get(id)
-            ??
-            null
-        );
-
-    }
-
-
-
-    create(
-        data: Partial<Attachment>,
-    ): Attachment {
-
-
-        const now =
-            new Date()
-                .toISOString();
-
-
-
-        const attachment: Attachment = {
-
-
-            id:
-                crypto.randomUUID(),
-
-
-
-            entityType:
-                data.entityType
-                ??
-                'Other' as Attachment['entityType'],
-
-
-
-            entityId:
-                data.entityId
-                ??
-                '',
-
-
-
-            fileName:
-                data.fileName
-                ??
-                '',
-
-
-
-            fileUrl:
-                data.fileUrl
-                ??
-                '',
-
-
-            fileType:
-                data.fileType ?? 'application/octet-stream',
-
-
-
-            fileSize:
-                data.fileSize,
-
-
-
-            description:
-                data.description,
-
-
-
-            uploadedBy:
-                data.uploadedBy,
-
-
-
-            uploadedAt:
-                data.uploadedAt
-                ??
-                now,
-
-
-
-            archived:
-                false,
-
-
-
-            createdAt:
-                now,
-
-
-
-            updatedAt:
-                now,
-
-        };
-
-
-
-        this.attachments.set(
-            attachment.id,
-            attachment,
-        );
-
-
-
-        return attachment;
-
-    }
-
-
-
-    update(
-        id: string,
-        data: Partial<Attachment>,
-    ): Attachment | null {
-
-
-        const existing =
-            this.attachments.get(
-                id,
-            );
-
-
-        if (!existing) {
-
-            return null;
-
-        }
-
-
-
-        const updated: Attachment = {
-
-            ...existing,
-
-            ...data,
-
-
-            updatedAt:
-                new Date()
-                    .toISOString(),
-
-        };
-
-
-
-        this.attachments.set(
-            id,
-            updated,
-        );
-
-
-
-        return updated;
-
-    }
-
-
-
-    delete(
-        id: string,
-    ): boolean {
-
-
-        const attachment =
-            this.attachments.get(
-                id,
-            );
-
-
-        if (!attachment) {
-
-            return false;
-
-        }
-
-
-
-        attachment.archived =
-            true;
-
-
-
-        attachment.updatedAt =
-            new Date()
-                .toISOString();
-
-
-
-        this.attachments.set(
-            id,
-            attachment,
-        );
-
-
-
-        return true;
-
-    }
-
-
-
-    summary() {
-
-
-        const attachments =
-            Array.from(
-                this.attachments.values(),
-            );
-
-
-
-        return {
-
-
-            total:
-                attachments.length,
-
-
-
-            active:
-                attachments.filter(
-                    item =>
-                        !item.archived,
-                )
-                    .length,
-
-
-
-            archived:
-                attachments.filter(
-                    item =>
-                        item.archived,
-                )
-                    .length,
-
-        };
-
-    }
-
-
+  Attachment,
+  AttachmentSearchFilters,
+  AttachmentSummary,
+} from "@/types/crm/Attachment";
+
+export class AttachmentService {
+  private readonly repository: AttachmentRepository;
+
+  constructor(
+    supabase: SupabaseClient,
+  ) {
+    this.repository =
+      createAttachmentRepository(
+        supabase,
+      );
+  }
+
+  async list(
+    entityType?: string,
+    entityId?: string,
+    includeArchived = false,
+    includeDeleted = false,
+  ): Promise<Attachment[]> {
+    return this.repository.list(
+      entityType,
+      entityId,
+      includeArchived,
+      includeDeleted,
+    );
+  }
+
+  async listByEntity(
+    entityType: string,
+    entityId: string,
+  ): Promise<Attachment[]> {
+    return this.repository.listByEntity(
+      entityType,
+      entityId,
+    );
+  }
+
+  async details(
+    id: string,
+  ): Promise<Attachment | null> {
+    return this.repository.findById(
+      id,
+    );
+  }
+
+  async findById(
+    id: string,
+  ): Promise<Attachment | null> {
+    return this.repository.findById(
+      id,
+    );
+  }
+
+  async search(
+    filters?: AttachmentSearchFilters,
+  ): Promise<Attachment[]> {
+    return this.repository.search(
+      filters,
+    );
+  }
+
+  async create(
+    data: Partial<Attachment>,
+  ): Promise<Attachment> {
+    return this.repository.create(
+      data,
+    );
+  }
+
+  async update(
+    id: string,
+    data: Partial<Attachment>,
+  ): Promise<Attachment> {
+    return this.repository.update(
+      id,
+      data,
+    );
+  }
+
+  async delete(
+    id: string,
+  ): Promise<void> {
+    return this.repository.delete(
+      id,
+    );
+  }
+
+  async restore(
+    id: string,
+  ): Promise<Attachment | null> {
+    return this.repository.restore(
+      id,
+    );
+  }
+
+  async summary(): Promise<AttachmentSummary> {
+    return this.repository.summary();
+  }
 }
 
-
-
-export const AttachmentServiceInstance =
-    new AttachmentService();
+/**
+ * Factory for server-side/service usage.
+ *
+ * A Supabase client must be supplied so the service operates
+ * inside the authenticated tenant context.
+ */
+export function createAttachmentService(
+  supabase: SupabaseClient,
+): AttachmentService {
+  return new AttachmentService(
+    supabase,
+  );
+}
