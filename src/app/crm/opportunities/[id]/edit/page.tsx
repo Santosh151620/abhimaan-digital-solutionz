@@ -1,50 +1,38 @@
 import {
     notFound,
-    redirect,
-} from "next/navigation";
+} from 'next/navigation';
 
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
-import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
-import CRMHeader from "@/components/crm/shared/layout/CRMHeader";
-
-
-import {
-    OpportunitiesForm,
-} from "@/components/crm/opportunities";
-
+import EditOpportunityClient from './EditOpportunityClient';
 
 import {
     OpportunitiesServiceInstance,
-} from "@/services/crm/OpportunitiesService";
-
+} from '@/services/crm/OpportunitiesService';
 
 import {
     updateOpportunity,
-} from "../../actions";
-
-
-import type {
-    UpdateOpportunityInput,
-} from "@/types/crm/Opportunities";
-
+} from '../../actions';
 
 
 interface Props {
 
-    params:Promise<{
-        id:string;
+    params: Promise<{
+        id: string;
     }>;
 
 }
 
+
+export const dynamic = 'force-dynamic';
 
 
 export default async function EditOpportunityPage({
 
     params,
 
-}:Props) {
-
+}: Props) {
 
 
     const {
@@ -53,14 +41,17 @@ export default async function EditOpportunityPage({
         await params;
 
 
+    if (!id?.trim()) {
+
+        notFound();
+
+    }
 
 
     const opportunity =
-
         await OpportunitiesServiceInstance.details(
             id,
         );
-
 
 
     if (!opportunity) {
@@ -70,53 +61,20 @@ export default async function EditOpportunityPage({
     }
 
 
-
-async function submit(
-    values: UpdateOpportunityInput
-) {
-
-        "use server";
-
-
-
-        await updateOpportunity(
-
-            id,
-
-            values,
-
-        );
-
-
-
-        redirect(
-
-            `/crm/opportunities/${id}`,
-
-        );
-
-    }
-
-
-
-
     return (
 
         <CRMPageLayout>
-
 
             <CRMHeader
 
                 title="Edit Opportunity"
 
-
                 description="Update CRM opportunity details."
-
 
                 actions={[
 
                     {
-                        label:"Back",
+                        label: 'Back',
 
                         href:
                             `/crm/opportunities/${id}`,
@@ -127,20 +85,17 @@ async function submit(
             />
 
 
+            <EditOpportunityClient
 
-            <OpportunitiesForm
-
-                initialValues={
+                opportunity={
                     opportunity
                 }
 
-
-                onSubmit={
-                    submit
+                updateOpportunity={
+                    updateOpportunity
                 }
 
             />
-
 
         </CRMPageLayout>
 

@@ -1,86 +1,133 @@
-'use server';
-
+"use server";
 
 import {
+    createClient,
+} from "@/lib/supabase/server";
 
-    AttachmentRepositoryInstance,
+import {
+    createAttachmentRepository,
+} from "@/repositories/crm/AttachmentRepository";
 
-} from '@/repositories/crm/AttachmentRepository';
+async function getRepository() {
+    const supabase =
+        await createClient();
 
+    return createAttachmentRepository(
+        supabase,
+    );
+}
 
+function requireTaskId(
+    taskId: string,
+): string {
+    const value =
+        taskId?.trim();
+
+    if (!value) {
+        throw new Error(
+            "Task ID is required.",
+        );
+    }
+
+    return value;
+}
+
+function requireAttachmentId(
+    id: string,
+): string {
+    const value =
+        id?.trim();
+
+    if (!value) {
+        throw new Error(
+            "Attachment ID is required.",
+        );
+    }
+
+    return value;
+}
 
 export async function getTaskAttachments(
-
     taskId: string,
-
 ) {
+    const normalizedTaskId =
+        requireTaskId(
+            taskId,
+        );
 
+    const repository =
+        await getRepository();
 
-    return AttachmentRepositoryInstance.list(
-
-        'Task',
-
-        taskId,
-
+    return repository.listByEntity(
+        "Task",
+        normalizedTaskId,
     );
-
-
 }
-
-
-
 
 export async function createTaskAttachment(
-
     data: {
-
         fileName: string;
-
         fileUrl: string;
-
         fileType?: string;
-
         fileSize?: number;
-
         taskId: string;
-
     },
-
 ) {
+    const taskId =
+        requireTaskId(
+            data.taskId,
+        );
 
+    const fileName =
+        data.fileName?.trim();
 
-    return AttachmentRepositoryInstance.create({
+    const fileUrl =
+        data.fileUrl?.trim();
 
-        entityType: 'Task',
+    if (!fileName) {
+        throw new Error(
+            "File name is required.",
+        );
+    }
 
-        entityId: data.taskId,
+    if (!fileUrl) {
+        throw new Error(
+            "File URL is required.",
+        );
+    }
 
-        fileName: data.fileName,
+    const repository =
+        await getRepository();
 
-        fileUrl: data.fileUrl,
-
-        fileSize: data.fileSize,
-
+    return repository.create({
+        entityType: "Task",
+        entityId: taskId,
+        fileName,
+        fileUrl,
+        fileType:
+            data.fileType?.trim() ||
+            "file",
+        fileSize:
+            data.fileSize,
     });
-
-
 }
 
-
-
-
 export async function deleteTaskAttachment(
-
     id: string,
-
 ) {
+    const attachmentId =
+        requireAttachmentId(
+            id,
+        );
 
+    const repository =
+        await getRepository();
 
-    return AttachmentRepositoryInstance.delete(
-
-        id,
-
+    await repository.delete(
+        attachmentId,
     );
 
-
+    return {
+        success: true,
+    };
 }

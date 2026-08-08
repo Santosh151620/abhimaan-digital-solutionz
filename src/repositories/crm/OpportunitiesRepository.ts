@@ -170,7 +170,7 @@ export class OpportunitiesRepository
                 data.name ??
                 data.title
             )
-            ?.trim();
+                ?.trim();
 
 
         if (!name) {
@@ -183,46 +183,27 @@ export class OpportunitiesRepository
 
 
         const value =
-            Number(
-                data.value ?? 0,
+            this.normalizeValue(
+                data.value,
             );
-
-
-        if (
-            !Number.isFinite(value) ||
-            value < 0
-        ) {
-
-            throw new Error(
-                'Opportunity value cannot be negative.',
-            );
-
-        }
 
 
         const probability =
-            Number(
-                data.probability ?? 0,
+            this.normalizeProbability(
+                data.probability,
             );
-
-
-        if (
-            !Number.isFinite(probability) ||
-            probability < 0 ||
-            probability > 100
-        ) {
-
-            throw new Error(
-                'Opportunity probability must be between 0 and 100.',
-            );
-
-        }
 
 
         const entityId =
-            data.entityId
-            ??
+            data.entityId?.trim()
+            ||
             crypto.randomUUID();
+
+
+        const opportunityNumber =
+            data.opportunityNumber?.trim()
+            ||
+            `OPP-${Date.now()}`;
 
 
         const result =
@@ -233,43 +214,34 @@ export class OpportunitiesRepository
 
                 entityId,
 
-                opportunityNumber:
-                    data.opportunityNumber
-                    ??
-                    `OPP-${Date.now()}`,
+                opportunityNumber,
 
                 opportunityName:
                     name,
 
                 description:
                     data.description
-                    ??
-                    null,
+                    ?? null,
 
                 companyId:
                     data.companyId
-                    ??
-                    null,
+                    ?? null,
 
                 primaryContactId:
                     data.contactId
-                    ??
-                    null,
+                    ?? null,
 
                 ownerUserId:
                     data.ownerId
-                    ??
-                    null,
+                    ?? null,
 
                 stage:
                     data.stage
-                    ??
-                    'New',
+                    ?? 'New',
 
                 status:
                     data.status
-                    ??
-                    'Open',
+                    ?? 'Open',
 
                 amount:
                     value,
@@ -278,13 +250,11 @@ export class OpportunitiesRepository
 
                 expectedCloseDate:
                     data.expectedCloseDate
-                    ??
-                    null,
+                    ?? null,
 
                 metadata:
                     data.metadata
-                    ??
-                    {},
+                    ?? {},
 
                 isDeleted:
                     false,
@@ -311,99 +281,142 @@ export class OpportunitiesRepository
             this.requireId(id);
 
 
+        if (
+            data.name !== undefined &&
+            !data.name.trim()
+        ) {
+
+            throw new Error(
+                'Opportunity name cannot be empty.',
+            );
+
+        }
+
+
+        if (
+            data.title !== undefined &&
+            data.name === undefined &&
+            !data.title.trim()
+        ) {
+
+            throw new Error(
+                'Opportunity title cannot be empty.',
+            );
+
+        }
+
+
+        const updateData: Partial<Opportunity> = {
+
+            ...(data.name !== undefined ||
+            data.title !== undefined
+                ? {
+                    opportunityName:
+                        (
+                            data.name ??
+                            data.title
+                        )?.trim(),
+                }
+                : {}),
+
+
+            ...(data.description !== undefined
+                ? {
+                    description:
+                        data.description,
+                }
+                : {}),
+
+
+            ...(data.companyId !== undefined
+                ? {
+                    companyId:
+                        data.companyId,
+                }
+                : {}),
+
+
+            ...(data.contactId !== undefined
+                ? {
+                    primaryContactId:
+                        data.contactId,
+                }
+                : {}),
+
+
+            ...(data.ownerId !== undefined
+                ? {
+                    ownerUserId:
+                        data.ownerId,
+                }
+                : {}),
+
+
+            ...(data.stage !== undefined
+                ? {
+                    stage:
+                        data.stage,
+                }
+                : {}),
+
+
+            ...(data.status !== undefined
+                ? {
+                    status:
+                        data.status,
+                }
+                : {}),
+
+
+            ...(data.value !== undefined
+                ? {
+                    amount:
+                        this.normalizeValue(
+                            data.value,
+                        ),
+                }
+                : {}),
+
+
+            ...(data.probability !== undefined
+                ? {
+                    probability:
+                        this.normalizeProbability(
+                            data.probability,
+                        ),
+                }
+                : {}),
+
+
+            ...(data.expectedCloseDate !== undefined
+                ? {
+                    expectedCloseDate:
+                        data.expectedCloseDate,
+                }
+                : {}),
+
+
+            ...(data.metadata !== undefined
+                ? {
+                    metadata:
+                        data.metadata,
+                }
+                : {}),
+
+
+            updatedAt:
+                new Date()
+                    .toISOString(),
+
+        };
+
+
         const result =
             await super.update(
 
                 normalizedId,
 
-                {
-
-                    ...(data.name !== undefined ||
-                    data.title !== undefined
-                        ? {
-                            opportunityName:
-                                (
-                                    data.name ??
-                                    data.title
-                                )?.trim(),
-                        }
-                        : {}),
-
-                    ...(data.description !== undefined
-                        ? {
-                            description:
-                                data.description,
-                        }
-                        : {}),
-
-                    ...(data.companyId !== undefined
-                        ? {
-                            companyId:
-                                data.companyId,
-                        }
-                        : {}),
-
-                    ...(data.contactId !== undefined
-                        ? {
-                            primaryContactId:
-                                data.contactId,
-                        }
-                        : {}),
-
-                    ...(data.ownerId !== undefined
-                        ? {
-                            ownerUserId:
-                                data.ownerId,
-                        }
-                        : {}),
-
-                    ...(data.stage !== undefined
-                        ? {
-                            stage:
-                                data.stage,
-                        }
-                        : {}),
-
-                    ...(data.status !== undefined
-                        ? {
-                            status:
-                                data.status,
-                        }
-                        : {}),
-
-                    ...(data.value !== undefined
-                        ? {
-                            amount:
-                                data.value,
-                        }
-                        : {}),
-
-                    ...(data.probability !== undefined
-                        ? {
-                            probability:
-                                data.probability,
-                        }
-                        : {}),
-
-                    ...(data.expectedCloseDate !== undefined
-                        ? {
-                            expectedCloseDate:
-                                data.expectedCloseDate,
-                        }
-                        : {}),
-
-                    ...(data.metadata !== undefined
-                        ? {
-                            metadata:
-                                data.metadata,
-                        }
-                        : {}),
-
-                    updatedAt:
-                        new Date()
-                            .toISOString(),
-
-                } as Partial<Opportunity>,
+                updateData,
 
             );
 
@@ -563,7 +576,40 @@ export class OpportunitiesRepository
                     item,
                 ) =>
                     total +
-                    item.value,
+                    this.safeNumber(
+                        item.value,
+                    ),
+                0,
+            );
+
+
+        const weightedValue =
+            opportunities.reduce(
+                (
+                    total,
+                    item,
+                ) => {
+
+                    const value =
+                        this.safeNumber(
+                            item.value,
+                        );
+
+                    const probability =
+                        this.safeNumber(
+                            item.probability,
+                        );
+
+                    return (
+                        total +
+                        (
+                            value *
+                            probability /
+                            100
+                        )
+                    );
+
+                },
                 0,
             );
 
@@ -594,20 +640,7 @@ export class OpportunitiesRepository
             pipelineValue:
                 totalValue,
 
-            weightedValue:
-                opportunities.reduce(
-                    (
-                        total,
-                        item,
-                    ) =>
-                        total +
-                        (
-                            item.value *
-                            item.probability /
-                            100
-                        ),
-                    0,
-                ),
+            weightedValue,
 
             totalValue,
 
@@ -684,17 +717,13 @@ export class OpportunitiesRepository
                 'New',
 
             value:
-                Number(
-                    row.amount
-                    ??
-                    0,
+                this.safeNumber(
+                    row.amount,
                 ),
 
             probability:
-                Number(
-                    row.probability
-                    ??
-                    0,
+                this.safeNumber(
+                    row.probability,
                 ),
 
             expectedCloseDate:
@@ -740,6 +769,76 @@ export class OpportunitiesRepository
 
             throw new Error(
                 'Opportunity id is required.',
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private safeNumber(
+        value: number | null | undefined,
+    ): number {
+
+        const normalized =
+            Number(
+                value ?? 0,
+            );
+
+
+        return Number.isFinite(
+            normalized,
+        )
+            ? normalized
+            : 0;
+
+    }
+
+
+    private normalizeValue(
+        value: number | null | undefined,
+    ): number {
+
+        const normalized =
+            this.safeNumber(
+                value,
+            );
+
+
+        if (normalized < 0) {
+
+            throw new Error(
+                'Opportunity value cannot be negative.',
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeProbability(
+        value: number | null | undefined,
+    ): number {
+
+        const normalized =
+            this.safeNumber(
+                value,
+            );
+
+
+        if (
+            normalized < 0 ||
+            normalized > 100
+        ) {
+
+            throw new Error(
+                'Opportunity probability must be between 0 and 100.',
             );
 
         }

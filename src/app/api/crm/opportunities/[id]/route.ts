@@ -7,6 +7,10 @@ import {
     OpportunitiesServiceInstance,
 } from '@/services/crm/OpportunitiesService';
 
+import type {
+    UpdateOpportunityInput,
+} from '@/types/crm/Opportunities';
+
 
 interface RouteContext {
 
@@ -17,24 +21,45 @@ interface RouteContext {
 }
 
 
+function getId(
+    params: {
+        id: string;
+    },
+): string | null {
+
+    const id =
+        params.id?.trim();
+
+    return id || null;
+
+}
+
+
 export async function GET(
     _request: NextRequest,
-    { params }: RouteContext,
+    context: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await context.params;
 
 
-        if (!id?.trim()) {
+        const opportunityId =
+            getId({
+                id,
+            });
+
+
+        if (!opportunityId) {
 
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Opportunity id is required',
+                    error: 'Opportunity id is required.',
                 },
                 {
                     status: 400,
@@ -46,7 +71,7 @@ export async function GET(
 
         const opportunity =
             await OpportunitiesServiceInstance.details(
-                id,
+                opportunityId,
             );
 
 
@@ -55,7 +80,7 @@ export async function GET(
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Opportunity not found',
+                    error: 'Opportunity not found.',
                 },
                 {
                     status: 404,
@@ -86,7 +111,7 @@ export async function GET(
         return NextResponse.json(
             {
                 success: false,
-                error: 'Failed to fetch opportunity',
+                error: 'Failed to load opportunity.',
             },
             {
                 status: 500,
@@ -98,24 +123,31 @@ export async function GET(
 }
 
 
-export async function PATCH(
+export async function PUT(
     request: NextRequest,
-    { params }: RouteContext,
+    context: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await context.params;
 
 
-        if (!id?.trim()) {
+        const opportunityId =
+            getId({
+                id,
+            });
+
+
+        if (!opportunityId) {
 
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Opportunity id is required',
+                    error: 'Opportunity id is required.',
                 },
                 {
                     status: 400,
@@ -138,7 +170,89 @@ export async function PATCH(
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Invalid request body',
+                    error: 'Invalid request body.',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        const values =
+            body as UpdateOpportunityInput;
+
+
+        if (
+            values.name !== undefined &&
+            typeof values.name !== 'string'
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity name must be a string.',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        if (
+            values.title !== undefined &&
+            typeof values.title !== 'string'
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity title must be a string.',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        if (
+            values.value !== undefined &&
+            (
+                typeof values.value !== 'number' ||
+                !Number.isFinite(values.value)
+            )
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity value must be a valid number.',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        if (
+            values.probability !== undefined &&
+            (
+                typeof values.probability !== 'number' ||
+                !Number.isFinite(values.probability)
+            )
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity probability must be a valid number.',
                 },
                 {
                     status: 400,
@@ -150,24 +264,12 @@ export async function PATCH(
 
         const opportunity =
             await OpportunitiesServiceInstance.update(
-                id,
-                body,
+
+                opportunityId,
+
+                values,
+
             );
-
-
-        if (!opportunity) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity not found',
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
 
 
         return NextResponse.json(
@@ -191,7 +293,7 @@ export async function PATCH(
         const message =
             error instanceof Error
                 ? error.message
-                : 'Failed to update opportunity';
+                : 'Failed to update opportunity.';
 
 
         return NextResponse.json(
@@ -211,22 +313,29 @@ export async function PATCH(
 
 export async function DELETE(
     _request: NextRequest,
-    { params }: RouteContext,
+    context: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } = await params;
+        } =
+            await context.params;
 
 
-        if (!id?.trim()) {
+        const opportunityId =
+            getId({
+                id,
+            });
+
+
+        if (!opportunityId) {
 
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Opportunity id is required',
+                    error: 'Opportunity id is required.',
                 },
                 {
                     status: 400,
@@ -238,7 +347,7 @@ export async function DELETE(
 
         const existing =
             await OpportunitiesServiceInstance.details(
-                id,
+                opportunityId,
             );
 
 
@@ -247,7 +356,7 @@ export async function DELETE(
             return NextResponse.json(
                 {
                     success: false,
-                    error: 'Opportunity not found',
+                    error: 'Opportunity not found.',
                 },
                 {
                     status: 404,
@@ -258,13 +367,16 @@ export async function DELETE(
 
 
         await OpportunitiesServiceInstance.delete(
-            id,
+            opportunityId,
         );
 
 
         return NextResponse.json(
             {
                 success: true,
+                data: {
+                    id: opportunityId,
+                },
             },
             {
                 status: 200,
@@ -279,13 +391,19 @@ export async function DELETE(
         );
 
 
+        const message =
+            error instanceof Error
+                ? error.message
+                : 'Failed to delete opportunity.';
+
+
         return NextResponse.json(
             {
                 success: false,
-                error: 'Failed to delete opportunity',
+                error: message,
             },
             {
-                status: 500,
+                status: 400,
             },
         );
 

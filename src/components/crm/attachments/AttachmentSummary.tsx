@@ -1,97 +1,99 @@
 import type {
-    AttachmentSummary as AttachmentSummaryType,
+    AttachmentSummary as AttachmentSummaryData,
 } from '@/types/crm/Attachment';
 
-
-
 interface Props {
-
-    summary: AttachmentSummaryType;
-
+    summary: AttachmentSummaryData;
 }
 
+function formatStorage(
+    bytes?: number,
+): string {
+    if (
+        bytes === undefined ||
+        bytes === null ||
+        !Number.isFinite(bytes) ||
+        bytes < 0
+    ) {
+        return '0 B';
+    }
 
+    if (bytes < 1024) {
+        return `${bytes} B`;
+    }
+
+    if (bytes < 1024 * 1024) {
+        return `${(
+            bytes / 1024
+        ).toFixed(1)} KB`;
+    }
+
+    if (bytes < 1024 * 1024 * 1024) {
+        return `${(
+            bytes /
+            (1024 * 1024)
+        ).toFixed(1)} MB`;
+    }
+
+    return `${(
+        bytes /
+        (1024 * 1024 * 1024)
+    ).toFixed(1)} GB`;
+}
 
 export default function AttachmentSummary({
-
     summary,
-
 }: Props) {
-
-
     return (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-xl border p-5">
+                <div className="text-sm text-muted-foreground">
+                    Total
+                </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-
-
-            <div className="crm-card p-5">
-
-
-                <p className="text-sm text-muted-foreground">
-
-                    Total Attachments
-
-                </p>
-
-
-                <h2 className="mt-2 text-2xl font-semibold">
-
+                <div className="mt-1 text-2xl font-semibold">
                     {summary.total}
-
-                </h2>
-
-
+                </div>
             </div>
 
-
-
-
-            <div className="crm-card p-5">
-
-
-                <p className="text-sm text-muted-foreground">
-
+            <div className="rounded-xl border p-5">
+                <div className="text-sm text-muted-foreground">
                     Active
+                </div>
 
-                </p>
-
-
-                <h2 className="mt-2 text-2xl font-semibold">
-
+                <div className="mt-1 text-2xl font-semibold">
                     {summary.active}
-
-                </h2>
-
-
+                </div>
             </div>
 
+            <div className="rounded-xl border p-5">
+                <div className="text-sm text-muted-foreground">
+                    Archived / Deleted
+                </div>
 
+                <div className="mt-1 text-2xl font-semibold">
+                    {(summary.archived ?? 0) +
+                        (summary.deleted ?? 0)}
+                </div>
 
-
-            <div className="crm-card p-5">
-
-
-                <p className="text-sm text-muted-foreground">
-
-                    Archived
-
-                </p>
-
-
-                <h2 className="mt-2 text-2xl font-semibold">
-
-                    {summary.archived}
-
-                </h2>
-
-
+                <div className="mt-1 text-xs text-muted-foreground">
+                    Archived: {summary.archived ?? 0}
+                    {' · '}
+                    Deleted: {summary.deleted ?? 0}
+                </div>
             </div>
 
+            <div className="rounded-xl border p-5">
+                <div className="text-sm text-muted-foreground">
+                    Storage Used
+                </div>
 
+                <div className="mt-1 text-2xl font-semibold">
+                    {formatStorage(
+                        summary.storageUsed,
+                    )}
+                </div>
+            </div>
         </div>
-
     );
-
-
 }
-

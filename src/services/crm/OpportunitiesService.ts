@@ -1,19 +1,18 @@
 import {
     createClient,
-} from "@/lib/supabase/server";
-
+} from '@/lib/supabase/server';
 
 import {
     createOpportunitiesRepository,
-} from "@/repositories/crm/OpportunitiesRepository";
-
+} from '@/repositories/crm/OpportunitiesRepository';
 
 import type {
+    CreateOpportunityInput,
     Opportunity,
     OpportunitySearchFilters,
     OpportunitySummary,
-} from "@/types/crm/Opportunities";
-
+    UpdateOpportunityInput,
+} from '@/types/crm/Opportunities';
 
 
 export class OpportunitiesService {
@@ -24,7 +23,6 @@ export class OpportunitiesService {
         const supabase =
             await createClient();
 
-
         return createOpportunitiesRepository(
             supabase,
         );
@@ -32,17 +30,14 @@ export class OpportunitiesService {
     }
 
 
-
     async list(): Promise<Opportunity[]> {
 
         const repository =
             await this.repository();
 
-
         return repository.list();
 
     }
-
 
 
     async details(
@@ -52,142 +47,87 @@ export class OpportunitiesService {
         const repository =
             await this.repository();
 
-
         return repository.details(
-            this.requireId(id),
-        );
-
-    }
-
-
-
-    async get(
-        id: string,
-    ): Promise<Opportunity | null> {
-
-        return this.details(
             id,
         );
 
     }
 
 
-
-    async search(
-        filters?: OpportunitySearchFilters,
-    ): Promise<Opportunity[]> {
+    async create(
+        values: CreateOpportunityInput,
+    ): Promise<Opportunity> {
 
         const repository =
             await this.repository();
 
 
-        return repository.search(
-            filters,
-        );
-
-    }
-
-
-
-    async create(
-        data: Partial<Opportunity>,
-    ): Promise<Opportunity> {
-
-
-        if (!data) {
-
-            throw new Error(
-                "Opportunity data is required.",
-            );
-
-        }
-
-
-
         const name =
-            data.name?.trim()
-            ??
-            data.title?.trim();
-
+            (
+                values.name ??
+                values.title
+            )
+                ?.trim();
 
 
         if (!name) {
 
             throw new Error(
-                "Opportunity name is required.",
+                'Opportunity name is required.',
             );
 
         }
-
 
 
         const value =
             Number(
-                data.value ?? 0,
+                values.value ??
+                0,
             );
 
 
-
-        if (value < 0) {
+        if (
+            !Number.isFinite(value) ||
+            value < 0
+        ) {
 
             throw new Error(
-                "Opportunity value cannot be negative.",
+                'Opportunity value must be zero or greater.',
             );
 
         }
 
 
-
         const probability =
             Number(
-                data.probability ?? 0,
+                values.probability ??
+                0,
             );
 
 
-
         if (
+            !Number.isFinite(probability) ||
             probability < 0 ||
             probability > 100
         ) {
 
             throw new Error(
-                "Opportunity probability must be between 0 and 100.",
+                'Opportunity probability must be between 0 and 100.',
             );
 
         }
 
 
-
-        const repository =
-            await this.repository();
-
-
-
         return repository.create({
 
-            ...data,
+            ...values,
 
             name,
 
             title:
+                values.title?.trim()
+                ||
                 name,
-
-
-            entityType:
-                "Opportunity",
-
-
-            stage:
-                data.stage
-                ??
-                "New",
-
-
-            status:
-                data.status
-                ??
-                "Open",
-
 
             value,
 
@@ -198,52 +138,189 @@ export class OpportunitiesService {
     }
 
 
-
     async update(
         id: string,
-        data: Partial<Opportunity>,
+        values: UpdateOpportunityInput,
     ): Promise<Opportunity> {
-
 
         const repository =
             await this.repository();
 
 
+        if (!id?.trim()) {
+
+            throw new Error(
+                'Opportunity id is required.',
+            );
+
+        }
+
+
+        if (
+            values.name !== undefined ||
+            values.title !== undefined
+        ) {
+
+            const name =
+                (
+                    values.name ??
+                    values.title
+                )
+                    ?.trim();
+
+
+            if (!name) {
+
+                throw new Error(
+                    'Opportunity name cannot be empty.',
+                );
+
+            }
+
+        }
+
+
+        if (
+            values.value !== undefined
+        ) {
+
+            const value =
+                Number(
+                    values.value,
+                );
+
+
+            if (
+                !Number.isFinite(value) ||
+                value < 0
+            ) {
+
+                throw new Error(
+                    'Opportunity value must be zero or greater.',
+                );
+
+            }
+
+        }
+
+
+        if (
+            values.probability !== undefined
+        ) {
+
+            const probability =
+                Number(
+                    values.probability,
+                );
+
+
+            if (
+                !Number.isFinite(probability) ||
+                probability < 0 ||
+                probability > 100
+            ) {
+
+                throw new Error(
+                    'Opportunity probability must be between 0 and 100.',
+                );
+
+            }
+
+        }
+
 
         return repository.update(
 
-            this.requireId(id),
+            id,
 
-            {
-
-                ...data,
-
-                entityType:
-                    "Opportunity",
-
-            },
+            values,
 
         );
 
     }
-
 
 
     async delete(
         id: string,
     ): Promise<void> {
 
+        if (!id?.trim()) {
+
+            throw new Error(
+                'Opportunity id is required.',
+            );
+
+        }
+
+
         const repository =
             await this.repository();
 
 
-
         await repository.delete(
-            this.requireId(id),
+            id,
         );
 
     }
 
+
+    async search(
+        filters?: OpportunitySearchFilters,
+    ): Promise<Opportunity[]> {
+
+        const repository =
+            await this.repository();
+
+
+        const normalizedFilters:
+            OpportunitySearchFilters =
+            {
+
+                ...filters,
+
+                search:
+                    filters?.search?.trim()
+                    ||
+                    undefined,
+
+                keyword:
+                    filters?.keyword?.trim()
+                    ||
+                    undefined,
+
+                companyId:
+                    filters?.companyId?.trim()
+                    ||
+                    undefined,
+
+                contactId:
+                    filters?.contactId?.trim()
+                    ||
+                    undefined,
+
+                leadId:
+                    filters?.leadId?.trim()
+                    ||
+                    undefined,
+
+                ownerId:
+                    filters?.ownerId?.trim()
+                    ||
+                    undefined,
+
+                assignedTo:
+                    filters?.assignedTo?.trim()
+                    ||
+                    undefined,
+
+            };
+
+
+        return repository.search(
+            normalizedFilters,
+        );
+
+    }
 
 
     async summary(): Promise<OpportunitySummary> {
@@ -251,59 +328,16 @@ export class OpportunitiesService {
         const repository =
             await this.repository();
 
-
         return repository.summary();
 
     }
 
-
-
-    private requireId(
-        id: string,
-    ): string {
-
-        const normalized =
-            id?.trim();
-
-
-        if (!normalized) {
-
-            throw new Error(
-                "Opportunity id is required.",
-            );
-
-        }
-
-
-        return normalized;
-
-    }
-
 }
 
 
-
-/**
- * Production factory
- */
-export function createOpportunitiesService() {
-
-    return new OpportunitiesService();
-
-}
-
-
-
-/**
- * Server-safe service facade
- */
 export const opportunitiesService =
     new OpportunitiesService();
 
 
-
-/**
- * Compatibility export
- */
 export const OpportunitiesServiceInstance =
     opportunitiesService;

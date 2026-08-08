@@ -6,17 +6,24 @@ import type {
     Opportunity,
 } from '@/types/crm/Opportunities';
 
+
 interface Props {
 
     opportunities: Opportunity[];
 
+    locale?: string;
+
 }
+
 
 export default function OpportunitiesTable({
 
     opportunities,
 
+    locale = 'en',
+
 }: Props) {
+
 
     if (opportunities.length === 0) {
 
@@ -31,6 +38,7 @@ export default function OpportunitiesTable({
         );
 
     }
+
 
     return (
 
@@ -82,6 +90,7 @@ export default function OpportunitiesTable({
 
                 </thead>
 
+
                 <tbody>
 
                     {opportunities.map(
@@ -109,11 +118,13 @@ export default function OpportunitiesTable({
 
                                 </td>
 
+
                                 <td className="p-3">
 
                                     {opportunity.companyId ?? '-'}
 
                                 </td>
+
 
                                 <td className="p-3">
 
@@ -121,29 +132,38 @@ export default function OpportunitiesTable({
 
                                 </td>
 
+
                                 <td className="p-3">
 
                                     {opportunity.status}
 
                                 </td>
 
-                                <td className="p-3 text-right">
-
-                                    {opportunity.value.toLocaleString()}
-
-                                </td>
 
                                 <td className="p-3 text-right">
 
-                                    {opportunity.probability}%
+                                    {Number(
+                                        opportunity.value ?? 0,
+                                    ).toLocaleString()}
 
                                 </td>
+
+
+                                <td className="p-3 text-right">
+
+                                    {Number(
+                                        opportunity.probability ?? 0,
+                                    )}%
+
+                                </td>
+
 
                                 <td className="p-3">
 
                                     {opportunity.expectedCloseDate ?? '-'}
 
                                 </td>
+
 
                                 <td className="p-3">
 
@@ -153,11 +173,12 @@ export default function OpportunitiesTable({
 
                                 </td>
 
+
                                 <td className="p-3 text-right">
 
                                     <Link
-                                        href={`/crm/opportunities/${opportunity.id}`}
-                                        className="rounded border px-3 py-1 text-sm"
+                                        href={`/${locale}/dashboard/opportunities/${opportunity.id}`}
+                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
                                     >
 
                                         View

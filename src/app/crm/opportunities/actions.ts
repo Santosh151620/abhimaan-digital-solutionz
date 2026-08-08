@@ -1,16 +1,35 @@
 'use server';
 
-
 import {
     opportunitiesService,
 } from '@/services/crm/OpportunitiesService';
-
 
 import type {
     CreateOpportunityInput,
     UpdateOpportunityInput,
 } from '@/types/crm/Opportunities';
 
+
+function requireId(
+    id: string,
+): string {
+
+    const normalized =
+        id?.trim();
+
+
+    if (!normalized) {
+
+        throw new Error(
+            'Opportunity id is required.',
+        );
+
+    }
+
+
+    return normalized;
+
+}
 
 
 export async function getOpportunities() {
@@ -20,7 +39,6 @@ export async function getOpportunities() {
 }
 
 
-
 export async function getOpportunitySummary() {
 
     return opportunitiesService.summary();
@@ -28,29 +46,57 @@ export async function getOpportunitySummary() {
 }
 
 
-
 export async function getOpportunity(
     id: string,
 ) {
 
     return opportunitiesService.details(
-        id,
+        requireId(id),
     );
 
 }
-
 
 
 export async function createOpportunity(
     values: CreateOpportunityInput,
 ) {
 
-    return opportunitiesService.create(
-        values,
-    );
+    if (
+        !values ||
+        typeof values !== 'object'
+    ) {
+
+        throw new Error(
+            'Invalid opportunity data.',
+        );
+
+    }
+
+
+    const name =
+        values.name?.trim()
+        ||
+        values.title?.trim();
+
+
+    if (!name) {
+
+        throw new Error(
+            'Opportunity name is required.',
+        );
+
+    }
+
+
+    return opportunitiesService.create({
+
+        ...values,
+
+        name,
+
+    });
 
 }
-
 
 
 export async function updateOpportunity(
@@ -58,9 +104,25 @@ export async function updateOpportunity(
     values: UpdateOpportunityInput,
 ) {
 
+    const normalizedId =
+        requireId(id);
+
+
+    if (
+        !values ||
+        typeof values !== 'object'
+    ) {
+
+        throw new Error(
+            'Invalid opportunity data.',
+        );
+
+    }
+
+
     return opportunitiesService.update(
 
-        id,
+        normalizedId,
 
         values,
 
@@ -69,13 +131,12 @@ export async function updateOpportunity(
 }
 
 
-
 export async function deleteOpportunity(
     id: string,
 ) {
 
     return opportunitiesService.delete(
-        id,
+        requireId(id),
     );
 
 }

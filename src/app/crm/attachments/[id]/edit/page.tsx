@@ -1,183 +1,121 @@
-'use client';
 import Link from 'next/link';
+import {
+    notFound,
+    redirect,
+} from 'next/navigation';
 
 import {
-
-    useState,
-
-    useEffect,
-
-} from 'react';
-
-
-import {
-
     AttachmentForm,
-
 } from '@/components/crm/attachments';
 
-
+import {
+    getAttachment,
+    updateAttachment,
+} from '../../actions';
 
 import type {
-
     Attachment,
-
+    UpdateAttachmentRequest,
 } from '@/types/crm/Attachment';
 
-
-
 interface Props {
-
     params: Promise<{
-
         id: string;
-
     }>;
-
 }
 
+export const dynamic = 'force-dynamic';
 
-
-export default function EditAttachmentPage({
-
+export default async function EditAttachmentPage({
     params,
-
 }: Props) {
+    const {
+        id,
+    } = await params;
 
-
-    const [id, setId] =
-
-        useState<string>();
-
-
-   const [attachment] =
-    useState<Attachment | null>(null);
-
-
-
-    useEffect(() => {
-
-
-        params.then(
-
-            value => {
-
-
-                setId(
-
-                    value.id,
-
-                );
-
-
-            }
-
-        );
-
-
-    }, [params]);
-
-
-
-    if (!id) {
-
-
-        return null;
-
-
+    if (!id?.trim()) {
+        notFound();
     }
 
-
+    const attachment =
+        await getAttachment(id);
 
     if (!attachment) {
-
-
-        // Placeholder until API/service hydration
-
+        notFound();
     }
 
-
-
-
-    async function handleSubmit(
-
+    async function submit(
         values: Partial<Attachment>,
-
     ) {
+        'use server';
 
+        const payload: UpdateAttachmentRequest = {
+            fileName:
+                values.fileName,
+            fileUrl:
+                values.fileUrl,
+            storagePath:
+                values.storagePath,
+            fileType:
+                values.fileType,
+            mimeType:
+                values.mimeType,
+            fileSize:
+                values.fileSize,
+            description:
+                values.description,
+            previewAllowed:
+                values.previewAllowed,
+            downloadAllowed:
+                values.downloadAllowed,
+        };
 
-        console.log(
-
-            'Update Attachment',
-
+        await updateAttachment(
             id,
-
-            values,
-
+            payload,
         );
 
-
+        redirect(
+            `/crm/attachments/${id}`,
+        );
     }
 
-
-
     return (
-
         <div className="space-y-6">
-
-
-
             <div>
-
+                <div className="mb-2 text-sm text-muted-foreground">
+                    <Link
+                        href={`/crm/attachments/${id}`}
+                        className="hover:underline"
+                    >
+                        Attachment
+                    </Link>
+                    {' / '}
+                    Edit
+                </div>
 
                 <h1 className="text-2xl font-semibold">
-
                     Edit Attachment
-
                 </h1>
 
-
-
                 <p className="text-sm text-muted-foreground">
-
                     Update attachment information.
-
                 </p>
-
-
             </div>
 
-
-
-
             <AttachmentForm
-
-                initialValues={attachment ?? {}}
-
-                onSubmit={handleSubmit}
-
+                initialValues={
+                    attachment
+                }
+                onSubmit={
+                    submit
+                }
+                onCancel={() =>
+                    redirect(
+                        `/crm/attachments/${id}`,
+                    )
+                }
             />
-
-
-
-
-            <Link
-
-                href={`/crm/attachments/${id}`}
-
-                className="text-sm underline"
-
-            >
-
-                Back to Attachment
-
-            </Link>
-
-
-
         </div>
-
     );
-
-
 }

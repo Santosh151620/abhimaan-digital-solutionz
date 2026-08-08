@@ -8,20 +8,44 @@ import {
 
 import OpportunitiesClient from '@/components/crm/opportunities/OpportunitiesClient';
 
+
 export const dynamic = 'force-dynamic';
 
-export default async function OpportunitiesPage() {
+
+interface OpportunitiesPageProps {
+
+    params: Promise<{
+        locale: string;
+    }>;
+
+}
+
+
+export default async function OpportunitiesPage({
+
+    params,
+
+}: OpportunitiesPageProps) {
+
+
+    const {
+        locale,
+    } = await params;
+
 
     const supabase =
         await createClient();
+
 
     const repository =
         createOpportunitiesRepository(
             supabase,
         );
 
+
     const opportunities =
         await repository.list();
+
 
     return (
 
@@ -40,9 +64,13 @@ export default async function OpportunitiesPage() {
 
             </div>
 
+
             <OpportunitiesClient
                 initialOpportunities={
                     opportunities
+                }
+                locale={
+                    locale
                 }
             />
 
