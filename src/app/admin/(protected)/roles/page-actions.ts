@@ -27,12 +27,6 @@ async function getService() {
 
 
 
-    const supabase =
-
-        await createClient();
-
-
-
 
 
 
@@ -86,4 +80,5 @@ Promise<Role[]> {
 
 
 }
+
 

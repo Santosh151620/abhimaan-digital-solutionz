@@ -407,3 +407,4 @@ export function createNotesRepository(
  */
 export const NotesRepositoryInstance =
   createNotesRepository;
+

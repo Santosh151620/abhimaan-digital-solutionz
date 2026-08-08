@@ -21,51 +21,38 @@ import type {
 } from "@/types/admin/Role";
 
 async function getService() {
-
-    const supabase =
-        await createClient();
-
     const repository =
         new RolesRepository();
 
     return new RolesService(
         repository,
     );
+}
 
+async function getSupabase() {
+    return createClient();
 }
 
 function validateIds(
-
     roleId: string,
-
     permissionId: string,
-
 ) {
-
     if (!roleId.trim()) {
-
         throw new Error(
             "Role ID is required.",
         );
-
     }
 
     if (!permissionId.trim()) {
-
         throw new Error(
             "Permission ID is required.",
         );
-
     }
-
 }
 
 export async function createRole(
-
     data: Partial<Role>,
-
 ) {
-
     const service =
         await getService();
 
@@ -74,7 +61,6 @@ export async function createRole(
             .toISOString();
 
     const role: Role = {
-
         id:
             crypto.randomUUID(),
 
@@ -119,7 +105,6 @@ export async function createRole(
 
         updatedAt:
             now,
-
     };
 
     await service.save(
@@ -131,26 +116,18 @@ export async function createRole(
     );
 
     return {
-
         success: true,
-
         id: role.id,
-
     };
-
 }
 
 export async function updateRole(
-
     role: Role,
-
 ) {
-
     const service =
         await getService();
 
     await service.save({
-
         ...role,
 
         isActive:
@@ -159,7 +136,6 @@ export async function updateRole(
         updatedAt:
             new Date()
                 .toISOString(),
-
     });
 
     revalidatePath(
@@ -167,19 +143,13 @@ export async function updateRole(
     );
 
     return {
-
         success: true,
-
     };
-
 }
 
 export async function deleteRole(
-
     id: string,
-
 ) {
-
     const service =
         await getService();
 
@@ -192,44 +162,29 @@ export async function deleteRole(
     );
 
     return {
-
         success: true,
-
     };
-
 }
 
 export async function assignRolePermission(
-
     roleId: string,
-
     permissionId: string,
-
 ) {
-
     validateIds(
-
         roleId,
-
         permissionId,
-
     );
 
     const supabase =
-        await createClient();
+        await getSupabase();
 
     const {
-
         error,
-
     } = await supabase
-
         .from(
             "role_permissions",
         )
-
         .upsert({
-
             id:
                 crypto.randomUUID(),
 
@@ -242,13 +197,10 @@ export async function assignRolePermission(
             created_at:
                 new Date()
                     .toISOString(),
-
         });
 
     if (error) {
-
         throw error;
-
     }
 
     revalidatePath(
@@ -256,58 +208,40 @@ export async function assignRolePermission(
     );
 
     return {
-
         success: true,
-
     };
-
 }
 
 export async function revokeRolePermission(
-
     roleId: string,
-
     permissionId: string,
-
 ) {
-
     validateIds(
-
         roleId,
-
         permissionId,
-
     );
 
     const supabase =
-        await createClient();
+        await getSupabase();
 
     const {
-
         error,
-
     } = await supabase
-
         .from(
             "role_permissions",
         )
-
         .delete()
-
         .eq(
             "role_id",
             roleId,
         )
-
         .eq(
             "permission_id",
             permissionId,
         );
 
     if (error) {
-
         throw error;
-
     }
 
     revalidatePath(
@@ -315,10 +249,6 @@ export async function revokeRolePermission(
     );
 
     return {
-
         success: true,
-
     };
-
 }
-
