@@ -1,19 +1,85 @@
 import {
     NextRequest,
     NextResponse,
-} from "next/server";
+} from 'next/server';
 
 import {
     OpportunitiesServiceInstance,
-} from "@/services/crm/OpportunitiesService";
+} from '@/services/crm/OpportunitiesService';
+
+import type {
+    OpportunitySearchFilters,
+    OpportunityStage,
+    OpportunityStatus,
+} from '@/types/crm/Opportunities';
 
 
-export async function GET() {
+export async function GET(
+    request: NextRequest,
+) {
 
     try {
 
+        const searchParams =
+            request.nextUrl.searchParams;
+
+
+        const status =
+            searchParams.get('status');
+
+
+        const stage =
+            searchParams.get('stage');
+
+
+        const companyId =
+            searchParams.get('companyId');
+
+
+        const search =
+            searchParams.get('search');
+
+
+        const filters: OpportunitySearchFilters = {
+
+            status:
+                status
+                    ? status as OpportunityStatus
+                    : undefined,
+
+            stage:
+                stage
+                    ? stage as OpportunityStage
+                    : undefined,
+
+            companyId:
+                companyId
+                ??
+                undefined,
+
+            search:
+                search
+                ??
+                undefined,
+
+        };
+
+
+        const hasFilters =
+            Object.values(filters)
+                .some(
+                    value =>
+                        value !== undefined &&
+                        value !== '',
+                );
+
+
         const opportunities =
-            await OpportunitiesServiceInstance.list();
+            hasFilters
+                ? await OpportunitiesServiceInstance.search(
+                    filters,
+                )
+                : await OpportunitiesServiceInstance.list();
 
 
         return NextResponse.json(
@@ -26,11 +92,10 @@ export async function GET() {
             },
         );
 
-
     } catch (error) {
 
         console.error(
-            "OPPORTUNITIES_LIST_ERROR",
+            'OPPORTUNITIES_LIST_ERROR',
             error,
         );
 
@@ -38,8 +103,7 @@ export async function GET() {
         return NextResponse.json(
             {
                 success: false,
-                error:
-                    "Failed to load opportunities",
+                error: 'Failed to load opportunities',
             },
             {
                 status: 500,
@@ -49,7 +113,6 @@ export async function GET() {
     }
 
 }
-
 
 
 export async function POST(
@@ -64,14 +127,32 @@ export async function POST(
 
         if (
             !body ||
-            typeof body !== "object"
+            typeof body !== 'object' ||
+            Array.isArray(body)
         ) {
 
             return NextResponse.json(
                 {
                     success: false,
-                    error:
-                        "Invalid request body",
+                    error: 'Invalid request body',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        if (
+            typeof body.name !== 'string' &&
+            typeof body.title !== 'string'
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity name is required',
                 },
                 {
                     status: 400,
@@ -97,23 +178,27 @@ export async function POST(
             },
         );
 
-
     } catch (error) {
 
         console.error(
-            "OPPORTUNITY_CREATE_ERROR",
+            'OPPORTUNITY_CREATE_ERROR',
             error,
         );
+
+
+        const message =
+            error instanceof Error
+                ? error.message
+                : 'Failed to create opportunity';
 
 
         return NextResponse.json(
             {
                 success: false,
-                error:
-                    "Failed to create opportunity",
+                error: message,
             },
             {
-                status: 500,
+                status: 400,
             },
         );
 

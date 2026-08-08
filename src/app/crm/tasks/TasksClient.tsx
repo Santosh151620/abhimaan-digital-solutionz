@@ -2,122 +2,294 @@
 
 import {
     useState,
+    useTransition,
 } from 'react';
-
-import {
-    createTask,
-    deleteTask,
-    updateTaskStatus,
-} from './actions';
 
 import type {
     Task,
+    TaskPriority,
     TaskStatus,
 } from '@/types/crm/Tasks';
 
+import TasksTable from '@/components/crm/tasks/TasksTable';
+
+import {
+    updateTaskStatus,
+    deleteTask,
+    restoreTask,
+} from '@/app/crm/tasks/actions';
+
 
 interface Props {
+
     initialTasks: Task[];
+
 }
+
+
+const statuses: TaskStatus[] = [
+    'Todo',
+    'In Progress',
+    'Blocked',
+    'Completed',
+    'Cancelled',
+];
+
+
+const priorities: TaskPriority[] = [
+    'Low',
+    'Medium',
+    'High',
+    'Critical',
+];
 
 
 export default function TasksClient({
     initialTasks,
 }: Props) {
 
+
     const [
         tasks,
         setTasks,
-    ] = useState<Task[]>(
-        initialTasks
-    );
+    ] =
+        useState<Task[]>(
+            initialTasks,
+        );
 
 
     const [
-        title,
-        setTitle,
-    ] = useState('');
+        isPending,
+        startTransition,
+    ] =
+        useTransition();
 
 
-    async function handleCreate() {
-
-        if (!title.trim()) {
-            return;
-        }
-
-
-        const task =
-            await createTask({
-                title,
-                status: 'Todo',
-                priority: 'Medium',
-            });
+    const [
+        search,
+        setSearch,
+    ] =
+        useState('');
 
 
-        setTasks(
-            previous => [
-                ...previous,
-                task,
-            ]
+    const [
+        status,
+        setStatus,
+    ] =
+        useState<
+            TaskStatus | ''
+        >('');
+
+
+    const [
+        priority,
+        setPriority,
+    ] =
+        useState<
+            TaskPriority | ''
+        >('');
+
+
+
+    const filteredTasks =
+        tasks.filter(
+            task => {
+
+
+                const keyword =
+                    search
+                        .trim()
+                        .toLowerCase();
+
+
+                const matchesSearch =
+                    keyword.length === 0
+                    ||
+                    task.title
+                        .toLowerCase()
+                        .includes(
+                            keyword,
+                        )
+                    ||
+                    task.taskNumber
+                        .toLowerCase()
+                        .includes(
+                            keyword,
+                        )
+                    ||
+                    task.description
+                        ?.toLowerCase()
+                        .includes(
+                            keyword,
+                        );
+
+
+                const matchesStatus =
+                    !status
+                    ||
+                    task.status === status;
+
+
+                const matchesPriority =
+                    !priority
+                    ||
+                    task.priority === priority;
+
+
+                return (
+                    matchesSearch
+                    &&
+                    matchesStatus
+                    &&
+                    matchesPriority
+                );
+
+            },
         );
 
 
-        setTitle('');
+
+    function handleStatusChange(
+        task: Task,
+        nextStatus: TaskStatus,
+    ) {
+
+
+        startTransition(
+            async () => {
+
+
+                try {
+
+
+                    const updated =
+                        await updateTaskStatus(
+                            task.id,
+                            nextStatus,
+                        );
+
+
+                    setTasks(
+                        current =>
+                            current.map(
+                                item =>
+                                    item.id === task.id
+                                        ? updated
+                                        : item,
+                            ),
+                    );
+
+
+                } catch (error) {
+
+
+                    console.error(
+                        'Failed to update task status:',
+                        error,
+                    );
+
+
+                }
+
+            },
+        );
 
     }
 
 
 
-    async function handleStatus(
-        id: string,
-        status: TaskStatus,
+    function handleDelete(
+        task: Task,
     ) {
 
-        const updated =
-            await updateTaskStatus(
-                id,
-                status
-            );
+
+        startTransition(
+            async () => {
 
 
-        if (!updated) {
-            return;
-        }
+                try {
 
 
-        setTasks(
-            previous =>
-                previous.map(
-                    task =>
-                        task.id === id
-                            ? updated
-                            : task
-                )
+                    await deleteTask(
+                        task.id,
+                    );
+
+
+                    setTasks(
+                        current =>
+                            current.filter(
+                                item =>
+                                    item.id !== task.id,
+                            ),
+                    );
+
+
+                } catch (error) {
+
+
+                    console.error(
+                        'Failed to delete task:',
+                        error,
+                    );
+
+
+                }
+
+            },
         );
 
     }
 
 
 
-    async function handleDelete(
-        id: string
+    function handleRestore(
+        task: Task,
     ) {
 
-        const success =
-            await deleteTask(id);
+
+        startTransition(
+            async () => {
 
 
-        if (!success) {
-            return;
-        }
+                try {
 
 
-        setTasks(
-            previous =>
-                previous.filter(
-                    task =>
-                        task.id !== id
-                )
+                    const restored =
+                        await restoreTask(
+                            task.id,
+                        );
+
+
+                    if (restored) {
+
+                        setTasks(
+                            current =>
+                                current.map(
+                                    item =>
+                                        item.id === task.id
+                                            ? {
+                                                ...item,
+                                                archived: false,
+                                            }
+                                            : item,
+                                ),
+                        );
+
+                    }
+
+
+                } catch (error) {
+
+
+                    console.error(
+                        'Failed to restore task:',
+                        error,
+                    );
+
+
+                }
+
+            },
         );
 
     }
@@ -126,143 +298,112 @@ export default function TasksClient({
 
     return (
 
-        <div className="space-y-6">
+        <div className="space-y-4">
 
 
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3 md:flex-row">
+
 
                 <input
-                    value={title}
+                    value={search}
                     onChange={
-                        e =>
-                            setTitle(
-                                e.target.value
+                        event =>
+                            setSearch(
+                                event.target.value,
                             )
                     }
-                    placeholder="New task title"
-                    className="border rounded px-3 py-2 flex-1"
+                    placeholder="Search tasks..."
+                    className="h-10 flex-1 rounded-md border bg-background px-3 text-sm"
                 />
 
 
-                <button
-                    onClick={handleCreate}
-                    className="rounded bg-primary px-4 py-2 text-primary-foreground"
+                <select
+                    value={status}
+                    onChange={
+                        event =>
+                            setStatus(
+                                event.target.value as TaskStatus | '',
+                            )
+                    }
+                    className="h-10 rounded-md border bg-background px-3 text-sm"
                 >
-                    Add Task
-                </button>
 
+                    <option value="">
+                        All statuses
+                    </option>
 
-            </div>
+                    {statuses.map(
+                        item => (
 
-
-
-            <div className="rounded-lg border">
-
-                {
-                    tasks.map(
-                        task => (
-
-                            <div
-                                key={task.id}
-                                className="flex items-center justify-between border-b p-4 last:border-0"
+                            <option
+                                key={item}
+                                value={item}
                             >
+                                {item}
+                            </option>
 
-                                <div>
+                        ),
+                    )}
 
-                                    <p className="font-medium">
-                                        {task.title}
-                                    </p>
-
-
-                                    <p className="text-sm text-muted-foreground">
-                                        {task.status}
-                                        {' • '}
-                                        {task.priority}
-                                    </p>
-
-                                </div>
+                </select>
 
 
+                <select
+                    value={priority}
+                    onChange={
+                        event =>
+                            setPriority(
+                                event.target.value as TaskPriority | '',
+                            )
+                    }
+                    className="h-10 rounded-md border bg-background px-3 text-sm"
+                >
 
-                                <div className="flex gap-2">
+                    <option value="">
+                        All priorities
+                    </option>
 
+                    {priorities.map(
+                        item => (
 
-                                    <select
-                                        value={task.status}
-                                        onChange={
-                                            e =>
-                                                handleStatus(
-                                                    task.id,
-                                                    e.target.value as TaskStatus
-                                                )
-                                        }
-                                        className="border rounded px-2 py-1"
-                                    >
+                            <option
+                                key={item}
+                                value={item}
+                            >
+                                {item}
+                            </option>
 
-                                        <option value="Todo">
-                                            Todo
-                                        </option>
+                        ),
+                    )}
 
-                                        <option value="In Progress">
-                                            In Progress
-                                        </option>
-
-                                        <option value="Blocked">
-                                            Blocked
-                                        </option>
-
-                                        <option value="Completed">
-                                            Completed
-                                        </option>
-
-                                        <option value="Cancelled">
-                                            Cancelled
-                                        </option>
-
-                                    </select>
-
-
-
-                                    <button
-                                        onClick={
-                                            () =>
-                                                handleDelete(
-                                                    task.id
-                                                )
-                                        }
-                                        className="text-sm text-destructive"
-                                    >
-                                        Delete
-                                    </button>
-
-
-                                </div>
-
-
-                            </div>
-
-                        )
-                    )
-                }
-
-
-                {
-                    tasks.length === 0 && (
-
-                        <div className="p-6 text-center text-muted-foreground">
-                            No tasks available.
-                        </div>
-
-                    )
-                }
+                </select>
 
 
             </div>
 
+
+
+            <div className="text-sm text-muted-foreground">
+
+                Showing {filteredTasks.length} of {tasks.length} tasks
+
+                {isPending && (
+                    <span className="ml-2">
+                        Updating...
+                    </span>
+                )}
+
+            </div>
+
+<TasksTable
+    tasks={filteredTasks}
+    onStatusChange={handleStatusChange}
+    onDelete={handleDelete}
+    onRestore={handleRestore}
+/>
 
         </div>
 
     );
 
 }
-

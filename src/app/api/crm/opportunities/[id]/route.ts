@@ -1,22 +1,20 @@
 import {
     NextRequest,
     NextResponse,
-} from "next/server";
-
+} from 'next/server';
 
 import {
     OpportunitiesServiceInstance,
-} from "@/services/crm/OpportunitiesService";
+} from '@/services/crm/OpportunitiesService';
 
 
 interface RouteContext {
 
     params: Promise<{
-        id:string;
+        id: string;
     }>;
 
 }
-
 
 
 export async function GET(
@@ -28,8 +26,22 @@ export async function GET(
 
         const {
             id,
-        } =
-            await params;
+        } = await params;
+
+
+        if (!id?.trim()) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity id is required',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
 
 
         const opportunity =
@@ -42,12 +54,11 @@ export async function GET(
 
             return NextResponse.json(
                 {
-                    success:false,
-                    error:
-                        "Opportunity not found",
+                    success: false,
+                    error: 'Opportunity not found',
                 },
                 {
-                    status:404,
+                    status: 404,
                 },
             );
 
@@ -56,31 +67,29 @@ export async function GET(
 
         return NextResponse.json(
             {
-                success:true,
-                data:opportunity,
+                success: true,
+                data: opportunity,
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
-
-    } catch(error) {
+    } catch (error) {
 
         console.error(
-            "OPPORTUNITY_GET_ERROR",
+            'OPPORTUNITY_GET_ERROR',
             error,
         );
 
 
         return NextResponse.json(
             {
-                success:false,
-                error:
-                    "Failed to fetch opportunity",
+                success: false,
+                error: 'Failed to fetch opportunity',
             },
             {
-                status:500,
+                status: 500,
             },
         );
 
@@ -89,23 +98,54 @@ export async function GET(
 }
 
 
-
-
 export async function PATCH(
-    request:NextRequest,
-    { params }:RouteContext,
+    request: NextRequest,
+    { params }: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } =
-            await params;
+        } = await params;
+
+
+        if (!id?.trim()) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity id is required',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
 
 
         const body =
             await request.json();
+
+
+        if (
+            !body ||
+            typeof body !== 'object' ||
+            Array.isArray(body)
+        ) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Invalid request body',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
 
 
         const opportunity =
@@ -115,33 +155,52 @@ export async function PATCH(
             );
 
 
+        if (!opportunity) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
+
+
         return NextResponse.json(
             {
-                success:true,
-                data:opportunity,
+                success: true,
+                data: opportunity,
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
-
-    } catch(error) {
+    } catch (error) {
 
         console.error(
-            "OPPORTUNITY_UPDATE_ERROR",
+            'OPPORTUNITY_UPDATE_ERROR',
             error,
         );
 
 
+        const message =
+            error instanceof Error
+                ? error.message
+                : 'Failed to update opportunity';
+
+
         return NextResponse.json(
             {
-                success:false,
-                error:
-                    "Failed to update opportunity",
+                success: false,
+                error: message,
             },
             {
-                status:500,
+                status: 400,
             },
         );
 
@@ -150,20 +209,52 @@ export async function PATCH(
 }
 
 
-
-
-
 export async function DELETE(
-    _request:NextRequest,
-    { params }:RouteContext,
+    _request: NextRequest,
+    { params }: RouteContext,
 ) {
 
     try {
 
         const {
             id,
-        } =
-            await params;
+        } = await params;
+
+
+        if (!id?.trim()) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity id is required',
+                },
+                {
+                    status: 400,
+                },
+            );
+
+        }
+
+
+        const existing =
+            await OpportunitiesServiceInstance.details(
+                id,
+            );
+
+
+        if (!existing) {
+
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Opportunity not found',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
 
 
         await OpportunitiesServiceInstance.delete(
@@ -173,30 +264,28 @@ export async function DELETE(
 
         return NextResponse.json(
             {
-                success:true,
+                success: true,
             },
             {
-                status:200,
+                status: 200,
             },
         );
 
-
-    } catch(error) {
+    } catch (error) {
 
         console.error(
-            "OPPORTUNITY_DELETE_ERROR",
+            'OPPORTUNITY_DELETE_ERROR',
             error,
         );
 
 
         return NextResponse.json(
             {
-                success:false,
-                error:
-                    "Failed to delete opportunity",
+                success: false,
+                error: 'Failed to delete opportunity',
             },
             {
-                status:500,
+                status: 500,
             },
         );
 

@@ -1,0 +1,1751 @@
+warning: in the working copy of 'src/repositories/crm/ActivitiesRepository.ts', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/repositories/crm/ActivitiesRepository.ts b/src/repositories/crm/ActivitiesRepository.ts[m
+[1mindex 4112a7c..93f8492 100644[m
+[1m--- a/src/repositories/crm/ActivitiesRepository.ts[m
+[1m+++ b/src/repositories/crm/ActivitiesRepository.ts[m
+[36m@@ -1,730 +1,1134 @@[m
+[31m-import type {[m
+[31m-    SupabaseClient,[m
+[31m-} from '@supabase/supabase-js';[m
+[32m+[m[32m﻿import type {[m
+[32m+[m[32m  SupabaseClient,[m
+[32m+[m[32m  PostgrestFilterBuilder,[m
+[32m+[m[32m} from "@supabase/supabase-js";[m
+ [m
+ import {[m
+[31m-    BaseRepository,[m
+[31m-} from '@/lib/db/base-repository';[m
+[32m+[m[32m  TenantContextManager,[m
+[32m+[m[32m} from "@/lib/tenant/tenantContext";[m
+ [m
+ import type {[m
+[31m-    Activity,[m
+[31m-    ActivityStatus,[m
+[31m-    ActivitySearchFilters,[m
+[31m-    ActivitySummary,[m
+[31m-} from '@/types/crm/Activities';[m
+[31m-[m
+[31m-[m
+[31m-export class ActivitiesRepository[m
+[31m-    extends BaseRepository<Activity> {[m
+[31m-[m
+[31m-[m
+[31m-    constructor([m
+[31m-        supabase: SupabaseClient,[m
+[31m-    ) {[m
+[31m-[m
+[31m-        super([m
+[31m-            supabase,[m
+[31m-            'activities',[m
+[31m-        );[m
+[31m-[m
+[31m-    }[m
+[31m-    async list(): Promise<Activity[]> {[m
+[31m-[m
+[31m-        const {[m
+[31m-            data,[m
+[31m-            error,[m
+[31m-        } =[m
+[31m-            await this.tableRef()[m
+[31m-                .select('*')[m
+[31m-                .eq([m
+[31m-                    'organization_id',[m
+[31m-                    this.organizationId,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'archived',[m
+[31m-                    false,[m
+[31m-                )[m
+[31m-                .order([m
+[31m-                    'created_at',[m
+[31m-                    {[m
+[31m-                        ascending: false,[m
+[31m-                    },[m
+[31m-                );[m
+[31m-[m
+[31m-        if (error) {[m
+[31m-[m
+[31m-            throw error;[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[31m-        return ([m
+[31m-            data ??[m
+[31m-            [][m
+[31m-        ) as Activity[];[m
+[31m-[m
+[31m-    }[m
+[32m+[m[32m  Activity,[m
+[32m+[m[32m  ActivitySearchFilters,[m
+[32m+[m[32m  ActivityStatus,[m
+[32m+[m[32m  ActivitySummary,[m
+[32m+[m[32m  ActivityType,[m
+[32m+[m[32m} from "@/types/crm/Activities";[m
+[32m+[m
+[32m+[m[32minterface ActivityRow {[m
+[32m+[m[32m  id: string;[m
+[32m+[m[32m  entity_type: string;[m
+[32m+[m[32m  entity_id: string;[m
+[32m+[m[32m  activity_type: string;[m
+[32m+[m[32m  description: string | null;[m
+[32m+[m[32m  metadata: Record<string, unknown> | null;[m
+[32m+[m[32m  created_at: string;[m
+[32m+[m[32m  created_by: string;[m
+[32m+[m[32m}[m
+ [m
+[32m+[m[32mfunction mapActivity([m
+[32m+[m[32m  row: ActivityRow[m
+[32m+[m[32m): Activity {[m
+[32m+[m[32m  const metadata =[m
+[32m+[m[32m    row.metadata ?? {};[m
+ [m
+[32m+[m[32m  const status =[m
+[32m+[m[32m    typeof metadata.status === "string"[m
+[32m+[m[32m      ? (metadata.status as ActivityStatus)[m
+[32m+[m[32m      : "Completed";[m
+[32m+[m
+[32m+[m[32m  const priority =[m
+[32m+[m[32m    typeof metadata.priority === "string"[m
+[32m+[m[32m      ? (metadata.priority as Activity["priority"])[m
+[32m+[m[32m      : "Medium";[m
+[32m+[m
+[32m+[m[32m  const title =[m
+[32m+[m[32m    typeof metadata.title === "string"[m
+[32m+[m[32m      ? metadata.title[m
+[32m+[m[32m      : row.activity_type;[m
+[32m+[m
+[32m+[m[32m  return {[m
+[32m+[m[32m    id: row.id,[m
+[32m+[m
+[32m+[m[32m    activityNumber:[m
+[32m+[m[32m      typeof metadata.activityNumber === "string"[m
+[32m+[m[32m        ? metadata.activityNumber[m
+[32m+[m[32m        : `ACT-${row.id.slice(0, 8)}`,[m
+[32m+[m
+[32m+[m[32m    organizationId:[m
+[32m+[m[32m      undefined,[m
+[32m+[m
+[32m+[m[32m    entityType: "Activity",[m
+[32m+[m
+[32m+[m[32m    entityId:[m
+[32m+[m[32m      row.entity_id,[m
+[32m+[m
+[32m+[m[32m    companyId:[m
+[32m+[m[32m      typeof metadata.companyId === "string"[m
+[32m+[m[32m        ? metadata.companyId[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    contactId:[m
+[32m+[m[32m      typeof metadata.contactId === "string"[m
+[32m+[m[32m        ? metadata.contactId[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    opportunityId:[m
+[32m+[m[32m      typeof metadata.opportunityId === "string"[m
+[32m+[m[32m        ? metadata.opportunityId[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    title,[m
+ [m
+[32m+[m[32m    description:[m
+[32m+[m[32m      row.description ?? undefined,[m
+[32m+[m
+[32m+[m[32m    type:[m
+[32m+[m[32m      row.activity_type as ActivityType,[m
+[32m+[m
+[32m+[m[32m    status,[m
+[32m+[m
+[32m+[m[32m    priority,[m
+[32m+[m
+[32m+[m[32m    scheduledAt:[m
+[32m+[m[32m      typeof metadata.scheduledAt === "string"[m
+[32m+[m[32m        ? metadata.scheduledAt[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    startedAt:[m
+[32m+[m[32m      typeof metadata.startedAt === "string"[m
+[32m+[m[32m        ? metadata.startedAt[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    startDate:[m
+[32m+[m[32m      typeof metadata.startDate === "string"[m
+[32m+[m[32m        ? metadata.startDate[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    completedAt:[m
+[32m+[m[32m      typeof metadata.completedAt === "string"[m
+[32m+[m[32m        ? metadata.completedAt[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    dueAt:[m
+[32m+[m[32m      typeof metadata.dueAt === "string"[m
+[32m+[m[32m        ? metadata.dueAt[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    dueDate:[m
+[32m+[m[32m      typeof metadata.dueDate === "string"[m
+[32m+[m[32m        ? metadata.dueDate[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    durationMinutes:[m
+[32m+[m[32m      typeof metadata.durationMinutes === "number"[m
+[32m+[m[32m        ? metadata.durationMinutes[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    outcome:[m
+[32m+[m[32m      typeof metadata.outcome === "string"[m
+[32m+[m[32m        ? metadata.outcome[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    nextAction:[m
+[32m+[m[32m      typeof metadata.nextAction === "string"[m
+[32m+[m[32m        ? metadata.nextAction[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    reminderAt:[m
+[32m+[m[32m      typeof metadata.reminderAt === "string"[m
+[32m+[m[32m        ? metadata.reminderAt[m
+[32m+[m[32m        : undefined,[m
+ [m
+[31m-    async listArchived(): Promise<Activity[]> {[m
+[32m+[m[32m    reminderMinutes:[m
+[32m+[m[32m      typeof metadata.reminderMinutes === "number"[m
+[32m+[m[32m        ? metadata.reminderMinutes[m
+[32m+[m[32m        : undefined,[m
+ [m
+[31m-        const {[m
+[31m-            data,[m
+[31m-            error,[m
+[31m-        } =[m
+[31m-            await this.tableRef()[m
+[31m-                .select('*')[m
+[31m-                .eq([m
+[31m-                    'organization_id',[m
+[31m-                    this.organizationId,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'archived',[m
+[31m-                    true,[m
+[31m-                )[m
+[31m-                .order([m
+[31m-                    'created_at',[m
+[31m-                    {[m
+[31m-                        ascending: false,[m
+[31m-                    },[m
+[31m-                );[m
+[32m+[m[32m    ownerId:[m
+[32m+[m[32m      typeof metadata.ownerId === "string"[m
+[32m+[m[32m        ? metadata.ownerId[m
+[32m+[m[32m        : undefined,[m
+ [m
+[31m-        if (error) {[m
+[32m+[m[32m    assignedTo:[m
+[32m+[m[32m      typeof metadata.assignedTo === "string"[m
+[32m+[m[32m        ? metadata.assignedTo[m
+[32m+[m[32m        : undefined,[m
+ [m
+[31m-            throw error;[m
+[32m+[m[32m    location:[m
+[32m+[m[32m      typeof metadata.location === "string"[m
+[32m+[m[32m        ? metadata.location[m
+[32m+[m[32m        : undefined,[m
+ [m
+[31m-        }[m
+[32m+[m[32m    archived:[m
+[32m+[m[32m      false,[m
+[32m+[m
+[32m+[m[32m    isArchived:[m
+[32m+[m[32m      false,[m
+[32m+[m
+[32m+[m[32m    deletedAt:[m
+[32m+[m[32m      null,[m
+[32m+[m
+[32m+[m[32m    notes:[m
+[32m+[m[32m      typeof metadata.notes === "string"[m
+[32m+[m[32m        ? metadata.notes[m
+[32m+[m[32m        : undefined,[m
+[32m+[m
+[32m+[m[32m    metadata,[m
+ [m
+[31m-        return ([m
+[31m-            data ??[m
+[31m-            [][m
+[31m-        ) as Activity[];[m
+[32m+[m[32m    createdAt:[m
+[32m+[m[32m      row.created_at,[m
+[32m+[m
+[32m+[m[32m    updatedAt:[m
+[32m+[m[32m      row.created_at,[m
+[32m+[m[32m  };[m
+[32m+[m[32m}[m
+ [m
+[32m+[m[32mexport class ActivitiesRepository {[m
+[32m+[m[32m  private readonly supabase: SupabaseClient;[m
+[32m+[m
+[32m+[m[32m  constructor([m
+[32m+[m[32m    supabase: SupabaseClient[m
+[32m+[m[32m  ) {[m
+[32m+[m[32m    this.supabase =[m
+[32m+[m[32m      supabase;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  private get organizationId(): string {[m
+[32m+[m[32m    return TenantContextManager[m
+[32m+[m[32m      .require()[m
+[32m+[m[32m      .organizationId;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  /**[m
+[32m+[m[32m   * Resolve the current authenticated profile.[m
+[32m+[m[32m   *[m
+[32m+[m[32m   * Application-level membership validation.[m
+[32m+[m[32m   * Database RLS remains authoritative.[m
+[32m+[m[32m   */[m
+[32m+[m[32m  private async currentProfileId(): Promise<string> {[m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data: {[m
+[32m+[m[32m        user,[m
+[32m+[m[32m      },[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await this.supabase.auth.getUser();[m
+[32m+[m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+     }[m
+ [m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    async findById([m
+[31m-        id: string,[m
+[31m-    ): Promise<Activity | null> {[m
+[31m-[m
+[31m-        return super.findById([m
+[31m-            id,[m
+[31m-        );[m
+[31m-[m
+[32m+[m[32m    if (!user) {[m
+[32m+[m[32m      throw new Error([m
+[32m+[m[32m        "Authentication required."[m
+[32m+[m[32m      );[m
+     }[m
+ [m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-    async details([m
+[31m-        id: string,[m
+[31m-    ): Promise<Activity | null> {[m
+[31m-[m
+[31m-        return this.findById([m
+[31m-            id,[m
+[31m-        );[m
+[31m-[m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data,[m
+[32m+[m[32m      error: membershipError,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await this.supabase[m
+[32m+[m[32m        .from("organization_members")[m
+[32m+[m[32m        .select("profile_id")[m
+[32m+[m[32m        .eq([m
+[32m+[m[32m          "profile_id",[m
+[32m+[m[32m          user.id[m
+[32m+[m[32m        )[m
+[32m+[m[32m        .eq([m
+[32m+[m[32m          "organization_id",[m
+[32m+[m[32m          this.organizationId[m
+[32m+[m[32m        )[m
+[32m+[m[32m        .eq([m
+[32m+[m[32m          "is_active",[m
+[32m+[m[32m          true[m
+[32m+[m[32m        )[m
+[32m+[m[32m        .maybeSingle();[m
+[32m+[m
+[32m+[m[32m    if (membershipError) {[m
+[32m+[m[32m      throw membershipError;[m
+     }[m
+ [m
+[32m+[m[32m    if (!data) {[m
+[32m+[m[32m      throw new Error([m
+[32m+[m[32m        "Authenticated user is not an active member of the current organization."[m
+[32m+[m[32m      );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    return data.profile_id;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  /**[m
+[32m+[m[32m   * IMPORTANT:[m
+[32m+[m[32m   * Do NOT await this method.[m
+[32m+[m[32m   *[m
+[32m+[m[32m   * It intentionally returns the Supabase query builder[m
+[32m+[m[32m   * so callers can continue chaining eq/ilike/order/etc.[m
+[32m+[m[32m   */[m
+[32m+[m[32m  private queryOwnedActivities([m
+[32m+[m[32m    profileId: string[m
+[32m+[m[32m  ) {[m
+[32m+[m[32m    return this.supabase[m
+[32m+[m[32m      .from("activities")[m
+[32m+[m[32m      .select("*")[m
+[32m+[m[32m      .eq("created_by", profileId);[m
+[32m+[m[32m  }[m
+[32m+[m[32m  async list(): Promise<Activity[]> {[m
+[32m+[m[32m    const query =[m
+[32m+[m[32m      this.queryOwnedActivities(await this.currentProfileId());[m
+[32m+[m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data,[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await query.order([m
+[32m+[m[32m        "created_at",[m
+[32m+[m[32m        {[m
+[32m+[m[32m          ascending: false,[m
+[32m+[m[32m        }[m
+[32m+[m[32m      );[m
+ [m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+[32m+[m[32m    }[m
+ [m
+[31m-    async create([m
+[31m-        data: Partial<Activity>,[m
+[31m-    ): Promise<Activity> {[m
+[31m-[m
+[31m-        const now =[m
+[31m-            new Date()[m
+[31m-                .toISOString();[m
+[31m-[m
+[31m-        return super.create({[m
+[31m-[m
+[31m-            id:[m
+[31m-                data.id ??[m
+[31m-                crypto.randomUUID(),[m
+[32m+[m[32m    return ([m
+[32m+[m[32m      (data ?? []) as ActivityRow[][m
+[32m+[m[32m    ).map([m
+[32m+[m[32m      mapActivity[m
+[32m+[m[32m    );[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  /**[m
+[32m+[m[32m   * Current activities schema has no archive column.[m
+[32m+[m[32m   *[m
+[32m+[m[32m   * Retained for service compatibility.[m
+[32m+[m[32m   */[m
+[32m+[m[32m  async listArchived(): Promise<Activity[]> {[m
+[32m+[m[32m    return [];[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async findById([m
+[32m+[m[32m    id: string[m
+[32m+[m[32m  ): Promise<Activity | null> {[m
+[32m+[m[32m    const query =[m
+[32m+[m[32m      this.queryOwnedActivities(await this.currentProfileId());[m
+[32m+[m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data,[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await query[m
+[32m+[m[32m        .eq([m
+[32m+[m[32m          "id",[m
+[32m+[m[32m          id[m
+[32m+[m[32m        )[m
+[32m+[m[32m        .maybeSingle();[m
+[32m+[m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    return data[m
+[32m+[m[32m      ? mapActivity([m
+[32m+[m[32m          data as ActivityRow[m
+[32m+[m[32m        )[m
+[32m+[m[32m      : null;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async details([m
+[32m+[m[32m    id: string[m
+[32m+[m[32m  ): Promise<Activity | null> {[m
+[32m+[m[32m    return this.findById(id);[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async create([m
+[32m+[m[32m    data: Partial<Activity>[m
+[32m+[m[32m  ): Promise<Activity> {[m
+[32m+[m[32m    const profileId =[m
+[32m+[m[32m      await this.currentProfileId();[m
+[32m+[m
+[32m+[m[32m    const now =[m
+[32m+[m[32m      new Date().toISOString();[m
+[32m+[m
+[32m+[m[32m    const metadata: Record<string, unknown> = {[m
+[32m+[m[32m      ...(data.metadata ?? {}),[m
+[32m+[m
+[32m+[m[32m      ...(data.activityNumber !== undefined[m
+[32m+[m[32m        ? {[m
+             activityNumber:[m
+[31m-                data.activityNumber ??[m
+[31m-                `ACT-${Date.now()}`,[m
+[31m-[m
+[31m-            entityType:[m
+[31m-                data.entityType ??[m
+[31m-                'Activity',[m
+[32m+[m[32m              data.activityNumber,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            entityId:[m
+[31m-                data.entityId ??[m
+[31m-                crypto.randomUUID(),[m
+[31m-[m
+[31m-            organizationId:[m
+[31m-                data.organizationId,[m
+[31m-            companyId:[m
+[31m-                data.companyId,[m
+[31m-            contactId:[m
+[31m-                data.contactId,[m
+[31m-            opportunityId:[m
+[31m-                data.opportunityId,[m
+[31m-            ownerId:[m
+[31m-                data.ownerId,[m
+[31m-            assignedTo:[m
+[31m-                data.assignedTo,[m
+[32m+[m[32m      ...(data.title !== undefined[m
+[32m+[m[32m        ? {[m
+             title:[m
+[31m-                data.title ??[m
+[31m-                '',[m
+[31m-            description:[m
+[31m-                data.description,[m
+[31m-            type:[m
+[31m-                data.type ??[m
+[31m-                'Other',[m
+[32m+[m[32m              data.title,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+[32m+[m
+[32m+[m[32m      ...(data.status !== undefined[m
+[32m+[m[32m        ? {[m
+             status:[m
+[31m-                data.status ??[m
+[31m-                'Planned',[m
+[31m-            priority:[m
+[31m-                data.priority ??[m
+[31m-                'Medium',[m
+[31m-            scheduledAt:[m
+[31m-                data.scheduledAt,[m
+[31m-            startedAt:[m
+[31m-                data.startedAt,[m
+[31m-            startDate:[m
+[31m-                data.startDate,[m
+[31m-            dueAt:[m
+[31m-                data.dueAt,[m
+[31m-            dueDate:[m
+[31m-                data.dueDate,[m
+[31m-            completedAt:[m
+[31m-                data.completedAt,[m
+[31m-            reminderAt:[m
+[31m-                data.reminderAt,[m
+[31m-            reminderMinutes:[m
+[31m-                data.reminderMinutes,[m
+[31m-            durationMinutes:[m
+[31m-                data.durationMinutes,[m
+[31m-            outcome:[m
+[31m-                data.outcome,[m
+[31m-            nextAction:[m
+[31m-                data.nextAction,[m
+[31m-            location:[m
+[31m-                data.location,[m
+[31m-            notes:[m
+[31m-                data.notes,[m
+[31m-            metadata:[m
+[31m-                data.metadata,[m
+[31m-            archived:[m
+[31m-                false,[m
+[31m-            isArchived:[m
+[31m-                false,[m
+[31m-            deletedAt:[m
+[31m-                null,[m
+[31m-            createdAt:[m
+[31m-                now,[m
+[31m-            updatedAt:[m
+[31m-                now,[m
+[31m-        });[m
+[32m+[m[32m              data.status,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-    }[m
+[31m-    async update([m
+[31m-        id: string,[m
+[31m-        data: Partial<Activity>,[m
+[31m-    ): Promise<Activity> {[m
+[32m+[m[32m      ...(data.priority !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            priority:[m
+[32m+[m[32m              data.priority,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-        return super.update([m
+[32m+[m[32m      ...(data.companyId !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            companyId:[m
+[32m+[m[32m              data.companyId,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            id,[m
+[32m+[m[32m      ...(data.contactId !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            contactId:[m
+[32m+[m[32m              data.contactId,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            {[m
+[32m+[m[32m      ...(data.opportunityId !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            opportunityId:[m
+[32m+[m[32m              data.opportunityId,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-                ...data,[m
+[32m+[m[32m      ...(data.scheduledAt !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            scheduledAt:[m
+[32m+[m[32m              data.scheduledAt,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            },[m
+[32m+[m[32m      ...(data.startedAt !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            startedAt:[m
+[32m+[m[32m              data.startedAt,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-        );[m
+[32m+[m[32m      ...(data.startDate !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            startDate:[m
+[32m+[m[32m              data.startDate,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-    }[m
+[32m+[m[32m      ...(data.completedAt !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            completedAt:[m
+[32m+[m[32m              data.completedAt,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[32m+[m[32m      ...(data.dueAt !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            dueAt:[m
+[32m+[m[32m              data.dueAt,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[32m+[m[32m      ...(data.dueDate !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            dueDate:[m
+[32m+[m[32m              data.dueDate,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[32m+[m[32m      ...(data.durationMinutes !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            durationMinutes:[m
+[32m+[m[32m              data.durationMinutes,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-    async updateStatus([m
+[31m-        id: string,[m
+[31m-        status: ActivityStatus,[m
+[31m-    ): Promise<Activity> {[m
+[32m+[m[32m      ...(data.reminderAt !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            reminderAt:[m
+[32m+[m[32m              data.reminderAt,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-        return this.update([m
+[32m+[m[32m      ...(data.reminderMinutes !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            reminderMinutes:[m
+[32m+[m[32m              data.reminderMinutes,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            id,[m
+[32m+[m[32m      ...(data.outcome !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            outcome:[m
+[32m+[m[32m              data.outcome,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            {[m
+[32m+[m[32m      ...(data.nextAction !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            nextAction:[m
+[32m+[m[32m              data.nextAction,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-                status,[m
+[32m+[m[32m      ...(data.location !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            location:[m
+[32m+[m[32m              data.location,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-            },[m
+[32m+[m[32m      ...(data.ownerId !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            ownerId:[m
+[32m+[m[32m              data.ownerId,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[31m-        );[m
+[32m+[m[32m      ...(data.assignedTo !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            assignedTo:[m
+[32m+[m[32m              data.assignedTo,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+ [m
+[32m+[m[32m      ...(data.notes !== undefined[m
+[32m+[m[32m        ? {[m
+[32m+[m[32m            notes:[m
+[32m+[m[32m              data.notes,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        : {}),[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    const row = {[m
+[32m+[m[32m      id:[m
+[32m+[m[32m        data.id ??[m
+[32m+[m[32m        crypto.randomUUID(),[m
+[32m+[m
+[32m+[m[32m      entity_type:[m
+[32m+[m[32m        data.entityId[m
+[32m+[m[32m          ? ([m
+[32m+[m[32m              data.entityType ??[m
+[32m+[m[32m              "Activity"[m
+[32m+[m[32m            )[m
+[32m+[m[32m          : "Activity",[m
+[32m+[m
+[32m+[m[32m      entity_id:[m
+[32m+[m[32m        data.entityId ??[m
+[32m+[m[32m        crypto.randomUUID(),[m
+[32m+[m
+[32m+[m[32m      activity_type:[m
+[32m+[m[32m        data.type ??[m
+[32m+[m[32m        "Other",[m
+[32m+[m
+[32m+[m[32m      description:[m
+[32m+[m[32m        data.description ??[m
+[32m+[m[32m        null,[m
+[32m+[m
+[32m+[m[32m      metadata,[m
+[32m+[m
+[32m+[m[32m      created_at:[m
+[32m+[m[32m        now,[m
+[32m+[m
+[32m+[m[32m      created_by:[m
+[32m+[m[32m        profileId,[m
+[32m+[m[32m    };[m
+[32m+[m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data: inserted,[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await this.supabase[m
+[32m+[m[32m        .from("activities")[m
+[32m+[m[32m        .insert(row)[m
+[32m+[m[32m        .select("*")[m
+[32m+[m[32m        .single();[m
+[32m+[m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+     }[m
+ [m
+[31m-    async delete([m
+[31m-        id: string,[m
+[31m-    ): Promise<void> {[m
+[31m-[m
+[31m-        const existing =[m
+[31m-            await this.findById([m
+[31m-                id,[m
+[31m-            );[m
+[31m-[m
+[31m-[m
+[31m-        if (!existing) {[m
+[31m-[m
+[31m-            return;[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[32m+[m[32m    return mapActivity([m
+[32m+[m[32m      inserted as ActivityRow[m
+[32m+[m[32m    );[m
+[32m+[m[32m  }[m
+ [m
+[31m-        const {[m
+[31m-            error,[m
+[31m-        } =[m
+[31m-            await this.tableRef()[m
+[31m-                .update([m
+[31m-                    {[m
+[31m-                        archived: true,[m
+[31m-                        updated_at:[m
+[31m-                            new Date()[m
+[31m-                                .toISOString(),[m
+[31m-                    },[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'organization_id',[m
+[31m-                    this.organizationId,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'id',[m
+[31m-                    id,[m
+[31m-                );[m
+[31m-[m
+[31m-[m
+[31m-        if (error) {[m
+[31m-[m
+[31m-            throw error;[m
+[32m+[m[32m  async update([m
+[32m+[m[32m    id: string,[m
+[32m+[m[32m    data: Partial<Activity>[m
+[32m+[m[32m  ): Promise<Activity | null> {[m
+[32m+[m[32m    const profileId =[m
+[32m+[m[32m      await this.currentProfileId();[m
+ [m
+[31m-        }[m
+[32m+[m[32m    const existing =[m
+[32m+[m[32m      await this.findById(id);[m
+ [m
+[32m+[m[32m    if (!existing) {[m
+[32m+[m[32m      return null;[m
+     }[m
+ [m
+[31m-    async restore([m
+[31m-        id: string,[m
+[31m-    ): Promise<boolean> {[m
+[31m-[m
+[31m-        const existing =[m
+[31m-            await this.findById([m
+[31m-                id,[m
+[31m-            );[m
+[31m-[m
+[31m-[m
+[31m-        if (!existing) {[m
+[31m-[m
+[31m-            return false;[m
+[31m-[m
+[31m-        }[m
+[32m+[m[32m    const currentMetadata =[m
+[32m+[m[32m      existing.metadata ?? {};[m
+ [m
+[32m+[m[32m    const metadata: Record<string, unknown> = {[m
+[32m+[m[32m      ...currentMetadata,[m
+[32m+[m[32m    };[m
+ [m
+[31m-        const {[m
+[31m-            error,[m
+[31m-        } =[m
+[31m-            await this.tableRef()[m
+[31m-                .update([m
+[31m-                    {[m
+[31m-                        archived: false,[m
+[31m-                        updated_at:[m
+[31m-                            new Date()[m
+[31m-                                .toISOString(),[m
+[31m-                    },[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'organization_id',[m
+[31m-                    this.organizationId,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'id',[m
+[31m-                    id,[m
+[31m-                );[m
+[31m-[m
+[31m-[m
+[31m-        if (error) {[m
+[31m-[m
+[31m-            throw error;[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[31m-[m
+[31m-        return true;[m
+[31m-[m
+[32m+[m[32m    if (data.activityNumber !== undefined) {[m
+[32m+[m[32m      metadata.activityNumber =[m
+[32m+[m[32m        data.activityNumber;[m
+     }[m
+ [m
+[31m-    async search([m
+[31m-        filters?: ActivitySearchFilters,[m
+[31m-    ): Promise<Activity[]> {[m
+[31m-[m
+[31m-[m
+[31m-        let query =[m
+[31m-            this.tableRef()[m
+[31m-                .select('*')[m
+[31m-                .eq([m
+[31m-                    'organization_id',[m
+[31m-                    this.organizationId,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'archived',[m
+[31m-                    false,[m
+[31m-                );[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-        if (filters?.status) {[m
+[31m-[m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'status',[m
+[31m-                    filters.status,[m
+[31m-                );[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-        if (filters?.type) {[m
+[31m-[m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'type',[m
+[31m-                    filters.type,[m
+[31m-                );[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-        if (filters?.priority) {[m
+[31m-[m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'priority',[m
+[31m-                    filters.priority,[m
+[31m-                );[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-        if (filters?.entityType) {[m
+[31m-[m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'entity_type',[m
+[31m-                    filters.entityType,[m
+[31m-                );[m
+[31m-[m
+[31m-        }[m
+[31m-[m
+[32m+[m[32m    if (data.title !== undefined) {[m
+[32m+[m[32m      metadata.title =[m
+[32m+[m[32m        data.title;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.status !== undefined) {[m
+[32m+[m[32m      metadata.status =[m
+[32m+[m[32m        data.status;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.entityId) {[m
+[32m+[m[32m    if (data.priority !== undefined) {[m
+[32m+[m[32m      metadata.priority =[m
+[32m+[m[32m        data.priority;[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'entity_id',[m
+[31m-                    filters.entityId,[m
+[31m-                );[m
+[32m+[m[32m    if (data.companyId !== undefined) {[m
+[32m+[m[32m      metadata.companyId =[m
+[32m+[m[32m        data.companyId;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        }[m
+[32m+[m[32m    if (data.contactId !== undefined) {[m
+[32m+[m[32m      metadata.contactId =[m
+[32m+[m[32m        data.contactId;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.opportunityId !== undefined) {[m
+[32m+[m[32m      metadata.opportunityId =[m
+[32m+[m[32m        data.opportunityId;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.companyId) {[m
+[32m+[m[32m    if (data.scheduledAt !== undefined) {[m
+[32m+[m[32m      metadata.scheduledAt =[m
+[32m+[m[32m        data.scheduledAt;[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'company_id',[m
+[31m-                    filters.companyId,[m
+[31m-                );[m
+[32m+[m[32m    if (data.startedAt !== undefined) {[m
+[32m+[m[32m      metadata.startedAt =[m
+[32m+[m[32m        data.startedAt;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        }[m
+[32m+[m[32m    if (data.startDate !== undefined) {[m
+[32m+[m[32m      metadata.startDate =[m
+[32m+[m[32m        data.startDate;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.completedAt !== undefined) {[m
+[32m+[m[32m      metadata.completedAt =[m
+[32m+[m[32m        data.completedAt;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.dueAt !== undefined) {[m
+[32m+[m[32m      metadata.dueAt =[m
+[32m+[m[32m        data.dueAt;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.contactId) {[m
+[32m+[m[32m    if (data.dueDate !== undefined) {[m
+[32m+[m[32m      metadata.dueDate =[m
+[32m+[m[32m        data.dueDate;[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'contact_id',[m
+[31m-                    filters.contactId,[m
+[31m-                );[m
+[32m+[m[32m    if (data.durationMinutes !== undefined) {[m
+[32m+[m[32m      metadata.durationMinutes =[m
+[32m+[m[32m        data.durationMinutes;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        }[m
+[32m+[m[32m    if (data.outcome !== undefined) {[m
+[32m+[m[32m      metadata.outcome =[m
+[32m+[m[32m        data.outcome;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.nextAction !== undefined) {[m
+[32m+[m[32m      metadata.nextAction =[m
+[32m+[m[32m        data.nextAction;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.reminderAt !== undefined) {[m
+[32m+[m[32m      metadata.reminderAt =[m
+[32m+[m[32m        data.reminderAt;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.opportunityId) {[m
+[32m+[m[32m    if (data.reminderMinutes !== undefined) {[m
+[32m+[m[32m      metadata.reminderMinutes =[m
+[32m+[m[32m        data.reminderMinutes;[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'opportunity_id',[m
+[31m-                    filters.opportunityId,[m
+[31m-                );[m
+[32m+[m[32m    if (data.ownerId !== undefined) {[m
+[32m+[m[32m      metadata.ownerId =[m
+[32m+[m[32m        data.ownerId;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        }[m
+[32m+[m[32m    if (data.assignedTo !== undefined) {[m
+[32m+[m[32m      metadata.assignedTo =[m
+[32m+[m[32m        data.assignedTo;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (data.location !== undefined) {[m
+[32m+[m[32m      metadata.location =[m
+[32m+[m[32m        data.location;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.ownerId) {[m
+[32m+[m[32m    if (data.notes !== undefined) {[m
+[32m+[m[32m      metadata.notes =[m
+[32m+[m[32m        data.notes;[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'owner_id',[m
+[31m-                    filters.ownerId,[m
+[31m-                );[m
+[32m+[m[32m    if (data.metadata !== undefined) {[m
+[32m+[m[32m      Object.assign([m
+[32m+[m[32m        metadata,[m
+[32m+[m[32m        data.metadata[m
+[32m+[m[32m      );[m
+[32m+[m[32m    }[m
+ [m
+[31m-        }[m
+[32m+[m[32m    const payload = {[m
+[32m+[m[32m      entity_type:[m
+[32m+[m[32m        data.entityId !== undefined[m
+[32m+[m[32m          ? ([m
+[32m+[m[32m              data.entityType ??[m
+[32m+[m[32m              existing.entityType[m
+[32m+[m[32m            )[m
+[32m+[m[32m          : undefined,[m
+ [m
+[32m+[m[32m      entity_id:[m
+[32m+[m[32m        data.entityId ??[m
+[32m+[m[32m        existing.entityId,[m
+ [m
+[32m+[m[32m      activity_type:[m
+[32m+[m[32m        data.type ??[m
+[32m+[m[32m        existing.type,[m
+ [m
+[31m-        if (filters?.assignedTo) {[m
+[32m+[m[32m      description:[m
+[32m+[m[32m        data.description ??[m
+[32m+[m[32m        existing.description ??[m
+[32m+[m[32m        null,[m
+ [m
+[31m-            query =[m
+[31m-                query.eq([m
+[31m-                    'assigned_to',[m
+[31m-                    filters.assignedTo,[m
+[31m-                );[m
+[32m+[m[32m      metadata,[m
+ [m
+[31m-        }[m
+[32m+[m[32m      created_by:[m
+[32m+[m[32m        profileId,[m
+[32m+[m[32m    };[m
+ [m
+[32m+[m[32m    if (payload.entity_type === undefined) {[m
+[32m+[m[32m      delete payload.entity_type;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data: updated,[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await this.supabase[m
+[32m+[m[32m        .from("activities")[m
+[32m+[m[32m        .update(payload)[m
+[32m+[m[32m        .eq("id", id)[m
+[32m+[m[32m        .eq("created_by", profileId)[m
+[32m+[m[32m        .select("*")[m
+[32m+[m[32m        .maybeSingle();[m
+[32m+[m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.fromDate) {[m
+[32m+[m[32m    return updated[m
+[32m+[m[32m      ? mapActivity([m
+[32m+[m[32m          updated as ActivityRow[m
+[32m+[m[32m        )[m
+[32m+[m[32m      : null;[m
+[32m+[m[32m  }[m
+[32m+[m[32m  async updateStatus([m
+[32m+[m[32m    id: string,[m
+[32m+[m[32m    status: ActivityStatus[m
+[32m+[m[32m  ): Promise<Activity> {[m
+[32m+[m[32m    const updated =[m
+[32m+[m[32m      await this.update(id, { status });[m
+[32m+[m
+[32m+[m[32m    if (!updated) {[m
+[32m+[m[32m      throw new Error([m
+[32m+[m[32m        "Activity not found or access denied."[m
+[32m+[m[32m      );[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.gte([m
+[31m-                    'start_date',[m
+[31m-                    filters.fromDate,[m
+[31m-                );[m
+[32m+[m[32m    return updated;[m
+[32m+[m[32m  }[m
+[32m+[m[32m  async delete([m
+[32m+[m[32m    id: string[m
+[32m+[m[32m  ): Promise<void> {[m
+[32m+[m[32m    const existing =[m
+[32m+[m[32m      await this.findById(id);[m
+ [m
+[31m-        }[m
+[32m+[m[32m    if (!existing) {[m
+[32m+[m[32m      return;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    throw new Error([m
+[32m+[m[32m      "Activity deletion is not supported by the current activities schema."[m
+[32m+[m[32m    );[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async restore([m
+[32m+[m[32m    id: string[m
+[32m+[m[32m  ): Promise<boolean> {[m
+[32m+[m[32m    const existing =[m
+[32m+[m[32m      await this.findById(id);[m
+[32m+[m
+[32m+[m[32m    return existing !== null;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async search([m
+[32m+[m[32m    filters?: ActivitySearchFilters[m
+[32m+[m[32m  ): Promise<Activity[]> {[m
+[32m+[m[32m    const query =[m
+[32m+[m[32m      this.queryOwnedActivities(await this.currentProfileId());[m
+[32m+[m
+[32m+[m[32m    let builder =[m
+[32m+[m[32m      query;[m
+[32m+[m
+[32m+[m[32m    if (filters?.entityType) {[m
+[32m+[m[32m      builder =[m
+[32m+[m[32m        builder.eq([m
+[32m+[m[32m          "entity_type",[m
+[32m+[m[32m          filters.entityType[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (filters?.entityId) {[m
+[32m+[m[32m      builder =[m
+[32m+[m[32m        builder.eq([m
+[32m+[m[32m          "entity_id",[m
+[32m+[m[32m          filters.entityId[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-        if (filters?.toDate) {[m
+[32m+[m[32m    if (filters?.type) {[m
+[32m+[m[32m      builder =[m
+[32m+[m[32m        builder.eq([m
+[32m+[m[32m          "activity_type",[m
+[32m+[m[32m          filters.type[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-            query =[m
+[31m-                query.lte([m
+[31m-                    'start_date',[m
+[31m-                    filters.toDate,[m
+[31m-                );[m
+[32m+[m[32m    if (filters?.keyword) {[m
+[32m+[m[32m      builder =[m
+[32m+[m[32m        builder.ilike([m
+[32m+[m[32m          "description",[m
+[32m+[m[32m          `%${filters.keyword}%`[m
+[32m+[m[32m        );[m
+[32m+[m[32m    } else if ([m
+[32m+[m[32m      filters?.search[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m      builder =[m
+[32m+[m[32m        builder.ilike([m
+[32m+[m[32m          "description",[m
+[32m+[m[32m          `%${filters.search}%`[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data,[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await builder.order([m
+[32m+[m[32m        "created_at",[m
+[32m+[m[32m        {[m
+[32m+[m[32m          ascending: false,[m
+         }[m
+[32m+[m[32m      );[m
+ [m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    let activities =[m
+[32m+[m[32m      ([m
+[32m+[m[32m        (data ?? []) as ActivityRow[][m
+[32m+[m[32m      ).map([m
+[32m+[m[32m        mapActivity[m
+[32m+[m[32m      );[m
+[32m+[m
+[32m+[m[32m    if (filters?.status) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.status ===[m
+[32m+[m[32m            filters.status[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-        const keyword =[m
+[31m-            filters?.keyword[m
+[31m-            ??[m
+[31m-            filters?.search;[m
+[31m-[m
+[31m-[m
+[31m-[m
+[31m-        if (keyword) {[m
+[31m-[m
+[31m-            query =[m
+[31m-                query.or([m
+[31m-[m
+[31m-                    [[m
+[31m-[m
+[31m-                        `title.ilike.%${keyword}%`,[m
+[31m-[m
+[31m-                        `description.ilike.%${keyword}%`,[m
+[31m-[m
+[31m-                        `activity_number.ilike.%${keyword}%`,[m
+[32m+[m[32m    if (filters?.priority) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.priority ===[m
+[32m+[m[32m            filters.priority[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-                    ].join(','),[m
+[32m+[m[32m    if (filters?.companyId) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.companyId ===[m
+[32m+[m[32m            filters.companyId[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-                );[m
+[32m+[m[32m    if (filters?.contactId) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.contactId ===[m
+[32m+[m[32m            filters.contactId[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-        }[m
+[32m+[m[32m    if (filters?.opportunityId) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.opportunityId ===[m
+[32m+[m[32m            filters.opportunityId[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (filters?.ownerId) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.ownerId ===[m
+[32m+[m[32m            filters.ownerId[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (filters?.assignedTo) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.assignedTo ===[m
+[32m+[m[32m            filters.assignedTo[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[31m-        const {[m
+[31m-            data,[m
+[31m-            error,[m
+[31m-        } =[m
+[31m-            await query.order([m
+[31m-                'created_at',[m
+[31m-                {[m
+[31m-                    ascending: false,[m
+[31m-                },[m
+[31m-            );[m
+[32m+[m[32m    if (filters?.fromDate) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            !!activity.startDate &&[m
+[32m+[m[32m            activity.startDate >=[m
+[32m+[m[32m              filters.fromDate![m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if (filters?.toDate) {[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            !!activity.startDate &&[m
+[32m+[m[32m            activity.startDate <=[m
+[32m+[m[32m              filters.toDate![m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    if ([m
+[32m+[m[32m      filters?.page !== undefined &&[m
+[32m+[m[32m      filters?.limit !== undefined[m
+[32m+[m[32m    ) {[m
+[32m+[m[32m      const page =[m
+[32m+[m[32m        Math.max([m
+[32m+[m[32m          filters.page,[m
+[32m+[m[32m          1[m
+[32m+[m[32m        );[m
+ [m
+[31m-        if (error) {[m
+[32m+[m[32m      const limit =[m
+[32m+[m[32m        Math.max([m
+[32m+[m[32m          filters.limit,[m
+[32m+[m[32m          1[m
+[32m+[m[32m        );[m
+ [m
+[31m-            throw error;[m
+[32m+[m[32m      const offset =[m
+[32m+[m[32m        (page - 1) *[m
+[32m+[m[32m        limit;[m
+ [m
+[31m-        }[m
+[32m+[m[32m      activities =[m
+[32m+[m[32m        activities.slice([m
+[32m+[m[32m          offset,[m
+[32m+[m[32m          offset + limit[m
+[32m+[m[32m        );[m
+[32m+[m[32m    }[m
+ [m
+[32m+[m[32m    return activities;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async summary(): Promise<ActivitySummary> {[m
+[32m+[m[32m    const activities =[m
+[32m+[m[32m      await this.list();[m
+[32m+[m
+[32m+[m[32m    const today =[m
+[32m+[m[32m      new Date()[m
+[32m+[m[32m        .toISOString()[m
+[32m+[m[32m        .substring(0, 10);[m
+[32m+[m
+[32m+[m[32m    const completed =[m
+[32m+[m[32m      activities.filter([m
+[32m+[m[32m        (activity) =>[m
+[32m+[m[32m          activity.status ===[m
+[32m+[m[32m          "Completed"[m
+[32m+[m[32m      ).length;[m
+[32m+[m
+[32m+[m[32m    return {[m
+[32m+[m[32m      total:[m
+[32m+[m[32m        activities.length,[m
+[32m+[m
+[32m+[m[32m      planned:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.status ===[m
+[32m+[m[32m            "Planned"[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      inProgress:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.status ===[m
+[32m+[m[32m            "In Progress"[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      completed,[m
+[32m+[m
+[32m+[m[32m      cancelled:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.status ===[m
+[32m+[m[32m            "Cancelled"[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      missed:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.status ===[m
+[32m+[m[32m            "Missed"[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      overdue:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            !!activity.startDate &&[m
+[32m+[m[32m            activity.startDate <[m
+[32m+[m[32m              today &&[m
+[32m+[m[32m            activity.status !==[m
+[32m+[m[32m              "Completed" &&[m
+[32m+[m[32m            activity.status !==[m
+[32m+[m[32m              "Cancelled"[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      today:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.startDate ===[m
+[32m+[m[32m            today[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      upcoming:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            !!activity.startDate &&[m
+[32m+[m[32m            activity.startDate >[m
+[32m+[m[32m              today[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      highPriority:[m
+[32m+[m[32m        activities.filter([m
+[32m+[m[32m          (activity) =>[m
+[32m+[m[32m            activity.priority ===[m
+[32m+[m[32m              "High" ||[m
+[32m+[m[32m            activity.priority ===[m
+[32m+[m[32m              "Critical"[m
+[32m+[m[32m        ).length,[m
+[32m+[m
+[32m+[m[32m      archived:[m
+[32m+[m[32m        0,[m
+[32m+[m
+[32m+[m[32m      completionRate:[m
+[32m+[m[32m        activities.length === 0[m
+[32m+[m[32m          ? 0[m
+[32m+[m[32m          : Math.round([m
+[32m+[m[32m              ([m
+[32m+[m[32m                completed /[m
+[32m+[m[32m                activities.length[m
+[32m+[m[32m              ) * 100[m
+[32m+[m[32m            ),[m
+[32m+[m[32m    };[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  async findByEntity([m
+[32m+[m[32m    entityType: string,[m
+[32m+[m[32m    entityId: string[m
+[32m+[m[32m  ): Promise<Activity[]> {[m
+[32m+[m[32m    const query =[m
+[32m+[m[32m      this.queryOwnedActivities(await this.currentProfileId());[m
+[32m+[m
+[32m+[m[32m    const {[m
+[32m+[m[32m      data,[m
+[32m+[m[32m      error,[m
+[32m+[m[32m    } =[m
+[32m+[m[32m      await query[m
+[32m+[m[32m        .eq([m
+[32m+[m[32m          "entity_type",[m
+[32m+[m[32m          entityType[m
+[32m+[m[32m        )[m
+[32m+[m[32m        .eq([m
+[32m+[m[32m          "entity_id",[m
+[32m+[m[32m          entityId[m
+[32m+[m[32m        )[m
+[32m+[m[32m        .order([m
+[32m+[m[32m          "created_at",[m
+[32m+[m[32m          {[m
+[32m+[m[32m            ascending: false,[m
+[32m+[m[32m          }[m
+[32m+[m[32m        );[m
+ [m
+[32m+[m[32m    if (error) {[m
+[32m+[m[32m      throw error;[m
+[32m+[m[32m    }[m
+ [m
+[31m-        return ([m
+[31m-            data ??[m
+[31m-            [][m
+[31m-        ) as Activity[];[m
+[31m-[m
+[31m-    }[m
+[31m-    async summary(): Promise<ActivitySummary> {[m
+[31m-[m
+[31m-        const activities =[m
+[31m-            await this.list();[m
+[31m-[m
+[31m-        const today =[m
+[31m-            new Date()[m
+[31m-                .toISOString()[m
+[31m-                .substring(0, 10);[m
+[31m-[m
+[31m-        return {[m
+[31m-[m
+[31m-            total:[m
+[31m-                activities.length,[m
+[31m-[m
+[31m-            planned:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.status === 'Planned',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            inProgress:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.status === 'In Progress',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            completed:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.status === 'Completed',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            cancelled:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.status === 'Cancelled',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            missed:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.status === 'Missed',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            overdue:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        !!activity.startDate &&[m
+[31m-                        activity.startDate < today &&[m
+[31m-                        activity.status !== 'Completed' &&[m
+[31m-                        activity.status !== 'Cancelled',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            today:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.startDate === today,[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            upcoming:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        !!activity.startDate &&[m
+[31m-                        activity.startDate > today,[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            highPriority:[m
+[31m-                activities.filter([m
+[31m-                    activity =>[m
+[31m-                        activity.priority === 'High' ||[m
+[31m-                        activity.priority === 'Critical',[m
+[31m-                ).length,[m
+[31m-[m
+[31m-            archived: 0,[m
+[31m-[m
+[31m-            completionRate:[m
+[31m-[m
+[31m-                activities.length === 0[m
+[31m-                    ? 0[m
+[31m-                    :[m
+[31m-                    Math.round([m
+[31m-                        ([m
+[31m-                            activities.filter([m
+[31m-                                activity =>[m
+[31m-                                    activity.status === 'Completed',[m
+[31m-                            ).length[m
+[31m-                            /[m
+[31m-                            activities.length[m
+[31m-                        ) * 100,[m
+[31m-                    ),[m
+[31m-[m
+[31m-        };[m
+[31m-[m
+[31m-    }[m
+[31m-    async findByEntity([m
+[31m-        entityType: string,[m
+[31m-        entityId: string,[m
+[31m-    ): Promise<Activity[]> {[m
+[31m-[m
+[31m-        const {[m
+[31m-            data,[m
+[31m-            error,[m
+[31m-        } =[m
+[31m-            await this.tableRef()[m
+[31m-                .select('*')[m
+[31m-                .eq([m
+[31m-                    'organization_id',[m
+[31m-                    this.organizationId,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'entity_type',[m
+[31m-                    entityType,[m
+[31m-                )[m
+[31m-                .eq([m
+[31m-                    'entity_id',[m
+[31m-                    entityId,[m
+[31m-                )[m
+[31m-                .order([m
+[31m-                    'created_at',[m
+[31m-                    {[m
+[31m-                        ascending: false,[m
+[31m-                    },[m
+[31m-                );[m
+[31m-[m
+[31m-[m
+[31m-        if (error) {[m
+[31m-            throw error;[m
+[31m-        }[m
+[32m+[m[32m    return ([m
+[32m+[m[32m      (data ?? []) as ActivityRow[][m
+[32m+[m[32m    ).map([m
+[32m+[m[32m      mapActivity[m
+[32m+[m[32m    );[m
+[32m+[m[32m  }[m
+[32m+[m[32m}[m
+ [m
+[32m+[m[32mexport function createActivitiesRepository([m
+[32m+[m[32m  supabase: SupabaseClient[m
+[32m+[m[32m): ActivitiesRepository {[m
+[32m+[m[32m  return new ActivitiesRepository([m
+[32m+[m[32m    supabase[m
+[32m+[m[32m  );[m
+[32m+[m[32m}[m
+ [m
+[31m-        return ([m
+[31m-            data ?? [][m
+[31m-        ) as Activity[];[m
+[32m+[m[32mexport const ActivitiesRepositoryInstance =[m
+[32m+[m[32m  createActivitiesRepository;[m
+ [m
+[31m-    }[m
+[31m-}[m
+ [m
+[31m-export function createActivitiesRepository([m
+[31m-    supabase: SupabaseClient,[m
+[31m-) {[m
+ [m
+[31m-    return new ActivitiesRepository([m
+[31m-        supabase,[m
+[31m-    );[m
+ [m
+[31m-}[m
+[31m-export const ActivitiesRepositoryInstance =[m
+[31m-    createActivitiesRepository;[m

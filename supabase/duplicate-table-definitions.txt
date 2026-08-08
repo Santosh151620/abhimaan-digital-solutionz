@@ -1,0 +1,151 @@
+
+============================================================
+SOURCE: 001_platform.sql
+TABLE: audit_logs
+============================================================
+CREATE TABLE IF NOT EXISTS audit_logs
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+organization_id uuid NOT NULL,
+
+profile_id uuid,
+
+entity_type varchar(150) NOT NULL,
+
+entity_id uuid,
+
+action varchar(100) NOT NULL,
+
+old_values jsonb,
+
+new_values jsonb,
+
+ip_address inet,
+
+user_agent text,
+
+performed_at timestamptz NOT NULL DEFAULT now(),
+
+metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+CONSTRAINT fk_audit_org
+FOREIGN KEY(organization_id)
+REFERENCES organizations(id)
+ON DELETE CASCADE,
+
+CONSTRAINT fk_audit_profile
+FOREIGN KEY(profile_id)
+REFERENCES profiles(id)
+
+);
+
+============================================================
+SOURCE: 003_crm.sql
+TABLE: audit_logs
+============================================================
+CREATE TABLE IF NOT EXISTS audit_logs
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+organization_id uuid NOT NULL,
+
+entity_type varchar(100),
+
+entity_id uuid,
+
+action varchar(100),
+
+old_values jsonb,
+
+new_values jsonb,
+
+performed_by uuid,
+
+performed_at timestamptz DEFAULT now(),
+
+ip_address inet,
+
+user_agent text,
+
+metadata jsonb DEFAULT '{}'::jsonb,
+
+FOREIGN KEY (organization_id)
+REFERENCES organizations(id),
+
+FOREIGN KEY (performed_by)
+REFERENCES profiles(id)
+
+);
+
+============================================================
+SOURCE: 003_crm.sql
+TABLE: report_executions
+============================================================
+CREATE TABLE IF NOT EXISTS report_executions
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+report_id uuid NOT NULL,
+
+executed_by uuid,
+
+started_at timestamptz,
+
+completed_at timestamptz,
+
+execution_status varchar(50),
+
+execution_time_ms integer,
+
+result_location text,
+
+metadata jsonb DEFAULT '{}'::jsonb,
+
+FOREIGN KEY(report_id)
+REFERENCES reports(id)
+ON DELETE CASCADE,
+
+FOREIGN KEY(executed_by)
+REFERENCES profiles(id)
+
+);
+
+============================================================
+SOURCE: 004_erp.sql
+TABLE: report_executions
+============================================================
+CREATE TABLE IF NOT EXISTS report_executions
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+report_id uuid NOT NULL,
+
+executed_by uuid,
+
+started_at timestamptz,
+
+completed_at timestamptz,
+
+execution_status varchar(50),
+
+execution_time_ms integer,
+
+export_format varchar(50),
+
+file_path text,
+
+metadata jsonb DEFAULT '{}'::jsonb,
+
+FOREIGN KEY(report_id)
+REFERENCES erp_reports(id)
+ON DELETE CASCADE,
+
+FOREIGN KEY(executed_by)
+REFERENCES profiles(id)
+
+);
