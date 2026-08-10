@@ -1,4 +1,4 @@
-export default function WelcomeBanner(){
+﻿export default function WelcomeBanner(){
 
 const hour=new Date().getHours();
 
@@ -26,7 +26,7 @@ return(
 
 <h1 className="mt-3 text-5xl font-black">
 
-Welcome to Abhimaan CRM
+Welcome to CRM Workspace
 
 </h1>
 

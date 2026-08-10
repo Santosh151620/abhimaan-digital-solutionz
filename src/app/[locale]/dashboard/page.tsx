@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+﻿import type { ReactNode } from "react";
 
 import { AIInsightsPanel } from "@/modules/dashboard/ai";
 import NotificationSummary from "@/modules/dashboard/notifications/NotificationSummary";
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
             </p>
 
             <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
-              CRM Intelligence Dashboard
+              Dashboard
             </h1>
 
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
@@ -321,7 +321,7 @@ export default async function DashboardPage() {
 
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            "CRM Intelligence",
+            "Business Intelligence",
             "Executive Intelligence",
             "Revenue Forecast Engine",
             "Workflow Intelligence",

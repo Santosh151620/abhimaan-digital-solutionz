@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import {
@@ -33,7 +33,7 @@ export default function CRMHeader() {
 
               <div className="min-w-0">
                 <p className="truncate text-[15px] font-semibold tracking-tight text-white sm:text-base">
-                  Abhimaan CRM
+                  CRM Workspace
                 </p>
 
                 <p className="hidden truncate text-[10px] font-medium uppercase tracking-[0.16em] text-slate-500 sm:block">

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Plus } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ type DashboardEmptyStateProps = {
 };
 
 export default function DashboardEmptyState({
-  title = "Your CRM intelligence starts here",
+  title = "Your business intelligence starts here",
   description = "Add leads, activities, and opportunities to unlock sales insights.",
   action = "Create your first lead",
   actionHref = "/dashboard/leads",

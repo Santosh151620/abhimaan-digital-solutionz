@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import type { ComponentType } from "react";
 import { useState } from "react";
@@ -614,7 +614,7 @@ export default function CRMSidebar() {
                     {!collapsed && (
                         <div className="min-w-0">
                             <h2 className="truncate text-sm font-bold tracking-tight text-white">
-                                Abhimaan CRM
+                                CRM Workspace
                             </h2>
 
                             <p className="mt-0.5 truncate text-[10px] text-slate-400">
