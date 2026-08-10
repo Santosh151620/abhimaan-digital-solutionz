@@ -19,11 +19,8 @@ export interface TodayTask {
 
 export interface WorkflowSnapshot {
   inactiveLeads: Awaited<ReturnType<typeof getInactiveLeads>>;
-
   pipeline: Awaited<ReturnType<typeof getPipelineData>>;
-
   revenue: Awaited<ReturnType<typeof getRevenueIntelligence>>;
-
   projects: Awaited<ReturnType<typeof getProjects>>;
 
   copilot: {
@@ -33,6 +30,18 @@ export interface WorkflowSnapshot {
   };
 
   today: TodayTask[];
+}
+
+function toWorkflowLead(lead: {
+  id: string;
+  full_name: string;
+  email: string;
+}): WorkflowLead {
+  return {
+    id: lead.id,
+    name: lead.full_name,
+    email: lead.email,
+  };
 }
 
 export async function getWorkflowIntelligence(): Promise<WorkflowSnapshot> {
@@ -57,62 +66,47 @@ export async function getWorkflowIntelligence(): Promise<WorkflowSnapshot> {
 
   const callToday: WorkflowLead[] = activeLeads
     .slice(0, 5)
-    .map((lead) => ({
-      id: lead.id,
-      name: lead.full_name,
-      email: lead.email,
-    }));
+    .map(toWorkflowLead);
 
   const followUpUrgent: WorkflowLead[] = inactiveLeads
     .slice(0, 5)
-    .map((lead) => ({
-      id: lead.id,
-      name: lead.full_name,
-      email: lead.email,
-    }));
+    .map(toWorkflowLead);
 
   const highConversionLeads: WorkflowLead[] = activeLeads
     .filter((lead) => lead.priority === "hot")
     .slice(0, 5)
-    .map((lead) => ({
-      id: lead.id,
-      name: lead.full_name,
-      email: lead.email,
-    }));
+    .map(toWorkflowLead);
 
   const today: TodayTask[] = [
-    ...callToday.map((lead) => ({
+    ...callToday.map((lead): TodayTask => ({
       id: `call-${lead.id}`,
       title: `Call ${lead.name}`,
       description: lead.email,
-      priority: "high" as const,
-      type: "call" as const,
+      priority: "high",
+      type: "call",
     })),
 
-    ...followUpUrgent.map((lead) => ({
+    ...followUpUrgent.map((lead): TodayTask => ({
       id: `follow-${lead.id}`,
       title: `Follow up with ${lead.name}`,
       description: lead.email,
-      priority: "medium" as const,
-      type: "follow_up" as const,
+      priority: "medium",
+      type: "follow_up",
     })),
 
-    ...highConversionLeads.map((lead) => ({
+    ...highConversionLeads.map((lead): TodayTask => ({
       id: `deal-${lead.id}`,
       title: `Close deal with ${lead.name}`,
       description: lead.email,
-      priority: "high" as const,
-      type: "deal" as const,
+      priority: "high",
+      type: "deal",
     })),
   ];
 
   return {
     inactiveLeads,
-
     pipeline,
-
     revenue,
-
     projects,
 
     copilot: {
@@ -124,9 +118,3 @@ export async function getWorkflowIntelligence(): Promise<WorkflowSnapshot> {
     today,
   };
 }
-
-
-
-
-
-

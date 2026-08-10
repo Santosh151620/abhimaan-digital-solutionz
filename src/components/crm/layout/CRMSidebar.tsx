@@ -251,7 +251,7 @@ function SidebarLink({
                         "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
                         "transition-all duration-200",
                         active
-                            ? "bg-cyan-400/10"
+                            ? "bg-amber-300/10"
                             : "bg-transparent group-hover:bg-white/[0.06]",
                     ].join(" ")}
                 >
@@ -261,7 +261,7 @@ function SidebarLink({
                             "h-[17px] w-[17px] shrink-0",
                             "transition-colors duration-200",
                             active
-                                ? "text-cyan-300"
+                                ? "text-amber-200"
                                 : "text-slate-400 group-hover:text-white",
                         ].join(" ")}
                     />
@@ -281,7 +281,7 @@ function SidebarLink({
                         "h-4 w-4 shrink-0 text-slate-500",
                         "transition-transform duration-200",
                         expanded
-                            ? "rotate-180 text-cyan-300"
+                            ? "rotate-180 text-amber-200"
                             : "group-hover:text-slate-300",
                     ].join(" ")}
                 />
@@ -307,26 +307,26 @@ function SidebarLink({
                     "group relative flex min-h-11 w-full items-center rounded-xl border",
                     "transition-all duration-200 ease-out",
                     "focus-visible:outline-none focus-visible:ring-2",
-                    "focus-visible:ring-cyan-400/50",
+                    "focus-visible:ring-amber-300/50",
                     collapsed
                         ? "justify-center px-2"
                         : "justify-between px-2.5",
                     active
                         ? [
-                              "border-cyan-400/25",
+                              "border-amber-300/25",
                               "bg-gradient-to-r",
                               "from-cyan-400/15",
                               "via-cyan-400/[0.08]",
                               "to-transparent",
                               "text-white",
                               "shadow-lg",
-                              "shadow-cyan-950/20",
+                              "shadow-amber-950/20",
                           ].join(" ")
                         : [
                               "border-transparent",
                               "text-slate-300",
-                              "hover:border-white/10",
-                              "hover:bg-white/[0.055]",
+                              "hover:border-stone-400/10",
+                              "hover:bg-white/[0.06]",
                               "hover:text-white",
                           ].join(" "),
                 ].join(" ")}
@@ -351,26 +351,26 @@ function SidebarLink({
                 "group relative flex min-h-11 w-full items-center rounded-xl border",
                 "transition-all duration-200 ease-out",
                 "focus-visible:outline-none focus-visible:ring-2",
-                "focus-visible:ring-cyan-400/50",
+                "focus-visible:ring-amber-300/50",
                 collapsed
                     ? "justify-center px-2"
                     : "justify-between px-2.5",
                 active
                     ? [
-                          "border-cyan-400/25",
+                          "border-amber-300/25",
                           "bg-gradient-to-r",
                           "from-cyan-400/15",
                           "via-cyan-400/[0.08]",
                           "to-transparent",
                           "text-white",
                           "shadow-lg",
-                          "shadow-cyan-950/20",
+                          "shadow-amber-950/20",
                       ].join(" ")
                     : [
                           "border-transparent",
                           "text-slate-300",
-                          "hover:border-white/10",
-                          "hover:bg-white/[0.055]",
+                          "hover:border-stone-400/10",
+                          "hover:bg-white/[0.06]",
                           "hover:text-white",
                       ].join(" "),
             ].join(" ")}
@@ -400,7 +400,7 @@ function SidebarSubmenu({
     }
 
     return (
-        <div className="ml-5 border-l border-white/10 pl-3">
+        <div className="ml-5 border-l border-stone-400/10 pl-3">
             <div className="space-y-1 py-1">
                 {item.children
                     .filter(isItemEnabled)
@@ -424,7 +424,7 @@ function SidebarSubmenu({
                                     "group flex min-h-9 items-center gap-2 rounded-lg px-2.5",
                                     "text-xs transition-all duration-150",
                                     active
-                                        ? "bg-cyan-400/10 text-cyan-200"
+                                        ? "bg-amber-300/10 text-cyan-200"
                                         : "text-slate-400 hover:bg-white/[0.04] hover:text-white",
                                 ].join(" ")}
                             >
@@ -433,7 +433,7 @@ function SidebarSubmenu({
                                     className={[
                                         "h-3.5 w-3.5 shrink-0",
                                         active
-                                            ? "text-cyan-300"
+                                            ? "text-amber-200"
                                             : "text-slate-500 group-hover:text-slate-300",
                                     ].join(" ")}
                                 />
@@ -569,8 +569,8 @@ export default function CRMSidebar() {
             aria-label="CRM navigation"
             className={[
                 "relative hidden shrink-0 flex-col",
-                "border-r border-white/10",
-                "bg-[#07101f]/95",
+                "border-r border-stone-400/10",
+                "bg-[#16120d]/95",
                 "shadow-2xl shadow-black/20",
                 "backdrop-blur-2xl",
                 "transition-[width] duration-300 ease-in-out",
@@ -584,7 +584,7 @@ export default function CRMSidebar() {
             {/* Sidebar Header */}
             <div
                 className={[
-                    "shrink-0 border-b border-white/10",
+                    "shrink-0 border-b border-stone-400/10",
                     "transition-all duration-300",
                     collapsed
                         ? "px-3 py-5"
@@ -599,7 +599,7 @@ export default function CRMSidebar() {
                             : "gap-3",
                     ].join(" ")}
                 >
-                    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-700 shadow-lg shadow-cyan-500/20">
+                    <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300 via-yellow-600 to-stone-600 shadow-lg shadow-cyan-500/20">
                         <LayoutDashboard
                             aria-hidden="true"
                             className="h-[18px] w-[18px] text-white"
@@ -694,8 +694,8 @@ export default function CRMSidebar() {
 
             {/* Platform Status */}
             {!collapsed && (
-                <div className="shrink-0 border-t border-white/10 p-3">
-                    <div className="rounded-xl border border-cyan-400/10 bg-gradient-to-br from-cyan-400/[0.08] via-white/[0.025] to-amber-300/[0.04] p-3.5">
+                <div className="shrink-0 border-t border-stone-400/10 p-3">
+                    <div className="rounded-xl border border-amber-300/10 bg-gradient-to-br from-amber-300/[0.08] via-white/[0.025] to-amber-300/[0.04] p-3.5">
                         <div className="flex items-center gap-2">
                             <span
                                 aria-hidden="true"
@@ -743,12 +743,12 @@ export default function CRMSidebar() {
                     "text-slate-300",
                     "shadow-xl shadow-black/30",
                     "transition-all duration-200",
-                    "hover:border-cyan-400/30",
+                    "hover:border-amber-300/40",
                     "hover:bg-slate-800",
                     "hover:text-white",
                     "focus-visible:outline-none",
                     "focus-visible:ring-2",
-                    "focus-visible:ring-cyan-400/50",
+                    "focus-visible:ring-amber-300/50",
                 ].join(" ")}
             >
                 {collapsed ? (
@@ -767,7 +767,7 @@ export default function CRMSidebar() {
             {/* Visual Edge */}
             <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-cyan-400/10 to-transparent"
+                className="pointer-events-none absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-amber-300/20 to-transparent"
             />
         </aside>
     );

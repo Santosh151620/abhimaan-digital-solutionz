@@ -1,149 +1,711 @@
 import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
     Setting,
+    SettingCategory,
     SettingStatus,
 } from '@/types/crm/Settings';
 
-class SettingsRepository {
 
-    private settings =
-        new Map<string, Setting>();
+interface OrganizationSettingRow {
 
-    list() {
+    id: string;
 
-        return Array.from(
-            this.settings.values(),
-        ).filter(
-            setting => !setting.archived,
-        );
+    organization_id: string;
 
-    }
+    setting_key: string;
 
-    listArchived() {
+    setting_value: unknown;
 
-        return Array.from(
-            this.settings.values(),
-        ).filter(
-            setting => setting.archived,
-        );
+    category: string | null;
 
-    }
+    description: string | null;
 
-    details(
-        id: string,
+    created_at: string;
+
+    updated_at: string;
+
+    metadata: Record<string, unknown> | null;
+
+}
+
+
+interface SettingMetadata {
+
+    settingNumber?: string;
+
+    companyId?: string;
+
+    name?: string;
+
+    defaultValue?: string;
+
+    status?: SettingStatus;
+
+    editable?: boolean;
+
+    encrypted?: boolean;
+
+    archived?: boolean;
+
+}
+
+
+
+export class SettingsRepository
+    extends BaseRepository<Setting> {
+
+
+    constructor(
+        supabase: SupabaseClient,
     ) {
 
-        return this.settings.get(id) ?? null;
+        super(
+            supabase,
+            'organization_settings',
+        );
 
     }
 
-    create(
-        data: Partial<Setting>,
+
+
+    private normalizeKey(
+        key?: string,
+    ) {
+
+        return (
+            key
+                ?.trim()
+                .toLowerCase() ?? ''
+        );
+
+    }
+
+
+
+    private normalizeValue(
+        value: unknown,
+    ): string {
+
+        if (
+            typeof value === 'string'
+        ) {
+
+            return value;
+
+        }
+
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return '';
+
+        }
+
+
+        return JSON.stringify(value);
+
+    }
+
+
+
+    private mapRow(
+        row: OrganizationSettingRow,
     ): Setting {
 
-        const now =
-            new Date().toISOString();
 
-        const setting: Setting = {
+        const metadata =
+            (row.metadata ?? {}) as SettingMetadata;
+
+
+
+        return {
 
             id:
-                crypto.randomUUID(),
+                row.id,
+
 
             settingNumber:
-                data.settingNumber ??
-                `SET-${Date.now()}`,
+                metadata.settingNumber ??
+                `SET-${row.id.slice(0, 8)}`,
+
 
             companyId:
-                data.companyId,
+                metadata.companyId,
+
 
             category:
-                data.category ??
-                'General',
+                (
+                    row.category ??
+                    'General'
+                ) as SettingCategory,
+
 
             key:
-                data.key ?? '',
+                row.setting_key,
+
 
             name:
-                data.name ?? '',
+                metadata.name ??
+                row.setting_key,
+
 
             description:
-                data.description,
+                row.description ??
+                undefined,
+
 
             value:
-                data.value ?? '',
+                this.normalizeValue(
+                    row.setting_value,
+                ),
+
 
             defaultValue:
-                data.defaultValue,
+                metadata.defaultValue,
+
 
             status:
-                data.status ??
+                metadata.status ??
                 'Active',
 
+
             editable:
-                data.editable ??
+                metadata.editable ??
                 true,
 
+
             encrypted:
-                data.encrypted ??
+                metadata.encrypted ??
                 false,
+
 
             archived:
+                metadata.archived ??
                 false,
 
+
             createdAt:
-                now,
+                row.created_at,
+
 
             updatedAt:
-                now,
+                row.updated_at,
 
         };
 
-        this.settings.set(
-            setting.id,
-            setting,
-        );
+    }
 
-        return setting;
+
+
+    private async ensureUniqueKey(
+        key:string,
+        ignoreId?:string,
+    ) {
+
+
+        let query =
+            this.tableRef()
+                .select('id')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'setting_key',
+                    key,
+                );
+
+
+        if (ignoreId) {
+
+            query =
+                query.neq(
+                    'id',
+                    ignoreId,
+                );
+
+        }
+
+
+        const {
+            data,
+            error,
+        } =
+            await query.maybeSingle();
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        if (data) {
+
+            throw new Error(
+                'A setting with this key already exists.',
+            );
+
+        }
 
     }
 
-    update(
-        id: string,
-        data: Partial<Setting>,
-    ) {
 
-        const existing =
-            this.settings.get(id);
 
-        if (!existing) {
+    async list(): Promise<Setting[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending:false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            (data ?? []) as OrganizationSettingRow[]
+        )
+            .map(
+                row =>
+                    this.mapRow(row),
+            )
+            .filter(
+                setting =>
+                    !setting.archived,
+            );
+
+    }
+
+
+
+    async listArchived(): Promise<Setting[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending:false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            (data ?? []) as OrganizationSettingRow[]
+        )
+            .map(
+                row =>
+                    this.mapRow(row),
+            )
+            .filter(
+                setting =>
+                    setting.archived,
+            );
+
+    }
+
+
+
+    async details(
+        id:string,
+    ):Promise<Setting | null> {
+
+
+        const {
+            data,
+            error,
+        }
+        =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                )
+                .maybeSingle();
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        if (!data) {
 
             return null;
 
         }
 
-        const updated: Setting = {
 
-            ...existing,
 
-            ...data,
+        return this.mapRow(
+            data as OrganizationSettingRow,
+        );
 
-            updatedAt:
-                new Date().toISOString(),
+    }
+        async create(
+        data:Partial<Setting>,
+    ):Promise<Setting> {
+
+
+        const key =
+            this.normalizeKey(
+                data.key,
+            );
+
+
+        await this.ensureUniqueKey(
+            key,
+        );
+
+
+
+        const metadata:SettingMetadata = {
+
+
+            settingNumber:
+                data.settingNumber ??
+                `SET-${Date.now()}`,
+
+
+            companyId:
+                data.companyId,
+
+
+            name:
+                data.name ??
+                key,
+
+
+            defaultValue:
+                data.defaultValue,
+
+
+            status:
+                data.status ??
+                'Active',
+
+
+            editable:
+                data.editable ??
+                true,
+
+
+            encrypted:
+                data.encrypted ??
+                false,
+
+
+            archived:
+                false,
 
         };
 
-        this.settings.set(
-            id,
-            updated,
-        );
 
-        return updated;
+
+        const payload = {
+
+
+            setting_key:
+                key,
+
+
+            setting_value:
+                data.value ??
+                '',
+
+
+            category:
+                data.category ??
+                'General',
+
+
+            description:
+                data.description ??
+                null,
+
+
+            metadata,
+
+        };
+
+
+
+        const {
+            data: row,
+            error,
+        } =
+            await this.tableRef()
+                .insert(
+                    this.withCreateTenant(
+                        payload,
+                    ),
+                )
+                .select('*')
+                .single();
+
+
+
+        if (error) {
+
+            if (
+                error.code === '23505'
+            ) {
+
+                throw new Error(
+                    'A setting with this key already exists.',
+                );
+
+            }
+
+
+            throw error;
+
+        }
+
+
+
+        return this.mapRow(
+            row as OrganizationSettingRow,
+        );
 
     }
 
-    updateStatus(
-        id: string,
-        status: SettingStatus,
-    ) {
+
+
+
+
+    async update(
+        id:string,
+        data:Partial<Setting>,
+    ):Promise<Setting> {
+
+
+        const existing =
+            await this.details(id);
+
+
+
+        if (!existing) {
+
+            throw new Error(
+                `Setting not found: ${id}`,
+            );
+
+        }
+
+
+
+        const key =
+            data.key !== undefined
+                ? this.normalizeKey(data.key)
+                : existing.key;
+
+
+
+        if (
+            key !== existing.key
+        ) {
+
+            await this.ensureUniqueKey(
+                key,
+                id,
+            );
+
+        }
+
+
+
+        const metadata:SettingMetadata = {
+
+
+            settingNumber:
+                data.settingNumber ??
+                existing.settingNumber,
+
+
+            companyId:
+                data.companyId ??
+                existing.companyId,
+
+
+            name:
+                data.name ??
+                existing.name,
+
+
+            defaultValue:
+                data.defaultValue ??
+                existing.defaultValue,
+
+
+            status:
+                data.status ??
+                existing.status,
+
+
+            editable:
+                data.editable ??
+                existing.editable,
+
+
+            encrypted:
+                data.encrypted ??
+                existing.encrypted,
+
+
+            archived:
+                data.archived ??
+                existing.archived,
+
+        };
+
+
+
+        const payload = {
+
+
+            setting_key:
+                key,
+
+
+            setting_value:
+                data.value ??
+                existing.value,
+
+
+            category:
+                data.category ??
+                existing.category,
+
+
+            description:
+                data.description !== undefined
+                    ? data.description
+                    : existing.description ?? null,
+
+
+            metadata,
+
+        };
+
+
+
+        const {
+            data: row,
+            error,
+        }
+        =
+            await this.tableRef()
+                .update(
+                    payload,
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                )
+                .select('*')
+                .single();
+
+
+
+        if (error) {
+
+            if (
+                error.code === '23505'
+            ) {
+
+                throw new Error(
+                    'A setting with this key already exists.',
+                );
+
+            }
+
+
+            throw error;
+
+        }
+
+
+
+        return this.mapRow(
+            row as OrganizationSettingRow,
+        );
+
+    }
+
+
+
+
+
+    async updateStatus(
+        id:string,
+        status:SettingStatus,
+    ):Promise<Setting> {
+
 
         return this.update(
             id,
@@ -154,97 +716,108 @@ class SettingsRepository {
 
     }
 
-    delete(
-        id: string,
-    ) {
 
-        const setting =
-            this.settings.get(id);
 
-        if (!setting) {
+
+
+    async delete(
+        id:string,
+    ):Promise<void> {
+
+
+        await this.update(
+            id,
+            {
+                archived:true,
+            },
+        );
+
+    }
+
+
+
+
+
+    async restore(
+        id:string,
+    ):Promise<boolean> {
+
+
+        const existing =
+            await this.details(id);
+
+
+
+        if (!existing) {
 
             return false;
 
         }
 
-        setting.archived = true;
 
-        setting.updatedAt =
-            new Date().toISOString();
 
-        this.settings.set(
+        await this.update(
             id,
-            setting,
+            {
+                archived:false,
+            },
         );
+
+
 
         return true;
 
     }
 
-    restore(
-        id: string,
-    ) {
 
-        const setting =
-            this.settings.get(id);
 
-        if (!setting) {
 
-            return false;
 
-        }
+    async summary() {
 
-        setting.archived = false;
-
-        setting.updatedAt =
-            new Date().toISOString();
-
-        this.settings.set(
-            id,
-            setting,
-        );
-
-        return true;
-
-    }
-
-    summary() {
 
         const settings =
-            this.list();
+            await this.list();
+
+
 
         return {
+
 
             total:
                 settings.length,
 
+
             active:
                 settings.filter(
-                    s => s.status === 'Active',
+                    setting =>
+                        setting.status === 'Active',
                 ).length,
+
 
             inactive:
                 settings.filter(
-                    s => s.status === 'Inactive',
+                    setting =>
+                        setting.status === 'Inactive',
                 ).length,
+
 
             editable:
                 settings.filter(
-                    s => s.editable,
+                    setting =>
+                        setting.editable,
                 ).length,
+
 
             encrypted:
                 settings.filter(
-                    s => s.encrypted,
+                    setting =>
+                        setting.encrypted,
                 ).length,
 
         };
 
     }
 
+
 }
-
-export const
-    SettingsRepositoryInstance =
-        new SettingsRepository();
-

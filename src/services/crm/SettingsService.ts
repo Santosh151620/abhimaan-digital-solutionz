@@ -1,5 +1,9 @@
 import {
-    SettingsRepositoryInstance,
+    createSupabaseServerClient,
+} from '@/lib/supabase/server-client';
+
+import {
+    SettingsRepository,
 } from '@/repositories/crm/SettingsRepository';
 
 import type {
@@ -7,99 +11,140 @@ import type {
     SettingStatus,
 } from '@/types/crm/Settings';
 
-class SettingsService {
+export class SettingsService {
 
-    list() {
+    private async repository(): Promise<SettingsRepository> {
 
-        return SettingsRepositoryInstance.list();
+        const supabase =
+            await createSupabaseServerClient();
+
+        return new SettingsRepository(
+            supabase,
+        );
+    }
+
+    async list(): Promise<Setting[]> {
+
+        const repository =
+            await this.repository();
+
+        return repository.list();
 
     }
 
-    listArchived() {
+    async listArchived(): Promise<Setting[]> {
 
-        return SettingsRepositoryInstance.listArchived();
+        const repository =
+            await this.repository();
+
+        return repository.listArchived();
 
     }
 
-    details(
+    async details(
         id: string,
-    ) {
+    ): Promise<Setting | null> {
 
-        return SettingsRepositoryInstance.details(
+        const repository =
+            await this.repository();
+
+        return repository.details(
             id,
         );
 
     }
 
-    create(
+    async create(
         data: Partial<Setting>,
-    ) {
+    ): Promise<Setting> {
 
-        return SettingsRepositoryInstance.create(
+        const repository =
+            await this.repository();
+
+        return repository.create(
             data,
         );
 
     }
 
-    update(
+    async update(
         id: string,
         data: Partial<Setting>,
-    ) {
+    ): Promise<Setting> {
 
-        return SettingsRepositoryInstance.update(
+        const repository =
+            await this.repository();
+
+        return repository.update(
             id,
             data,
         );
 
     }
 
-    updateStatus(
+    async updateStatus(
         id: string,
         status: SettingStatus,
-    ) {
+    ): Promise<Setting> {
 
-        return SettingsRepositoryInstance.updateStatus(
+        const repository =
+            await this.repository();
+
+        return repository.updateStatus(
             id,
             status,
         );
 
     }
 
-    delete(
+    async delete(
         id: string,
-    ) {
+    ): Promise<void> {
 
-        return SettingsRepositoryInstance.delete(
+        const repository =
+            await this.repository();
+
+        return repository.delete(
             id,
         );
 
     }
 
-    restore(
+    async restore(
         id: string,
-    ) {
+    ): Promise<boolean> {
 
-        return SettingsRepositoryInstance.restore(
+        const repository =
+            await this.repository();
+
+        return repository.restore(
             id,
         );
 
     }
 
-    summary() {
+    async summary(): Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        editable: number;
+        encrypted: number;
+    }> {
 
-        return SettingsRepositoryInstance.summary();
+        const repository =
+            await this.repository();
+
+        return repository.summary();
 
     }
-
 }
 
-export async function createSettingsService() {
-
-    return new SettingsService();
-
-}
-
-export const
-    SettingsServiceInstance =
-        new SettingsService();
-
+/**
+ * Request-safe service facade.
+ *
+ * A fresh authenticated Supabase server client is created
+ * for every operation. Do not convert this into a global
+ * Supabase client singleton.
+ */
+export const SettingsServiceInstance =
+    new SettingsService();

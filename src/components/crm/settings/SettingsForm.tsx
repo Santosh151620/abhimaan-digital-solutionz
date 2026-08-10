@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import {
+    useState,
+} from 'react';
 
 import type {
     Setting,
@@ -15,7 +17,7 @@ interface Props {
     loading?: boolean;
 
     onSubmit?: (
-        values: Partial<Setting>
+        values: Partial<Setting>,
     ) => void | Promise<void>;
 
     onCancel?: () => void;
@@ -49,18 +51,15 @@ export default function SettingsForm({
 
     const [form, setForm] =
         useState<Partial<Setting>>({
-
             category: 'General',
-
             status: 'Active',
-
             editable: true,
-
             encrypted: false,
-
             ...initialValues,
-
         });
+
+    const [error, setError] =
+        useState<string | null>(null);
 
     function update<K extends keyof Setting>(
         key: K,
@@ -72,37 +71,79 @@ export default function SettingsForm({
             [key]: value,
         }));
 
+        setError(null);
     }
 
     async function submit(
-        e: React.FormEvent<HTMLFormElement>,
+        event: React.FormEvent<HTMLFormElement>,
     ) {
 
-        e.preventDefault();
+        event.preventDefault();
 
-        if (!form.name?.trim()) {
+        if (loading) {
 
-            alert(
-                'Setting name is required.'
+            return;
+
+        }
+
+        const name =
+            form.name?.trim() ?? '';
+
+        const key =
+            form.key?.trim() ?? '';
+
+        if (!name) {
+
+            setError(
+                'Setting name is required.',
             );
 
             return;
 
         }
 
-        if (!form.key?.trim()) {
+        if (!key) {
 
-            alert(
-                'Setting key is required.'
+            setError(
+                'Setting key is required.',
             );
 
             return;
 
         }
 
-        await onSubmit?.(
-            form
-        );
+        if (!/^[a-zA-Z0-9._-]+$/.test(key)) {
+
+            setError(
+                'Setting key may contain only letters, numbers, dots, underscores and hyphens.',
+            );
+
+            return;
+
+        }
+
+        try {
+
+            setError(null);
+
+            await onSubmit?.({
+                ...form,
+                name,
+                key,
+            });
+
+        } catch (submitError) {
+
+            console.error(
+                'Settings form submission failed:',
+                submitError,
+            );
+
+            setError(
+                'Unable to save the setting. Please try again.',
+            );
+
+        }
 
     }
 
@@ -110,24 +151,47 @@ export default function SettingsForm({
 
         <form
             onSubmit={submit}
+            noValidate
             className="space-y-6 rounded-xl border bg-background p-6"
         >
+
+            {
+                error && (
+
+                    <div
+                        role="alert"
+                        className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                    >
+                        {error}
+                    </div>
+
+                )
+            }
 
             <div className="grid gap-4 md:grid-cols-2">
 
                 <div>
 
-                    <label className="mb-1 block text-sm font-medium">
+                    <label
+                        htmlFor="setting-name"
+                        className="mb-1 block text-sm font-medium"
+                    >
                         Name
                     </label>
 
                     <input
-                        className="w-full rounded-lg border p-2"
+                        id="setting-name"
+                        name="name"
+                        type="text"
+                        required
+                        autoComplete="off"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
                         value={form.name ?? ''}
-                        onChange={e =>
+                        onChange={event =>
                             update(
                                 'name',
-                                e.target.value,
+                                event.target.value,
                             )
                         }
                     />
@@ -136,17 +200,27 @@ export default function SettingsForm({
 
                 <div>
 
-                    <label className="mb-1 block text-sm font-medium">
+                    <label
+                        htmlFor="setting-key"
+                        className="mb-1 block text-sm font-medium"
+                    >
                         Key
                     </label>
 
                     <input
-                        className="w-full rounded-lg border p-2"
+                        id="setting-key"
+                        name="key"
+                        type="text"
+                        required
+                        autoComplete="off"
+                        disabled={loading}
+                        placeholder="example.setting"
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
                         value={form.key ?? ''}
-                        onChange={e =>
+                        onChange={event =>
                             update(
                                 'key',
-                                e.target.value,
+                                event.target.value,
                             )
                         }
                     />
@@ -155,17 +229,26 @@ export default function SettingsForm({
 
                 <div>
 
-                    <label className="mb-1 block text-sm font-medium">
+                    <label
+                        htmlFor="setting-category"
+                        className="mb-1 block text-sm font-medium"
+                    >
                         Category
                     </label>
 
                     <select
-                        className="w-full rounded-lg border p-2"
-                        value={form.category}
-                        onChange={e =>
+                        id="setting-category"
+                        name="category"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={
+                            form.category ??
+                            'General'
+                        }
+                        onChange={event =>
                             update(
                                 'category',
-                                e.target.value as SettingCategory,
+                                event.target.value as SettingCategory,
                             )
                         }
                     >
@@ -189,17 +272,26 @@ export default function SettingsForm({
 
                 <div>
 
-                    <label className="mb-1 block text-sm font-medium">
+                    <label
+                        htmlFor="setting-status"
+                        className="mb-1 block text-sm font-medium"
+                    >
                         Status
                     </label>
 
                     <select
-                        className="w-full rounded-lg border p-2"
-                        value={form.status}
-                        onChange={e =>
+                        id="setting-status"
+                        name="status"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={
+                            form.status ??
+                            'Active'
+                        }
+                        onChange={event =>
                             update(
                                 'status',
-                                e.target.value as SettingStatus,
+                                event.target.value as SettingStatus,
                             )
                         }
                     >
@@ -223,18 +315,24 @@ export default function SettingsForm({
 
                 <div className="md:col-span-2">
 
-                    <label className="mb-1 block text-sm font-medium">
+                    <label
+                        htmlFor="setting-value"
+                        className="mb-1 block text-sm font-medium"
+                    >
                         Value
                     </label>
 
                     <textarea
+                        id="setting-value"
+                        name="value"
                         rows={5}
-                        className="w-full rounded-lg border p-2"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 font-mono text-sm disabled:cursor-not-allowed disabled:opacity-60"
                         value={form.value ?? ''}
-                        onChange={e =>
+                        onChange={event =>
                             update(
                                 'value',
-                                e.target.value,
+                                event.target.value,
                             )
                         }
                     />
@@ -243,18 +341,24 @@ export default function SettingsForm({
 
                 <div className="md:col-span-2">
 
-                    <label className="mb-1 block text-sm font-medium">
+                    <label
+                        htmlFor="setting-description"
+                        className="mb-1 block text-sm font-medium"
+                    >
                         Description
                     </label>
 
                     <textarea
+                        id="setting-description"
+                        name="description"
                         rows={3}
-                        className="w-full rounded-lg border p-2"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
                         value={form.description ?? ''}
-                        onChange={e =>
+                        onChange={event =>
                             update(
                                 'description',
-                                e.target.value,
+                                event.target.value,
                             )
                         }
                     />
@@ -265,11 +369,16 @@ export default function SettingsForm({
 
                     <input
                         type="checkbox"
-                        checked={form.editable ?? true}
-                        onChange={e =>
+                        name="editable"
+                        disabled={loading}
+                        checked={
+                            form.editable ??
+                            true
+                        }
+                        onChange={event =>
                             update(
                                 'editable',
-                                e.target.checked,
+                                event.target.checked,
                             )
                         }
                     />
@@ -282,11 +391,16 @@ export default function SettingsForm({
 
                     <input
                         type="checkbox"
-                        checked={form.encrypted ?? false}
-                        onChange={e =>
+                        name="encrypted"
+                        disabled={loading}
+                        checked={
+                            form.encrypted ??
+                            false
+                        }
+                        onChange={event =>
                             update(
                                 'encrypted',
-                                e.target.checked,
+                                event.target.checked,
                             )
                         }
                     />
@@ -299,18 +413,25 @@ export default function SettingsForm({
 
             <div className="flex justify-end gap-3">
 
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="rounded-lg border px-4 py-2"
-                >
-                    Cancel
-                </button>
+                {
+                    onCancel && (
+
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            disabled={loading}
+                            className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            Cancel
+                        </button>
+
+                    )
+                }
 
                 <button
                     type="submit"
                     disabled={loading}
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground"
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {
                         loading
@@ -326,4 +447,3 @@ export default function SettingsForm({
     );
 
 }
-

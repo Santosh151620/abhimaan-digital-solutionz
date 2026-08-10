@@ -13,35 +13,56 @@ interface RouteContext {
 }
 
 export async function GET(
-    request: Request,
+    _request: Request,
     { params }: RouteContext,
 ) {
 
-    const { id } =
-        await params;
+    try {
 
-    const setting =
-        SettingsServiceInstance.details(
-            id,
+        const { id } =
+            await params;
+
+        const setting =
+            await SettingsServiceInstance.details(
+                id,
+            );
+
+        if (!setting) {
+
+            return NextResponse.json(
+                {
+                    message:
+                        'Setting not found.',
+                },
+                {
+                    status: 404,
+                },
+            );
+
+        }
+
+        return NextResponse.json(
+            setting,
         );
 
-    if (!setting) {
+    } catch (error) {
+
+        console.error(
+            'CRM Setting GET failed:',
+            error,
+        );
 
         return NextResponse.json(
             {
                 message:
-                    'Setting not found',
+                    'Failed to load setting.',
             },
             {
-                status: 404,
+                status: 500,
             },
         );
 
     }
-
-    return NextResponse.json(
-        setting,
-    );
 
 }
 
@@ -50,69 +71,82 @@ export async function PUT(
     { params }: RouteContext,
 ) {
 
-    const { id } =
-        await params;
+    try {
 
-    const body =
-        await request.json();
+        const { id } =
+            await params;
 
-    const updated =
-        SettingsServiceInstance.update(
-            id,
-            body,
+        const body =
+            await request.json();
+
+        const setting =
+            await SettingsServiceInstance.update(
+                id,
+                body,
+            );
+
+        return NextResponse.json(
+            setting,
         );
 
-    if (!updated) {
+    } catch (error) {
+
+        console.error(
+            'CRM Setting PUT failed:',
+            error,
+        );
 
         return NextResponse.json(
             {
                 message:
-                    'Setting not found',
+                    'Failed to update setting.',
             },
             {
-                status: 404,
+                status: 500,
             },
         );
 
     }
-
-    return NextResponse.json(
-        updated,
-    );
 
 }
 
 export async function DELETE(
-    request: Request,
+    _request: Request,
     { params }: RouteContext,
 ) {
 
-    const { id } =
-        await params;
+    try {
 
-    const deleted =
-        SettingsServiceInstance.delete(
+        const { id } =
+            await params;
+
+        await SettingsServiceInstance.delete(
             id,
         );
 
-    if (!deleted) {
+        return NextResponse.json(
+            {
+                success: true,
+            },
+        );
+
+    } catch (error) {
+
+        console.error(
+            'CRM Setting DELETE failed:',
+            error,
+        );
 
         return NextResponse.json(
             {
                 message:
-                    'Setting not found',
+                    'Failed to delete setting.',
             },
             {
-                status: 404,
+                status: 500,
             },
         );
 
     }
-
-    return NextResponse.json(
-        {
-            success: true,
-        },
-    );
 
 }

@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import {
     SettingsClient,
 } from '@/components/crm/settings';
@@ -7,87 +9,138 @@ import {
     getSettingsSummary,
 } from './actions';
 
+
+const personalizationOptions = [
+    {
+        title: 'Theme',
+        description:
+            'Manage CRM appearance, colors and visual preferences.',
+        href: '/crm/settings/theme',
+    },
+    {
+        title: 'Profile',
+        description:
+            'Update profile details and account preferences.',
+        href: '/crm/profile',
+    },
+    {
+        title: 'Language',
+        description:
+            'Configure your preferred application language.',
+        href: '/crm/settings/language',
+    },
+    {
+        title: 'Accessibility',
+        description:
+            'Manage readability and accessibility preferences.',
+        href: '/crm/settings/accessibility',
+    },
+];
+
+
 export default async function CRMSettingsPage() {
 
     const settings =
         await getSettings();
 
+
     const summary =
         await getSettingsSummary();
 
+
     return (
 
-        <div className="space-y-8">
+        <div className="space-y-10">
 
-            {/* Existing Personalization Dashboard */}
 
-            <div className="crm-card p-10">
+            <section className="space-y-3">
 
                 <h1 className="crm-title">
-                    CRM Personalization
+                    CRM Settings
                 </h1>
 
-                <p className="crm-subtitle mt-2">
-                    Theme • Appearance • Accessibility • Language • Profile
+
+                <p className="crm-subtitle">
+                    Manage organization configuration,
+                    personalization and CRM preferences.
                 </p>
 
-                <div className="mt-10 grid gap-6 md:grid-cols-2">
+            </section>
 
-                    <div className="rounded-xl border p-6">
 
-                        <h2 className="font-semibold">
-                            Theme
-                        </h2>
 
-                        <p className="mt-2 text-sm text-slate-500">
-                            Blue / Brown / Green Premium Theme
-                        </p>
 
-                    </div>
+            <section className="crm-card p-8">
 
-                    <div className="rounded-xl border p-6">
 
-                        <h2 className="font-semibold">
-                            Profile Photo
-                        </h2>
+                <div className="mb-6">
 
-                        <p className="mt-2 text-sm text-slate-500">
-                            Upload avatar
-                        </p>
+                    <h2 className="text-xl font-semibold">
+                        Personalization
+                    </h2>
 
-                    </div>
 
-                    <div className="rounded-xl border p-6">
-
-                        <h2 className="font-semibold">
-                            Language
-                        </h2>
-
-                        <p className="mt-2 text-sm text-slate-500">
-                            English / Hindi
-                        </p>
-
-                    </div>
-
-                    <div className="rounded-xl border p-6">
-
-                        <h2 className="font-semibold">
-                            Accessibility
-                        </h2>
-
-                        <p className="mt-2 text-sm text-slate-500">
-                            Font Size / Contrast
-                        </p>
-
-                    </div>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Customize your CRM experience.
+                    </p>
 
                 </div>
 
-            </div>
 
-            {/* Existing module extension */}
 
-            <div className="space-y-4">
+
+                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+
+
+                    {
+                        personalizationOptions.map(option => (
+
+                            <Link
+
+                                key={option.title}
+
+                                href={option.href}
+
+                                className="
+                                    group
+                                    rounded-xl
+                                    border
+                                    bg-background
+                                    p-5
+                                    transition
+                                    hover:-translate-y-1
+                                    hover:shadow-md
+                                "
+
+                            >
+
+                                <h3 className="font-semibold group-hover:text-primary">
+                                    {option.title}
+                                </h3>
+
+
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    {option.description}
+                                </p>
+
+
+                            </Link>
+
+                        ))
+                    }
+
+
+                </div>
+
+
+            </section>
+
+
+
+
+
+            <section className="space-y-5">
+
 
                 <div>
 
@@ -95,21 +148,33 @@ export default async function CRMSettingsPage() {
                         System Settings
                     </h2>
 
+
                     <p className="text-sm text-muted-foreground">
-                        Configure CRM, application and organization settings.
+                        Configure CRM application and organization settings.
                     </p>
 
                 </div>
 
+
+
                 <SettingsClient
-                    initialSettings={settings}
-                    summary={summary}
+
+                    initialSettings={
+                        settings
+                    }
+
+                    summary={
+                        summary
+                    }
+
                 />
 
-            </div>
+
+            </section>
+
 
         </div>
 
     );
-}
 
+}

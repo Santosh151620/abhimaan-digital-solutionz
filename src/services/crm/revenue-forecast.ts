@@ -1,7 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
 
-const supabase = createClient();
-
 export interface RevenueForecast {
   estimatedMonthlyRevenue: number;
   pipelineValue: number;
@@ -10,62 +8,75 @@ export interface RevenueForecast {
   velocityScore: number;
 }
 
+const EMPTY_FORECAST: RevenueForecast = {
+  estimatedMonthlyRevenue: 0,
+  pipelineValue: 0,
+  winProbability: 0,
+  averageDealSize: 0,
+  velocityScore: 0,
+};
+
 /**
- * ðŸ”® Lightweight Revenue Forecast Engine
- * (No AI, just smart business math)
+ * Lightweight revenue forecast engine.
+ *
+ * This is intentionally deterministic business math.
+ * It does not use AI or predictive external services.
  */
 export async function getRevenueForecast(): Promise<RevenueForecast> {
+  const supabase = createClient();
+
   const { data, error } = await supabase
     .from("leads")
     .select("id, status, created_at, amount");
 
-  if (error || !data) {
-    return {
-      estimatedMonthlyRevenue: 0,
-      pipelineValue: 0,
-      winProbability: 0,
-      averageDealSize: 0,
-      velocityScore: 0,
-    };
+  if (error || !data || data.length === 0) {
+    return EMPTY_FORECAST;
   }
 
   let totalValue = 0;
   let wonValue = 0;
   let wonCount = 0;
+  let activePipelineValue = 0;
   let activeLeads = 0;
 
   for (const lead of data) {
-    const amount = lead.amount || 0;
+    const amount =
+      typeof lead.amount === "number"
+        ? lead.amount
+        : Number(lead.amount) || 0;
 
     totalValue += amount;
 
-    // WON DEALS
     if (lead.status === "won") {
       wonValue += amount;
       wonCount++;
+      continue;
     }
 
-    // ACTIVE PIPELINE
-    if (lead.status !== "won" && lead.status !== "lost") {
+    if (lead.status !== "lost") {
       activeLeads++;
+      activePipelineValue += amount;
     }
   }
 
-  const averageDealSize = totalValue / (data.length || 1);
+  const leadCount = data.length;
 
-  // WIN PROBABILITY (simple ratio model)
+  const averageDealSize =
+    totalValue / leadCount;
+
   const winProbability =
-    (wonCount / (data.length || 1)) * 100;
+    (wonCount / leadCount) * 100;
 
-  // PIPELINE VALUE (active deals weighted)
-  const pipelineValue = totalValue * 0.6;
+  const pipelineValue =
+    activePipelineValue;
 
-  // VELOCITY (how active your funnel is)
-  const velocityScore = activeLeads * 10;
+  const velocityScore =
+    activeLeads * 10;
 
-  // MONTHLY FORECAST (simple projection)
   const estimatedMonthlyRevenue =
-    wonValue + pipelineValue * (winProbability / 100);
+    wonValue +
+    pipelineValue *
+      (winProbability / 100);
 
   return {
     estimatedMonthlyRevenue,
@@ -75,9 +86,3 @@ export async function getRevenueForecast(): Promise<RevenueForecast> {
     velocityScore,
   };
 }
-
-
-
-
-
-

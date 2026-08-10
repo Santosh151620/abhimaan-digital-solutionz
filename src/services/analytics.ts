@@ -47,41 +47,80 @@ export interface CRMAnalytics {
 
 function calculateCollectionRate(
   total: number,
-  outstanding: number
-) {
-  if (total <= 0) return 0;
+  outstanding: number,
+): number {
+  if (total <= 0) {
+    return 0;
+  }
 
   return Number(
-    (((total - outstanding) / total) * 100).toFixed(1)
+    (((total - outstanding) / total) * 100).toFixed(1),
   );
 }
 
 function calculatePaymentRate(
   paid: number,
-  total: number
-) {
-  if (total <= 0) return 0;
+  total: number,
+): number {
+  if (total <= 0) {
+    return 0;
+  }
 
   return Number(((paid / total) * 100).toFixed(1));
 }
 
 function calculateConversion(
   total: number,
-  won: number
-) {
-  if (total <= 0) return 0;
+  won: number,
+): number {
+  if (total <= 0) {
+    return 0;
+  }
 
   return Number(((won / total) * 100).toFixed(1));
 }
 
 function determineRevenueHealth(
   collectionRate: number,
-  overdue: number
+  overdue: number,
 ): CRMAnalytics["health"]["revenue"] {
-  if (overdue > 10) return "critical";
-  if (collectionRate >= 90) return "excellent";
-  if (collectionRate >= 75) return "good";
-  if (collectionRate >= 50) return "warning";
+  if (overdue > 10) {
+    return "critical";
+  }
+
+  if (collectionRate >= 90) {
+    return "excellent";
+  }
+
+  if (collectionRate >= 75) {
+    return "good";
+  }
+
+  if (collectionRate >= 50) {
+    return "warning";
+  }
+
+  return "critical";
+}
+
+function determinePipelineHealth(
+  totalLeads: number,
+  proposalLeads: number,
+): CRMAnalytics["health"]["pipeline"] {
+  if (totalLeads <= 0) {
+    return "critical";
+  }
+
+  const proposalRatio = proposalLeads / totalLeads;
+
+  if (proposalRatio >= 0.25) {
+    return "healthy";
+  }
+
+  if (proposalRatio >= 0.1) {
+    return "warning";
+  }
+
   return "critical";
 }
 
@@ -104,37 +143,55 @@ export async function getCRMAnalytics(): Promise<CRMAnalytics> {
     getPaymentsCountByStatus(),
   ]);
 
-  const totalLeads = Object.values(leadCounts).reduce(
-  (a: number, b: number) => a + b,
-  0
-);
-
+  const newLeads = leadCounts.new ?? 0;
+  const contactedLeads = leadCounts.contacted ?? 0;
+  const qualifiedLeads = leadCounts.qualified ?? 0;
+  const proposalLeads = leadCounts.proposal ?? 0;
   const wonLeads = leadCounts.won ?? 0;
+  const lostLeads = leadCounts.lost ?? 0;
+
+  const totalLeads =
+    newLeads +
+    contactedLeads +
+    qualifiedLeads +
+    proposalLeads +
+    wonLeads +
+    lostLeads;
+
+  const pendingPayments = payments.pending ?? 0;
+  const paidPayments = payments.paid ?? 0;
+  const overduePayments = payments.overdue ?? 0;
+  const cancelledPayments = payments.cancelled ?? 0;
+
+  /*
+   * Cancelled payments are intentionally excluded from the
+   * successful-payment denominator because they are not
+   * actionable payment obligations.
+   */
+  const paymentTotal =
+    paidPayments +
+    pendingPayments +
+    overduePayments;
 
   const conversionRate = calculateConversion(
     totalLeads,
-    wonLeads
+    wonLeads,
   );
 
   const collectionRate = calculateCollectionRate(
     totalRevenue,
-    outstandingRevenue
+    outstandingRevenue,
   );
-
-  const paymentTotal =
-    (payments.paid ?? 0) +
-    (payments.pending ?? 0) +
-    (payments.overdue ?? 0);
 
   return {
     overview: {
       totalLeads,
-      newLeads: leadCounts.new ?? 0,
-      contactedLeads: leadCounts.contacted ?? 0,
-      qualifiedLeads: leadCounts.qualified ?? 0,
-      proposalLeads: leadCounts.proposal ?? 0,
+      newLeads,
+      contactedLeads,
+      qualifiedLeads,
+      proposalLeads,
       wonLeads,
-      lostLeads: leadCounts.lost ?? 0,
+      lostLeads,
       conversionRate,
       activeClients,
       activeProjects,
@@ -148,48 +205,50 @@ export async function getCRMAnalytics(): Promise<CRMAnalytics> {
     },
 
     payments: {
-      pending: payments.pending ?? 0,
-      paid: payments.paid ?? 0,
-      overdue: payments.overdue ?? 0,
-      cancelled: payments.cancelled ?? 0,
+      pending: pendingPayments,
+      paid: paidPayments,
+      overdue: overduePayments,
+      cancelled: cancelledPayments,
       paymentSuccessRate: calculatePaymentRate(
-        payments.paid ?? 0,
-        paymentTotal
+        paidPayments,
+        paymentTotal,
       ),
     },
 
     health: {
       revenue: determineRevenueHealth(
         collectionRate,
-        payments.overdue ?? 0
+        overduePayments,
       ),
-      pipeline:
-        totalLeads === 0
-          ? "critical"
-          : leadCounts.proposal / totalLeads >= 0.25
-          ? "healthy"
-          : leadCounts.proposal / totalLeads >= 0.1
-          ? "warning"
-          : "critical",
+      pipeline: determinePipelineHealth(
+        totalLeads,
+        proposalLeads,
+      ),
     },
   };
 }
 
-/* Legacy helpers retained for compatibility */
-
+/**
+ * Legacy compatibility helper.
+ *
+ * Retained because existing dashboard/CRM consumers may
+ * import this function directly.
+ */
 export function calculateGrowth(
   current: number,
-  previous: number
-) {
-  if (!previous) return 100;
+  previous: number,
+): number {
+  if (!previous) {
+    return 100;
+  }
 
   return ((current - previous) / previous) * 100;
 }
 
-export { calculateConversion, calculatePaymentRate };
-
-
-
-
-
-
+/**
+ * Public compatibility exports retained for existing consumers.
+ */
+export {
+  calculateConversion,
+  calculatePaymentRate,
+};

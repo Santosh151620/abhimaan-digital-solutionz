@@ -20,13 +20,18 @@ export default function DashboardLiveRefresh() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  const refreshingRef = useRef(false);
   const feedbackTimerRef = useRef<number | null>(null);
 
   const refreshDashboard = useCallback(() => {
-    if (document.visibilityState !== "visible" || refreshing) {
+    if (
+      document.visibilityState !== "visible" ||
+      refreshingRef.current
+    ) {
       return;
     }
 
+    refreshingRef.current = true;
     setRefreshing(true);
     setLastUpdated(new Date());
 
@@ -37,13 +42,16 @@ export default function DashboardLiveRefresh() {
     }
 
     feedbackTimerRef.current = window.setTimeout(() => {
+      refreshingRef.current = false;
       setRefreshing(false);
       feedbackTimerRef.current = null;
     }, REFRESH_FEEDBACK_MS);
-  }, [refreshing, router]);
+  }, [router]);
 
   useEffect(() => {
-    setLastUpdated(new Date());
+    const initialUpdateTimer = window.setTimeout(() => {
+      setLastUpdated(new Date());
+    }, 0);
 
     const interval = window.setInterval(() => {
       if (document.visibilityState === "visible") {
@@ -57,10 +65,15 @@ export default function DashboardLiveRefresh() {
       }
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
+    );
 
     return () => {
+      window.clearTimeout(initialUpdateTimer);
       window.clearInterval(interval);
+
       document.removeEventListener(
         "visibilitychange",
         handleVisibilityChange,
@@ -68,7 +81,10 @@ export default function DashboardLiveRefresh() {
 
       if (feedbackTimerRef.current !== null) {
         window.clearTimeout(feedbackTimerRef.current);
+        feedbackTimerRef.current = null;
       }
+
+      refreshingRef.current = false;
     };
   }, [refreshDashboard]);
 
@@ -99,13 +115,17 @@ export default function DashboardLiveRefresh() {
         onClick={refreshDashboard}
         disabled={refreshing}
         aria-label={
-          refreshing ? "Refreshing dashboard" : "Refresh dashboard intelligence"
+          refreshing
+            ? "Refreshing dashboard"
+            : "Refresh dashboard intelligence"
         }
         title="Refresh dashboard"
         className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-white/[0.08] bg-white/[0.025] text-slate-500 transition hover:border-cyan-400/20 hover:bg-cyan-400/5 hover:text-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-400/40 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <RefreshCw
-          className={`h-3 w-3 ${refreshing ? "animate-spin" : ""}`}
+          className={`h-3 w-3 ${
+            refreshing ? "animate-spin" : ""
+          }`}
           aria-hidden="true"
         />
       </button>

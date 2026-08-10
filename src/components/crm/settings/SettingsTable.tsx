@@ -6,139 +6,248 @@ import type {
     Setting,
 } from '@/types/crm/Settings';
 
+
 interface Props {
 
     settings: Setting[];
 
 }
 
+
+
+function Badge({
+    value,
+}: {
+    value: string;
+}) {
+
+    return (
+
+        <span className="inline-flex rounded-full border px-3 py-1 text-xs font-medium">
+            {value}
+        </span>
+
+    );
+
+}
+
+
+
 export default function SettingsTable({
     settings,
 }: Props) {
 
-    if (settings.length === 0) {
+
+    if (!settings.length) {
 
         return (
 
-            <div className="rounded-xl border p-8 text-center text-muted-foreground">
-                No settings found.
+            <div className="crm-card p-8 text-center">
+
+                <div className="font-medium">
+                    No settings found.
+                </div>
+
+                <p className="mt-2 text-sm text-muted-foreground">
+                    Create a new CRM setting to get started.
+                </p>
+
             </div>
 
         );
 
     }
 
+
+
     return (
 
-        <div className="overflow-x-auto rounded-xl border">
+        <div className="crm-card overflow-hidden">
 
-            <table className="w-full">
+            <div className="overflow-x-auto">
 
-                <thead>
+                <table className="w-full">
 
-                    <tr className="border-b bg-muted/40 text-left">
 
-                        <th className="p-3">
-                            Name
-                        </th>
+                    <thead>
 
-                        <th className="p-3">
-                            Key
-                        </th>
+                        <tr className="border-b bg-muted/30 text-left">
 
-                        <th className="p-3">
-                            Category
-                        </th>
 
-                        <th className="p-3">
-                            Status
-                        </th>
+                            <th className="p-4 text-sm font-semibold">
+                                Name
+                            </th>
 
-                        <th className="p-3">
-                            Editable
-                        </th>
 
-                        <th className="p-3">
-                            Encrypted
-                        </th>
+                            <th className="p-4 text-sm font-semibold">
+                                Key
+                            </th>
 
-                        <th className="p-3 text-right">
-                            Actions
-                        </th>
 
-                    </tr>
+                            <th className="p-4 text-sm font-semibold">
+                                Category
+                            </th>
 
-                </thead>
 
-                <tbody>
+                            <th className="p-4 text-sm font-semibold">
+                                Status
+                            </th>
 
-                    {
-                        settings.map(setting => (
 
-                            <tr
-                                key={setting.id}
-                                className="border-b hover:bg-muted/30"
-                            >
+                            <th className="p-4 text-sm font-semibold">
+                                Editable
+                            </th>
 
-                                <td className="p-3">
 
-                                    <div className="font-medium">
-                                        {setting.name}
-                                    </div>
+                            <th className="p-4 text-sm font-semibold">
+                                Encrypted
+                            </th>
 
-                                </td>
 
-                                <td className="p-3">
-                                    {setting.key}
-                                </td>
+                            <th className="p-4 text-right text-sm font-semibold">
+                                Actions
+                            </th>
 
-                                <td className="p-3">
-                                    {setting.category}
-                                </td>
 
-                                <td className="p-3">
-                                    {setting.status}
-                                </td>
+                        </tr>
 
-                                <td className="p-3">
-                                    {
-                                        setting.editable
-                                            ? 'Yes'
-                                            : 'No'
-                                    }
-                                </td>
 
-                                <td className="p-3">
-                                    {
-                                        setting.encrypted
-                                            ? 'Yes'
-                                            : 'No'
-                                    }
-                                </td>
+                    </thead>
 
-                                <td className="p-3 text-right">
 
-                                    <Link
-                                        href={`/crm/settings/${setting.id}`}
-                                        className="rounded border px-3 py-1 text-sm"
-                                    >
-                                        View
-                                    </Link>
 
-                                </td>
+                    <tbody>
 
-                            </tr>
+                        {
+                            settings.map(setting => (
 
-                        ))
-                    }
+                                <tr
+                                    key={setting.id}
+                                    className="border-b transition hover:bg-muted/20"
+                                >
 
-                </tbody>
 
-            </table>
+                                    <td className="p-4">
+
+                                        <div className="font-medium">
+                                            {setting.name}
+                                        </div>
+
+
+                                        {
+                                            setting.description && (
+
+                                                <div className="mt-1 max-w-xs truncate text-sm text-muted-foreground">
+                                                    {setting.description}
+                                                </div>
+
+                                            )
+                                        }
+
+
+                                    </td>
+
+
+
+                                    <td className="p-4 text-sm">
+                                        {setting.key}
+                                    </td>
+
+
+
+                                    <td className="p-4">
+
+                                        <Badge
+                                            value={setting.category}
+                                        />
+
+                                    </td>
+
+
+
+                                    <td className="p-4">
+
+                                        <Badge
+                                            value={setting.status}
+                                        />
+
+                                    </td>
+
+
+
+                                    <td className="p-4 text-sm">
+
+                                        {
+                                            setting.editable
+                                                ? 'Yes'
+                                                : 'No'
+                                        }
+
+                                    </td>
+
+
+
+                                    <td className="p-4 text-sm">
+
+                                        {
+                                            setting.encrypted
+                                                ? 'Yes'
+                                                : 'No'
+                                        }
+
+                                    </td>
+
+
+
+                                    <td className="p-4">
+
+                                        <div className="flex justify-end gap-2">
+
+
+                                            <Link
+                                                href={`/crm/settings/${setting.id}`}
+                                                className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-muted"
+                                            >
+                                                View
+                                            </Link>
+
+
+                                            {
+                                                setting.editable && (
+
+                                                    <Link
+                                                        href={`/crm/settings/${setting.id}/edit`}
+                                                        className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-muted"
+                                                    >
+                                                        Edit
+                                                    </Link>
+
+                                                )
+                                            }
+
+
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+                            ))
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
 
         </div>
 
     );
 
 }
-

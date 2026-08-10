@@ -5,6 +5,7 @@ import {
     getSetting,
 } from '../actions';
 
+
 interface Props {
 
     params: Promise<{
@@ -13,15 +14,64 @@ interface Props {
 
 }
 
-export default async function SettingDetailsPage({
+
+export async function generateMetadata({
     params,
 }: Props) {
 
     const { id } =
         await params;
 
+
     const setting =
         await getSetting(id);
+
+
+    return {
+
+        title: setting
+            ? `${setting.name} | CRM Settings`
+            : 'CRM Setting',
+
+    };
+
+}
+
+
+
+function displayValue(
+    encrypted: boolean,
+    value?: string | null,
+) {
+
+    if (encrypted) {
+
+        return '••••••••';
+
+    }
+
+
+    return value?.trim()
+        ? value
+        : '-';
+
+}
+
+
+
+export default async function SettingDetailsPage({
+    params,
+}: Props) {
+
+
+    const { id } =
+        await params;
+
+
+    const setting =
+        await getSetting(id);
+
+
 
     if (!setting) {
 
@@ -29,11 +79,15 @@ export default async function SettingDetailsPage({
 
     }
 
+
+
     return (
 
-        <div className="space-y-6">
+        <div className="space-y-8">
+
 
             <div className="flex items-center justify-between">
+
 
                 <div>
 
@@ -41,122 +95,204 @@ export default async function SettingDetailsPage({
                         {setting.name}
                     </h1>
 
+
                     <p className="text-sm text-muted-foreground">
                         {setting.settingNumber}
                     </p>
 
                 </div>
 
+
+
                 <Link
+
                     href={`/crm/settings/${setting.id}/edit`}
-                    className="rounded-lg border px-4 py-2"
+
+                    className="
+                        rounded-lg
+                        border
+                        px-4
+                        py-2
+                        transition
+                        hover:bg-muted
+                    "
+
                 >
+
                     Edit
+
                 </Link>
+
 
             </div>
 
+
+
+
             <div className="grid gap-6 md:grid-cols-2">
 
-                <div className="rounded-xl border p-6 space-y-4">
 
-                    <div>
 
-                        <div className="text-sm text-muted-foreground">
-                            Key
-                        </div>
+                <div className="crm-card space-y-5 p-6">
 
-                        <div className="font-medium">
-                            {setting.key}
-                        </div>
 
-                    </div>
+                    <Info
+                        label="Key"
+                        value={setting.key}
+                    />
 
-                    <div>
 
-                        <div className="text-sm text-muted-foreground">
-                            Category
-                        </div>
+                    <Info
+                        label="Category"
+                        value={setting.category}
+                    />
 
-                        <div>
-                            {setting.category}
-                        </div>
 
-                    </div>
+                    <Info
+                        label="Status"
+                        value={setting.status}
+                    />
 
-                    <div>
-
-                        <div className="text-sm text-muted-foreground">
-                            Status
-                        </div>
-
-                        <div>
-                            {setting.status}
-                        </div>
-
-                    </div>
 
                 </div>
 
-                <div className="rounded-xl border p-6 space-y-4">
+
+
+
+
+                <div className="crm-card space-y-5 p-6">
+
+
+                    <Info
+
+                        label="Editable"
+
+                        value={
+                            setting.editable
+                                ? 'Yes'
+                                : 'No'
+                        }
+
+                    />
+
+
+
+                    <Info
+
+                        label="Encrypted"
+
+                        value={
+                            setting.encrypted
+                                ? 'Yes'
+                                : 'No'
+                        }
+
+                    />
+
+
 
                     <div>
 
-                        <div className="text-sm text-muted-foreground">
-                            Editable
-                        </div>
-
-                        <div>
-                            {setting.editable ? 'Yes' : 'No'}
-                        </div>
-
-                    </div>
-
-                    <div>
-
-                        <div className="text-sm text-muted-foreground">
-                            Encrypted
-                        </div>
-
-                        <div>
-                            {setting.encrypted ? 'Yes' : 'No'}
-                        </div>
-
-                    </div>
-
-                    <div>
 
                         <div className="text-sm text-muted-foreground">
                             Value
                         </div>
 
-                        <pre className="whitespace-pre-wrap break-words rounded bg-muted p-3 text-sm">
-                            {setting.value}
+
+
+                        <pre className="
+                            mt-2
+                            whitespace-pre-wrap
+                            break-words
+                            rounded-lg
+                            bg-muted
+                            p-3
+                            text-sm
+                        ">
+
+                            {
+                                displayValue(
+                                    setting.encrypted,
+                                    setting.value,
+                                )
+                            }
+
                         </pre>
+
 
                     </div>
 
+
                 </div>
 
+
+
             </div>
+
+
+
+
 
             {
                 setting.description && (
 
-                    <div className="rounded-xl border p-6">
+                    <div className="crm-card p-6">
+
 
                         <h2 className="mb-3 font-semibold">
                             Description
                         </h2>
 
-                        <p className="whitespace-pre-wrap">
+
+
+                        <p className="whitespace-pre-wrap text-sm">
                             {setting.description}
                         </p>
+
+
 
                     </div>
 
                 )
             }
+
+
+
+        </div>
+
+    );
+
+}
+
+
+
+
+
+function Info({
+    label,
+    value,
+}: {
+    label: string;
+    value?: string | null;
+}) {
+
+
+    return (
+
+        <div>
+
+
+            <div className="text-sm text-muted-foreground">
+                {label}
+            </div>
+
+
+
+            <div className="break-words font-medium">
+                {value || '-'}
+            </div>
+
+
 
         </div>
 

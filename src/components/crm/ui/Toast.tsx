@@ -1,56 +1,206 @@
 "use client";
 
-interface Props{
+import {
+    useEffect,
+} from "react";
 
-title:string;
+interface Props {
 
-message:string;
+    title: string;
 
-type?:"success"|"error"|"warning"|"info";
+    message: string;
+
+    type?:
+        | "success"
+        | "error"
+        | "warning"
+        | "info";
+
+    duration?: number;
+
+    onClose?: () => void;
 
 }
 
-const colours={
 
-success:"border-green-500",
+const styles = {
 
-error:"border-red-500",
+    success: {
+        border:
+            "border-green-500",
 
-warning:"border-yellow-500",
+        icon:
+            "✓",
+    },
 
-info:"border-blue-500"
+    error: {
+        border:
+            "border-red-500",
+
+        icon:
+            "!",
+    },
+
+    warning: {
+        border:
+            "border-yellow-500",
+
+        icon:
+            "⚠",
+    },
+
+    info: {
+        border:
+            "border-blue-500",
+
+        icon:
+            "i",
+    },
 
 };
 
+
 export default function Toast({
 
-title,
+    title,
 
-message,
+    message,
 
-type="info"
+    type = "info",
 
-}:Props){
+    duration = 4000,
 
-return(
+    onClose,
 
-<div className={`fixed right-6 top-6 z-50 w-80 rounded-2xl border-l-4 bg-white p-5 shadow-xl ${colours[type]}`}>
+}: Props) {
 
-<h3 className="font-semibold text-slate-900">
 
-{title}
+    useEffect(() => {
 
-</h3>
+        if (!onClose) {
 
-<p className="mt-2 text-sm text-slate-500">
+            return;
 
-{message}
+        }
 
-</p>
 
-</div>
+        const timer =
+            window.setTimeout(
+                onClose,
+                duration,
+            );
 
-);
+
+        return () =>
+            window.clearTimeout(
+                timer,
+            );
+
+
+    }, [
+        duration,
+        onClose,
+    ]);
+
+
+
+    const style =
+        styles[type];
+
+
+    return (
+
+        <div
+
+            role="alert"
+
+            className={[
+                "fixed right-6 top-6 z-50",
+                "w-96 rounded-2xl",
+                "border-l-4",
+                "bg-white",
+                "p-5",
+                "shadow-xl",
+                "animate-in",
+                "fade-in",
+                "slide-in-from-top-3",
+                style.border,
+            ].join(" ")}
+
+        >
+
+            <div
+                className="flex gap-3"
+            >
+
+                <div
+                    className={[
+                        "flex h-8 w-8",
+                        "items-center",
+                        "justify-center",
+                        "rounded-full",
+                        "bg-slate-100",
+                        "font-bold",
+                    ].join(" ")}
+                >
+
+                    {style.icon}
+
+                </div>
+
+
+                <div
+                    className="flex-1"
+                >
+
+                    <h3
+                        className="font-semibold text-slate-900"
+                    >
+
+                        {title}
+
+                    </h3>
+
+
+                    <p
+                        className="mt-1 text-sm text-slate-600"
+                    >
+
+                        {message}
+
+                    </p>
+
+
+                </div>
+
+
+                {
+                    onClose && (
+
+                        <button
+
+                            type="button"
+
+                            onClick={onClose}
+
+                            aria-label="Close notification"
+
+                            className="text-slate-400 hover:text-slate-700"
+
+                        >
+
+                            ×
+
+                        </button>
+
+                    )
+                }
+
+
+            </div>
+
+        </div>
+
+    );
 
 }
-
