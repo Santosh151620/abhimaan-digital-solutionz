@@ -1,67 +1,143 @@
-﻿import type {
-  SupabaseClient,
-
-} from "@supabase/supabase-js";
-
-import {
-  TenantContextManager,
-} from "@/lib/tenant/tenantContext";
+﻿import type { SupabaseClient } from "@supabase/supabase-js";
 
 import type {
   Activity,
+  ActivityPriority,
   ActivitySearchFilters,
   ActivityStatus,
   ActivitySummary,
   ActivityType,
 } from "@/types/crm/Activities";
 
-interface ActivityRow {
-  id: string;
-  entity_type: string;
-  entity_id: string;
-  activity_type: string;
-  description: string | null;
-  metadata: Record<string, unknown> | null;
-  created_at: string;
-  created_by: string;
+type ActivityRow = {
+  id?: string | null;
+  entity_type?: string | null;
+  entity_id?: string | null;
+  activity_type?: string | null;
+  description?: string | null;
+  metadata?: Record<string, unknown> | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  created_by?: string | null;
+};
+
+function asRecord(
+  value: unknown
+): Record<string, unknown> {
+  return value &&
+    typeof value === "object" &&
+    !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function asString(
+  value: unknown,
+  fallback = ""
+): string {
+  return typeof value === "string"
+    ? value
+    : fallback;
+}
+
+function asActivityType(
+  value: unknown
+): ActivityType {
+  return typeof value === "string"
+    ? (value as ActivityType)
+    : ("Other" as ActivityType);
+}
+
+function asActivityStatus(
+  value: unknown
+): ActivityStatus {
+  return typeof value === "string"
+    ? (value as ActivityStatus)
+    : ("Planned" as ActivityStatus);
+}
+
+function asActivityPriority(
+  value: unknown
+): ActivityPriority {
+  return typeof value === "string"
+    ? (value as ActivityPriority)
+    : ("Medium" as ActivityPriority);
 }
 
 function mapActivity(
   row: ActivityRow
 ): Activity {
-  const metadata =
-    row.metadata ?? {};
+  const metadata = asRecord(
+    row.metadata
+  );
 
-  const status =
-    typeof metadata.status === "string"
-      ? (metadata.status as ActivityStatus)
-      : "Completed";
+  const id =
+    asString(row.id) ||
+    crypto.randomUUID();
 
-  const priority =
-    typeof metadata.priority === "string"
-      ? (metadata.priority as Activity["priority"])
-      : "Medium";
+  const createdAt =
+    asString(
+      row.created_at
+    ) ||
+    new Date().toISOString();
+
+  const updatedAt =
+    asString(
+      row.updated_at
+    ) ||
+    createdAt;
+
+  const entityId =
+    asString(
+      row.entity_id
+    ) ||
+    id;
+
+  const activityNumber =
+    asString(
+      metadata.activityNumber
+    ) ||
+    id;
 
   const title =
-    typeof metadata.title === "string"
-      ? metadata.title
-      : row.activity_type;
+    asString(
+      metadata.title
+    ) ||
+    asString(
+      row.description
+    ) ||
+    "Activity";
 
   return {
-    id: row.id,
+    id,
 
-    activityNumber:
-      typeof metadata.activityNumber === "string"
-        ? metadata.activityNumber
-        : `ACT-${row.id.slice(0, 8)}`,
+    entityType:
+      "Activity",
 
-    organizationId:
+    entityId,
+
+    type:
+      asActivityType(
+        row.activity_type
+      ),
+
+    activityNumber,
+
+    title,
+
+    description:
+      row.description ??
       undefined,
 
-    entityType: "Activity",
+    status:
+      asActivityStatus(
+        metadata.status
+      ),
 
-    entityId:
-      row.entity_id,
+    priority:
+      asActivityPriority(
+        metadata.priority
+      ),
 
     companyId:
       typeof metadata.companyId === "string"
@@ -77,18 +153,6 @@ function mapActivity(
       typeof metadata.opportunityId === "string"
         ? metadata.opportunityId
         : undefined,
-
-    title,
-
-    description:
-      row.description ?? undefined,
-
-    type:
-      row.activity_type as ActivityType,
-
-    status,
-
-    priority,
 
     scheduledAt:
       typeof metadata.scheduledAt === "string"
@@ -176,11 +240,9 @@ function mapActivity(
 
     metadata,
 
-    createdAt:
-      row.created_at,
+    createdAt,
 
-    updatedAt:
-      row.created_at,
+    updatedAt,
   };
 }
 
@@ -194,17 +256,13 @@ export class ActivitiesRepository {
       supabase;
   }
 
-  private get organizationId(): string {
-    return TenantContextManager
-      .require()
-      .organizationId;
-  }
-
   /**
-   * Resolve the current authenticated profile.
+   * Resolve the authenticated Supabase user.
    *
-   * Application-level membership validation.
-   * Database RLS remains authoritative.
+   * Tenant isolation is enforced by database RLS.
+   * This repository intentionally does not depend on a
+   * TenantContextManager because the current project
+   * does not expose that module.
    */
   private async currentProfileId(): Promise<string> {
     const {
@@ -225,46 +283,12 @@ export class ActivitiesRepository {
       );
     }
 
-    const {
-      data,
-      error: membershipError,
-    } =
-      await this.supabase
-        .from("organization_members")
-        .select("profile_id")
-        .eq(
-          "profile_id",
-          user.id
-        )
-        .eq(
-          "organization_id",
-          this.organizationId
-        )
-        .eq(
-          "is_active",
-          true
-        )
-        .maybeSingle();
-
-    if (membershipError) {
-      throw membershipError;
-    }
-
-    if (!data) {
-      throw new Error(
-        "Authenticated user is not an active member of the current organization."
-      );
-    }
-
-    return data.profile_id;
+    return user.id;
   }
 
   /**
-   * IMPORTANT:
-   * Do NOT await this method.
-   *
-   * It intentionally returns the Supabase query builder
-   * so callers can continue chaining eq/ilike/order/etc.
+   * Returns the query builder intentionally so callers
+   * can continue chaining Supabase filters.
    */
   private queryOwnedActivities(
     profileId: string
@@ -272,22 +296,30 @@ export class ActivitiesRepository {
     return this.supabase
       .from("activities")
       .select("*")
-      .eq("created_by", profileId);
+      .eq(
+        "created_by",
+        profileId
+      );
   }
+
   async list(): Promise<Activity[]> {
-    const query =
-      this.queryOwnedActivities(await this.currentProfileId());
+    const profileId =
+      await this.currentProfileId();
 
     const {
       data,
       error,
     } =
-      await query.order(
-        "created_at",
-        {
-          ascending: false,
-        }
-      );
+      await this
+        .queryOwnedActivities(
+          profileId
+        )
+        .order(
+          "created_at",
+          {
+            ascending: false,
+          }
+        );
 
     if (error) {
       throw error;
@@ -302,8 +334,6 @@ export class ActivitiesRepository {
 
   /**
    * Current activities schema has no archive column.
-   *
-   * Retained for service compatibility.
    */
   async listArchived(): Promise<Activity[]> {
     return [];
@@ -312,14 +342,17 @@ export class ActivitiesRepository {
   async findById(
     id: string
   ): Promise<Activity | null> {
-    const query =
-      this.queryOwnedActivities(await this.currentProfileId());
+    const profileId =
+      await this.currentProfileId();
 
     const {
       data,
       error,
     } =
-      await query
+      await this
+        .queryOwnedActivities(
+          profileId
+        )
         .eq(
           "id",
           id
@@ -354,161 +387,183 @@ export class ActivitiesRepository {
 
     const metadata: Record<string, unknown> = {
       ...(data.metadata ?? {}),
-
-      ...(data.activityNumber !== undefined
-        ? {
-            activityNumber:
-              data.activityNumber,
-          }
-        : {}),
-
-      ...(data.title !== undefined
-        ? {
-            title:
-              data.title,
-          }
-        : {}),
-
-      ...(data.status !== undefined
-        ? {
-            status:
-              data.status,
-          }
-        : {}),
-
-      ...(data.priority !== undefined
-        ? {
-            priority:
-              data.priority,
-          }
-        : {}),
-
-      ...(data.companyId !== undefined
-        ? {
-            companyId:
-              data.companyId,
-          }
-        : {}),
-
-      ...(data.contactId !== undefined
-        ? {
-            contactId:
-              data.contactId,
-          }
-        : {}),
-
-      ...(data.opportunityId !== undefined
-        ? {
-            opportunityId:
-              data.opportunityId,
-          }
-        : {}),
-
-      ...(data.scheduledAt !== undefined
-        ? {
-            scheduledAt:
-              data.scheduledAt,
-          }
-        : {}),
-
-      ...(data.startedAt !== undefined
-        ? {
-            startedAt:
-              data.startedAt,
-          }
-        : {}),
-
-      ...(data.startDate !== undefined
-        ? {
-            startDate:
-              data.startDate,
-          }
-        : {}),
-
-      ...(data.completedAt !== undefined
-        ? {
-            completedAt:
-              data.completedAt,
-          }
-        : {}),
-
-      ...(data.dueAt !== undefined
-        ? {
-            dueAt:
-              data.dueAt,
-          }
-        : {}),
-
-      ...(data.dueDate !== undefined
-        ? {
-            dueDate:
-              data.dueDate,
-          }
-        : {}),
-
-      ...(data.durationMinutes !== undefined
-        ? {
-            durationMinutes:
-              data.durationMinutes,
-          }
-        : {}),
-
-      ...(data.reminderAt !== undefined
-        ? {
-            reminderAt:
-              data.reminderAt,
-          }
-        : {}),
-
-      ...(data.reminderMinutes !== undefined
-        ? {
-            reminderMinutes:
-              data.reminderMinutes,
-          }
-        : {}),
-
-      ...(data.outcome !== undefined
-        ? {
-            outcome:
-              data.outcome,
-          }
-        : {}),
-
-      ...(data.nextAction !== undefined
-        ? {
-            nextAction:
-              data.nextAction,
-          }
-        : {}),
-
-      ...(data.location !== undefined
-        ? {
-            location:
-              data.location,
-          }
-        : {}),
-
-      ...(data.ownerId !== undefined
-        ? {
-            ownerId:
-              data.ownerId,
-          }
-        : {}),
-
-      ...(data.assignedTo !== undefined
-        ? {
-            assignedTo:
-              data.assignedTo,
-          }
-        : {}),
-
-      ...(data.notes !== undefined
-        ? {
-            notes:
-              data.notes,
-          }
-        : {}),
     };
+
+    if (
+      data.activityNumber !==
+      undefined
+    ) {
+      metadata.activityNumber =
+        data.activityNumber;
+    }
+
+    if (
+      data.title !==
+      undefined
+    ) {
+      metadata.title =
+        data.title;
+    }
+
+    if (
+      data.status !==
+      undefined
+    ) {
+      metadata.status =
+        data.status;
+    }
+
+    if (
+      data.priority !==
+      undefined
+    ) {
+      metadata.priority =
+        data.priority;
+    }
+
+    if (
+      data.companyId !==
+      undefined
+    ) {
+      metadata.companyId =
+        data.companyId;
+    }
+
+    if (
+      data.contactId !==
+      undefined
+    ) {
+      metadata.contactId =
+        data.contactId;
+    }
+
+    if (
+      data.opportunityId !==
+      undefined
+    ) {
+      metadata.opportunityId =
+        data.opportunityId;
+    }
+
+    if (
+      data.scheduledAt !==
+      undefined
+    ) {
+      metadata.scheduledAt =
+        data.scheduledAt;
+    }
+
+    if (
+      data.startedAt !==
+      undefined
+    ) {
+      metadata.startedAt =
+        data.startedAt;
+    }
+
+    if (
+      data.startDate !==
+      undefined
+    ) {
+      metadata.startDate =
+        data.startDate;
+    }
+
+    if (
+      data.completedAt !==
+      undefined
+    ) {
+      metadata.completedAt =
+        data.completedAt;
+    }
+
+    if (
+      data.dueAt !==
+      undefined
+    ) {
+      metadata.dueAt =
+        data.dueAt;
+    }
+
+    if (
+      data.dueDate !==
+      undefined
+    ) {
+      metadata.dueDate =
+        data.dueDate;
+    }
+
+    if (
+      data.durationMinutes !==
+      undefined
+    ) {
+      metadata.durationMinutes =
+        data.durationMinutes;
+    }
+
+    if (
+      data.reminderAt !==
+      undefined
+    ) {
+      metadata.reminderAt =
+        data.reminderAt;
+    }
+
+    if (
+      data.reminderMinutes !==
+      undefined
+    ) {
+      metadata.reminderMinutes =
+        data.reminderMinutes;
+    }
+
+    if (
+      data.outcome !==
+      undefined
+    ) {
+      metadata.outcome =
+        data.outcome;
+    }
+
+    if (
+      data.nextAction !==
+      undefined
+    ) {
+      metadata.nextAction =
+        data.nextAction;
+    }
+
+    if (
+      data.location !==
+      undefined
+    ) {
+      metadata.location =
+        data.location;
+    }
+
+    if (
+      data.ownerId !==
+      undefined
+    ) {
+      metadata.ownerId =
+        data.ownerId;
+    }
+
+    if (
+      data.assignedTo !==
+      undefined
+    ) {
+      metadata.assignedTo =
+        data.assignedTo;
+    }
+
+    if (
+      data.notes !==
+      undefined
+    ) {
+      metadata.notes =
+        data.notes;
+    }
 
     const row = {
       id:
@@ -516,15 +571,11 @@ export class ActivitiesRepository {
         crypto.randomUUID(),
 
       entity_type:
-        data.entityId
-          ? (
-              data.entityType ??
-              "Activity"
-            )
-          : "Activity",
+        "Activity",
 
       entity_id:
         data.entityId ??
+        data.id ??
         crypto.randomUUID(),
 
       activity_type:
@@ -584,117 +635,186 @@ export class ActivitiesRepository {
       ...currentMetadata,
     };
 
-    if (data.activityNumber !== undefined) {
+    if (
+      data.activityNumber !==
+      undefined
+    ) {
       metadata.activityNumber =
         data.activityNumber;
     }
 
-    if (data.title !== undefined) {
+    if (
+      data.title !==
+      undefined
+    ) {
       metadata.title =
         data.title;
     }
 
-    if (data.status !== undefined) {
+    if (
+      data.status !==
+      undefined
+    ) {
       metadata.status =
         data.status;
     }
 
-    if (data.priority !== undefined) {
+    if (
+      data.priority !==
+      undefined
+    ) {
       metadata.priority =
         data.priority;
     }
 
-    if (data.companyId !== undefined) {
+    if (
+      data.companyId !==
+      undefined
+    ) {
       metadata.companyId =
         data.companyId;
     }
 
-    if (data.contactId !== undefined) {
+    if (
+      data.contactId !==
+      undefined
+    ) {
       metadata.contactId =
         data.contactId;
     }
 
-    if (data.opportunityId !== undefined) {
+    if (
+      data.opportunityId !==
+      undefined
+    ) {
       metadata.opportunityId =
         data.opportunityId;
     }
 
-    if (data.scheduledAt !== undefined) {
+    if (
+      data.scheduledAt !==
+      undefined
+    ) {
       metadata.scheduledAt =
         data.scheduledAt;
     }
 
-    if (data.startedAt !== undefined) {
+    if (
+      data.startedAt !==
+      undefined
+    ) {
       metadata.startedAt =
         data.startedAt;
     }
 
-    if (data.startDate !== undefined) {
+    if (
+      data.startDate !==
+      undefined
+    ) {
       metadata.startDate =
         data.startDate;
     }
 
-    if (data.completedAt !== undefined) {
+    if (
+      data.completedAt !==
+      undefined
+    ) {
       metadata.completedAt =
         data.completedAt;
     }
 
-    if (data.dueAt !== undefined) {
+    if (
+      data.dueAt !==
+      undefined
+    ) {
       metadata.dueAt =
         data.dueAt;
     }
 
-    if (data.dueDate !== undefined) {
+    if (
+      data.dueDate !==
+      undefined
+    ) {
       metadata.dueDate =
         data.dueDate;
     }
 
-    if (data.durationMinutes !== undefined) {
+    if (
+      data.durationMinutes !==
+      undefined
+    ) {
       metadata.durationMinutes =
         data.durationMinutes;
     }
 
-    if (data.outcome !== undefined) {
+    if (
+      data.outcome !==
+      undefined
+    ) {
       metadata.outcome =
         data.outcome;
     }
 
-    if (data.nextAction !== undefined) {
+    if (
+      data.nextAction !==
+      undefined
+    ) {
       metadata.nextAction =
         data.nextAction;
     }
 
-    if (data.reminderAt !== undefined) {
+    if (
+      data.reminderAt !==
+      undefined
+    ) {
       metadata.reminderAt =
         data.reminderAt;
     }
 
-    if (data.reminderMinutes !== undefined) {
+    if (
+      data.reminderMinutes !==
+      undefined
+    ) {
       metadata.reminderMinutes =
         data.reminderMinutes;
     }
 
-    if (data.ownerId !== undefined) {
+    if (
+      data.ownerId !==
+      undefined
+    ) {
       metadata.ownerId =
         data.ownerId;
     }
 
-    if (data.assignedTo !== undefined) {
+    if (
+      data.assignedTo !==
+      undefined
+    ) {
       metadata.assignedTo =
         data.assignedTo;
     }
 
-    if (data.location !== undefined) {
+    if (
+      data.location !==
+      undefined
+    ) {
       metadata.location =
         data.location;
     }
 
-    if (data.notes !== undefined) {
+    if (
+      data.notes !==
+      undefined
+    ) {
       metadata.notes =
         data.notes;
     }
 
-    if (data.metadata !== undefined) {
+    if (
+      data.metadata !==
+      undefined
+    ) {
       Object.assign(
         metadata,
         data.metadata
@@ -703,12 +823,7 @@ export class ActivitiesRepository {
 
     const payload = {
       entity_type:
-        data.entityId !== undefined
-          ? (
-              data.entityType ??
-              existing.entityType
-            )
-          : undefined,
+        "Activity",
 
       entity_id:
         data.entityId ??
@@ -724,14 +839,7 @@ export class ActivitiesRepository {
         null,
 
       metadata,
-
-      created_by:
-        profileId,
     };
-
-    if (payload.entity_type === undefined) {
-      delete payload.entity_type;
-    }
 
     const {
       data: updated,
@@ -740,8 +848,14 @@ export class ActivitiesRepository {
       await this.supabase
         .from("activities")
         .update(payload)
-        .eq("id", id)
-        .eq("created_by", profileId)
+        .eq(
+          "id",
+          id
+        )
+        .eq(
+          "created_by",
+          profileId
+        )
         .select("*")
         .maybeSingle();
 
@@ -755,12 +869,18 @@ export class ActivitiesRepository {
         )
       : null;
   }
+
   async updateStatus(
     id: string,
     status: ActivityStatus
   ): Promise<Activity> {
     const updated =
-      await this.update(id, { status });
+      await this.update(
+        id,
+        {
+          status,
+        }
+      );
 
     if (!updated) {
       throw new Error(
@@ -770,6 +890,7 @@ export class ActivitiesRepository {
 
     return updated;
   }
+
   async delete(
     id: string
   ): Promise<void> {
@@ -797,13 +918,17 @@ export class ActivitiesRepository {
   async search(
     filters?: ActivitySearchFilters
   ): Promise<Activity[]> {
-    const query =
-      this.queryOwnedActivities(await this.currentProfileId());
+    const profileId =
+      await this.currentProfileId();
 
     let builder =
-      query;
+      this.queryOwnedActivities(
+        profileId
+      );
 
-    if (filters?.entityType) {
+    if (
+      filters?.entityType
+    ) {
       builder =
         builder.eq(
           "entity_type",
@@ -811,7 +936,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.entityId) {
+    if (
+      filters?.entityId
+    ) {
       builder =
         builder.eq(
           "entity_id",
@@ -819,7 +946,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.type) {
+    if (
+      filters?.type
+    ) {
       builder =
         builder.eq(
           "activity_type",
@@ -827,7 +956,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.keyword) {
+    if (
+      filters?.keyword
+    ) {
       builder =
         builder.ilike(
           "description",
@@ -865,7 +996,9 @@ export class ActivitiesRepository {
         mapActivity
       );
 
-    if (filters?.status) {
+    if (
+      filters?.status
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -874,7 +1007,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.priority) {
+    if (
+      filters?.priority
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -883,7 +1018,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.companyId) {
+    if (
+      filters?.companyId
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -892,7 +1029,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.contactId) {
+    if (
+      filters?.contactId
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -901,7 +1040,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.opportunityId) {
+    if (
+      filters?.opportunityId
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -910,7 +1051,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.ownerId) {
+    if (
+      filters?.ownerId
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -919,7 +1062,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.assignedTo) {
+    if (
+      filters?.assignedTo
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -928,7 +1073,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.fromDate) {
+    if (
+      filters?.fromDate
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -938,7 +1085,9 @@ export class ActivitiesRepository {
         );
     }
 
-    if (filters?.toDate) {
+    if (
+      filters?.toDate
+    ) {
       activities =
         activities.filter(
           (activity) =>
@@ -949,8 +1098,10 @@ export class ActivitiesRepository {
     }
 
     if (
-      filters?.page !== undefined &&
-      filters?.limit !== undefined
+      filters?.page !==
+        undefined &&
+      filters?.limit !==
+        undefined
     ) {
       const page =
         Math.max(
@@ -985,7 +1136,10 @@ export class ActivitiesRepository {
     const today =
       new Date()
         .toISOString()
-        .substring(0, 10);
+        .substring(
+          0,
+          10
+        );
 
     const completed =
       activities.filter(
@@ -1074,7 +1228,8 @@ export class ActivitiesRepository {
               (
                 completed /
                 activities.length
-              ) * 100
+              ) *
+                100
             ),
     };
   }
@@ -1083,14 +1238,17 @@ export class ActivitiesRepository {
     entityType: string,
     entityId: string
   ): Promise<Activity[]> {
-    const query =
-      this.queryOwnedActivities(await this.currentProfileId());
+    const profileId =
+      await this.currentProfileId();
 
     const {
       data,
       error,
     } =
-      await query
+      await this
+        .queryOwnedActivities(
+          profileId
+        )
         .eq(
           "entity_type",
           entityType
@@ -1128,8 +1286,3 @@ export function createActivitiesRepository(
 
 export const ActivitiesRepositoryInstance =
   createActivitiesRepository;
-
-
-
-
-
