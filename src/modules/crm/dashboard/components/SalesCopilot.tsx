@@ -21,27 +21,21 @@ interface Section {
   leads: WorkflowLead[];
 }
 
-function LeadItem({
-  lead,
-}: {
-  lead: WorkflowLead;
-}) {
+function LeadItem({ lead }: { lead: WorkflowLead }) {
   return (
-    <div className="rounded-lg border border-slate-800 p-3">
-      <p className="text-sm font-medium text-white">
+    <div className="rounded-lg border border-slate-800 bg-slate-950/50 p-3">
+      <p className="truncate text-sm font-medium text-white">
         {lead.name}
       </p>
 
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="mt-1 truncate text-xs text-slate-500">
         {lead.email}
       </p>
     </div>
   );
 }
 
-export default function SalesCopilot({
-  data,
-}: Props) {
+export default function SalesCopilot({ data }: Props) {
   const sections: Section[] = [
     {
       title: "Call Today",
@@ -64,27 +58,30 @@ export default function SalesCopilot({
   ];
 
   return (
-    <section className="grid gap-4 md:grid-cols-3">
+    <section className="grid min-w-0 gap-4 md:grid-cols-3">
       {sections.map((section) => (
         <article
           key={section.title}
-          className={`rounded-xl border ${section.border} bg-slate-900 p-4`}
+          className={`min-w-0 rounded-xl border ${section.border} bg-slate-900 p-4`}
         >
-          <h3 className="mb-4 text-sm font-medium text-slate-400">
-            {section.title}
-          </h3>
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h3 className="text-sm font-semibold text-slate-300">
+              {section.title}
+            </h3>
+
+            <span className="rounded-full border border-slate-800 bg-slate-950 px-2 py-1 text-[10px] font-medium text-slate-500">
+              {section.leads.length}
+            </span>
+          </div>
 
           <div className="space-y-3">
             {section.leads.length === 0 ? (
-              <p className="text-xs text-slate-500">
+              <p className="rounded-lg border border-dashed border-slate-800 px-3 py-4 text-center text-xs text-slate-500">
                 {section.empty}
               </p>
             ) : (
               section.leads.map((lead) => (
-                <LeadItem
-                  key={lead.id}
-                  lead={lead}
-                />
+                <LeadItem key={lead.id} lead={lead} />
               ))
             )}
           </div>
@@ -93,4 +90,3 @@ export default function SalesCopilot({
     </section>
   );
 }
-

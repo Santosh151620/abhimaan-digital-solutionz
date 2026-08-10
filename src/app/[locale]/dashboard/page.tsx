@@ -27,183 +27,291 @@ import { AIScorePanel } from "@/modules/dashboard/ai-score";
 import { QuickActionsPanel } from "@/modules/dashboard/quick-actions";
 import { RecentLeadsPanel } from "@/modules/dashboard/recent-leads";
 import { TeamPerformancePanel } from "@/modules/dashboard/team-performance";
+
 import NotificationCenter from "@/modules/dashboard/notifications/NotificationCenter";
 import ActivityFeed from "@/modules/dashboard/activity/ActivityFeed";
 import LiveStatus from "@/modules/dashboard/live/LiveStatus";
+
 import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummaryCard";
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
 import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
 import ActionCenterCard from "@/modules/dashboard/components/ActionCenterCard";
 import DashboardEmptyState from "@/modules/dashboard/components/DashboardEmptyState";
+import ExecutiveDemoBanner from "@/modules/dashboard/components/ExecutiveDemoBanner";
+import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
+
 import { getDashboardSnapshot } from "@/services/dashboard";
 
 import ExecutivePanel from "@/modules/crm/dashboard/components/ExecutivePanel";
-
 import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOverview";
 import RevenueForecast from "@/modules/crm/dashboard/components/RevenueForecast";
 import RevenueKPI from "@/modules/crm/dashboard/components/RevenueKPI";
 import SalesCopilot from "@/modules/crm/dashboard/components/SalesCopilot";
 import TodayWorkPanel from "@/modules/crm/dashboard/components/TodayWorkPanel";
 
-import ExecutiveDemoBanner from "@/modules/dashboard/components/ExecutiveDemoBanner";
-import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
+function DashboardFrame({
+  title,
+  description,
+  children,
+  defaultOpen = true,
+}: {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+}) {
+  return (
+    <details
+      open={defaultOpen}
+      className="group overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl shadow-black/10 backdrop-blur-xl"
+    >
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 transition hover:bg-white/[0.025] sm:px-5">
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold text-white sm:text-base">
+            {title}
+          </h2>
 
+          <p className="mt-1 text-xs leading-relaxed text-slate-400 sm:text-sm">
+            {description}
+          </p>
+        </div>
+
+        <span
+          aria-hidden="true"
+          className="shrink-0 rounded-lg border border-white/10 bg-white/[0.035] px-2 py-1 text-xs text-slate-400 transition group-open:rotate-180"
+        >
+          ↓
+        </span>
+      </summary>
+
+      <div className="border-t border-slate-800/80 p-3 sm:p-5">
+        {children}
+      </div>
+    </details>
+  );
+}
 
 export default async function DashboardPage() {
   const dashboard = await getDashboardSnapshot();
 
   return (
-    <main className="min-h-screen space-y-6 sm:space-y-8 bg-slate-950 px-4 py-5 text-white sm:p-6">
+    <main className="crm-page min-w-0 space-y-4 overflow-x-hidden bg-slate-950 px-3 py-4 text-white sm:space-y-5 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+      {/* Primary dashboard identity */}
+      <section className="relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/[0.12] via-blue-500/[0.06] to-slate-900/80 p-5 shadow-2xl shadow-cyan-950/20 sm:p-6 lg:p-7">
+        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5 sm:p-6">
-        <h1 className="text-xl font-bold sm:text-2xl">
-          CRM Intelligence Dashboard
-        </h1>
-        <p className="mt-2 text-sm text-slate-400">
-          Real-time visibility into sales activity, pipeline health, and opportunities.
-        </p>
-      </section>
-      <DashboardEmptyState />
+        <div className="relative max-w-4xl">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 sm:text-xs">
+            Business Intelligence
+          </p>
 
-<CommandCenterPanel />
+          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+            CRM Intelligence Dashboard
+          </h1>
 
-<ExecutiveScorecardPanel />
-
-<MarketIntelligencePanel />
-
-<MarketIntelligencePanel />
-
-<MarketIntelligencePanel />
-<ExecutiveDemoBanner />
-<PriorityAlertsCard />
-
-      
-<ExecutivePanel executive={dashboard.executive} />
-
-<ExecutiveMetricsPanel />
-
-<ExecutiveTimelinePanel />
-
-<CEOBriefingPanel />
-
-<BoardSummaryPanel />
-
-
-      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
-        <ExecutiveSummaryCard />
-        <PipelineIntelligenceCard />
-        <CRMHealthCard />
-
-<BusinessHealthPanel />
-        <ActionCenterCard />
-      </div>
-
-      <AnalyticsCards data={dashboard.metrics} />
-
-<KPITrendsPanel />
-
-      <RevenueKPI data={dashboard.revenue} />
-
-<RevenueIntelligencePanel />
-
-      <PipelineOverview data={dashboard.pipeline} />
-
-<SalesVelocityPanel />
-
-<DealIntelligencePanel />
-
-      <SalesCopilot data={dashboard.copilot} />
-
-<PredictiveAnalyticsPanel />
-
-<StrategicInsightsPanel />
-
-      <TodayWorkPanel items={dashboard.today} />
-
-      <RevenueForecast {...dashboard.forecast} />
-
-<CustomerSuccessPanel />
-
-<GoalTrackerPanel />
-
-      <QuickActionsPanel />
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <RecentLeadsPanel />
-        <TeamPerformancePanel />
-      </div>
-
-<section className="grid gap-6 xl:grid-cols-3">
-  <NotificationCenter />
-  <ActivityFeed />
-  <LiveStatus />
-</section>
-
-
-      <section className="grid gap-6 xl:grid-cols-3">
-
-        <AIInsightsPanel />
-
-        <NotificationSummary />
-
-        <LiveActivityTicker />
-
-      </section>
-
-      
-<section className="grid gap-6">
-  <AutomationPanel />
-  <section className="grid gap-6">
-  <InsightsPanel />
-</section>
-
-<section className="grid gap-6 xl:grid-cols-3">
-  <AIScorePanel />
-  <AISummaryPanel />
-  <RiskAlertsPanel />
-</section>
-</section>
-<section className="rounded-2xl border border-emerald-500/20 bg-slate-900 p-6">
-        <h3 className="mb-3 text-sm font-semibold text-emerald-400">
-          System Status
-        </h3>
-
-        <div className="grid gap-2 text-sm text-slate-300 md:grid-cols-2">
-          <p>? CRM Intelligence</p>
-          <p>? Executive Intelligence</p>
-          <p>? Revenue Forecast Engine</p>
-          <p>? Workflow Intelligence</p>
-          <p>? Dashboard Analytics</p>
-          <p>? Production Services</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+            Real-time visibility into sales activity, pipeline health, and
+            opportunities.
+          </p>
         </div>
       </section>
 
+      <DashboardEmptyState />
+
+      {/* Executive intelligence */}
+      <DashboardFrame
+        title="Executive Intelligence"
+        description="Executive overview, business health, strategic signals and leadership insights."
+      >
+        <div className="space-y-5">
+          <CommandCenterPanel />
+
+          <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+            <ExecutiveScorecardPanel />
+            <BusinessHealthPanel />
+          </div>
+
+          <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+            <ExecutivePanel executive={dashboard.executive} />
+            <ExecutiveMetricsPanel />
+          </div>
+
+          <ExecutiveTimelinePanel />
+
+          <div className="grid min-w-0 gap-4 xl:grid-cols-2">
+            <CEOBriefingPanel />
+            <BoardSummaryPanel />
+          </div>
+
+          <ExecutiveDemoBanner />
+          <PriorityAlertsCard />
+        </div>
+      </DashboardFrame>
+
+      {/* CRM overview */}
+      <DashboardFrame
+        title="CRM Performance"
+        description="Core CRM health, pipeline intelligence and sales performance."
+      >
+        <div className="space-y-5">
+          <div className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <ExecutiveSummaryCard />
+            <PipelineIntelligenceCard />
+            <CRMHealthCard />
+            <ActionCenterCard />
+          </div>
+
+          <AnalyticsCards data={dashboard.metrics} />
+
+          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+            <PipelineOverview data={dashboard.pipeline} />
+            <RevenueKPI data={dashboard.revenue} />
+          </div>
+
+          <KPITrendsPanel />
+        </div>
+      </DashboardFrame>
+
+      {/* Sales and revenue */}
+      <DashboardFrame
+        title="Sales & Revenue Intelligence"
+        description="Revenue performance, forecasting, deal intelligence and sales execution."
+      >
+        <div className="space-y-5">
+          <RevenueIntelligencePanel />
+
+          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+            <SalesVelocityPanel />
+            <DealIntelligencePanel />
+          </div>
+
+          <SalesCopilot data={dashboard.copilot} />
+
+          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+            <PredictiveAnalyticsPanel />
+            <StrategicInsightsPanel />
+          </div>
+
+          <RevenueForecast {...dashboard.forecast} />
+        </div>
+      </DashboardFrame>
+
+      {/* Today's work */}
+      <DashboardFrame
+        title="Today's Work"
+        description="Recommended actions and operational priorities for today."
+      >
+        <TodayWorkPanel items={dashboard.today} />
+      </DashboardFrame>
+
+      {/* Customer and operations */}
+      <DashboardFrame
+        title="Customer & Operations"
+        description="Customer success, goals, tasks, recent activity and team performance."
+        defaultOpen={false}
+      >
+        <div className="space-y-5">
+          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+            <CustomerSuccessPanel />
+            <GoalTrackerPanel />
+          </div>
+
+          <QuickActionsPanel />
+
+          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
+            <RecentLeadsPanel />
+            <TeamPerformancePanel />
+          </div>
+        </div>
+      </DashboardFrame>
+
+      {/* Market intelligence */}
+      <DashboardFrame
+        title="Market Intelligence"
+        description="External signals and market context supporting business decisions."
+        defaultOpen={false}
+      >
+        <MarketIntelligencePanel />
+      </DashboardFrame>
+
+      {/* AI intelligence */}
+      <DashboardFrame
+        title="AI Intelligence"
+        description="AI business score, executive summary and risk intelligence."
+        defaultOpen
+      >
+        <div className="grid min-w-0 gap-5 xl:grid-cols-3">
+          <AIScorePanel />
+          <AISummaryPanel />
+          <RiskAlertsPanel />
+        </div>
+
+        <div className="mt-5">
+          <AIInsightsPanel />
+        </div>
+      </DashboardFrame>
+
+      {/* Activity and notifications */}
+      <DashboardFrame
+        title="Activity & Notifications"
+        description="Live system activity, notifications and operational events."
+        defaultOpen={false}
+      >
+        <div className="space-y-5">
+          <div className="grid min-w-0 gap-5 xl:grid-cols-3">
+            <NotificationCenter />
+            <ActivityFeed />
+            <LiveStatus />
+          </div>
+
+          <div className="grid min-w-0 gap-5 xl:grid-cols-3">
+            <NotificationSummary />
+            <LiveActivityTicker />
+            <AutomationPanel />
+          </div>
+
+          <InsightsPanel />
+        </div>
+      </DashboardFrame>
+
+      {/* System status */}
+      <section className="rounded-2xl border border-emerald-500/20 bg-slate-900/70 p-4 shadow-xl shadow-black/10 sm:p-5">
+        <div className="mb-4">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">
+            Platform Status
+          </p>
+
+          <h2 className="mt-1 text-sm font-semibold text-white">
+            Business Platform Services
+          </h2>
+        </div>
+
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {[
+            "CRM Intelligence",
+            "Executive Intelligence",
+            "Revenue Forecast Engine",
+            "Workflow Intelligence",
+            "Dashboard Analytics",
+            "Production Services",
+          ].map((service) => (
+            <div
+              key={service}
+              className="flex min-w-0 items-center gap-2 rounded-xl border border-white/5 bg-white/[0.025] px-3 py-2.5"
+            >
+              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)]" />
+
+              <span className="truncate text-xs text-slate-300">
+                {service}
+              </span>
+
+              <span className="ml-auto shrink-0 text-[10px] font-medium text-emerald-400">
+                Ready
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

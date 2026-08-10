@@ -5,11 +5,8 @@ import type {
 export class ImportParserService {
 
     parse(
-
         content: string,
-
         format: ImportExportFormat = "CSV",
-
     ): Record<string, string>[] {
 
         switch (format) {
@@ -37,13 +34,10 @@ export class ImportParserService {
     }
 
     private parseCsv(
-
         content: string,
-
     ): Record<string, string>[] {
 
         const lines =
-
             content
                 .replace(/\r/g, "")
                 .split("\n")
@@ -56,7 +50,6 @@ export class ImportParserService {
         }
 
         const headers =
-
             lines[0]
                 .split(",")
                 .map(
@@ -66,34 +59,25 @@ export class ImportParserService {
         const rows: Record<string, string>[] = [];
 
         for (
-
             let i = 1;
-
             i < lines.length;
-
             i++
-
         ) {
 
             const values =
-
                 lines[i]
                     .split(",");
 
             const row: Record<string, string> = {};
 
             headers.forEach(
-
                 (header, index) => {
 
                     row[header] =
-
                         values[index]?.trim()
-
                         ?? "";
 
                 },
-
             );
 
             rows.push(row);
@@ -105,24 +89,43 @@ export class ImportParserService {
     }
 
     private parseJson(
-
         content: string,
-
     ): Record<string, string>[] {
 
-        const parsed = JSON.parse(content);
+        const normalizedContent =
+            content.trim();
 
-        if (
+        if (!normalizedContent) {
 
-            Array.isArray(parsed)
-
-        ) {
-
-            return parsed;
+            return [];
 
         }
 
-        return [];
+        try {
+
+            const parsed: unknown =
+                JSON.parse(normalizedContent);
+
+            if (!Array.isArray(parsed)) {
+
+                return [];
+
+            }
+
+            return parsed.filter(
+                (
+                    item,
+                ): item is Record<string, string> =>
+                    typeof item === "object" &&
+                    item !== null &&
+                    !Array.isArray(item),
+            );
+
+        } catch {
+
+            return [];
+
+        }
 
     }
 

@@ -9,8 +9,7 @@ export default function RevenueKPI({
   data,
 }: Props) {
   return (
-    <section className="grid gap-4 md:grid-cols-4">
-
+    <section className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <KPICard
         title="Collection Rate"
         value={`${data.collectionRate}%`}
@@ -26,7 +25,7 @@ export default function RevenueKPI({
       <KPICard
         title="Pending Payments"
         value={data.pendingPayments}
-        valueClassName="text-yellow-400"
+        valueClassName="text-amber-400"
       />
 
       <KPICard
@@ -34,8 +33,6 @@ export default function RevenueKPI({
         value={data.overduePayments}
         valueClassName="text-red-400"
       />
-
     </section>
   );
 }
-

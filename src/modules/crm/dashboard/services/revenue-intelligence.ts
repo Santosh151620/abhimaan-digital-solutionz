@@ -29,31 +29,54 @@ export interface RevenueSnapshot {
 
 function calculateCollectionRate(
   totalRevenue: number,
-  outstandingRevenue: number
+  outstandingRevenue: number,
 ): number {
-  if (totalRevenue <= 0) return 0;
+  if (totalRevenue <= 0) {
+    return 0;
+  }
 
-  return Math.round(
-    ((totalRevenue - outstandingRevenue) / totalRevenue) * 100
+  const collectedRevenue = Math.max(
+    totalRevenue - outstandingRevenue,
+    0,
+  );
+
+  return Math.min(
+    Math.round((collectedRevenue / totalRevenue) * 100),
+    100,
   );
 }
 
 function determineRevenueHealth(
   collectionRate: number,
-  overduePayments: number
+  overduePayments: number,
 ): RevenueHealth {
-  if (overduePayments >= 10) return "critical";
-  if (collectionRate >= 90) return "excellent";
-  if (collectionRate >= 75) return "good";
-  if (collectionRate >= 50) return "warning";
+  if (overduePayments >= 10) {
+    return "critical";
+  }
+
+  if (collectionRate >= 90) {
+    return "excellent";
+  }
+
+  if (collectionRate >= 75) {
+    return "good";
+  }
+
+  if (collectionRate >= 50) {
+    return "warning";
+  }
 
   return "critical";
+}
+
+function formatCurrency(value: number): string {
+  return `₹${value.toLocaleString("en-IN")}`;
 }
 
 function buildSummary(
   health: RevenueHealth,
   collectionRate: number,
-  outstandingRevenue: number
+  outstandingRevenue: number,
 ): string {
   switch (health) {
     case "excellent":
@@ -63,10 +86,14 @@ function buildSummary(
       return `Revenue collection is healthy (${collectionRate}%).`;
 
     case "warning":
-  return `Outstanding revenue of ₹${outstandingRevenue.toLocaleString()} requires attention.`;
+      return `Outstanding revenue of ${formatCurrency(
+        outstandingRevenue,
+      )} requires attention.`;
 
     case "critical":
-      return `Cash flow is at risk. Outstanding revenue is ₹${outstandingRevenue.toLocaleString()}.`;
+      return `Cash flow is at risk. Outstanding revenue is ${formatCurrency(
+        outstandingRevenue,
+      )}.`;
 
     default:
       return "Revenue performance unavailable.";
@@ -87,7 +114,10 @@ export async function getRevenueIntelligence(): Promise<RevenueSnapshot> {
   ]);
 
   const safeTotalRevenue = totalRevenue ?? 0;
-  const safeOutstandingRevenue = outstandingRevenue ?? 0;
+  const safeOutstandingRevenue = Math.max(
+    outstandingRevenue ?? 0,
+    0,
+  );
   const safeProjectedRevenue = projectedRevenue ?? 0;
 
   const paidPayments = paymentCounts?.paid ?? 0;
@@ -97,12 +127,12 @@ export async function getRevenueIntelligence(): Promise<RevenueSnapshot> {
 
   const collectionRate = calculateCollectionRate(
     safeTotalRevenue,
-    safeOutstandingRevenue
+    safeOutstandingRevenue,
   );
 
   const health = determineRevenueHealth(
     collectionRate,
-    overduePayments
+    overduePayments,
   );
 
   return {
@@ -122,13 +152,7 @@ export async function getRevenueIntelligence(): Promise<RevenueSnapshot> {
     summary: buildSummary(
       health,
       collectionRate,
-      safeOutstandingRevenue
+      safeOutstandingRevenue,
     ),
   };
 }
-
-
-
-
-
-
