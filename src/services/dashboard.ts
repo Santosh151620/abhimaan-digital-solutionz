@@ -1,11 +1,12 @@
+import { unstable_noStore as noStore } from "next/cache";
+
 import { getCRMAnalytics } from "./analytics";
 import { getExecutiveIntelligence } from "@/modules/crm/dashboard/services/executive-intelligence";
 import { getRevenueForecast } from "./crm/revenue-forecast";
 import { getWorkflowIntelligence } from "./crm/workflow-intelligence";
 
-// KEEP EVERYTHING ELSE IN THIS FILE EXACTLY AS IT IS.
-
 export async function getDashboardSnapshot() {
+  noStore();
 
   const [
     metrics,
@@ -33,9 +34,3 @@ export async function getDashboardSnapshot() {
     copilot: workflow.copilot,
   };
 }
-
-
-
-
-
-

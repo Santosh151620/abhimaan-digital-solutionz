@@ -1,8 +1,11 @@
+import type { ReactNode } from "react";
+
 import { AIInsightsPanel } from "@/modules/dashboard/ai";
 import NotificationSummary from "@/modules/dashboard/notifications/NotificationSummary";
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
 import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
+import DashboardLiveRefresh from "@/modules/dashboard/components/DashboardLiveRefresh";
 import { BoardSummaryPanel } from "@/modules/dashboard/board-summary";
 import { MarketIntelligencePanel } from "@/modules/dashboard/market-intelligence";
 import { ExecutiveScorecardPanel } from "@/modules/dashboard/executive-scorecard";
@@ -36,8 +39,6 @@ import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummar
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
 import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
 import ActionCenterCard from "@/modules/dashboard/components/ActionCenterCard";
-import DashboardEmptyState from "@/modules/dashboard/components/DashboardEmptyState";
-import ExecutiveDemoBanner from "@/modules/dashboard/components/ExecutiveDemoBanner";
 import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
 
 import { getDashboardSnapshot } from "@/services/dashboard";
@@ -57,7 +58,7 @@ function DashboardFrame({
 }: {
   title: string;
   description: string;
-  children: React.ReactNode;
+  children: ReactNode;
   defaultOpen?: boolean;
 }) {
   return (
@@ -65,20 +66,20 @@ function DashboardFrame({
       open={defaultOpen}
       className="group overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl shadow-black/10 backdrop-blur-xl"
     >
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 transition hover:bg-white/[0.025] sm:px-5">
+      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-white/[0.025] sm:px-5 sm:py-5">
         <div className="min-w-0">
-          <h2 className="text-sm font-semibold text-white sm:text-base">
+          <h2 className="text-sm font-semibold tracking-tight text-white sm:text-base">
             {title}
           </h2>
 
-          <p className="mt-1 text-xs leading-relaxed text-slate-400 sm:text-sm">
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-400 sm:text-sm">
             {description}
           </p>
         </div>
 
         <span
           aria-hidden="true"
-          className="shrink-0 rounded-lg border border-white/10 bg-white/[0.035] px-2 py-1 text-xs text-slate-400 transition group-open:rotate-180"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.035] text-xs text-slate-400 transition-transform duration-200 group-open:rotate-180"
         >
           ↓
         </span>
@@ -94,34 +95,44 @@ function DashboardFrame({
 export default async function DashboardPage() {
   const dashboard = await getDashboardSnapshot();
 
+  const overview = dashboard.metrics.overview;
+  const payments = dashboard.metrics.payments;
+
   return (
     <main className="crm-page min-w-0 space-y-4 overflow-x-hidden bg-slate-950 px-3 py-4 text-white sm:space-y-5 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
       {/* Primary dashboard identity */}
       <section className="relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/[0.12] via-blue-500/[0.06] to-slate-900/80 p-5 shadow-2xl shadow-cyan-950/20 sm:p-6 lg:p-7">
-        <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-cyan-400/10 blur-3xl" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-cyan-400/10 blur-3xl"
+        />
 
-        <div className="relative max-w-4xl">
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 sm:text-xs">
-            Business Intelligence
-          </p>
+        <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="min-w-0 max-w-4xl">
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 sm:text-xs">
+              Business Intelligence
+            </p>
 
-          <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
-            CRM Intelligence Dashboard
-          </h1>
+            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+              CRM Intelligence Dashboard
+            </h1>
 
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-            Real-time visibility into sales activity, pipeline health, and
-            opportunities.
-          </p>
+            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
+              Real-time visibility into sales activity, pipeline health,
+              revenue performance, and business opportunities.
+            </p>
+          </div>
+
+          <div className="relative shrink-0 lg:pb-1">
+            <DashboardLiveRefresh />
+          </div>
         </div>
       </section>
 
-      <DashboardEmptyState />
-
       {/* Executive intelligence */}
       <DashboardFrame
-        title="Executive Intelligence"
-        description="Executive overview, business health, strategic signals and leadership insights."
+        title="Executive Overview"
+        description="A concise view of business health, strategic signals, leadership insights, and priority actions."
       >
         <div className="space-y-5">
           <CommandCenterPanel />
@@ -143,22 +154,44 @@ export default async function DashboardPage() {
             <BoardSummaryPanel />
           </div>
 
-          <ExecutiveDemoBanner />
-          <PriorityAlertsCard />
+          <PriorityAlertsCard
+            metrics={dashboard.metrics}
+            workflow={dashboard.workflow}
+          />
+
         </div>
       </DashboardFrame>
 
       {/* CRM overview */}
       <DashboardFrame
-        title="CRM Performance"
-        description="Core CRM health, pipeline intelligence and sales performance."
+        title="CRM Overview & Performance"
+        description="Core customer relationship metrics, pipeline health, sales conversion, and operational performance."
       >
         <div className="space-y-5">
           <div className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <ExecutiveSummaryCard />
-            <PipelineIntelligenceCard />
-            <CRMHealthCard />
-            <ActionCenterCard />
+            <ExecutiveSummaryCard metrics={dashboard.metrics} />
+
+            <PipelineIntelligenceCard
+              metrics={{
+                totalLeads: overview.totalLeads,
+                qualifiedLeads: overview.qualifiedLeads,
+                proposalLeads: overview.proposalLeads,
+                wonLeads: overview.wonLeads,
+                conversionRate: overview.conversionRate,
+              }}
+            />
+
+            <CRMHealthCard metrics={dashboard.metrics} />
+
+            <ActionCenterCard
+              metrics={{
+                totalLeads: overview.totalLeads,
+                newLeads: overview.newLeads,
+                qualifiedLeads: overview.qualifiedLeads,
+                proposalLeads: overview.proposalLeads,
+                overduePayments: payments.overdue,
+              }}
+            />
           </div>
 
           <AnalyticsCards data={dashboard.metrics} />
@@ -175,7 +208,7 @@ export default async function DashboardPage() {
       {/* Sales and revenue */}
       <DashboardFrame
         title="Sales & Revenue Intelligence"
-        description="Revenue performance, forecasting, deal intelligence and sales execution."
+        description="Revenue performance, forecasting, deal intelligence, and sales execution."
       >
         <div className="space-y-5">
           <RevenueIntelligencePanel />
@@ -199,7 +232,7 @@ export default async function DashboardPage() {
       {/* Today's work */}
       <DashboardFrame
         title="Today's Work"
-        description="Recommended actions and operational priorities for today."
+        description="Recommended follow-ups, sales actions, and operational priorities for today."
       >
         <TodayWorkPanel items={dashboard.today} />
       </DashboardFrame>
@@ -207,7 +240,7 @@ export default async function DashboardPage() {
       {/* Customer and operations */}
       <DashboardFrame
         title="Customer & Operations"
-        description="Customer success, goals, tasks, recent activity and team performance."
+        description="Customer success, goals, tasks, recent activity, and team performance."
         defaultOpen={false}
       >
         <div className="space-y-5">
@@ -237,8 +270,8 @@ export default async function DashboardPage() {
       {/* AI intelligence */}
       <DashboardFrame
         title="AI Intelligence"
-        description="AI business score, executive summary and risk intelligence."
-        defaultOpen
+        description="AI business scoring, executive summaries, recommendations, and risk intelligence."
+        defaultOpen={false}
       >
         <div className="grid min-w-0 gap-5 xl:grid-cols-3">
           <AIScorePanel />
@@ -254,7 +287,7 @@ export default async function DashboardPage() {
       {/* Activity and notifications */}
       <DashboardFrame
         title="Activity & Notifications"
-        description="Live system activity, notifications and operational events."
+        description="Live system activity, notifications, automation, and operational events."
         defaultOpen={false}
       >
         <div className="space-y-5">
@@ -274,7 +307,7 @@ export default async function DashboardPage() {
         </div>
       </DashboardFrame>
 
-      {/* System status */}
+      {/* Platform status */}
       <section className="rounded-2xl border border-emerald-500/20 bg-slate-900/70 p-4 shadow-xl shadow-black/10 sm:p-5">
         <div className="mb-4">
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">
@@ -299,7 +332,10 @@ export default async function DashboardPage() {
               key={service}
               className="flex min-w-0 items-center gap-2 rounded-xl border border-white/5 bg-white/[0.025] px-3 py-2.5"
             >
-              <span className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)]" />
+              <span
+                aria-hidden="true"
+                className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)]"
+              />
 
               <span className="truncate text-xs text-slate-300">
                 {service}

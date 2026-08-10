@@ -6,54 +6,65 @@ export default function RecentLeadsPanel() {
   return (
     <section
       aria-labelledby="recent-leads-heading"
-      className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
+      className="min-w-0 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5 shadow-lg shadow-black/10"
     >
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+      <div className="mb-5 flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400">
             CRM Activity
           </p>
 
           <h3
             id="recent-leads-heading"
-            className="mt-1 text-lg font-bold text-white"
+            className="mt-1 text-base font-semibold text-white"
           >
             Recent Leads
           </h3>
+
+          <p className="mt-1 text-xs leading-5 text-slate-500">
+            Latest lead activity across the CRM workspace.
+          </p>
         </div>
 
-        <span className="rounded-full border border-slate-700 bg-slate-950 px-2.5 py-1 text-[10px] font-medium text-slate-400">
+        <span
+          aria-label={`${recentLeads.length} recent leads`}
+          className="shrink-0 rounded-full border border-slate-700/80 bg-slate-950/80 px-2.5 py-1 text-[10px] font-semibold text-slate-400"
+        >
           {recentLeads.length}
         </span>
       </div>
 
       {recentLeads.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/60 px-4 py-6 text-center">
+        <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950/50 px-4 py-7 text-center">
           <p className="text-sm text-slate-400">
             No recent leads available.
           </p>
+
+          <p className="mt-1 text-xs text-slate-600">
+            New CRM leads will appear here.
+          </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {recentLeads.map((lead, index) => (
-            <div
+            <article
               key={`${lead.name}-${index}`}
-              className="flex min-w-0 items-center justify-between gap-4 rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 transition hover:border-slate-700 hover:bg-slate-900"
+              className="flex min-w-0 items-center justify-between gap-4 rounded-xl border border-slate-800/80 bg-slate-950/70 px-4 py-3 transition duration-200 hover:border-cyan-500/20 hover:bg-slate-950"
             >
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-white">
+                <p className="truncate text-sm font-semibold text-white">
                   {lead.name}
                 </p>
 
-                <p className="mt-1 text-[11px] text-slate-500">
+                <p className="mt-1 text-[10px] uppercase tracking-wide text-slate-600">
                   Recent CRM lead
                 </p>
               </div>
 
-              <span className="shrink-0 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-cyan-400">
+              <span className="shrink-0 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-cyan-300">
                 {lead.status}
               </span>
-            </div>
+            </article>
           ))}
         </div>
       )}

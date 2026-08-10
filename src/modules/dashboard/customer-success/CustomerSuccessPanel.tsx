@@ -2,41 +2,59 @@ import { customerSuccess } from "./data";
 
 export default function CustomerSuccessPanel() {
   return (
-    <section className="min-w-0 overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-900/80 shadow-lg shadow-black/10">
+    <section
+      aria-labelledby="customer-success-heading"
+      className="min-w-0 overflow-hidden rounded-2xl border border-cyan-500/20 bg-slate-900/80 shadow-lg shadow-black/10"
+    >
       <div className="border-b border-white/5 px-5 py-4">
         <div className="flex items-center justify-between gap-4">
-          <div>
+          <div className="min-w-0">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
               Customer Intelligence
             </p>
 
-            <h3 className="mt-1 text-base font-semibold text-white">
+            <h3
+              id="customer-success-heading"
+              className="mt-1 text-base font-semibold text-white"
+            >
               Customer Success
             </h3>
+
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Key indicators for customer health, retention, and engagement.
+            </p>
           </div>
 
-          <span className="rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-medium text-cyan-300">
+          <span className="shrink-0 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-2.5 py-1 text-[10px] font-medium text-cyan-300">
             Live
           </span>
         </div>
       </div>
 
-      <div className="grid min-w-0 gap-3 p-4 sm:grid-cols-2 xl:grid-cols-4">
-        {customerSuccess.map((item) => (
-          <article
-            key={item.metric}
-            className="min-w-0 rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition-colors hover:border-cyan-500/20"
-          >
-            <p className="truncate text-xs font-medium text-slate-400">
-              {item.metric}
-            </p>
+      {customerSuccess.length === 0 ? (
+        <div className="m-4 rounded-xl border border-dashed border-slate-800 bg-slate-950/50 px-4 py-8 text-center">
+          <p className="text-sm text-slate-500">
+            No customer success data available.
+          </p>
+        </div>
+      ) : (
+        <div className="grid min-w-0 gap-3 p-4 sm:grid-cols-2 xl:grid-cols-4">
+          {customerSuccess.map((item) => (
+            <article
+              key={item.metric}
+              className="min-w-0 rounded-xl border border-slate-800/80 bg-slate-950/70 p-4 transition-colors hover:border-cyan-500/20"
+            >
+              <p className="truncate text-xs font-medium uppercase tracking-wide text-slate-500">
+                {item.metric}
+              </p>
 
-            <p className="mt-2 truncate text-2xl font-bold tracking-tight text-cyan-400">
-              {item.value}
-            </p>
-          </article>
-        ))}
-      </div>
+              <p className="mt-2 truncate text-2xl font-bold tracking-tight tabular-nums text-cyan-400">
+                {item.value}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
     </section>
   );
 }

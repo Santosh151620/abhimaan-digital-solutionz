@@ -52,34 +52,56 @@ const cards: readonly Card[] = [
   },
 ];
 
-export default function RevenueForecast(
-  props: RevenueForecastProps
-) {
+function formatValue(
+  value: number,
+  key: keyof RevenueForecastProps,
+): string {
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
+
+  if (key === "winProbability") {
+    return Math.max(0, Math.min(100, value)).toFixed(0);
+  }
+
+  if (key === "velocityScore") {
+    return value.toFixed(0);
+  }
+
+  return new Intl.NumberFormat("en-IN", {
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export default function RevenueForecast(props: RevenueForecastProps) {
   return (
-    <section className="grid grid-cols-1 gap-4 md:grid-cols-5">
+    <section
+      aria-label="Revenue forecast"
+      className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+    >
       {cards.map((card) => {
-        const value = props[card.key];
+        const rawValue = Number(props[card.key]);
+        const value = formatValue(rawValue, card.key);
 
         return (
-          <div
+          <article
             key={card.key}
-            className={`rounded-xl border ${card.border} bg-slate-900 p-4`}
+            className={`min-w-0 rounded-xl border ${card.border} bg-slate-900/70 p-4 shadow-lg shadow-black/5 transition-colors hover:bg-slate-900`}
           >
-            <p className="text-sm text-slate-400">
+            <p className="truncate text-sm font-medium text-slate-400">
               {card.title}
             </p>
 
             <p
-              className={`mt-2 text-2xl font-bold ${card.value}`}
+              className={`mt-2 truncate text-2xl font-bold tracking-tight ${card.value}`}
             >
               {card.prefix}
               {value}
               {card.suffix}
             </p>
-          </div>
+          </article>
         );
       })}
     </section>
   );
 }
-

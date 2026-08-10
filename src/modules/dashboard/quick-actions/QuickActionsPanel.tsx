@@ -31,42 +31,44 @@ const actions = [
 
 export default function QuickActionsPanel() {
   const handleAction = useCallback((action: string) => {
-    // Navigation/action wiring can be connected to the corresponding
-    // CRM workflows without changing this dashboard contract.
-    console.info(`Quick action selected: ${action}`);
+    console.info(`[CRM] Quick action selected: ${action}`);
   }, []);
 
   return (
     <section
       aria-labelledby="quick-actions-heading"
-      className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
+      className="min-w-0 overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/70 p-5 shadow-lg shadow-black/10"
     >
-      <div className="mb-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+      <div className="mb-5">
+        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400">
           Productivity
         </p>
 
         <h3
           id="quick-actions-heading"
-          className="mt-1 text-lg font-bold text-white"
+          className="mt-1 text-base font-semibold text-white"
         >
           Quick Actions
         </h3>
+
+        <p className="mt-1 text-xs leading-5 text-slate-500">
+          Start common CRM workflows from the dashboard.
+        </p>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {actions.map((action) => (
           <button
             key={action.label}
             type="button"
             onClick={() => handleAction(action.label)}
-            className="group rounded-xl border border-slate-700 bg-slate-950 px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-cyan-500/50 hover:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-cyan-500/40"
+            className="group min-w-0 rounded-xl border border-slate-800 bg-slate-950/70 px-4 py-3.5 text-left transition duration-200 hover:-translate-y-0.5 hover:border-cyan-500/30 hover:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-cyan-500/40 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
-            <span className="block text-sm font-semibold text-slate-200 transition group-hover:text-white">
+            <span className="block truncate text-sm font-semibold text-slate-200 transition-colors group-hover:text-white">
               {action.label}
             </span>
 
-            <span className="mt-1 block text-xs leading-5 text-slate-500 group-hover:text-slate-400">
+            <span className="mt-1 block text-xs leading-5 text-slate-500 transition-colors group-hover:text-slate-400">
               {action.description}
             </span>
           </button>

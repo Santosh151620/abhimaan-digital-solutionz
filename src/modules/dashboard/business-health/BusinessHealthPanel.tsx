@@ -55,7 +55,8 @@ export default function BusinessHealthPanel() {
             </p>
 
             <p className="mt-1 text-xs text-slate-600">
-              Health indicators will appear when operational data is available.
+              Health indicators will appear when operational data is
+              available.
             </p>
           </div>
         )}

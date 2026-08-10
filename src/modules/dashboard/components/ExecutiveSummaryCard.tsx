@@ -1,18 +1,49 @@
-"use client";
+import type { CRMAnalytics } from "@/services/analytics";
 
-type MetricProps = {
-  label: string;
-  value: string;
+type ExecutiveSummaryCardProps = {
+  metrics: CRMAnalytics;
 };
 
-const metrics: MetricProps[] = [
-  { label: "Leads", value: "—" },
-  { label: "Clients", value: "—" },
-  { label: "Projects", value: "—" },
-  { label: "Revenue", value: "—" },
-];
+function formatCount(value: number | undefined): string {
+  return typeof value === "number" && Number.isFinite(value)
+    ? value.toLocaleString("en-IN")
+    : "—";
+}
 
-export default function ExecutiveSummaryCard() {
+function formatRevenue(value: number | undefined): string {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    return "—";
+  }
+
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+export default function ExecutiveSummaryCard({
+  metrics,
+}: ExecutiveSummaryCardProps) {
+  const items = [
+    {
+      label: "Leads",
+      value: formatCount(metrics.overview.totalLeads),
+    },
+    {
+      label: "Clients",
+      value: formatCount(metrics.overview.activeClients),
+    },
+    {
+      label: "Projects",
+      value: formatCount(metrics.overview.activeProjects),
+    },
+    {
+      label: "Revenue",
+      value: formatRevenue(metrics.revenue.totalRevenue),
+    },
+  ];
+
   return (
     <section
       aria-labelledby="executive-summary-title"
@@ -43,28 +74,21 @@ export default function ExecutiveSummaryCard() {
       </div>
 
       <div className="mt-5 grid min-w-0 grid-cols-2 gap-3 xl:grid-cols-4">
-        {metrics.map((metric) => (
-          <Metric
-            key={metric.label}
-            label={metric.label}
-            value={metric.value}
-          />
+        {items.map((item) => (
+          <div
+            key={item.label}
+            className="min-w-0 rounded-xl border border-slate-800/80 bg-slate-900/70 px-3 py-3.5 transition-colors duration-200 hover:border-slate-700 hover:bg-slate-900 sm:px-4"
+          >
+            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+              {item.label}
+            </p>
+
+            <p className="mt-1.5 truncate text-xl font-bold tracking-tight text-white sm:text-2xl">
+              {item.value}
+            </p>
+          </div>
         ))}
       </div>
     </section>
-  );
-}
-
-function Metric({ label, value }: MetricProps) {
-  return (
-    <div className="min-w-0 rounded-xl border border-slate-800/80 bg-slate-900/70 px-3 py-3.5 transition-colors duration-200 hover:border-slate-700 hover:bg-slate-900 sm:px-4">
-      <p className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
-        {label}
-      </p>
-
-      <p className="mt-1.5 truncate text-xl font-bold tracking-tight text-white sm:text-2xl">
-        {value}
-      </p>
-    </div>
   );
 }

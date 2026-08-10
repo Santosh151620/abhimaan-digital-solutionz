@@ -39,6 +39,14 @@ interface CardProps {
   color?: string;
 }
 
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 function KPICard({
   title,
   value,
@@ -47,9 +55,7 @@ function KPICard({
 }: CardProps) {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-all duration-200 hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-950/30">
-      <p className="text-sm font-medium text-slate-400">
-        {title}
-      </p>
+      <p className="text-sm font-medium text-slate-400">{title}</p>
 
       <h3 className={`mt-2 text-3xl font-bold ${color}`}>
         {value}
@@ -64,9 +70,7 @@ function KPICard({
   );
 }
 
-export default function AnalyticsCards({
-  data,
-}: Props) {
+export default function AnalyticsCards({ data }: Props) {
   const overviewCards: CardProps[] = [
     {
       title: "Total Leads",
@@ -100,7 +104,7 @@ export default function AnalyticsCards({
     {
       title: "Conversion Rate",
       value: `${data.overview.conversionRate}%`,
-      subtitle: "Lead ? Client",
+      subtitle: "Lead → Client",
       color: "text-cyan-400",
     },
     {
@@ -118,19 +122,19 @@ export default function AnalyticsCards({
   const revenueCards: CardProps[] = [
     {
       title: "Revenue Collected",
-      value: `?${data.revenue.projectedRevenue.toLocaleString()}`,
+      value: formatCurrency(data.revenue.totalRevenue),
       subtitle: "Total collections",
       color: "text-emerald-400",
     },
     {
       title: "Outstanding",
-      value: `?${data.revenue.outstandingRevenue.toLocaleString()}`,
+      value: formatCurrency(data.revenue.outstandingRevenue),
       subtitle: "Pending collection",
       color: "text-amber-400",
     },
     {
       title: "Forecast",
-      value: `?${data.revenue.totalRevenue.toLocaleString()}`,
+      value: formatCurrency(data.revenue.projectedRevenue),
       subtitle: "Projected revenue",
       color: "text-violet-400",
     },
@@ -161,26 +165,20 @@ export default function AnalyticsCards({
 
   return (
     <div className="space-y-10">
-
       <section>
-        <div className="mb-5 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-bold text-white">
-              Business Overview
-            </h2>
+        <div className="mb-5">
+          <h2 className="text-xl font-bold text-white">
+            Business Overview
+          </h2>
 
-            <p className="text-sm text-slate-400">
-              Live operational KPIs
-            </p>
-          </div>
+          <p className="text-sm text-slate-400">
+            Live operational KPIs
+          </p>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {overviewCards.map((card) => (
-            <KPICard
-              key={card.title}
-              {...card}
-            />
+            <KPICard key={card.title} {...card} />
           ))}
         </div>
       </section>
@@ -198,10 +196,7 @@ export default function AnalyticsCards({
 
         <div className="grid gap-4 md:grid-cols-3">
           {revenueCards.map((card) => (
-            <KPICard
-              key={card.title}
-              {...card}
-            />
+            <KPICard key={card.title} {...card} />
           ))}
         </div>
       </section>
@@ -219,21 +214,10 @@ export default function AnalyticsCards({
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {paymentCards.map((card) => (
-            <KPICard
-              key={card.title}
-              {...card}
-            />
+            <KPICard key={card.title} {...card} />
           ))}
         </div>
       </section>
-
     </div>
   );
 }
-
-
-
-
-
-
-
