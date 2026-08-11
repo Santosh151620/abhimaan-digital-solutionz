@@ -1,0 +1,10 @@
+{
+  "entry": [
+    "src/app/**/page.tsx",
+    "src/app/**/layout.tsx"
+  ],
+  "project": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ]
+}

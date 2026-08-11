@@ -78,7 +78,7 @@ export default function ActionCenterCard({
   const title =
     resolvedState === "attention"
       ? "Attention Required"
-      : "Attention Required";
+      : "No Critical Actions";
 
   return (
     <section

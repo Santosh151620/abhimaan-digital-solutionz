@@ -37,6 +37,7 @@ interface CardProps {
   value: React.ReactNode;
   subtitle?: string;
   color?: string;
+  description?: string;
 }
 
 function formatCurrency(value: number): string {
@@ -52,19 +53,103 @@ function KPICard({
   value,
   subtitle,
   color = "text-white",
+  description,
 }: CardProps) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-5 transition-all duration-200 hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-950/30">
-      <p className="text-sm font-medium text-slate-400">{title}</p>
+    <div
+      className="
+        group
+        relative
+        min-h-[170px]
+        overflow-hidden
+        rounded-2xl
+        border
+        border-white/10
+        bg-slate-900/70
+        p-5
+        shadow-lg
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:border-amber-300/40
+        hover:bg-slate-900
+        hover:shadow-xl
+      "
+    >
+      <div className="flex items-start justify-between gap-3">
+        <p
+          className="
+            text-xs
+            font-bold
+            uppercase
+            tracking-wide
+            leading-5
+            text-slate-400
+          "
+        >
+          {title}
+        </p>
 
-      <h3 className={`mt-2 text-3xl font-bold ${color}`}>
+        <span
+          className="
+            h-2
+            w-2
+            shrink-0
+            rounded-full
+            bg-amber-300/70
+          "
+        />
+      </div>
+
+      <h3
+        className={`
+          mt-5
+          text-4xl
+          font-black
+          tracking-tight
+          ${color}
+        `}
+      >
         {value}
       </h3>
 
       {subtitle && (
-        <p className="mt-2 text-xs text-slate-500">
+        <p
+          className="
+            mt-3
+            text-sm
+            leading-relaxed
+            text-slate-400
+          "
+        >
           {subtitle}
         </p>
+      )}
+
+      {description && (
+        <div
+          className="
+            pointer-events-none
+            absolute
+            inset-x-4
+            bottom-4
+            rounded-xl
+            border
+            border-amber-300/20
+            bg-slate-950/95
+            px-3
+            py-3
+            text-xs
+            leading-relaxed
+            text-slate-200
+            opacity-0
+            transition-all
+            duration-200
+            group-hover:opacity-100
+          "
+        >
+          {description}
+        </div>
       )}
     </div>
   );
@@ -92,19 +177,19 @@ export default function AnalyticsCards({ data }: Props) {
     {
       title: "Won Leads",
       value: data.overview.wonLeads,
-      subtitle: "Successfully converted",
+      subtitle: "Converted successfully",
       color: "text-emerald-400",
     },
     {
       title: "Lost Leads",
       value: data.overview.lostLeads,
-      subtitle: "Need follow-up analysis",
+      subtitle: "Needs analysis",
       color: "text-rose-400",
     },
     {
       title: "Conversion Rate",
       value: `${data.overview.conversionRate}%`,
-      subtitle: "Lead → Client",
+      subtitle: "Lead to client",
       color: "text-cyan-400",
     },
     {
@@ -142,29 +227,42 @@ export default function AnalyticsCards({ data }: Props) {
 
   const paymentCards: CardProps[] = [
     {
-      title: "Pending",
+      title: "Pending Payments",
       value: data.payments.pending,
+      subtitle: "Awaiting customer payment",
+      description:
+        "Invoices generated but payment has not yet been received.",
       color: "text-amber-400",
     },
     {
-      title: "Paid",
+      title: "Paid Payments",
       value: data.payments.paid,
+      subtitle: "Successfully collected",
+      description:
+        "Payments completed and revenue recognized.",
       color: "text-emerald-400",
     },
     {
-      title: "Overdue",
+      title: "Overdue Payments",
       value: data.payments.overdue,
+      subtitle: "Requires follow-up",
+      description:
+        "Outstanding invoices crossing payment due date.",
       color: "text-rose-400",
     },
     {
-      title: "Cancelled",
+      title: "Cancelled Payments",
       value: data.payments.cancelled,
-      color: "text-slate-400",
+      subtitle: "Cancelled transactions",
+      description:
+        "Payments cancelled or removed from active collection.",
+      color: "text-slate-300",
     },
   ];
 
   return (
     <div className="space-y-10">
+
       <section>
         <div className="mb-5">
           <h2 className="text-xl font-bold text-white">
@@ -183,6 +281,7 @@ export default function AnalyticsCards({ data }: Props) {
         </div>
       </section>
 
+
       <section>
         <div className="mb-5">
           <h2 className="text-xl font-bold text-white">
@@ -190,7 +289,7 @@ export default function AnalyticsCards({ data }: Props) {
           </h2>
 
           <p className="text-sm text-slate-400">
-            Collections & forecast
+            Collections and forecast
           </p>
         </div>
 
@@ -201,6 +300,7 @@ export default function AnalyticsCards({ data }: Props) {
         </div>
       </section>
 
+
       <section>
         <div className="mb-5">
           <h2 className="text-xl font-bold text-white">
@@ -208,16 +308,17 @@ export default function AnalyticsCards({ data }: Props) {
           </h2>
 
           <p className="text-sm text-slate-400">
-            Invoice payment status
+            Invoice payment lifecycle monitoring
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {paymentCards.map((card) => (
             <KPICard key={card.title} {...card} />
           ))}
         </div>
       </section>
+
     </div>
   );
 }

@@ -250,7 +250,7 @@ export default function CRMHealthCard({
         />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-800/80 pt-4">
+            <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-800/80 pt-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
             Total Leads
@@ -270,7 +270,6 @@ export default function CRMHealthCard({
             {formatNumber(overview?.wonLeads)}
           </p>
         </div>
-      </div>
-    </section>
+      </div> </section>
   );
 }

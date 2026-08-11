@@ -27,68 +27,180 @@ export default function ExecutiveSummaryCard({
 }: ExecutiveSummaryCardProps) {
   const items = [
     {
-      label: "Leads",
+      label: "Total Leads",
       value: formatCount(metrics.overview.totalLeads),
+      description: "Active sales opportunities",
     },
     {
-      label: "Clients",
+      label: "Active Clients",
       value: formatCount(metrics.overview.activeClients),
+      description: "Current customer relationships",
     },
     {
-      label: "Projects",
+      label: "Active Projects",
       value: formatCount(metrics.overview.activeProjects),
+      description: "Running business engagements",
     },
     {
-      label: "Revenue",
+      label: "Total Revenue",
       value: formatRevenue(metrics.revenue.totalRevenue),
+      description: "Recorded revenue performance",
     },
   ];
 
   return (
     <section
       aria-labelledby="executive-summary-title"
-      className="group min-w-0 rounded-2xl border border-slate-800/90 bg-slate-950/80 p-5 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-cyan-400/20 hover:shadow-xl hover:shadow-cyan-950/10 sm:p-6"
+      className="
+        min-w-0
+        rounded-2xl
+        border
+        border-white/10
+        bg-slate-950/80
+        p-5
+        shadow-xl
+        shadow-black/20
+        transition-all
+        duration-300
+        hover:border-amber-300/30
+        sm:p-6
+      "
     >
-      <div className="flex min-w-0 items-start justify-between gap-4">
+      <div className="flex items-start justify-between gap-4">
+
         <div className="min-w-0">
-          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-cyan-400">
+
+          <p
+            className="
+              text-[11px]
+              font-bold
+              uppercase
+              tracking-[0.2em]
+              text-amber-300
+            "
+          >
             Executive Overview
           </p>
 
+
           <h2
             id="executive-summary-title"
-            className="mt-1.5 truncate text-base font-semibold tracking-tight text-white sm:text-lg"
+            className="
+              mt-2
+              text-xl
+              font-black
+              tracking-tight
+              text-white
+            "
           >
             Executive Summary
           </h2>
 
-          <p className="mt-1 text-xs leading-relaxed text-slate-500">
-            Current business activity at a glance.
+
+          <p
+            className="
+              mt-1
+              text-sm
+              text-slate-400
+            "
+          >
+            Current business performance snapshot.
           </p>
+
         </div>
+
 
         <span
           aria-hidden="true"
-          className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.45)]"
+          className="
+            mt-2
+            h-2.5
+            w-2.5
+            shrink-0
+            rounded-full
+            bg-amber-300
+            shadow-[0_0_12px_rgba(252,211,77,0.45)]
+          "
         />
+
       </div>
 
-      <div className="mt-5 grid min-w-0 grid-cols-2 gap-3 xl:grid-cols-4">
+
+      <div
+        className="
+          mt-6
+          grid
+          gap-4
+          sm:grid-cols-2
+          xl:grid-cols-4
+        "
+      >
+
         {items.map((item) => (
+
           <div
             key={item.label}
-            className="min-w-0 rounded-xl border border-slate-800/80 bg-slate-900/70 px-3 py-3.5 transition-colors duration-200 hover:border-slate-700 hover:bg-slate-900 sm:px-4"
+            className="
+              min-w-0
+              rounded-2xl
+              border
+              border-white/10
+              bg-white/[0.04]
+              p-4
+              transition-all
+              duration-200
+              hover:bg-white/[0.07]
+            "
           >
-            <p className="truncate text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
+
+            <p
+              className="
+                whitespace-normal
+                text-xs
+                font-bold
+                uppercase
+                leading-5
+                tracking-wide
+                text-slate-400
+              "
+            >
               {item.label}
             </p>
 
-            <p className="mt-1.5 truncate text-xl font-bold tracking-tight text-white sm:text-2xl">
+
+            <p
+              className="
+                mt-3
+                whitespace-normal
+                break-words
+                text-2xl
+                font-black
+                tracking-tight
+                text-white
+                sm:text-3xl
+              "
+            >
               {item.value}
             </p>
+
+
+            <p
+              className="
+                mt-2
+                text-xs
+                leading-relaxed
+                text-slate-500
+              "
+            >
+              {item.description}
+            </p>
+
           </div>
+
         ))}
+
       </div>
+
     </section>
   );
 }
