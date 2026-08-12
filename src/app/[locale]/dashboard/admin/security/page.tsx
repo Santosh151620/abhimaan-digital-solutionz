@@ -24,14 +24,14 @@
  * Responsibilities:
  *
  * - Provide organization security navigation.
- * - Present security configuration areas.
+ * - Present RBAC and governance areas.
  * - Maintain CRM administration boundary separation.
  *
  * Does NOT:
  *
  * - Manage platform authentication.
  * - Modify Supabase auth configuration.
- * - Manage global ADS security policies.
+ * - Control global ADS policies.
  * - Access database directly.
  *
  * ============================================================================
@@ -39,6 +39,7 @@
 
 
 import Link from "next/link";
+
 
 
 interface SecurityArea {
@@ -52,41 +53,47 @@ interface SecurityArea {
 }
 
 
+
+
 const SECURITY_AREAS:SecurityArea[] = [
 
-    {
-        title:
-            "Access Control",
-
-        description:
-            "Manage organization roles, permissions and CRM capability access.",
-
-        href:
-            "/dashboard/admin/roles",
-    },
-
 
     {
         title:
-            "User Security",
+            "Organization Users",
 
         description:
-            "Review organization users, account status and membership controls.",
+            "Manage organization users, memberships and account lifecycle controls.",
 
         href:
             "/dashboard/admin/users",
+
     },
 
 
     {
         title:
-            "Permission Management",
+            "Roles & Access Control",
 
         description:
-            "Configure role-based permissions for CRM operations.",
+            "Configure organization roles and CRM capability access.",
+
+        href:
+            "/dashboard/admin/roles",
+
+    },
+
+
+    {
+        title:
+            "Permissions",
+
+        description:
+            "Manage permission definitions used by organization roles.",
 
         href:
             "/dashboard/admin/permissions",
+
     },
 
 
@@ -99,6 +106,7 @@ const SECURITY_AREAS:SecurityArea[] = [
 
         href:
             "/dashboard/admin/role-permissions",
+
     },
 
 
@@ -107,28 +115,39 @@ const SECURITY_AREAS:SecurityArea[] = [
             "Audit & Activity Review",
 
         description:
-            "Review administrative activity and security-sensitive actions.",
+            "Review organization administrative activity and security events.",
 
         href:
             "/dashboard/admin/audit-logs",
+
     },
 
 
 ];
 
 
+
+
+
 function SecurityCard({
+
     area,
+
 }:{
+
     area:SecurityArea;
+
 }) {
+
 
     return (
 
         <Link
+
             href={
                 area.href
             }
+
             className="
                 group
                 rounded-2xl
@@ -143,6 +162,7 @@ function SecurityCard({
                 focus-visible:ring-2
                 focus-visible:ring-primary
             "
+
         >
 
             <div
@@ -166,10 +186,13 @@ function SecurityCard({
                             text-foreground
                         "
                     >
+
                         {
                             area.title
                         }
+
                     </h2>
+
 
 
                     <p
@@ -180,12 +203,16 @@ function SecurityCard({
                             text-muted-foreground
                         "
                     >
+
                         {
                             area.description
                         }
+
                     </p>
 
+
                 </div>
+
 
 
                 <span
@@ -195,12 +222,15 @@ function SecurityCard({
                         text-lg
                         text-muted-foreground
                         transition
-                        group-hover:translate-x-0.5
+                        group-hover:translate-x-1
                         group-hover:text-primary
                     "
                 >
+
                     →
+
                 </span>
+
 
             </div>
 
@@ -213,7 +243,10 @@ function SecurityCard({
 
 
 
+
+
 export default function OrganizationSecurityPage() {
+
 
     return (
 
@@ -227,6 +260,7 @@ export default function OrganizationSecurityPage() {
                 lg:px-8
             "
         >
+
 
             <header
                 className="
@@ -247,21 +281,26 @@ export default function OrganizationSecurityPage() {
                         text-primary
                     "
                 >
+
                     Organization Administration
+
                 </p>
+
 
 
                 <h1
                     className="
                         mt-2
-                        text-2xl
+                        text-3xl
                         font-bold
                         text-foreground
-                        sm:text-3xl
                     "
                 >
+
                     Security Controls
+
                 </h1>
+
 
 
                 <p
@@ -273,12 +312,16 @@ export default function OrganizationSecurityPage() {
                         text-muted-foreground
                     "
                 >
-                    Manage your organization&apos;s CRM access control,
-                    permissions, user security and administrative governance.
+
+                    Manage organization-level access control,
+                    permissions, user governance and CRM security operations.
+
                 </p>
 
 
             </header>
+
+
 
 
 
@@ -293,20 +336,26 @@ export default function OrganizationSecurityPage() {
 
                 {
                     SECURITY_AREAS.map(
+
                         area => (
 
                             <SecurityCard
+
                                 key={
                                     area.href
                                 }
+
                                 area={
                                     area
                                 }
+
                             />
 
                         ),
+
                     )
                 }
+
 
             </section>
 

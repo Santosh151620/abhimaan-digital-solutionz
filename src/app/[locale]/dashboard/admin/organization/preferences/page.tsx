@@ -1,6 +1,3 @@
-import Link from "next/link";
-
-
 import type {
     OrganizationSetting,
 } from "@/types/admin/OrganizationSetting";
@@ -10,147 +7,83 @@ import type {
 /**
  * ============================================================================
  * ADS CRM — ORGANIZATION ADMINISTRATION
- * ============================================================================
+ *
+ * Workspace Preferences
  *
  * Route:
  *
- * /[locale]/dashboard/admin/organization
- *
- * Purpose:
- *
- * Organization-level CRM configuration entry point.
+ * /[locale]/dashboard/admin/organization/preferences
  *
  * Boundary:
  *
  * Customer Organization Administration
  *
- * NOT:
- *
- * /admin
- *
- * which belongs to ADS Platform Master Control Center.
- *
  * Responsibilities:
  *
- * - Organization administration navigation.
- * - Workspace configuration areas.
- * - CRM organization boundary separation.
+ * - Configure organization workspace defaults.
+ * - Provide preference management entry point.
  *
  * Does NOT:
  *
- * - Access database directly.
- * - Manage ADS platform tenants.
- * - Modify authentication.
- * - Control global ADS settings.
+ * - Manage individual user preferences.
+ * - Override user-level settings.
+ * - Control platform preferences.
  *
  * ============================================================================
  */
 
 
 
-const ORGANIZATION_SETTINGS:OrganizationSetting[] = [
-
+const PREFERENCE_SETTINGS: OrganizationSetting[] = [
 
     {
         title:
-            "Company Profile",
+            "Default Dashboard",
 
         description:
-            "Manage organization identity, business information and workspace details.",
+            "Configure the default landing dashboard for organization users.",
 
         key:
-            "profile",
+            "dashboard",
 
     },
 
 
     {
         title:
-            "Branding",
+            "Workspace Behaviour",
 
         description:
-            "Configure organization branding and CRM visual preferences.",
+            "Configure workspace interaction defaults.",
 
         key:
-            "branding",
+            "workspace",
 
     },
 
 
     {
         title:
-            "Localization",
+            "Notification Defaults",
 
         description:
-            "Configure language, timezone, date and regional preferences.",
+            "Configure organization notification preferences.",
 
         key:
-            "localization",
+            "notifications",
 
     },
 
 
     {
         title:
-            "Currency & Formats",
+            "User Experience",
 
         description:
-            "Configure currency, numbering and business display formats.",
+            "Configure accessibility and usability defaults.",
 
         key:
-            "formats",
-
-    },
-
-
-    {
-        title:
-            "Organization Security",
-
-        description:
-            "Manage organization access control, permissions and security governance.",
-
-        key:
-            "security",
-
-    },
-
-
-    {
-        title:
-            "Team Structure",
-
-        description:
-            "Manage teams and organization workforce structure.",
-
-        key:
-            "teams",
-
-    },
-
-
-    {
-        title:
-            "User Preferences",
-
-        description:
-            "Configure organization workspace behaviour and defaults.",
-
-        key:
-            "preferences",
-
-    },
-
-
-    {
-        title:
-            "Data Management",
-
-        description:
-            "Manage imports, exports, retention and organization data policies.",
-
-        key:
-            "data",
+            "experience",
 
     },
 
@@ -161,48 +94,7 @@ const ORGANIZATION_SETTINGS:OrganizationSetting[] = [
 
 
 
-const ROUTE_MAP:Record<string,string> = {
-
-
-    profile:
-        "/dashboard/admin/organization/profile",
-
-
-    branding:
-        "/dashboard/admin/organization/branding",
-
-
-    localization:
-        "/dashboard/admin/organization/localization",
-
-
-    formats:
-        "/dashboard/admin/organization/formats",
-
-
-    security:
-        "/dashboard/admin/security",
-
-
-    teams:
-        "/dashboard/admin/organization/teams",
-
-
-    preferences:
-        "/dashboard/admin/organization/preferences",
-
-
-    data:
-        "/dashboard/admin/organization/data",
-
-
-};
-
-
-
-
-
-function SettingCard({
+function PreferenceCard({
 
     setting,
 
@@ -213,34 +105,16 @@ function SettingCard({
 }) {
 
 
-    const href =
-        ROUTE_MAP[setting.key];
-
-
-
     return (
 
-        <Link
-
-            href={
-                href
-            }
-
+        <div
             className="
-                group
-                rounded-2xl
+                rounded-xl
                 border
                 border-border
                 bg-background
                 p-5
-                transition
-                hover:border-primary/50
-                hover:bg-muted/30
-                focus-visible:outline-none
-                focus-visible:ring-2
-                focus-visible:ring-primary
             "
-
         >
 
             <h2
@@ -275,22 +149,25 @@ function SettingCard({
 
 
 
-            <span
+            <button
+                type="button"
                 className="
                     mt-4
-                    inline-flex
+                    rounded-md
+                    border
+                    px-4
+                    py-2
                     text-sm
-                    font-medium
-                    text-primary
+                    hover:bg-muted
                 "
             >
 
-                Manage →
+                Configure
 
-            </span>
+            </button>
 
 
-        </Link>
+        </div>
 
     );
 
@@ -300,13 +177,12 @@ function SettingCard({
 
 
 
-export default function OrganizationAdminPage() {
+export default function OrganizationPreferencesPage() {
 
 
     return (
 
         <main
-
             className="
                 min-w-0
                 space-y-8
@@ -315,12 +191,10 @@ export default function OrganizationAdminPage() {
                 sm:px-6
                 lg:px-8
             "
-
         >
 
 
             <header
-
                 className="
                     rounded-2xl
                     border
@@ -328,11 +202,9 @@ export default function OrganizationAdminPage() {
                     bg-background
                     p-6
                 "
-
             >
 
                 <p
-
                     className="
                         text-xs
                         font-semibold
@@ -340,7 +212,6 @@ export default function OrganizationAdminPage() {
                         tracking-[0.2em]
                         text-primary
                     "
-
                 >
 
                     Organization Administration
@@ -350,24 +221,21 @@ export default function OrganizationAdminPage() {
 
 
                 <h1
-
                     className="
                         mt-2
                         text-3xl
                         font-bold
                         text-foreground
                     "
-
                 >
 
-                    Organization Settings
+                    Workspace Preferences
 
                 </h1>
 
 
 
                 <p
-
                     className="
                         mt-3
                         max-w-3xl
@@ -375,12 +243,10 @@ export default function OrganizationAdminPage() {
                         leading-6
                         text-muted-foreground
                     "
-
                 >
 
-                    Configure your organization CRM workspace,
-                    branding, regional preferences, team structure,
-                    data policies and security controls.
+                    Configure organization-wide workspace defaults,
+                    notifications and user experience preferences.
 
                 </p>
 
@@ -392,22 +258,19 @@ export default function OrganizationAdminPage() {
 
 
             <section
-
                 className="
                     grid
                     gap-5
                     md:grid-cols-2
-                    xl:grid-cols-3
                 "
-
             >
 
                 {
-                    ORGANIZATION_SETTINGS.map(
+                    PREFERENCE_SETTINGS.map(
 
                         setting => (
 
-                            <SettingCard
+                            <PreferenceCard
 
                                 key={
                                     setting.key

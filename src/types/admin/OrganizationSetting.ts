@@ -1,48 +1,32 @@
-/**
- * ============================================================================
- * Organization Settings
- * Enterprise Tenant Configuration
- * CRM + ERP Compatible
- * Production Contract
- * ============================================================================
- */
+export interface OrganizationSetting {
 
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+    id?: string;
 
-
-export interface OrganizationSetting extends BaseEntity {
-
-    organizationId: string;
-
-
-    category: string;
-
+    organization_id?: string;
 
     key: string;
 
+    value?: unknown;
 
-    value: string;
+    title: string;
 
+    description?: string;
 
-    inherited: boolean;
+    category?: string;
 
+    type?:
+        | "text"
+        | "number"
+        | "boolean"
+        | "select"
+        | "json";
 
-    locked: boolean;
-
-
-    /**
-     * Allows organization level override
-     * of system defaults.
-     */
-    overrideSource?: string;
-
+    options?: unknown[];
 
     metadata?: Record<string, unknown>;
 
+    created_at?: string;
 
-    createdBy?: string;
-
-
-    updatedBy?: string;
+    updated_at?: string;
 
 }
