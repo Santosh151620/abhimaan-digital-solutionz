@@ -76,7 +76,7 @@ export interface ReportSummary {
     shared: number;
 
 }
-export interface ReportSearchFilters {
+interface ReportSearchFilters {
 
     search?: string;
 

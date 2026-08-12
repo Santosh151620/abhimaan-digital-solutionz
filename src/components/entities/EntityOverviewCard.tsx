@@ -5,7 +5,7 @@ interface EntityOverviewCardProps {
   value: React.ReactNode;
 }
 
-export default function EntityOverviewCard({
+function EntityOverviewCard({
   title,
   value,
 }: EntityOverviewCardProps) {
@@ -22,7 +22,4 @@ export default function EntityOverviewCard({
   );
 }
 
-
-
-
-
+export {};

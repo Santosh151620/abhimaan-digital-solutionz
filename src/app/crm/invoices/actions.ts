@@ -10,7 +10,7 @@ export async function listInvoices() {
     return InvoicesServiceInstance.list();
 }
 
-export async function listArchivedInvoices() {
+async function listArchivedInvoices() {
     return InvoicesServiceInstance.listArchived();
 }
 
@@ -73,19 +73,19 @@ export async function updateInvoice(
     );
 }
 
-export async function deleteInvoice(
+async function deleteInvoice(
     id: string,
 ) {
     return InvoicesServiceInstance.delete(id);
 }
 
-export async function restoreInvoice(
+async function restoreInvoice(
     id: string,
 ) {
     return InvoicesServiceInstance.restore(id);
 }
 
-export async function updateInvoiceStatus(
+async function updateInvoiceStatus(
     id: string,
     status: InvoiceStatus,
 ) {
@@ -95,7 +95,7 @@ export async function updateInvoiceStatus(
     );
 }
 
-export async function getInvoicesSummary() {
+async function getInvoicesSummary() {
     return InvoicesServiceInstance.summary();
 }
 

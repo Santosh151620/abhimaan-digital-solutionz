@@ -11,7 +11,7 @@ interface EntityActionBarProps {
   children?: ReactNode;
 }
 
-export default function EntityActionBar({
+function EntityActionBar({
   viewHref,
   editHref,
   onDelete,

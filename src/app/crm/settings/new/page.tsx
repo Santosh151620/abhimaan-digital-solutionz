@@ -18,19 +18,22 @@ import type {
     Setting,
 } from '@/types/crm/Settings';
 
+
 export default function NewSettingPage() {
 
     const router =
         useRouter();
 
+
     const [loading, setLoading] =
         useState(false);
 
+
     const [toast, setToast] =
         useState<{
-            title:string;
-            message:string;
-            type:'success' | 'error';
+            title: string;
+            message: string;
+            type: 'success' | 'error';
         } | null>(null);
 
 
@@ -44,9 +47,11 @@ export default function NewSettingPage() {
 
         }
 
+
         try {
 
             setLoading(true);
+
 
             const setting =
                 await createSetting(
@@ -55,18 +60,27 @@ export default function NewSettingPage() {
 
 
             setToast({
-                title: 'Setting created',
-                message: 'CRM setting saved successfully.',
-                type: 'success',
+
+                title:
+                    'Setting created',
+
+                message:
+                    'CRM setting saved successfully.',
+
+                type:
+                    'success',
+
             });
 
 
+            /*
+             * The detail page performs its own server-side
+             * load, so an additional router.refresh() is not
+             * required after navigation.
+             */
             router.push(
                 `/crm/settings/${setting.id}`,
             );
-
-            router.refresh();
-
 
         } catch (error) {
 
@@ -77,11 +91,19 @@ export default function NewSettingPage() {
 
 
             setToast({
-                title: 'Save failed',
-                message: 'Unable to create setting. Please try again.',
-                type: 'error',
-            });
 
+                title:
+                    'Save failed',
+
+                message:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unable to create setting. Please try again.',
+
+                type:
+                    'error',
+
+            });
 
         } finally {
 
@@ -93,6 +115,13 @@ export default function NewSettingPage() {
 
 
     function handleCancel() {
+
+        if (loading) {
+
+            return;
+
+        }
+
 
         router.push(
             '/crm/settings',
@@ -122,32 +151,67 @@ export default function NewSettingPage() {
             }
 
 
-            <div>
+            <div className="
+                flex
+                flex-col
+                gap-4
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+            ">
 
-                <h1 className="text-2xl font-semibold">
-                    Create Setting
-                </h1>
 
-                <p className="text-sm text-muted-foreground">
-                    Create a configuration setting for this organization.
-                </p>
+                <div>
+
+                    <h1 className="crm-title">
+                        Create Setting
+                    </h1>
+
+
+                    <p className="crm-subtitle">
+                        Create a configuration setting for this organization.
+                    </p>
+
+                </div>
+
+
+                <Link
+                    href="/crm/settings"
+                    aria-disabled={loading}
+                    className="
+                        inline-flex
+                        w-fit
+                        rounded-lg
+                        border
+                        px-4
+                        py-2
+                        text-sm
+                        font-medium
+                        transition
+                        hover:bg-muted
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary/20
+                        aria-disabled:pointer-events-none
+                        aria-disabled:opacity-50
+                    "
+                >
+                    Cancel
+                </Link>
+
 
             </div>
 
 
-            <SettingsForm
-                loading={loading}
-                onSubmit={handleSubmit}
-                onCancel={handleCancel}
-            />
+            <div className="crm-card p-6">
 
+                <SettingsForm
+                    loading={loading}
+                    onSubmit={handleSubmit}
+                    onCancel={handleCancel}
+                />
 
-            <Link
-                href="/crm/settings"
-                className="text-sm underline"
-            >
-                Back to Settings
-            </Link>
+            </div>
 
 
         </div>

@@ -2,8 +2,10 @@ import {
     requireAdmin,
 } from "@/lib/requireAdmin";
 
+import AdminLayout from "@/components/admin/AdminLayout";
 
-export default async function AdminLayout({
+
+export default async function AdminProtectedLayout({
 
     children,
 
@@ -15,19 +17,17 @@ export default async function AdminLayout({
 
 
     await requireAdmin(
-
-        "ORGANIZATION_ADMIN"
-
+        "ORGANIZATION_ADMIN",
     );
 
 
     return (
 
-        <>
+        <AdminLayout>
 
             {children}
 
-        </>
+        </AdminLayout>
 
     );
 

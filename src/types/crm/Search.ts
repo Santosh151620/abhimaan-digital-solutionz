@@ -13,7 +13,7 @@
  * ============================================================
  */
 
-export type SearchEntityType =
+type SearchEntityType =
     | "Lead"
     | "Company"
     | "Contact"

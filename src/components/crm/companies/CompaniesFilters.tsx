@@ -9,7 +9,7 @@ interface CompaniesFiltersProps {
     onStatusChange: (value: CompanyStatus | 'ALL') => void;
 }
 
-const statuses: (CompanyStatus | 'ALL')[] = [
+const statuses: Array<CompanyStatus | 'ALL'> = [
     'ALL',
     'ACTIVE',
     'PROSPECT',
@@ -24,37 +24,90 @@ export function CompaniesFilters({
     onStatusChange,
 }: CompaniesFiltersProps) {
     return (
-        <div className="flex flex-col gap-4 rounded-xl border bg-background p-4 md:flex-row">
-            <input
-                value={search}
-                onChange={(e) => onSearchChange(e.target.value)}
-                placeholder="Search companies..."
-                className="flex-1 rounded-lg border px-3 py-2 outline-none"
-            />
-
-            <select
-                value={status}
-                onChange={(e) =>
-                    onStatusChange(
-                        e.target.value as CompanyStatus | 'ALL'
-                    )
-                }
-                className="rounded-lg border px-3 py-2"
-            >
-                {statuses.map((item) => (
-                    <option
-                        key={item}
-                        value={item}
+        <section
+            aria-label="Company filters"
+            className="crm-card p-4"
+        >
+            <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                <div className="flex-1">
+                    <label
+                        htmlFor="company-search"
+                        className="mb-1.5 block text-sm font-medium"
                     >
-                        {item}
-                    </option>
-                ))}
-            </select>
-        </div>
+                        Search
+                    </label>
+
+                    <input
+                        id="company-search"
+                        name="company-search"
+                        type="search"
+                        value={search}
+                        onChange={(event) =>
+                            onSearchChange(event.target.value)
+                        }
+                        placeholder="Search companies..."
+                        autoComplete="off"
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            bg-background
+                            px-3
+                            py-2.5
+                            text-sm
+                            outline-none
+                            transition
+                            placeholder:text-muted-foreground
+                            focus:border-primary
+                            focus:ring-2
+                            focus:ring-primary/20
+                        "
+                    />
+                </div>
+
+                <div className="w-full md:w-56">
+                    <label
+                        htmlFor="company-status"
+                        className="mb-1.5 block text-sm font-medium"
+                    >
+                        Status
+                    </label>
+
+                    <select
+                        id="company-status"
+                        name="company-status"
+                        value={status}
+                        onChange={(event) =>
+                            onStatusChange(
+                                event.target.value as CompanyStatus | 'ALL',
+                            )
+                        }
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            bg-background
+                            px-3
+                            py-2.5
+                            text-sm
+                            outline-none
+                            transition
+                            focus:border-primary
+                            focus:ring-2
+                            focus:ring-primary/20
+                        "
+                    >
+                        {statuses.map((item) => (
+                            <option
+                                key={item}
+                                value={item}
+                            >
+                                {item === 'ALL' ? 'All statuses' : item}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+            </div>
+        </section>
     );
 }
-
-
-
-
-

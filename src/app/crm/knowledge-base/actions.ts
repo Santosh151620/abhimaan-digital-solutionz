@@ -42,7 +42,7 @@ export async function getKnowledgeArticles() {
 
 }
 
-export async function getArchivedKnowledgeArticles() {
+async function getArchivedKnowledgeArticles() {
 
     return KnowledgeBaseServiceInstance.listArchived();
 
@@ -58,7 +58,7 @@ export async function getKnowledgeArticle(
 
 }
 
-export async function createKnowledgeArticle(
+async function createKnowledgeArticle(
     data: Partial<KnowledgeArticle>,
 ) {
 
@@ -76,7 +76,7 @@ export async function createKnowledgeArticle(
 
 }
 
-export async function updateKnowledgeArticle(
+async function updateKnowledgeArticle(
     id: string,
     data: Partial<KnowledgeArticle>,
 ) {
@@ -96,7 +96,7 @@ export async function updateKnowledgeArticle(
 
 }
 
-export async function deleteKnowledgeArticle(
+async function deleteKnowledgeArticle(
     id: string,
 ) {
 
@@ -114,7 +114,7 @@ export async function deleteKnowledgeArticle(
 
 }
 
-export async function restoreKnowledgeArticle(
+async function restoreKnowledgeArticle(
     id: string,
 ) {
 
@@ -132,7 +132,7 @@ export async function restoreKnowledgeArticle(
 
 }
 
-export async function updateKnowledgeArticleStatus(
+async function updateKnowledgeArticleStatus(
     id: string,
     status: KnowledgeStatus,
 ) {
@@ -152,7 +152,7 @@ export async function updateKnowledgeArticleStatus(
 
 }
 
-export async function getKnowledgeSummary() {
+async function getKnowledgeSummary() {
 
     return KnowledgeBaseServiceInstance.summary();
 

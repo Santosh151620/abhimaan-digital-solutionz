@@ -1,10 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import {
+    useMemo,
+    useState,
+} from 'react';
+
 import { useRouter } from 'next/navigation';
+
 import { useQueryClient } from '@tanstack/react-query';
 
 import { useCompanies } from '@/hooks/crm/useCompanies';
+
 import { CompaniesColumns } from './CompaniesColumns';
 import { CompaniesFilters } from './CompaniesFilters';
 import { CompaniesToolbar } from './CompaniesToolbar';
@@ -14,23 +20,63 @@ import type {
     CompanyStatus,
 } from '@/types/crm/Companies';
 
+
+interface CompaniesDataTableProps {
+
+    initialCompanies?: Company[];
+
+    onRefresh?: () => void;
+
+}
+
+
 const STATUS_BADGES: Record<CompanyStatus, string> = {
-    ACTIVE: 'bg-green-100 text-green-700',
-    PROSPECT: 'bg-blue-100 text-blue-700',
-    INACTIVE: 'bg-gray-100 text-gray-700',
-    ARCHIVED: 'bg-red-100 text-red-700',
+    ACTIVE:
+        'bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400',
+
+    PROSPECT:
+        'bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400',
+
+    INACTIVE:
+        'bg-gray-100 text-gray-700 dark:bg-gray-500/10 dark:text-gray-400',
+
+    ARCHIVED:
+        'bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400',
 };
+
 
 type SortField =
     | 'name'
     | 'industry'
     | 'status';
 
+
 type SortDirection =
     | 'asc'
     | 'desc';
 
-export function CompaniesDataTable() {
+
+function csvCell(
+    value: string | null | undefined,
+): string {
+
+    const normalized =
+        value ?? '';
+
+    return `"${normalized
+        .replace(/"/g, '""')
+        .replace(/\r?\n|\r/g, ' ')}"`;
+
+}
+
+
+export function CompaniesDataTable({
+
+    initialCompanies,
+
+    onRefresh,
+
+}: CompaniesDataTableProps) {
 
     const router =
         useRouter();
@@ -38,16 +84,23 @@ export function CompaniesDataTable() {
     const queryClient =
         useQueryClient();
 
+
     const {
         data = [],
         isLoading,
         isError,
-    } = useCompanies();
+    } = useCompanies({
+
+        initialCompanies,
+
+    });
+
 
     const [
         search,
         setSearch,
     ] = useState('');
+
 
     const [
         status,
@@ -56,32 +109,37 @@ export function CompaniesDataTable() {
         CompanyStatus | 'ALL'
     >('ALL');
 
+
     const [
         selected,
         setSelected,
     ] = useState<string[]>([]);
+
 
     const [
         sortBy,
         setSortBy,
     ] = useState<SortField>('name');
 
+
     const [
         direction,
         setDirection,
     ] = useState<SortDirection>('asc');
 
+
     const companies =
         useMemo(() => {
+
+            const keyword =
+                search
+                    .trim()
+                    .toLowerCase();
+
 
             const filtered =
                 data.filter(
                     (company: Company) => {
-
-                        const keyword =
-                            search
-                                .trim()
-                                .toLowerCase();
 
                         const matchesSearch =
 
@@ -101,7 +159,12 @@ export function CompaniesDataTable() {
 
                             company.industry
                                 ?.toLowerCase()
+                                .includes(keyword) ||
+
+                            company.website
+                                ?.toLowerCase()
                                 .includes(keyword);
+
 
                         const matchesStatus =
 
@@ -109,15 +172,17 @@ export function CompaniesDataTable() {
 
                             company.status === status;
 
+
                         return (
                             matchesSearch &&
                             matchesStatus
                         );
 
-                    }
+                    },
                 );
 
-            filtered.sort(
+
+            return [...filtered].sort(
                 (
                     left,
                     right,
@@ -125,29 +190,33 @@ export function CompaniesDataTable() {
 
                     const a =
                         String(
-                            left[
-                                sortBy
-                            ] ?? ''
+                            left[sortBy] ?? '',
                         ).toLowerCase();
+
 
                     const b =
                         String(
-                            right[
-                                sortBy
-                            ] ?? ''
+                            right[sortBy] ?? '',
                         ).toLowerCase();
 
+
                     const result =
-                        a.localeCompare(b);
+                        a.localeCompare(
+                            b,
+                            undefined,
+                            {
+                                sensitivity: 'base',
+                                numeric: true,
+                            },
+                        );
+
 
                     return direction === 'asc'
                         ? result
                         : -result;
 
-                }
+                },
             );
-
-            return filtered;
 
         }, [
             data,
@@ -157,30 +226,31 @@ export function CompaniesDataTable() {
             direction,
         ]);
 
+
     function toggleSort(
         field: SortField,
     ) {
 
-        if (
-            sortBy === field
-        ) {
+        if (sortBy === field) {
 
             setDirection(
                 current =>
                     current === 'asc'
                         ? 'desc'
-                        : 'asc'
+                        : 'asc',
             );
 
             return;
 
         }
 
+
         setSortBy(field);
 
         setDirection('asc');
 
     }
+
 
     function toggleSelection(
         id: string,
@@ -193,45 +263,68 @@ export function CompaniesDataTable() {
 
                     ? current.filter(
                         item =>
-                            item !== id
+                            item !== id,
                     )
 
                     : [
                         ...current,
                         id,
-                    ]
-
+                    ],
         );
 
     }
 
+
+    const allVisibleSelected =
+        companies.length > 0 &&
+        companies.every(
+            company =>
+                selected.includes(company.id),
+        );
+
+
     function toggleAll() {
 
-        if (
-            selected.length ===
-            companies.length
-        ) {
+        if (allVisibleSelected) {
 
-            setSelected([]);
+            setSelected(
+                current =>
+                    current.filter(
+                        id =>
+                            !companies.some(
+                                company =>
+                                    company.id === id,
+                            ),
+                    ),
+            );
 
             return;
 
         }
 
+
         setSelected(
+            current => {
 
-            companies.map(
-                company =>
-                    company.id
-            )
+                const ids =
+                    new Set(current);
 
+                companies.forEach(
+                    company =>
+                        ids.add(company.id),
+                );
+
+                return Array.from(ids);
+
+            },
         );
 
     }
 
+
     function refresh() {
 
-        queryClient.invalidateQueries({
+        void queryClient.invalidateQueries({
 
             queryKey: [
                 'companies',
@@ -239,9 +332,19 @@ export function CompaniesDataTable() {
 
         });
 
+        onRefresh?.();
+
     }
 
+
     function exportCsv() {
+
+        if (companies.length === 0) {
+
+            return;
+
+        }
+
 
         const rows = [
 
@@ -269,19 +372,25 @@ export function CompaniesDataTable() {
 
                     company.status,
 
-                ]
+                ],
             ),
 
         ];
 
-        const csv =
 
+        const csv =
             rows
                 .map(
                     row =>
-                        row.join(',')
+                        row
+                            .map(
+                                cell =>
+                                    csvCell(cell),
+                            )
+                            .join(','),
                 )
-                .join('\n');
+                .join('\r\n');
+
 
         const blob =
             new Blob(
@@ -289,50 +398,94 @@ export function CompaniesDataTable() {
                 {
                     type:
                         'text/csv;charset=utf-8;',
-                }
+                },
             );
+
 
         const url =
             URL.createObjectURL(
-                blob
+                blob,
             );
+
 
         const link =
             document.createElement(
-                'a'
+                'a',
             );
+
 
         link.href = url;
 
         link.download =
             'companies.csv';
 
+        document.body.appendChild(link);
+
         link.click();
 
+        link.remove();
+
         URL.revokeObjectURL(
-            url
+            url,
         );
 
     }
-        if (isLoading) {
+
+
+    if (isLoading) {
 
         return (
 
-            <div className="rounded-xl border bg-background p-10 text-center text-muted-foreground">
+            <section
+                aria-label="Companies"
+                aria-busy="true"
+                className="crm-card p-10 text-center"
+            >
 
-                Loading companies...
+                <div className="mx-auto max-w-sm">
 
-            </div>
+                    <div
+                        className="
+                            mx-auto
+                            h-8
+                            w-8
+                            animate-spin
+                            rounded-full
+                            border-2
+                            border-muted
+                            border-t-primary
+                        "
+                        aria-hidden="true"
+                    />
+
+                    <p className="mt-4 text-sm text-muted-foreground">
+                        Loading companies...
+                    </p>
+
+                </div>
+
+            </section>
 
         );
 
     }
+
 
     if (isError) {
 
         return (
 
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+            <section
+                role="alert"
+                className="
+                    rounded-xl
+                    border
+                    border-destructive/30
+                    bg-destructive/5
+                    p-8
+                    text-center
+                "
+            >
 
                 <h3 className="font-semibold">
                     Unable to load companies
@@ -342,11 +495,33 @@ export function CompaniesDataTable() {
                     Please refresh and try again.
                 </p>
 
-            </div>
+                <button
+                    type="button"
+                    onClick={refresh}
+                    className="
+                        mt-5
+                        rounded-lg
+                        border
+                        px-4
+                        py-2
+                        text-sm
+                        font-medium
+                        transition
+                        hover:bg-muted
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary/20
+                    "
+                >
+                    Retry
+                </button>
+
+            </section>
 
         );
 
     }
+
 
     return (
 
@@ -356,11 +531,14 @@ export function CompaniesDataTable() {
                 total={companies.length}
                 selected={selected.length}
                 onAdd={() =>
-                    router.push('/crm/companies/new')
+                    router.push(
+                        '/crm/companies/new',
+                    )
                 }
                 onRefresh={refresh}
                 onExport={exportCsv}
             />
+
 
             <CompaniesFilters
                 search={search}
@@ -369,301 +547,429 @@ export function CompaniesDataTable() {
                 onStatusChange={setStatus}
             />
 
-            <div className="overflow-x-auto rounded-xl border bg-background">
 
-                <table className="min-w-full">
+            <div className="crm-card overflow-hidden">
 
-                    <thead className="bg-muted/40">
+                <div className="overflow-x-auto">
 
-                        <tr>
+                    <table className="min-w-full">
 
-                            <th className="w-12 p-4">
+                        <caption className="sr-only">
+                            CRM companies
+                        </caption>
 
-                                <input
-                                    type="checkbox"
-                                    checked={
-                                        companies.length > 0 &&
-                                        selected.length === companies.length
-                                    }
-                                    onChange={toggleAll}
-                                />
 
-                            </th>
+                        <thead className="bg-muted/40">
+
+                            <tr>
+
+                                <th
+                                    scope="col"
+                                    className="w-12 p-4 text-left"
+                                >
+
+                                    <input
+                                        type="checkbox"
+                                        aria-label="Select all visible companies"
+                                        checked={
+                                            allVisibleSelected
+                                        }
+                                        onChange={toggleAll}
+                                    />
+
+                                </th>
+
+
+                                {
+                                    CompaniesColumns
+                                        .filter(
+                                            column =>
+                                                column.key !== 'select',
+                                        )
+                                        .map(
+                                            column => {
+
+                                                const sortable =
+                                                    column.key === 'name' ||
+                                                    column.key === 'industry' ||
+                                                    column.key === 'status';
+
+
+                                                return (
+
+                                                    <th
+                                                        key={column.key}
+                                                        scope="col"
+                                                        className={`
+                                                            p-4
+                                                            text-left
+                                                            text-sm
+                                                            font-semibold
+                                                            ${column.className ?? ''}
+                                                        `}
+                                                    >
+
+                                                        {
+                                                            sortable
+
+                                                                ? (
+
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() =>
+                                                                            toggleSort(
+                                                                                column.key as SortField,
+                                                                            )
+                                                                        }
+                                                                        aria-label={`Sort by ${column.label}`}
+                                                                        className="
+                                                                            inline-flex
+                                                                            items-center
+                                                                            gap-2
+                                                                            rounded
+                                                                            px-1
+                                                                            py-1
+                                                                            transition
+                                                                            hover:bg-muted
+                                                                            focus:outline-none
+                                                                            focus:ring-2
+                                                                            focus:ring-primary/20
+                                                                        "
+                                                                    >
+
+                                                                        {column.label}
+
+                                                                        {
+                                                                            sortBy === column.key
+                                                                                ? (
+                                                                                    <span
+                                                                                        aria-hidden="true"
+                                                                                    >
+                                                                                        {
+                                                                                            direction === 'asc'
+                                                                                                ? '▲'
+                                                                                                : '▼'
+                                                                                        }
+                                                                                    </span>
+                                                                                )
+                                                                                : (
+                                                                                    <span
+                                                                                        aria-hidden="true"
+                                                                                        className="text-muted-foreground"
+                                                                                    >
+                                                                                        ↕
+                                                                                    </span>
+                                                                                )
+                                                                        }
+
+                                                                    </button>
+
+                                                                )
+
+                                                                : column.label
+                                                        }
+
+                                                    </th>
+
+                                                );
+
+                                            },
+                                        )
+                                }
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
 
                             {
+                                companies.length === 0 && (
 
-                                CompaniesColumns
-                                    .filter(
-                                        column =>
-                                            column.key !== 'select'
-                                    )
-                                    .map(column => (
+                                    <tr>
 
-                                        <th
-                                            key={column.key}
-                                            className={`p-4 text-left text-sm font-semibold ${column.className ?? ''}`}
+                                        <td
+                                            colSpan={
+                                                CompaniesColumns.length
+                                            }
+                                            className="p-12"
                                         >
 
-                                            {
+                                            <div className="flex flex-col items-center gap-4 text-center">
 
-                                                column.key === 'name' ||
-                                                column.key === 'industry' ||
-                                                column.key === 'status'
+                                                <div
+                                                    className="text-5xl"
+                                                    aria-hidden="true"
+                                                >
+                                                    🏢
+                                                </div>
 
-                                                    ? (
+                                                <h3 className="text-xl font-semibold">
+                                                    No Companies Found
+                                                </h3>
 
-                                                        <button
-                                                            type="button"
-                                                            className="flex items-center gap-2"
-                                                            onClick={() =>
-                                                                toggleSort(
-                                                                    column.key as
-                                                                    | 'name'
-                                                                    | 'industry'
-                                                                    | 'status'
-                                                                )
-                                                            }
-                                                        >
+                                                <p className="text-sm text-muted-foreground">
+                                                    {
+                                                        search.trim() ||
+                                                        status !== 'ALL'
+                                                            ? 'Try adjusting your search or status filter.'
+                                                            : 'Create your first company to begin.'
+                                                    }
+                                                </p>
 
-                                                            {column.label}
-
-                                                            {
-
-                                                                sortBy === column.key &&
-
-                                                                (
-
-                                                                    direction === 'asc'
-                                                                        ? '▲'
-                                                                        : '▼'
-
-                                                                )
-
-                                                            }
-
-                                                        </button>
-
-                                                    )
-
-                                                    : column.label
-
-                                            }
-
-                                        </th>
-
-                                    ))
-
-                            }
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {
-
-                            companies.length === 0 &&
-
-                            (
-
-                                <tr>
-
-                                    <td
-                                        colSpan={CompaniesColumns.length}
-                                        className="p-12"
-                                    >
-
-                                        <div className="flex flex-col items-center gap-4">
-
-                                            <div className="text-6xl">
-
-                                                🏢
+                                                <button
+                                                    type="button"
+                                                    className="
+                                                        rounded-lg
+                                                        bg-primary
+                                                        px-5
+                                                        py-2
+                                                        font-medium
+                                                        text-primary-foreground
+                                                        transition
+                                                        hover:opacity-90
+                                                        focus:outline-none
+                                                        focus:ring-2
+                                                        focus:ring-primary/20
+                                                    "
+                                                    onClick={() =>
+                                                        router.push(
+                                                            '/crm/companies/new',
+                                                        )
+                                                    }
+                                                >
+                                                    New Company
+                                                </button>
 
                                             </div>
 
-                                            <h3 className="text-xl font-semibold">
+                                        </td>
 
-                                                No Companies Found
+                                    </tr>
 
-                                            </h3>
+                                )
+                            }
 
-                                            <p className="text-muted-foreground">
 
-                                                Create your first company to begin.
+                            {
+                                companies.map(
+                                    company => (
 
-                                            </p>
-
-                                            <button
-                                                type="button"
-                                                className="rounded-lg bg-primary px-5 py-2 text-primary-foreground"
-                                                onClick={() =>
-                                                    router.push('/crm/companies/new')
-                                                }
-                                            >
-
-                                                New Company
-
-                                            </button>
-
-                                        </div>
-
-                                    </td>
-
-                                </tr>
-
-                            )
-
-                        }
-
-                        {
-
-                            companies.map(company => (
-
-                                <tr
-                                    key={company.id}
-                                    className="cursor-pointer border-t transition hover:bg-muted/20"
-                                    onClick={() =>
-                                        router.push(
-                                            `/crm/companies/${company.id}`
-                                        )
-                                    }
-                                >
-
-                                    <td className="p-4">
-
-                                        <input
-                                            type="checkbox"
-                                            checked={selected.includes(company.id)}
-                                            onClick={event =>
-                                                event.stopPropagation()
+                                        <tr
+                                            key={company.id}
+                                            className="
+                                                cursor-pointer
+                                                border-t
+                                                transition
+                                                hover:bg-muted/20
+                                            "
+                                            onClick={() =>
+                                                router.push(
+                                                    `/crm/companies/${company.id}`,
+                                                )
                                             }
-                                            onChange={() =>
-                                                toggleSelection(company.id)
-                                            }
-                                        />
-
-                                    </td>
-                                                                        <td className="p-4 font-medium">
-                                        {company.name}
-                                    </td>
-
-                                    <td className="p-4">
-                                        {company.industry ?? '-'}
-                                    </td>
-
-                                    <td className="p-4">
-                                        {company.website ?? '-'}
-                                    </td>
-
-                                    <td className="p-4">
-                                        {company.phone ?? '-'}
-                                    </td>
-
-                                    <td className="p-4">
-
-                                        <span
-                                            className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_BADGES[company.status]}`}
                                         >
-                                            {company.status}
-                                        </span>
 
-                                    </td>
+                                            <td className="p-4">
 
-                                    <td className="p-4">
+                                                <input
+                                                    type="checkbox"
+                                                    aria-label={`Select ${company.name}`}
+                                                    checked={selected.includes(
+                                                        company.id,
+                                                    )}
+                                                    onClick={event =>
+                                                        event.stopPropagation()
+                                                    }
+                                                    onChange={() =>
+                                                        toggleSelection(
+                                                            company.id,
+                                                        )
+                                                    }
+                                                />
 
-                                        <div className="flex gap-2">
+                                            </td>
 
-                                            <button
-                                                type="button"
-                                                onClick={(event) => {
 
-                                                    event.stopPropagation();
+                                            <td className="p-4 font-medium">
+                                                {company.name}
+                                            </td>
 
-                                                    router.push(
-                                                        `/crm/companies/${company.id}`
-                                                    );
 
-                                                }}
-                                                className="rounded border px-3 py-1 text-sm hover:bg-muted"
-                                            >
-                                                View
-                                            </button>
+                                            <td className="p-4">
+                                                {company.industry ?? '-'}
+                                            </td>
 
-                                            <button
-                                                type="button"
-                                                onClick={(event) => {
 
-                                                    event.stopPropagation();
+                                            <td className="p-4">
+                                                {company.website ?? '-'}
+                                            </td>
 
-                                                    router.push(
-                                                        `/crm/companies/${company.id}/edit`
-                                                    );
 
-                                                }}
-                                                className="rounded border px-3 py-1 text-sm hover:bg-muted"
-                                            >
-                                                Edit
-                                            </button>
+                                            <td className="p-4">
+                                                {company.phone ?? '-'}
+                                            </td>
 
-                                        </div>
 
-                                    </td>
+                                            <td className="p-4">
 
-                                </tr>
+                                                <span
+                                                    className={`
+                                                        inline-flex
+                                                        rounded-full
+                                                        px-3
+                                                        py-1
+                                                        text-xs
+                                                        font-medium
+                                                        ${STATUS_BADGES[company.status]}
+                                                    `}
+                                                >
+                                                    {company.status}
+                                                </span>
 
-                            ))
+                                            </td>
 
-                        }
 
-                    </tbody>
+                                            <td className="p-4">
 
-                </table>
+                                                <div className="flex flex-wrap gap-2">
 
-                <div className="flex items-center justify-between border-t bg-muted/30 px-5 py-3 text-sm text-muted-foreground">
+                                                    <button
+                                                        type="button"
+                                                        onClick={event => {
+
+                                                            event.stopPropagation();
+
+                                                            router.push(
+                                                                `/crm/companies/${company.id}`,
+                                                            );
+
+                                                        }}
+                                                        className="
+                                                            rounded-lg
+                                                            border
+                                                            px-3
+                                                            py-1.5
+                                                            text-sm
+                                                            font-medium
+                                                            transition
+                                                            hover:bg-muted
+                                                            focus:outline-none
+                                                            focus:ring-2
+                                                            focus:ring-primary/20
+                                                        "
+                                                    >
+                                                        View
+                                                    </button>
+
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={event => {
+
+                                                            event.stopPropagation();
+
+                                                            router.push(
+                                                                `/crm/companies/${company.id}/edit`,
+                                                            );
+
+                                                        }}
+                                                        className="
+                                                            rounded-lg
+                                                            border
+                                                            px-3
+                                                            py-1.5
+                                                            text-sm
+                                                            font-medium
+                                                            transition
+                                                            hover:bg-muted
+                                                            focus:outline-none
+                                                            focus:ring-2
+                                                            focus:ring-primary/20
+                                                        "
+                                                    >
+                                                        Edit
+                                                    </button>
+
+                                                </div>
+
+                                            </td>
+
+                                        </tr>
+
+                                    ),
+                                )
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                <div
+                    className="
+                        flex
+                        flex-col
+                        gap-2
+                        border-t
+                        bg-muted/30
+                        px-5
+                        py-3
+                        text-sm
+                        text-muted-foreground
+                        sm:flex-row
+                        sm:items-center
+                        sm:justify-between
+                    "
+                >
 
                     <div>
 
                         Showing
 
-                        <strong className="mx-1">
+                        <strong className="mx-1 text-foreground">
                             {companies.length}
                         </strong>
 
-                        companies
+                        {companies.length === 1
+                            ? 'company'
+                            : 'companies'}
 
                     </div>
+
 
                     <div>
 
                         Selected
 
-                        <strong className="mx-1">
+                        <strong className="mx-1 text-foreground">
                             {selected.length}
                         </strong>
 
                         of
 
-                        <strong className="mx-1">
+                        <strong className="mx-1 text-foreground">
                             {companies.length}
                         </strong>
 
                     </div>
 
+
                     <div>
 
                         Sorted by
 
-                        <strong className="ml-1 capitalize">
+                        <strong className="ml-1 capitalize text-foreground">
                             {sortBy}
                         </strong>
 
                         {' '}
 
                         (
-
                         {direction}
-
                         )
 
                     </div>

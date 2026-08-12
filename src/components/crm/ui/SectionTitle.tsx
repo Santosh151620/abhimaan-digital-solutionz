@@ -1,46 +1,53 @@
-interface Props{
+interface Props {
 
-title:string;
+    title:string;
 
-subtitle?:string;
+    subtitle?:string;
 
 }
+
 
 export default function SectionTitle({
 
-title,
+    title,
 
-subtitle
+    subtitle,
 
 }:Props){
 
-return(
 
-<div>
+    return (
 
-<h2 className="text-xl font-bold text-slate-900">
+        <div>
 
-{title}
+            <h2
+                className="
+                    text-xl
+                    font-bold
+                    tracking-tight
+                    text-white
+                "
+            >
+                {title}
+            </h2>
 
-</h2>
 
-{
+            {subtitle && (
 
-subtitle&&(
+                <p
+                    className="
+                        mt-1
+                        text-sm
+                        text-slate-400
+                    "
+                >
+                    {subtitle}
+                </p>
 
-<p className="mt-1 text-sm text-slate-500">
+            )}
 
-{subtitle}
+        </div>
 
-</p>
-
-)
+    );
 
 }
-
-</div>
-
-);
-
-}
-

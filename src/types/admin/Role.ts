@@ -1,4 +1,4 @@
-import type {
+﻿import type {
     BaseEntity,
 } from "@/types/platform/BaseEntity";
 
@@ -140,7 +140,7 @@ export interface Role
 
 
 /**
- * User ↔ Role assignment
+ * User â†” Role assignment
  */
 
 export interface RoleAssignment {
@@ -218,3 +218,4 @@ export interface RoleHierarchy {
 
 
 }
+

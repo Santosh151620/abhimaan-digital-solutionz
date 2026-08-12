@@ -10,6 +10,7 @@ import type {
     SettingStatus,
 } from '@/types/crm/Settings';
 
+
 interface Props {
 
     initialValues?: Partial<Setting>;
@@ -24,6 +25,12 @@ interface Props {
 
 }
 
+
+const MAX_NAME_LENGTH = 150;
+
+const MAX_KEY_LENGTH = 150;
+
+
 const categories: SettingCategory[] = [
     'General',
     'Company',
@@ -37,10 +44,12 @@ const categories: SettingCategory[] = [
     'Other',
 ];
 
+
 const statuses: SettingStatus[] = [
     'Active',
     'Inactive',
 ];
+
 
 export default function SettingsForm({
     initialValues,
@@ -49,17 +58,32 @@ export default function SettingsForm({
     onCancel,
 }: Props) {
 
+
     const [form, setForm] =
         useState<Partial<Setting>>({
-            category: 'General',
-            status: 'Active',
-            editable: true,
-            encrypted: false,
+
+            category:
+                'General',
+
+            status:
+                'Active',
+
+            editable:
+                true,
+
+            encrypted:
+                false,
+
             ...initialValues,
+
         });
 
+
     const [error, setError] =
-        useState<string | null>(null);
+        useState<string | null>(
+            null,
+        );
+
 
     function update<K extends keyof Setting>(
         key: K,
@@ -67,12 +91,18 @@ export default function SettingsForm({
     ) {
 
         setForm(previous => ({
+
             ...previous,
-            [key]: value,
+
+            [key]:
+                value,
+
         }));
 
         setError(null);
+
     }
+
 
     async function submit(
         event: React.FormEvent<HTMLFormElement>,
@@ -80,17 +110,21 @@ export default function SettingsForm({
 
         event.preventDefault();
 
+
         if (loading) {
 
             return;
 
         }
 
+
         const name =
             form.name?.trim() ?? '';
 
+
         const key =
             form.key?.trim() ?? '';
+
 
         if (!name) {
 
@@ -102,6 +136,18 @@ export default function SettingsForm({
 
         }
 
+
+        if (name.length > MAX_NAME_LENGTH) {
+
+            setError(
+                `Setting name cannot exceed ${MAX_NAME_LENGTH} characters.`,
+            );
+
+            return;
+
+        }
+
+
         if (!key) {
 
             setError(
@@ -111,6 +157,18 @@ export default function SettingsForm({
             return;
 
         }
+
+
+        if (key.length > MAX_KEY_LENGTH) {
+
+            setError(
+                `Setting key cannot exceed ${MAX_KEY_LENGTH} characters.`,
+            );
+
+            return;
+
+        }
+
 
         if (!/^[a-zA-Z0-9._-]+$/.test(key)) {
 
@@ -122,15 +180,22 @@ export default function SettingsForm({
 
         }
 
+
         try {
 
             setError(null);
 
+
             await onSubmit?.({
+
                 ...form,
+
                 name,
+
                 key,
+
             });
+
 
         } catch (submitError) {
 
@@ -139,13 +204,17 @@ export default function SettingsForm({
                 submitError,
             );
 
+
             setError(
-                'Unable to save the setting. Please try again.',
+                submitError instanceof Error
+                    ? submitError.message
+                    : 'Unable to save the setting. Please try again.',
             );
 
         }
 
     }
+
 
     return (
 
@@ -168,7 +237,9 @@ export default function SettingsForm({
                 )
             }
 
+
             <div className="grid gap-4 md:grid-cols-2">
+
 
                 <div>
 
@@ -179,11 +250,13 @@ export default function SettingsForm({
                         Name
                     </label>
 
+
                     <input
                         id="setting-name"
                         name="name"
                         type="text"
                         required
+                        maxLength={MAX_NAME_LENGTH}
                         autoComplete="off"
                         disabled={loading}
                         className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
@@ -198,6 +271,7 @@ export default function SettingsForm({
 
                 </div>
 
+
                 <div>
 
                     <label
@@ -207,15 +281,17 @@ export default function SettingsForm({
                         Key
                     </label>
 
+
                     <input
                         id="setting-key"
                         name="key"
                         type="text"
                         required
+                        maxLength={MAX_KEY_LENGTH}
                         autoComplete="off"
-                        disabled={loading}
                         placeholder="example.setting"
                         className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        disabled={loading}
                         value={form.key ?? ''}
                         onChange={event =>
                             update(
@@ -227,6 +303,7 @@ export default function SettingsForm({
 
                 </div>
 
+
                 <div>
 
                     <label
@@ -235,6 +312,7 @@ export default function SettingsForm({
                     >
                         Category
                     </label>
+
 
                     <select
                         id="setting-category"
@@ -270,6 +348,7 @@ export default function SettingsForm({
 
                 </div>
 
+
                 <div>
 
                     <label
@@ -278,6 +357,7 @@ export default function SettingsForm({
                     >
                         Status
                     </label>
+
 
                     <select
                         id="setting-status"
@@ -313,6 +393,7 @@ export default function SettingsForm({
 
                 </div>
 
+
                 <div className="md:col-span-2">
 
                     <label
@@ -321,6 +402,7 @@ export default function SettingsForm({
                     >
                         Value
                     </label>
+
 
                     <textarea
                         id="setting-value"
@@ -339,6 +421,7 @@ export default function SettingsForm({
 
                 </div>
 
+
                 <div className="md:col-span-2">
 
                     <label
@@ -347,6 +430,7 @@ export default function SettingsForm({
                     >
                         Description
                     </label>
+
 
                     <textarea
                         id="setting-description"
@@ -364,6 +448,7 @@ export default function SettingsForm({
                     />
 
                 </div>
+
 
                 <label className="flex items-center gap-2">
 
@@ -386,6 +471,7 @@ export default function SettingsForm({
                     Editable
 
                 </label>
+
 
                 <label className="flex items-center gap-2">
 
@@ -411,6 +497,7 @@ export default function SettingsForm({
 
             </div>
 
+
             <div className="flex justify-end gap-3">
 
                 {
@@ -420,7 +507,7 @@ export default function SettingsForm({
                             type="button"
                             onClick={onCancel}
                             disabled={loading}
-                            className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-lg border px-4 py-2 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             Cancel
                         </button>
@@ -428,10 +515,11 @@ export default function SettingsForm({
                     )
                 }
 
+
                 <button
                     type="submit"
                     disabled={loading}
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {
                         loading

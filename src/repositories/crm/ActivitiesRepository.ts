@@ -1284,5 +1284,5 @@ export function createActivitiesRepository(
   );
 }
 
-export const ActivitiesRepositoryInstance =
+const ActivitiesRepositoryInstance =
   createActivitiesRepository;

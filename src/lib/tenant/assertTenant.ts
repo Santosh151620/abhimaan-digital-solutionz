@@ -9,7 +9,7 @@ import { TenantContextManager } from "./tenantContext";
  * - API handlers
  * - Background jobs
  */
-export function assertOrganization(): string {
+function assertOrganization(): string {
   const tenant = TenantContextManager.require();
 
   if (!tenant.organizationId?.trim()) {
@@ -30,17 +30,17 @@ export function getOrganizationId(): string {
  * Backward compatibility.
  * Remove after all callers migrate.
  */
-export const assertTenant = assertOrganization;
+const assertTenant = assertOrganization;
 
 /**
  * @deprecated Use getOrganizationId()
  */
-export const getTenantId = getOrganizationId;
+const getTenantId = getOrganizationId;
 
 /**
  * Returns the full immutable organization context.
  */
-export function getTenant() {
+function getTenant() {
   return TenantContextManager.require();
 }
 

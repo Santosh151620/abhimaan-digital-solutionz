@@ -51,7 +51,7 @@ export async function saveDepartment(
     );
 }
 
-export async function deleteDepartment(
+async function deleteDepartment(
     id:string,
 ):Promise<void> {
 

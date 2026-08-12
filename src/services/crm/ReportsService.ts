@@ -105,6 +105,6 @@ class ReportService {
 export const ReportServiceInstance =
     new ReportService();
 
-export const ReportsServiceInstance =
+const ReportsServiceInstance =
     ReportServiceInstance;
 

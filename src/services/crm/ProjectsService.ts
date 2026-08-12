@@ -116,7 +116,7 @@ export let ProjectsServiceInstance: ProjectsService;
 
 
 
-export function initializeProjectsService(
+function initializeProjectsService(
     supabase: SupabaseClient,
 ) {
 

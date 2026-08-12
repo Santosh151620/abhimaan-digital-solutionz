@@ -7,7 +7,7 @@ interface EntityNotificationsProps {
     notifications: Notification[];
 }
 
-export default function EntityNotifications({
+function EntityNotifications({
     notifications,
 }: EntityNotificationsProps) {
 

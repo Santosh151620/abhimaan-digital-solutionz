@@ -1,26 +1,47 @@
 import type { ReactNode } from "react";
 
-interface Props{
 
-children:ReactNode;
+interface Props {
+
+    children: ReactNode;
+
+    className?: string;
 
 }
+
 
 export default function TableCard({
 
-children
+    children,
 
-}:Props){
+    className = "",
 
-return(
+}: Props) {
 
-<div className="overflow-hidden rounded-3xl border border-white/10 bg-white/80 backdrop-blur-xl shadow-xl">
 
-{children}
+    return (
 
-</div>
+        <div
+            className={`
+                overflow-hidden
+                rounded-2xl
+                border
+                border-cyan-400/10
+                bg-slate-950/80
+                shadow-xl
+                shadow-black/20
+                backdrop-blur-xl
+                transition-all
+                duration-300
+                hover:border-cyan-400/20
+                ${className}
+            `}
+        >
 
-);
+            {children}
+
+        </div>
+
+    );
 
 }
-

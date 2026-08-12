@@ -70,7 +70,7 @@ export async function createProduct(
 
 
 
-export async function updateProduct(
+async function updateProduct(
     id:string,
     data:Record<string, unknown>,
 ) {
@@ -137,7 +137,7 @@ export async function updateProduct(
 
 
 
-export async function deleteProduct(
+async function deleteProduct(
     id:string,
 ) {
 
@@ -196,7 +196,7 @@ export async function deleteProduct(
 
 
 
-export async function restoreProduct(
+async function restoreProduct(
     id:string,
 ) {
 

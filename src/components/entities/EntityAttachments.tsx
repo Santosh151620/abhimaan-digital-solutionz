@@ -7,7 +7,7 @@ interface EntityAttachmentsProps {
     attachments: Attachment[];
 }
 
-export default function EntityAttachments({
+function EntityAttachments({
     attachments,
 }: EntityAttachmentsProps) {
 

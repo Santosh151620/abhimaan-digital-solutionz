@@ -1,4 +1,4 @@
-export type WorkflowStatus =
+type WorkflowStatus =
 
     | "Active"
 
@@ -8,7 +8,7 @@ export type WorkflowStatus =
 
 
 
-export type WorkflowTrigger =
+type WorkflowTrigger =
 
     | "Manual"
 

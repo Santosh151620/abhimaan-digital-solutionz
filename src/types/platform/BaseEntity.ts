@@ -77,7 +77,7 @@ export interface BaseEntity {
 /**
  * Entities supporting activation lifecycle
  */
-export interface Activatable {
+interface Activatable {
 
     isActive: boolean;
 
@@ -87,7 +87,7 @@ export interface Activatable {
 /**
  * Entities supporting soft deletion
  */
-export interface SoftDelete {
+interface SoftDelete {
 
    deletedAt?: string;
 
@@ -102,7 +102,7 @@ isDeleted?: boolean;
 /**
  * Entities supporting version tracking
  */
-export interface Versioned {
+interface Versioned {
 
     version: number;
 

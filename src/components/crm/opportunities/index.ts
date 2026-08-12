@@ -1,5 +1,4 @@
-export { default as OpportunitiesClient }
-from './OpportunitiesClient';
+;
 
 
 export { default as OpportunitiesForm }

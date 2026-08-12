@@ -190,7 +190,7 @@ export interface Activity {
 
 
 
-export interface CreateActivityInput {
+interface CreateActivityInput {
 
 
     activityNumber?: string;
@@ -266,7 +266,7 @@ export interface CreateActivityInput {
 
 
 
-export type UpdateActivityInput =
+type UpdateActivityInput =
     Partial<CreateActivityInput>
     & {
 
@@ -282,7 +282,7 @@ export type UpdateActivityInput =
 
 
 
-export interface ActivityFilters {
+interface ActivityFilters {
 
 
     type?: ActivityType;

@@ -129,15 +129,14 @@ function StatusRow({
       <div className="flex items-start gap-3">
         <span
           aria-hidden="true"
-          className={`mt-1 h-2 w-2 shrink-0 rounded-full ${
-            status.tone === "success"
+          className={`mt-1 h-2 w-2 shrink-0 rounded-full ${status.tone === "success"
               ? "bg-emerald-400"
               : status.tone === "warning"
                 ? "bg-amber-400"
                 : status.tone === "danger"
                   ? "bg-rose-400"
                   : "bg-slate-500"
-          }`}
+            }`}
         />
 
         <div className="min-w-0">
@@ -250,7 +249,7 @@ export default function CRMHealthCard({
         />
       </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-800/80 pt-4">
+      <div className="mt-4 grid grid-cols-2 gap-3 border-t border-slate-800/80 pt-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500">
             Total Leads
@@ -270,6 +269,8 @@ export default function CRMHealthCard({
             {formatNumber(overview?.wonLeads)}
           </p>
         </div>
-      </div> </section>
+      </div>
+
+    </section>
   );
 }

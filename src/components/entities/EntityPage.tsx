@@ -7,7 +7,7 @@ interface EntityPageProps {
   children: React.ReactNode;
 }
 
-export default function EntityPage({
+function EntityPage({
   header,
   overview,
   actions,
@@ -28,7 +28,4 @@ export default function EntityPage({
   );
 }
 
-
-
-
-
+export {};

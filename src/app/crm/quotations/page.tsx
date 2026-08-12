@@ -14,7 +14,8 @@ import {
 
 export default async function QuotationsPage() {
 
-    const quotations = await getQuotations();
+    const quotations =
+        await getQuotations();
 
 
     return (
@@ -34,8 +35,6 @@ export default async function QuotationsPage() {
 
 
             <div className="space-y-6">
-
-
                 <QuotationsSummary
                     quotations={quotations}
                 />
@@ -51,7 +50,13 @@ export default async function QuotationsPage() {
                 />
 
 
-                <div className="flex gap-3">
+                <div
+                    className="
+                        flex
+                        flex-wrap
+                        gap-3
+                    "
+                >
 
                     <QuotationsExport
                         quotations={quotations}

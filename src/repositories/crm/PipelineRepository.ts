@@ -66,7 +66,7 @@ interface OpportunityPipelineRow {
 }
 
 
-export class PipelineRepository
+class PipelineRepository
     extends BaseRepository<Opportunity> {
 
 
@@ -595,5 +595,5 @@ export function createPipelineRepository(
 }
 
 
-export const PipelineRepositoryInstance =
+const PipelineRepositoryInstance =
     createPipelineRepository;

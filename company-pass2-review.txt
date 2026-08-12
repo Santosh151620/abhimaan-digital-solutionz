@@ -1,0 +1,2298 @@
+
+============================================================
+FILE: src/app/crm/companies/page.tsx
+============================================================
+import {
+
+    searchCompanies,
+
+    getCompaniesSummary,
+
+} from './actions';
+
+
+
+import type {
+
+    Company,
+
+} from '@/types/crm/Companies';
+
+import CompaniesClient from './CompaniesClient';
+
+
+
+interface Props {
+
+
+    searchParams?: Promise<{
+
+        status?:string;
+
+        industry?:string;
+
+        search?:string;
+
+    }>;
+
+
+}
+
+
+
+
+export default async function CompaniesPage(
+
+    props:Props
+
+) {
+
+
+
+    const searchParams =
+
+        await props.searchParams;
+
+
+
+
+    const companies =
+
+        await searchCompanies({
+
+            status:
+
+                searchParams?.status as Company['status'],
+
+
+            industry:
+
+                searchParams?.industry,
+
+
+            search:
+
+                searchParams?.search,
+
+
+        });
+
+
+
+
+
+    const summary =
+
+        await getCompaniesSummary();
+
+
+
+
+
+    return (
+
+
+        <div className="space-y-6">
+
+
+
+            <div>
+
+
+                <h1 className="text-2xl font-semibold">
+
+                    Companies
+
+                </h1>
+
+
+
+                <p className="text-sm text-muted-foreground">
+
+                    Manage CRM companies and customer accounts.
+
+                </p>
+
+
+            </div>
+
+
+
+
+
+            <div className="grid gap-4 md:grid-cols-4">
+
+
+
+                <div className="rounded-lg border p-4">
+
+
+                    <p className="text-sm text-muted-foreground">
+
+                        Total
+
+                    </p>
+
+
+                    <p className="text-2xl font-bold">
+
+                        {summary.total}
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+                <div className="rounded-lg border p-4">
+
+
+                    <p className="text-sm text-muted-foreground">
+
+                        Active
+
+                    </p>
+
+
+                    <p className="text-2xl font-bold">
+
+                        {summary.active}
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+                <div className="rounded-lg border p-4">
+
+
+                    <p className="text-sm text-muted-foreground">
+
+                        Prospects
+
+                    </p>
+
+
+                    <p className="text-2xl font-bold">
+
+                        {summary.prospect}
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+                <div className="rounded-lg border p-4">
+
+
+                    <p className="text-sm text-muted-foreground">
+
+                        Inactive
+
+                    </p>
+
+
+                    <p className="text-2xl font-bold">
+
+                        {summary.inactive}
+
+                    </p>
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            <div className="rounded-lg border p-6">
+
+
+                <CompaniesClient
+
+                    initialCompanies={companies}
+
+                />
+
+
+            </div>
+
+
+
+        </div>
+
+
+    );
+
+}
+
+
+
+============================================================
+FILE: src/app/crm/companies/new/page.tsx
+============================================================
+import { redirect } from 'next/navigation';
+
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+
+import {
+    CompaniesForm,
+} from '@/components/crm/companies';
+
+import {
+    createCompany,
+} from '../actions';
+
+import type {
+    CompanyDetails,
+} from '@/types/crm/Companies';
+
+export default function NewCompaniesPage() {
+
+    async function submit(
+        values: Partial<CompanyDetails>,
+    ) {
+        'use server';
+
+        await createCompany(values);
+
+        redirect('/crm/companies');
+    }
+
+    return (
+
+        <CRMPageLayout>
+
+            <CRMHeader
+                title="New Company"
+                description="Register a new customer organization in the CRM."
+                actions={[
+                    {
+                        label: 'Back',
+                        href: '/crm/companies',
+                    },
+                ]}
+            />
+
+            <CompaniesForm
+                onSubmit={submit}
+            />
+
+        </CRMPageLayout>
+
+    );
+
+}
+
+
+
+============================================================
+FILE: src/app/crm/companies/[id]/page.tsx
+============================================================
+import Link from "next/link";
+
+import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
+
+import EntityOverviewGrid from "@/components/entities/EntityOverviewGrid";
+import EntityWorkspace from "@/components/entities/EntityWorkspace";
+
+import {
+    CompaniesServiceInstance,
+} from "@/services/crm/CompaniesService";
+
+
+interface PageProps {
+
+    params: Promise<{
+        id: string;
+    }>;
+
+}
+
+
+
+export default async function CompanyDetailsPage({
+
+    params,
+
+}: PageProps) {
+
+
+    const {
+        id,
+    } = await params;
+
+
+
+    const company =
+        await CompaniesServiceInstance.details(id);
+
+
+
+    if (!company) {
+
+        return (
+
+            <CRMPageLayout>
+
+
+                <div
+                    className="
+                        rounded-2xl
+                        border
+                        border-white/10
+                        bg-[#111111]
+                        p-8
+                        text-center
+                    "
+                >
+
+                    <h2
+                        className="
+                            text-xl
+                            font-semibold
+                            text-white
+                        "
+                    >
+                        No company to view
+                    </h2>
+
+
+                    <p
+                        className="
+                            mt-2
+                            text-sm
+                            text-slate-400
+                        "
+                    >
+                        The company may have been removed
+                        or does not exist.
+                    </p>
+
+
+
+                    <Link
+
+                        href="/crm/companies"
+
+                        className="
+                            mt-5
+                            inline-flex
+                            rounded-xl
+                            bg-amber-300
+                            px-5
+                            py-2
+                            text-sm
+                            font-semibold
+                            text-black
+                        "
+
+                    >
+
+                        Back to Companies
+
+                    </Link>
+
+
+                </div>
+
+
+            </CRMPageLayout>
+
+        );
+
+    }
+
+
+
+    return (
+
+        <CRMPageLayout>
+
+
+            <div
+                className="
+                    flex
+                    items-start
+                    justify-between
+                "
+            >
+
+
+                <div>
+
+                    <h1
+                        className="
+                            text-3xl
+                            font-bold
+                            text-white
+                        "
+                    >
+
+                        {company.name}
+
+                    </h1>
+
+
+                    <p
+                        className="
+                            text-slate-400
+                        "
+                    >
+                        Company Details
+                    </p>
+
+
+                </div>
+
+
+
+                <div
+                    className="
+                        flex
+                        gap-2
+                    "
+                >
+
+                    <Link
+
+                        href="/crm/companies"
+
+                        className="
+                            rounded-xl
+                            border
+                            border-white/10
+                            px-4
+                            py-2
+                            text-sm
+                            text-slate-300
+                            hover:bg-white/5
+                        "
+
+                    >
+
+                        Back
+
+                    </Link>
+
+
+
+                    <Link
+
+                        href={`/crm/companies/${company.id}/edit`}
+
+                        className="
+                            rounded-xl
+                            bg-amber-300
+                            px-4
+                            py-2
+                            text-sm
+                            font-semibold
+                            text-black
+                        "
+
+                    >
+
+                        Edit
+
+                    </Link>
+
+
+                </div>
+
+
+            </div>
+
+
+
+            <EntityWorkspace
+
+                entityType="Company"
+
+                entityId={company.id}
+
+                overview={
+
+                    <EntityOverviewGrid
+
+                        items={[
+
+                            {
+                                title: "Status",
+                                value: company.status,
+                            },
+
+                            {
+                                title: "Industry",
+                                value: company.industry ?? "—",
+                            },
+
+                            {
+                                title: "Employees",
+                                value: company.employees ?? "—",
+                            },
+
+                            {
+                                title: "Website",
+                                value: company.website ?? "—",
+                            },
+
+                            {
+                                title: "Email",
+                                value: company.email ?? "—",
+                            },
+
+                            {
+                                title: "Phone",
+                                value: company.phone ?? "—",
+                            },
+
+                            {
+                                title: "Legal Name",
+                                value: company.legalName ?? "—",
+                            },
+
+                            {
+                                title: "Address",
+                                value: company.address ?? "—",
+                            },
+
+                        ]}
+
+                    />
+
+                }
+
+            />
+
+
+        </CRMPageLayout>
+
+    );
+
+}
+
+============================================================
+FILE: src/app/crm/companies/[id]/edit/page.tsx
+============================================================
+import {
+  notFound,
+  redirect,
+} from 'next/navigation';
+
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
+
+import {
+  CompaniesForm,
+} from '@/components/crm/companies';
+
+import {
+  getCompany,
+  updateCompany,
+} from '../../actions';
+
+import type {
+  CompanyDetails,
+} from '@/types/crm/Companies';
+
+
+interface PageProps {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
+
+export default async function EditCompanyPage({
+  params,
+}: PageProps) {
+
+  const {
+    id,
+  } = await params;
+
+
+  const company = await getCompany(id);
+
+
+  if (!company) {
+    notFound();
+  }
+
+
+  async function submit(
+    values: Partial<CompanyDetails>
+  ) {
+    'use server';
+
+
+    await updateCompany(
+      id,
+      values
+    );
+
+
+    redirect(
+      `/crm/companies/${id}`
+    );
+  }
+
+
+  return (
+
+    <CRMPageLayout>
+
+     <CRMHeader
+    title="Edit Company"
+    description="Update company information and subscription details."
+    actions={[
+        {
+            label: 'Back',
+            href: `/crm/companies/${id}`,
+        },
+    ]}
+/>
+
+
+      <CompaniesForm
+        initialValues={company}
+        onSubmit={submit}
+      />
+
+    </CRMPageLayout>
+
+  );
+}
+
+============================================================
+FILE: src\components\crm\companies\CompaniesColumns.ts
+============================================================
+import type { Company } from '@/types/crm/Companies';
+
+export interface CompanyColumn {
+
+    key:
+        | keyof Company
+        | 'select'
+        | 'actions';
+
+    label: string;
+
+    sortable?: boolean;
+
+    className?: string;
+
+}
+
+export const CompaniesColumns: CompanyColumn[] = [
+
+    {
+        key: 'select',
+        label: '',
+        className: 'w-12',
+    },
+
+    {
+        key: 'name',
+        label: 'Company',
+        sortable: true,
+        className: 'min-w-[220px]',
+    },
+
+    {
+        key: 'industry',
+        label: 'Industry',
+        sortable: true,
+        className: 'min-w-[180px]',
+    },
+
+    {
+        key: 'website',
+        label: 'Website',
+        className: 'min-w-[220px]',
+    },
+
+    {
+        key: 'phone',
+        label: 'Phone',
+        className: 'min-w-[160px]',
+    },
+
+    {
+        key: 'status',
+        label: 'Status',
+        sortable: true,
+        className: 'w-40',
+    },
+
+    {
+        key: 'actions',
+        label: 'Actions',
+        className: 'w-44 text-right',
+    },
+
+];
+
+
+============================================================
+FILE: src\components\crm\companies\CompaniesDataTable.tsx
+============================================================
+'use client';
+
+import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+
+import { useCompanies } from '@/hooks/crm/useCompanies';
+import { CompaniesColumns } from './CompaniesColumns';
+import { CompaniesFilters } from './CompaniesFilters';
+import { CompaniesToolbar } from './CompaniesToolbar';
+
+import type {
+    Company,
+    CompanyStatus,
+} from '@/types/crm/Companies';
+
+const STATUS_BADGES: Record<CompanyStatus, string> = {
+    ACTIVE: 'bg-green-100 text-green-700',
+    PROSPECT: 'bg-blue-100 text-blue-700',
+    INACTIVE: 'bg-gray-100 text-gray-700',
+    ARCHIVED: 'bg-red-100 text-red-700',
+};
+
+type SortField =
+    | 'name'
+    | 'industry'
+    | 'status';
+
+type SortDirection =
+    | 'asc'
+    | 'desc';
+
+export function CompaniesDataTable() {
+
+    const router =
+        useRouter();
+
+    const queryClient =
+        useQueryClient();
+
+    const {
+        data = [],
+        isLoading,
+        isError,
+    } = useCompanies();
+
+    const [
+        search,
+        setSearch,
+    ] = useState('');
+
+    const [
+        status,
+        setStatus,
+    ] = useState<
+        CompanyStatus | 'ALL'
+    >('ALL');
+
+    const [
+        selected,
+        setSelected,
+    ] = useState<string[]>([]);
+
+    const [
+        sortBy,
+        setSortBy,
+    ] = useState<SortField>('name');
+
+    const [
+        direction,
+        setDirection,
+    ] = useState<SortDirection>('asc');
+
+    const companies =
+        useMemo(() => {
+
+            const filtered =
+                data.filter(
+                    (company: Company) => {
+
+                        const keyword =
+                            search
+                                .trim()
+                                .toLowerCase();
+
+                        const matchesSearch =
+
+                            keyword.length === 0 ||
+
+                            company.name
+                                .toLowerCase()
+                                .includes(keyword) ||
+
+                            company.email
+                                ?.toLowerCase()
+                                .includes(keyword) ||
+
+                            company.phone
+                                ?.toLowerCase()
+                                .includes(keyword) ||
+
+                            company.industry
+                                ?.toLowerCase()
+                                .includes(keyword);
+
+                        const matchesStatus =
+
+                            status === 'ALL' ||
+
+                            company.status === status;
+
+                        return (
+                            matchesSearch &&
+                            matchesStatus
+                        );
+
+                    }
+                );
+
+            filtered.sort(
+                (
+                    left,
+                    right,
+                ) => {
+
+                    const a =
+                        String(
+                            left[
+                                sortBy
+                            ] ?? ''
+                        ).toLowerCase();
+
+                    const b =
+                        String(
+                            right[
+                                sortBy
+                            ] ?? ''
+                        ).toLowerCase();
+
+                    const result =
+                        a.localeCompare(b);
+
+                    return direction === 'asc'
+                        ? result
+                        : -result;
+
+                }
+            );
+
+            return filtered;
+
+        }, [
+            data,
+            search,
+            status,
+            sortBy,
+            direction,
+        ]);
+
+    function toggleSort(
+        field: SortField,
+    ) {
+
+        if (
+            sortBy === field
+        ) {
+
+            setDirection(
+                current =>
+                    current === 'asc'
+                        ? 'desc'
+                        : 'asc'
+            );
+
+            return;
+
+        }
+
+        setSortBy(field);
+
+        setDirection('asc');
+
+    }
+
+    function toggleSelection(
+        id: string,
+    ) {
+
+        setSelected(
+            current =>
+
+                current.includes(id)
+
+                    ? current.filter(
+                        item =>
+                            item !== id
+                    )
+
+                    : [
+                        ...current,
+                        id,
+                    ]
+
+        );
+
+    }
+
+    function toggleAll() {
+
+        if (
+            selected.length ===
+            companies.length
+        ) {
+
+            setSelected([]);
+
+            return;
+
+        }
+
+        setSelected(
+
+            companies.map(
+                company =>
+                    company.id
+            )
+
+        );
+
+    }
+
+    function refresh() {
+
+        queryClient.invalidateQueries({
+
+            queryKey: [
+                'companies',
+            ],
+
+        });
+
+    }
+
+    function exportCsv() {
+
+        const rows = [
+
+            [
+                'Company',
+                'Industry',
+                'Website',
+                'Phone',
+                'Email',
+                'Status',
+            ],
+
+            ...companies.map(
+                company => [
+
+                    company.name,
+
+                    company.industry ?? '',
+
+                    company.website ?? '',
+
+                    company.phone ?? '',
+
+                    company.email ?? '',
+
+                    company.status,
+
+                ]
+            ),
+
+        ];
+
+        const csv =
+
+            rows
+                .map(
+                    row =>
+                        row.join(',')
+                )
+                .join('\n');
+
+        const blob =
+            new Blob(
+                [csv],
+                {
+                    type:
+                        'text/csv;charset=utf-8;',
+                }
+            );
+
+        const url =
+            URL.createObjectURL(
+                blob
+            );
+
+        const link =
+            document.createElement(
+                'a'
+            );
+
+        link.href = url;
+
+        link.download =
+            'companies.csv';
+
+        link.click();
+
+        URL.revokeObjectURL(
+            url
+        );
+
+    }
+        if (isLoading) {
+
+        return (
+
+            <div className="rounded-xl border bg-background p-10 text-center text-muted-foreground">
+
+                Loading companies...
+
+            </div>
+
+        );
+
+    }
+
+    if (isError) {
+
+        return (
+
+            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
+
+                <h3 className="font-semibold">
+                    Unable to load companies
+                </h3>
+
+                <p className="mt-2 text-sm text-muted-foreground">
+                    Please refresh and try again.
+                </p>
+
+            </div>
+
+        );
+
+    }
+
+    return (
+
+        <section className="space-y-6">
+
+            <CompaniesToolbar
+                total={companies.length}
+                selected={selected.length}
+                onAdd={() =>
+                    router.push('/crm/companies/new')
+                }
+                onRefresh={refresh}
+                onExport={exportCsv}
+            />
+
+            <CompaniesFilters
+                search={search}
+                status={status}
+                onSearchChange={setSearch}
+                onStatusChange={setStatus}
+            />
+
+            <div className="overflow-x-auto rounded-xl border bg-background">
+
+                <table className="min-w-full">
+
+                    <thead className="bg-muted/40">
+
+                        <tr>
+
+                            <th className="w-12 p-4">
+
+                                <input
+                                    type="checkbox"
+                                    checked={
+                                        companies.length > 0 &&
+                                        selected.length === companies.length
+                                    }
+                                    onChange={toggleAll}
+                                />
+
+                            </th>
+
+                            {
+
+                                CompaniesColumns
+                                    .filter(
+                                        column =>
+                                            column.key !== 'select'
+                                    )
+                                    .map(column => (
+
+                                        <th
+                                            key={column.key}
+                                            className={`p-4 text-left text-sm font-semibold ${column.className ?? ''}`}
+                                        >
+
+                                            {
+
+                                                column.key === 'name' ||
+                                                column.key === 'industry' ||
+                                                column.key === 'status'
+
+                                                    ? (
+
+                                                        <button
+                                                            type="button"
+                                                            className="flex items-center gap-2"
+                                                            onClick={() =>
+                                                                toggleSort(
+                                                                    column.key as
+                                                                    | 'name'
+                                                                    | 'industry'
+                                                                    | 'status'
+                                                                )
+                                                            }
+                                                        >
+
+                                                            {column.label}
+
+                                                            {
+
+                                                                sortBy === column.key &&
+
+                                                                (
+
+                                                                    direction === 'asc'
+                                                                        ? '▲'
+                                                                        : '▼'
+
+                                                                )
+
+                                                            }
+
+                                                        </button>
+
+                                                    )
+
+                                                    : column.label
+
+                                            }
+
+                                        </th>
+
+                                    ))
+
+                            }
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {
+
+                            companies.length === 0 &&
+
+                            (
+
+                                <tr>
+
+                                    <td
+                                        colSpan={CompaniesColumns.length}
+                                        className="p-12"
+                                    >
+
+                                        <div className="flex flex-col items-center gap-4">
+
+                                            <div className="text-6xl">
+
+                                                🏢
+
+                                            </div>
+
+                                            <h3 className="text-xl font-semibold">
+
+                                                No Companies Found
+
+                                            </h3>
+
+                                            <p className="text-muted-foreground">
+
+                                                Create your first company to begin.
+
+                                            </p>
+
+                                            <button
+                                                type="button"
+                                                className="rounded-lg bg-primary px-5 py-2 text-primary-foreground"
+                                                onClick={() =>
+                                                    router.push('/crm/companies/new')
+                                                }
+                                            >
+
+                                                New Company
+
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            )
+
+                        }
+
+                        {
+
+                            companies.map(company => (
+
+                                <tr
+                                    key={company.id}
+                                    className="cursor-pointer border-t transition hover:bg-muted/20"
+                                    onClick={() =>
+                                        router.push(
+                                            `/crm/companies/${company.id}`
+                                        )
+                                    }
+                                >
+
+                                    <td className="p-4">
+
+                                        <input
+                                            type="checkbox"
+                                            checked={selected.includes(company.id)}
+                                            onClick={event =>
+                                                event.stopPropagation()
+                                            }
+                                            onChange={() =>
+                                                toggleSelection(company.id)
+                                            }
+                                        />
+
+                                    </td>
+                                                                        <td className="p-4 font-medium">
+                                        {company.name}
+                                    </td>
+
+                                    <td className="p-4">
+                                        {company.industry ?? '-'}
+                                    </td>
+
+                                    <td className="p-4">
+                                        {company.website ?? '-'}
+                                    </td>
+
+                                    <td className="p-4">
+                                        {company.phone ?? '-'}
+                                    </td>
+
+                                    <td className="p-4">
+
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-xs font-medium ${STATUS_BADGES[company.status]}`}
+                                        >
+                                            {company.status}
+                                        </span>
+
+                                    </td>
+
+                                    <td className="p-4">
+
+                                        <div className="flex gap-2">
+
+                                            <button
+                                                type="button"
+                                                onClick={(event) => {
+
+                                                    event.stopPropagation();
+
+                                                    router.push(
+                                                        `/crm/companies/${company.id}`
+                                                    );
+
+                                                }}
+                                                className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                            >
+                                                View
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={(event) => {
+
+                                                    event.stopPropagation();
+
+                                                    router.push(
+                                                        `/crm/companies/${company.id}/edit`
+                                                    );
+
+                                                }}
+                                                className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                            >
+                                                Edit
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            ))
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+                <div className="flex items-center justify-between border-t bg-muted/30 px-5 py-3 text-sm text-muted-foreground">
+
+                    <div>
+
+                        Showing
+
+                        <strong className="mx-1">
+                            {companies.length}
+                        </strong>
+
+                        companies
+
+                    </div>
+
+                    <div>
+
+                        Selected
+
+                        <strong className="mx-1">
+                            {selected.length}
+                        </strong>
+
+                        of
+
+                        <strong className="mx-1">
+                            {companies.length}
+                        </strong>
+
+                    </div>
+
+                    <div>
+
+                        Sorted by
+
+                        <strong className="ml-1 capitalize">
+                            {sortBy}
+                        </strong>
+
+                        {' '}
+
+                        (
+
+                        {direction}
+
+                        )
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    );
+
+}
+
+
+============================================================
+FILE: src\components\crm\companies\CompaniesFilters.tsx
+============================================================
+'use client';
+
+import type { CompanyStatus } from '@/types/crm/Companies';
+
+interface CompaniesFiltersProps {
+    search: string;
+    status: CompanyStatus | 'ALL';
+    onSearchChange: (value: string) => void;
+    onStatusChange: (value: CompanyStatus | 'ALL') => void;
+}
+
+const statuses: (CompanyStatus | 'ALL')[] = [
+    'ALL',
+    'ACTIVE',
+    'PROSPECT',
+    'INACTIVE',
+    'ARCHIVED',
+];
+
+export function CompaniesFilters({
+    search,
+    status,
+    onSearchChange,
+    onStatusChange,
+}: CompaniesFiltersProps) {
+    return (
+        <div className="flex flex-col gap-4 rounded-xl border bg-background p-4 md:flex-row">
+            <input
+                value={search}
+                onChange={(e) => onSearchChange(e.target.value)}
+                placeholder="Search companies..."
+                className="flex-1 rounded-lg border px-3 py-2 outline-none"
+            />
+
+            <select
+                value={status}
+                onChange={(e) =>
+                    onStatusChange(
+                        e.target.value as CompanyStatus | 'ALL'
+                    )
+                }
+                className="rounded-lg border px-3 py-2"
+            >
+                {statuses.map((item) => (
+                    <option
+                        key={item}
+                        value={item}
+                    >
+                        {item}
+                    </option>
+                ))}
+            </select>
+        </div>
+    );
+}
+
+
+
+
+
+
+
+============================================================
+FILE: src\components\crm\companies\CompaniesForm.tsx
+============================================================
+'use client';
+
+import { useState } from 'react';
+
+import type {
+    Company,
+} from '@/types/crm/Companies';
+
+
+interface CompaniesFormProps {
+
+    initialValues?: Partial<Company>;
+
+    onSubmit?: (
+        values: Partial<Company>,
+    ) => void | Promise<void>;
+
+    onCancel?: () => void;
+
+    loading?: boolean;
+
+}
+
+
+export function CompaniesForm({
+
+    initialValues,
+
+    onSubmit,
+
+    onCancel,
+
+    loading = false,
+
+}: CompaniesFormProps) {
+
+
+    const [form, setForm] =
+        useState<Partial<Company>>({
+
+            status: 'ACTIVE',
+
+            ...initialValues,
+
+        });
+
+
+    function update<K extends keyof Company>(
+
+        key: K,
+
+        value: Company[K],
+
+    ) {
+
+        setForm(
+            previous => ({
+
+                ...previous,
+
+                [key]: value,
+
+            }),
+        );
+
+    }
+
+
+    async function submit(
+        event: React.FormEvent<HTMLFormElement>,
+    ) {
+
+        event.preventDefault();
+
+
+        if (!form.name?.trim()) {
+
+            alert(
+                'Company name is required.',
+            );
+
+            return;
+
+        }
+
+
+        await onSubmit?.(form);
+
+    }
+
+
+
+    const inputClass = `
+        w-full
+        rounded-xl
+        border
+        border-white/10
+        bg-white/5
+        px-3
+        py-2.5
+        text-sm
+        text-white
+        outline-none
+        placeholder:text-slate-500
+        focus:border-amber-300/50
+        focus:ring-1
+        focus:ring-amber-300/30
+    `;
+
+
+    const labelClass = `
+        mb-1.5
+        block
+        text-sm
+        font-medium
+        text-slate-300
+    `;
+
+
+
+    return (
+
+        <form
+
+            onSubmit={submit}
+
+            className="
+                space-y-6
+                rounded-2xl
+                border
+                border-white/10
+                bg-[#111111]
+                p-6
+                shadow-xl
+            "
+
+        >
+
+
+            <div>
+
+                <h2
+                    className="
+                        text-xl
+                        font-semibold
+                        text-white
+                    "
+                >
+                    Company Details
+                </h2>
+
+
+                <p
+                    className="
+                        mt-1
+                        text-sm
+                        text-slate-400
+                    "
+                >
+                    Create or update CRM company information.
+                </p>
+
+
+            </div>
+
+
+
+            <div className="grid gap-5 md:grid-cols-2">
+
+
+
+                <Field
+                    label="Company Name *"
+                >
+
+                    <input
+
+                        className={inputClass}
+
+                        value={
+                            form.name ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'name',
+                                    e.target.value,
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+                <Field
+                    label="Legal Name"
+                >
+
+                    <input
+
+                        className={inputClass}
+
+                        value={
+                            form.legalName ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'legalName',
+                                    e.target.value,
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+                <Field
+                    label="Industry"
+                >
+
+                    <input
+
+                        className={inputClass}
+
+                        value={
+                            form.industry ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'industry',
+                                    e.target.value,
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+
+                <Field
+                    label="Status"
+                >
+
+                    <select
+
+                        className={inputClass}
+
+                        value={
+                            form.status ?? 'ACTIVE'
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'status',
+                                    e.target.value as Company['status'],
+                                )
+                        }
+
+                    >
+
+                        <option value="ACTIVE">
+                            ACTIVE
+                        </option>
+
+                        <option value="PROSPECT">
+                            PROSPECT
+                        </option>
+
+                        <option value="INACTIVE">
+                            INACTIVE
+                        </option>
+
+                        <option value="ARCHIVED">
+                            ARCHIVED
+                        </option>
+
+                    </select>
+
+                </Field>
+
+
+
+                <Field label="Website">
+
+                    <input
+
+                        className={inputClass}
+
+                        value={
+                            form.website ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'website',
+                                    e.target.value,
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+                <Field label="Email">
+
+                    <input
+
+                        type="email"
+
+                        className={inputClass}
+
+                        value={
+                            form.email ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'email',
+                                    e.target.value,
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+                <Field label="Phone">
+
+                    <input
+
+                        className={inputClass}
+
+                        value={
+                            form.phone ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'phone',
+                                    e.target.value,
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+                <Field label="Employees">
+
+                    <input
+
+                        type="number"
+
+                        className={inputClass}
+
+                        value={
+                            form.employees ?? ''
+                        }
+
+                        onChange={
+                            e =>
+                                update(
+                                    'employees',
+                                    Number(e.target.value),
+                                )
+                        }
+
+                    />
+
+                </Field>
+
+
+
+                <div className="md:col-span-2">
+
+                    <Field label="Address">
+
+                        <input
+
+                            className={inputClass}
+
+                            value={
+                                form.address ?? ''
+                            }
+
+                            onChange={
+                                e =>
+                                    update(
+                                        'address',
+                                        e.target.value,
+                                    )
+                            }
+
+                        />
+
+                    </Field>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div className="
+                flex
+                justify-end
+                gap-3
+            ">
+
+
+                <button
+
+                    type="button"
+
+                    onClick={onCancel}
+
+                    className="
+                        rounded-xl
+                        border
+                        border-white/10
+                        px-5
+                        py-2
+                        text-sm
+                        text-slate-300
+                        hover:bg-white/5
+                    "
+
+                >
+                    Cancel
+
+                </button>
+
+
+
+                <button
+
+                    type="submit"
+
+                    disabled={loading}
+
+                    className="
+                        rounded-xl
+                        bg-amber-300
+                        px-5
+                        py-2
+                        text-sm
+                        font-semibold
+                        text-black
+                        hover:bg-amber-200
+                        disabled:opacity-50
+                    "
+
+                >
+
+                    {
+                        loading
+                            ? 'Saving...'
+                            : 'Save Company'
+                    }
+
+                </button>
+
+
+            </div>
+
+
+        </form>
+
+    );
+
+}
+
+
+
+function Field({
+
+    label,
+
+    children,
+
+}: {
+
+    label: string;
+
+    children: React.ReactNode;
+
+}) {
+
+    return (
+
+        <div>
+
+            <label className="
+                mb-1.5
+                block
+                text-sm
+                font-medium
+                text-slate-300
+            ">
+
+                {label}
+
+            </label>
+
+
+            {children}
+
+        </div>
+
+    );
+
+}
+
+============================================================
+FILE: src\components\crm\companies\CompaniesSummaryCards.tsx
+============================================================
+'use client';
+
+import { useMemo } from 'react';
+
+import { useCompanies } from '@/hooks/crm/useCompanies';
+
+export function CompaniesSummaryCards() {
+
+    const {
+        data = [],
+        isLoading,
+    } = useCompanies();
+
+    const summary = useMemo(() => {
+
+        return {
+
+            total:
+                data.length,
+
+            active:
+                data.filter(
+                    company =>
+                        company.status === 'ACTIVE'
+                ).length,
+
+            prospects:
+                data.filter(
+                    company =>
+                        company.status === 'PROSPECT'
+                ).length,
+
+            inactive:
+                data.filter(
+                    company =>
+                        company.status === 'INACTIVE'
+                ).length,
+
+            archived:
+                data.filter(
+                    company =>
+                        company.status === 'ARCHIVED'
+                ).length,
+
+        };
+
+    }, [data]);
+
+    const cards = [
+
+        {
+            title: 'Total Companies',
+            value: summary.total,
+        },
+
+        {
+            title: 'Active',
+            value: summary.active,
+        },
+
+        {
+            title: 'Prospects',
+            value: summary.prospects,
+        },
+
+        {
+            title: 'Inactive',
+            value: summary.inactive,
+        },
+
+        {
+            title: 'Archived',
+            value: summary.archived,
+        },
+
+    ];
+
+    if (isLoading) {
+
+        return (
+
+            <div className="grid gap-4 md:grid-cols-5">
+
+                {
+
+                    Array.from({
+                        length: 5,
+                    }).map((_, index) => (
+
+                        <div
+                            key={index}
+                            className="h-28 animate-pulse rounded-xl border bg-muted"
+                        />
+
+                    ))
+
+                }
+
+            </div>
+
+        );
+
+    }
+
+    return (
+
+        <section className="grid gap-4 md:grid-cols-5">
+
+            {
+
+                cards.map(card => (
+
+                    <article
+                        key={card.title}
+                        className="rounded-xl border bg-background p-5 shadow-sm transition hover:shadow-md"
+                    >
+
+                        <p className="text-sm text-muted-foreground">
+
+                            {card.title}
+
+                        </p>
+
+                        <h2 className="mt-3 text-3xl font-bold">
+
+                            {card.value}
+
+                        </h2>
+
+                    </article>
+
+                ))
+
+            }
+
+        </section>
+
+    );
+
+}
+
+
+============================================================
+FILE: src\components\crm\companies\CompaniesToolbar.tsx
+============================================================
+'use client';
+
+interface CompaniesToolbarProps {
+
+    total: number;
+
+    selected: number;
+
+    onAdd?: () => void;
+
+    onRefresh?: () => void;
+
+    onExport?: () => void;
+
+}
+
+export function CompaniesToolbar({
+
+    total,
+
+    selected,
+
+    onAdd,
+
+    onRefresh,
+
+    onExport,
+
+}: CompaniesToolbarProps) {
+
+    return (
+
+        <section className="flex flex-col gap-4 rounded-xl border bg-background p-5 lg:flex-row lg:items-center lg:justify-between">
+
+            <div>
+
+                <h2 className="text-xl font-semibold">
+
+                    Companies
+
+                </h2>
+
+                <p className="text-sm text-muted-foreground">
+
+                    {total} Companies
+
+                    {
+
+                        selected > 0 &&
+
+                        ` • ${selected} Selected`
+
+                    }
+
+                </p>
+
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+
+                <button
+                    type="button"
+                    onClick={onRefresh}
+                    className="rounded-lg border px-4 py-2 transition hover:bg-muted"
+                >
+                    Refresh
+                </button>
+
+                <button
+                    type="button"
+                    onClick={onExport}
+                    className="rounded-lg border px-4 py-2 transition hover:bg-muted"
+                >
+                    Export CSV
+                </button>
+
+                <button
+                    type="button"
+                    onClick={onAdd}
+                    className="rounded-lg bg-primary px-4 py-2 font-medium text-primary-foreground transition hover:opacity-90"
+                >
+                    + New Company
+                </button>
+
+            </div>
+
+        </section>
+
+    );
+
+}
+
+
+============================================================
+FILE: src\components\crm\companies\index.ts
+============================================================
+export * from './CompaniesDataTable';
+export * from './CompaniesColumns';
+export * from './CompaniesToolbar';
+export * from './CompaniesFilters';
+export * from './CompaniesForm';
+export * from './CompaniesSummaryCards';
+
+
+
+
+
+

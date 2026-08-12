@@ -70,7 +70,7 @@ export default function InvoicesForm({
 
                     <input
                         name="customerName"
-                        defaultValue={initialData?.title}
+                        defaultValue={initialData?.customerName}
                         required
                         className="w-full rounded-lg border px-3 py-2"
                     />

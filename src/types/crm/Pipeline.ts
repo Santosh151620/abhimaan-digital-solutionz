@@ -54,7 +54,7 @@ export interface PipelineStage {
 
 
 
-export interface SalesPipeline {
+interface SalesPipeline {
 
 
     id: string;
@@ -157,14 +157,14 @@ export interface PipelineSummary {
 
 }
 
-export interface PipelineFilters {
+interface PipelineFilters {
     pipelineId?: string;
     stageId?: string;
     stage?: PipelineStageCode;
     search?: string;
 }
 
-export interface MoveOpportunityInput {
+interface MoveOpportunityInput {
 
     opportunityId: string;
     stage: PipelineStageCode;

@@ -5,7 +5,7 @@ import type { DashboardLead, LeadStatus } from "@/types/dashboard";
 
 const TABLE = "leads";
 
-export interface LeadFilters {
+interface LeadFilters {
   search?: string;
   status?: LeadStatus | "all";
   source?: string;
@@ -13,7 +13,7 @@ export interface LeadFilters {
   pageSize?: number;
 }
 
-export interface PaginatedLeads {
+interface PaginatedLeads {
   leads: DashboardLead[];
   total: number;
   page: number;
@@ -21,7 +21,7 @@ export interface PaginatedLeads {
   totalPages: number;
 }
 // await requireEmployee();
-export async function getLeads(
+async function getLeads(
   filters: LeadFilters = {}
 ): Promise<PaginatedLeads> {
   const supabase = await createSupabaseClient();
@@ -77,7 +77,7 @@ export async function getLeads(
   };
 }
 // await requireEmployee();
-export async function getLeadById(
+async function getLeadById(
   id: string
 ): Promise<DashboardLead | null> {
   const supabase = await createSupabaseClient();
@@ -95,7 +95,7 @@ export async function getLeadById(
   return data as DashboardLead;
 }
 // await requireEmployee();
-export async function getRecentLeads(
+async function getRecentLeads(
   limit = 10
 ): Promise<DashboardLead[]> {
   const supabase = await createSupabaseClient();
@@ -115,7 +115,7 @@ export async function getRecentLeads(
   return (data ?? []) as DashboardLead[];
 }
 // await requireEmployee();
-export async function updateLeadStatus(
+async function updateLeadStatus(
   id: string,
   status: LeadStatus
 ): Promise<DashboardLead> {
@@ -138,7 +138,7 @@ export async function updateLeadStatus(
 }
 
 // await requireEmployee();
-export async function convertLeadToClient(
+async function convertLeadToClient(
   leadId: string,
   clientId: string
 ): Promise<DashboardLead> {
@@ -161,7 +161,7 @@ export async function convertLeadToClient(
   return data as DashboardLead;
 }
 // await requireEmployee();
-export async function deleteLead(
+async function deleteLead(
   id: string
 ): Promise<boolean> {
   const supabase = await createSupabaseClient();

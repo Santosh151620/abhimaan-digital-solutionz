@@ -1,0 +1,1594 @@
+
+============================================================
+FILE: src/services/crm/SettingsService.ts
+============================================================
+import {
+    createSupabaseServerClient,
+} from '@/lib/supabase/server-client';
+
+import {
+    SettingsRepository,
+} from '@/repositories/crm/SettingsRepository';
+
+import type {
+    Setting,
+    SettingStatus,
+} from '@/types/crm/Settings';
+
+export class SettingsService {
+
+    private async repository(): Promise<SettingsRepository> {
+
+        const supabase =
+            await createSupabaseServerClient();
+
+        return new SettingsRepository(
+            supabase,
+        );
+    }
+
+    async list(): Promise<Setting[]> {
+
+        const repository =
+            await this.repository();
+
+        return repository.list();
+
+    }
+
+    async listArchived(): Promise<Setting[]> {
+
+        const repository =
+            await this.repository();
+
+        return repository.listArchived();
+
+    }
+
+    async details(
+        id: string,
+    ): Promise<Setting | null> {
+
+        const repository =
+            await this.repository();
+
+        return repository.details(
+            id,
+        );
+
+    }
+
+    async create(
+        data: Partial<Setting>,
+    ): Promise<Setting> {
+
+        const repository =
+            await this.repository();
+
+        return repository.create(
+            data,
+        );
+
+    }
+
+    async update(
+        id: string,
+        data: Partial<Setting>,
+    ): Promise<Setting> {
+
+        const repository =
+            await this.repository();
+
+        return repository.update(
+            id,
+            data,
+        );
+
+    }
+
+    async updateStatus(
+        id: string,
+        status: SettingStatus,
+    ): Promise<Setting> {
+
+        const repository =
+            await this.repository();
+
+        return repository.updateStatus(
+            id,
+            status,
+        );
+
+    }
+
+    async delete(
+        id: string,
+    ): Promise<void> {
+
+        const repository =
+            await this.repository();
+
+        return repository.delete(
+            id,
+        );
+
+    }
+
+    async restore(
+        id: string,
+    ): Promise<boolean> {
+
+        const repository =
+            await this.repository();
+
+        return repository.restore(
+            id,
+        );
+
+    }
+
+    async summary(): Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        editable: number;
+        encrypted: number;
+    }> {
+
+        const repository =
+            await this.repository();
+
+        return repository.summary();
+
+    }
+}
+
+/**
+ * Request-safe service facade.
+ *
+ * A fresh authenticated Supabase server client is created
+ * for every operation. Do not convert this into a global
+ * Supabase client singleton.
+ */
+export const SettingsServiceInstance =
+    new SettingsService();
+
+============================================================
+FILE: src\app\crm\settings\actions.ts
+============================================================
+'use server';
+
+import {
+    createSupabaseServerClient,
+} from '@/lib/supabase/server-client';
+
+import {
+    SettingsRepository,
+} from '@/repositories/crm/SettingsRepository';
+
+import {
+    PermissionServiceInstance,
+} from '@/services/crm/PermissionService';
+
+import {
+    CRM_ADMIN_ROLE,
+} from '@/services/crm/crmPermissions';
+
+import type {
+    Setting,
+    SettingStatus,
+} from '@/types/crm/Settings';
+
+
+async function repository() {
+
+    const supabase =
+        await createSupabaseServerClient();
+
+    return new SettingsRepository(
+        supabase,
+    );
+
+}
+
+
+function validateId(
+    id: string,
+) {
+
+    if (!id || id.trim().length === 0) {
+
+        throw new Error(
+            'Invalid setting id.',
+        );
+
+    }
+
+}
+
+
+
+function validateData(
+    data: Partial<Setting>,
+    isCreate = false,
+) {
+
+    const name =
+        data.name?.trim();
+
+    const key =
+        data.key?.trim();
+
+
+
+    if (isCreate && !key) {
+
+        throw new Error(
+            'Setting key is required.',
+        );
+
+    }
+
+
+
+    if (
+        data.name !== undefined &&
+        !name
+    ) {
+
+        throw new Error(
+            'Setting name is required.',
+        );
+
+    }
+
+
+
+    if (
+        data.key !== undefined &&
+        !key
+    ) {
+
+        throw new Error(
+            'Setting key is required.',
+        );
+
+    }
+
+
+
+    if (
+        key &&
+        !/^[a-zA-Z0-9._-]+$/.test(
+            key,
+        )
+    ) {
+
+        throw new Error(
+            'Setting key may contain only letters, numbers, dots, underscores and hyphens.',
+        );
+
+    }
+
+
+
+    if (
+        key &&
+        key.length > 150
+    ) {
+
+        throw new Error(
+            'Setting key cannot exceed 150 characters.',
+        );
+
+    }
+
+
+
+    if (
+        name &&
+        name.length > 150
+    ) {
+
+        throw new Error(
+            'Setting name cannot exceed 150 characters.',
+        );
+
+    }
+
+}
+
+
+
+function can(
+    action:
+        | 'create'
+        | 'update'
+        | 'delete',
+) {
+
+    return PermissionServiceInstance.hasPermission(
+        CRM_ADMIN_ROLE,
+        'Settings',
+        action,
+    );
+
+}
+
+
+
+function normalizeData(
+    data: Partial<Setting>,
+): Partial<Setting> {
+
+    return {
+
+        ...data,
+
+        name:
+            data.name?.trim(),
+
+        key:
+            data.key?.trim(),
+
+    };
+
+}
+
+
+
+function translateError(
+    error: unknown,
+): Error {
+
+    const message =
+        error instanceof Error
+            ? error.message
+            : String(error);
+
+
+
+    if (
+        message.includes('duplicate')
+        ||
+        message.includes('unique')
+    ) {
+
+        return new Error(
+            'A setting with this key already exists.',
+        );
+
+    }
+
+
+
+    return error instanceof Error
+        ? error
+        : new Error(
+            'Unable to process setting request.',
+        );
+
+}
+
+
+
+export async function getSettings() {
+
+    const repo =
+        await repository();
+
+    return repo.list();
+
+}
+
+
+
+export async function getArchivedSettings() {
+
+    const repo =
+        await repository();
+
+    return repo.listArchived();
+
+}
+
+
+
+export async function getSetting(
+    id: string,
+) {
+
+    validateId(id);
+
+    const repo =
+        await repository();
+
+    return repo.details(
+        id,
+    );
+
+}
+
+
+
+export async function createSetting(
+    data: Partial<Setting>,
+) {
+
+    if (!can('create')) {
+
+        throw new Error(
+            'Permission denied.',
+        );
+
+    }
+
+
+
+    try {
+
+        validateData(
+            data,
+            true,
+        );
+
+
+        const repo =
+            await repository();
+
+
+        return await repo.create(
+            normalizeData(data),
+        );
+
+
+    } catch (error) {
+
+        throw translateError(
+            error,
+        );
+
+    }
+
+}
+
+
+
+export async function updateSetting(
+    id: string,
+    data: Partial<Setting>,
+) {
+
+    if (!can('update')) {
+
+        throw new Error(
+            'Permission denied.',
+        );
+
+    }
+
+
+
+    try {
+
+        validateId(
+            id,
+        );
+
+
+        validateData(
+            data,
+        );
+
+
+        const repo =
+            await repository();
+
+
+        return await repo.update(
+            id,
+            normalizeData(data),
+        );
+
+
+    } catch (error) {
+
+        throw translateError(
+            error,
+        );
+
+    }
+
+}
+
+
+
+export async function deleteSetting(
+    id: string,
+) {
+
+    if (!can('delete')) {
+
+        throw new Error(
+            'Permission denied.',
+        );
+
+    }
+
+
+    validateId(
+        id,
+    );
+
+
+    const repo =
+        await repository();
+
+
+    return repo.delete(
+        id,
+    );
+
+}
+
+
+
+export async function restoreSetting(
+    id: string,
+) {
+
+    if (!can('update')) {
+
+        throw new Error(
+            'Permission denied.',
+        );
+
+    }
+
+
+    validateId(
+        id,
+    );
+
+
+    const repo =
+        await repository();
+
+
+    return repo.restore(
+        id,
+    );
+
+}
+
+
+
+export async function updateSettingStatus(
+    id: string,
+    status: SettingStatus,
+) {
+
+    if (!can('update')) {
+
+        throw new Error(
+            'Permission denied.',
+        );
+
+    }
+
+
+    validateId(
+        id,
+    );
+
+
+    const repo =
+        await repository();
+
+
+    return repo.updateStatus(
+        id,
+        status,
+    );
+
+}
+
+
+
+export async function getSettingsSummary() {
+
+    const repo =
+        await repository();
+
+    return repo.summary();
+
+}
+
+============================================================
+FILE: src\app\crm\settings\page.tsx
+============================================================
+import Link from 'next/link';
+
+import {
+    SettingsClient,
+} from '@/components/crm/settings';
+
+import {
+    getSettings,
+    getSettingsSummary,
+} from './actions';
+
+
+const personalizationOptions = [
+    {
+        title: 'Theme',
+        description:
+            'Manage CRM appearance, colors and visual preferences.',
+        href: '/crm/settings/theme',
+    },
+    {
+        title: 'Profile',
+        description:
+            'Update profile details and account preferences.',
+        href: '/crm/profile',
+    },
+    {
+        title: 'Language',
+        description:
+            'Configure your preferred application language.',
+        href: '/crm/settings/language',
+    },
+    {
+        title: 'Accessibility',
+        description:
+            'Manage readability and accessibility preferences.',
+        href: '/crm/settings/accessibility',
+    },
+];
+
+
+export default async function CRMSettingsPage() {
+
+    const settings =
+        await getSettings();
+
+
+    const summary =
+        await getSettingsSummary();
+
+
+    return (
+
+        <div className="space-y-10">
+
+
+            <section className="space-y-3">
+
+                <h1 className="crm-title">
+                    CRM Settings
+                </h1>
+
+
+                <p className="crm-subtitle">
+                    Manage organization configuration,
+                    personalization and CRM preferences.
+                </p>
+
+            </section>
+
+
+
+
+            <section className="crm-card p-8">
+
+
+                <div className="mb-6">
+
+                    <h2 className="text-xl font-semibold">
+                        Personalization
+                    </h2>
+
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Customize your CRM experience.
+                    </p>
+
+                </div>
+
+
+
+
+                <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+
+
+                    {
+                        personalizationOptions.map(option => (
+
+                            <Link
+
+                                key={option.title}
+
+                                href={option.href}
+
+                                className="
+                                    group
+                                    rounded-xl
+                                    border
+                                    bg-background
+                                    p-5
+                                    transition
+                                    hover:-translate-y-1
+                                    hover:shadow-md
+                                "
+
+                            >
+
+                                <h3 className="font-semibold group-hover:text-primary">
+                                    {option.title}
+                                </h3>
+
+
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    {option.description}
+                                </p>
+
+
+                            </Link>
+
+                        ))
+                    }
+
+
+                </div>
+
+
+            </section>
+
+
+
+
+
+            <section className="space-y-5">
+
+
+                <div>
+
+                    <h2 className="text-2xl font-semibold">
+                        System Settings
+                    </h2>
+
+
+                    <p className="text-sm text-muted-foreground">
+                        Configure CRM application and organization settings.
+                    </p>
+
+                </div>
+
+
+
+                <SettingsClient
+
+                    initialSettings={
+                        settings
+                    }
+
+                    summary={
+                        summary
+                    }
+
+                />
+
+
+            </section>
+
+
+        </div>
+
+    );
+
+}
+
+============================================================
+FILE: src\app\crm\settings\new\page.tsx
+============================================================
+'use client';
+
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
+import {
+    SettingsForm,
+} from '@/components/crm/settings';
+
+import Toast from '@/components/crm/ui/Toast';
+
+import {
+    createSetting,
+} from '../actions';
+
+import type {
+    Setting,
+} from '@/types/crm/Settings';
+
+export default function NewSettingPage() {
+
+    const router =
+        useRouter();
+
+    const [loading, setLoading] =
+        useState(false);
+
+    const [toast, setToast] =
+        useState<{
+            title:string;
+            message:string;
+            type:'success' | 'error';
+        } | null>(null);
+
+
+    async function handleSubmit(
+        values: Partial<Setting>,
+    ) {
+
+        if (loading) {
+
+            return;
+
+        }
+
+        try {
+
+            setLoading(true);
+
+            const setting =
+                await createSetting(
+                    values,
+                );
+
+
+            setToast({
+                title: 'Setting created',
+                message: 'CRM setting saved successfully.',
+                type: 'success',
+            });
+
+
+            router.push(
+                `/crm/settings/${setting.id}`,
+            );
+
+            router.refresh();
+
+
+        } catch (error) {
+
+            console.error(
+                'Create CRM setting failed:',
+                error,
+            );
+
+
+            setToast({
+                title: 'Save failed',
+                message: 'Unable to create setting. Please try again.',
+                type: 'error',
+            });
+
+
+        } finally {
+
+            setLoading(false);
+
+        }
+
+    }
+
+
+    function handleCancel() {
+
+        router.push(
+            '/crm/settings',
+        );
+
+    }
+
+
+    return (
+
+        <div className="space-y-6">
+
+
+            {
+                toast && (
+
+                    <Toast
+                        title={toast.title}
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() =>
+                            setToast(null)
+                        }
+                    />
+
+                )
+            }
+
+
+            <div>
+
+                <h1 className="text-2xl font-semibold">
+                    Create Setting
+                </h1>
+
+                <p className="text-sm text-muted-foreground">
+                    Create a configuration setting for this organization.
+                </p>
+
+            </div>
+
+
+            <SettingsForm
+                loading={loading}
+                onSubmit={handleSubmit}
+                onCancel={handleCancel}
+            />
+
+
+            <Link
+                href="/crm/settings"
+                className="text-sm underline"
+            >
+                Back to Settings
+            </Link>
+
+
+        </div>
+
+    );
+
+}
+
+============================================================
+FILE: src\app\crm\settings\[id]\page.tsx
+============================================================
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+
+import {
+    getSetting,
+} from '../actions';
+
+
+interface Props {
+
+    params: Promise<{
+        id: string;
+    }>;
+
+}
+
+
+export async function generateMetadata({
+    params,
+}: Props) {
+
+    const { id } =
+        await params;
+
+
+    const setting =
+        await getSetting(id);
+
+
+    return {
+
+        title: setting
+            ? `${setting.name} | CRM Settings`
+            : 'CRM Setting',
+
+    };
+
+}
+
+
+
+function displayValue(
+    encrypted: boolean,
+    value?: string | null,
+) {
+
+    if (encrypted) {
+
+        return '••••••••';
+
+    }
+
+
+    return value?.trim()
+        ? value
+        : '-';
+
+}
+
+
+
+export default async function SettingDetailsPage({
+    params,
+}: Props) {
+
+
+    const { id } =
+        await params;
+
+
+    const setting =
+        await getSetting(id);
+
+
+
+    if (!setting) {
+
+        notFound();
+
+    }
+
+
+
+    return (
+
+        <div className="space-y-8">
+
+
+            <div className="flex items-center justify-between">
+
+
+                <div>
+
+                    <h1 className="text-2xl font-semibold">
+                        {setting.name}
+                    </h1>
+
+
+                    <p className="text-sm text-muted-foreground">
+                        {setting.settingNumber}
+                    </p>
+
+                </div>
+
+
+
+                <Link
+
+                    href={`/crm/settings/${setting.id}/edit`}
+
+                    className="
+                        rounded-lg
+                        border
+                        px-4
+                        py-2
+                        transition
+                        hover:bg-muted
+                    "
+
+                >
+
+                    Edit
+
+                </Link>
+
+
+            </div>
+
+
+
+
+            <div className="grid gap-6 md:grid-cols-2">
+
+
+
+                <div className="crm-card space-y-5 p-6">
+
+
+                    <Info
+                        label="Key"
+                        value={setting.key}
+                    />
+
+
+                    <Info
+                        label="Category"
+                        value={setting.category}
+                    />
+
+
+                    <Info
+                        label="Status"
+                        value={setting.status}
+                    />
+
+
+                </div>
+
+
+
+
+
+                <div className="crm-card space-y-5 p-6">
+
+
+                    <Info
+
+                        label="Editable"
+
+                        value={
+                            setting.editable
+                                ? 'Yes'
+                                : 'No'
+                        }
+
+                    />
+
+
+
+                    <Info
+
+                        label="Encrypted"
+
+                        value={
+                            setting.encrypted
+                                ? 'Yes'
+                                : 'No'
+                        }
+
+                    />
+
+
+
+                    <div>
+
+
+                        <div className="text-sm text-muted-foreground">
+                            Value
+                        </div>
+
+
+
+                        <pre className="
+                            mt-2
+                            whitespace-pre-wrap
+                            break-words
+                            rounded-lg
+                            bg-muted
+                            p-3
+                            text-sm
+                        ">
+
+                            {
+                                displayValue(
+                                    setting.encrypted,
+                                    setting.value,
+                                )
+                            }
+
+                        </pre>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            {
+                setting.description && (
+
+                    <div className="crm-card p-6">
+
+
+                        <h2 className="mb-3 font-semibold">
+                            Description
+                        </h2>
+
+
+
+                        <p className="whitespace-pre-wrap text-sm">
+                            {setting.description}
+                        </p>
+
+
+
+                    </div>
+
+                )
+            }
+
+
+
+        </div>
+
+    );
+
+}
+
+
+
+
+
+function Info({
+    label,
+    value,
+}: {
+    label: string;
+    value?: string | null;
+}) {
+
+
+    return (
+
+        <div>
+
+
+            <div className="text-sm text-muted-foreground">
+                {label}
+            </div>
+
+
+
+            <div className="break-words font-medium">
+                {value || '-'}
+            </div>
+
+
+
+        </div>
+
+    );
+
+}
+
+
+============================================================
+FILE: src\app\crm\settings\[id]\edit\page.tsx
+============================================================
+'use client';
+
+import Link from 'next/link';
+import {
+    useParams,
+    useRouter,
+} from 'next/navigation';
+import {
+    useEffect,
+    useState,
+} from 'react';
+
+import {
+    SettingsForm,
+} from '@/components/crm/settings';
+
+import {
+    getSetting,
+    updateSetting,
+} from '../../actions';
+
+import type {
+    Setting,
+} from '@/types/crm/Settings';
+
+
+export default function EditSettingPage() {
+
+    const params =
+        useParams<{
+            id: string;
+        }>();
+
+    const router =
+        useRouter();
+
+
+    const id =
+        params.id;
+
+
+    const [setting, setSetting] =
+        useState<Setting | null>(null);
+
+
+    const [loading, setLoading] =
+        useState(true);
+
+
+    const [saving, setSaving] =
+        useState(false);
+
+
+    const [error, setError] =
+        useState<string | null>(null);
+
+
+
+    useEffect(() => {
+
+        let mounted = true;
+
+
+        async function loadSetting() {
+
+            try {
+
+                setError(null);
+
+
+                const result =
+                    await getSetting(id);
+
+
+                if (mounted) {
+
+                    setSetting(result);
+
+                }
+
+
+            } catch (loadError) {
+
+                console.error(
+                    'Load CRM setting failed:',
+                    loadError,
+                );
+
+
+                if (mounted) {
+
+                    setError(
+                        'Unable to load setting.',
+                    );
+
+                }
+
+
+            } finally {
+
+                if (mounted) {
+
+                    setLoading(false);
+
+                }
+
+            }
+
+        }
+
+
+        if (id) {
+
+            void loadSetting();
+
+        }
+
+
+        return () => {
+
+            mounted = false;
+
+        };
+
+
+    }, [id]);
+
+
+
+    async function handleSubmit(
+        values: Partial<Setting>,
+    ) {
+
+        if (saving) {
+
+            return;
+
+        }
+
+
+        try {
+
+            setSaving(true);
+
+            setError(null);
+
+
+            await updateSetting(
+                id,
+                values,
+            );
+
+
+            router.push(
+                `/crm/settings/${id}`,
+            );
+
+
+            router.refresh();
+
+
+        } catch (updateError) {
+
+            console.error(
+                'Update CRM setting failed:',
+                updateError,
+            );
+
+
+            setError(
+                'Unable to update setting. Please try again.',
+            );
+
+
+        } finally {
+
+            setSaving(false);
+
+        }
+
+    }
+
+
+
+    function handleCancel() {
+
+        if (saving) {
+
+            return;
+
+        }
+
+
+        router.push(
+            `/crm/settings/${id}`,
+        );
+
+    }
+
+
+
+    if (loading) {
+
+        return (
+
+            <div className="space-y-6">
+
+                <h1 className="text-2xl font-semibold">
+                    Edit Setting
+                </h1>
+
+
+                <div className="rounded-xl border p-6 text-sm text-muted-foreground">
+                    Loading setting...
+                </div>
+
+            </div>
+
+        );
+
+    }
+
+
+
+    if (!setting) {
+
+        return (
+
+            <div className="space-y-6">
+
+
+                <h1 className="text-2xl font-semibold">
+                    Setting Not Found
+                </h1>
+
+
+                {
+                    error && (
+
+                        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                            {error}
+                        </div>
+
+                    )
+                }
+
+
+                <Link
+                    href="/crm/settings"
+                    className="text-sm underline"
+                >
+                    Back to Settings
+                </Link>
+
+
+            </div>
+
+        );
+
+    }
+
+
+
+    return (
+
+        <div className="space-y-6">
+
+
+            <div>
+
+                <h1 className="text-2xl font-semibold">
+                    Edit Setting
+                </h1>
+
+
+                <p className="text-sm text-muted-foreground">
+                    Update CRM configuration setting.
+                </p>
+
+            </div>
+
+
+
+            {
+                error && (
+
+                    <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                        {error}
+                    </div>
+
+                )
+            }
+
+
+
+            <SettingsForm
+
+                initialValues={
+                    setting
+                }
+
+                loading={
+                    saving
+                }
+
+                onSubmit={
+                    handleSubmit
+                }
+
+                onCancel={
+                    handleCancel
+                }
+
+            />
+
+
+
+            <Link
+
+                href={`/crm/settings/${setting.id}`}
+
+                className="text-sm underline"
+
+            >
+                Back to Setting
+
+            </Link>
+
+
+        </div>
+
+    );
+
+}

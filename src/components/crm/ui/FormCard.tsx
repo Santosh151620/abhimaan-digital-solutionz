@@ -1,62 +1,118 @@
 import type { ReactNode } from "react";
 
-interface Props{
-
-title:string;
-
-children:ReactNode;
-
-footer?:ReactNode;
-
+interface Props {
+    title: string;
+    children: ReactNode;
+    footer?: ReactNode;
+    description?: string;
 }
+
 
 export default function FormCard({
+    title,
+    children,
+    footer,
+    description,
+}: Props) {
 
-title,
+    return (
 
-children,
+        <section
+            className="
+                overflow-hidden
+                rounded-3xl
+                border
+                border-cyan-400/10
+                bg-slate-950/80
+                shadow-xl
+                shadow-black/20
+                backdrop-blur-xl
+            "
+        >
 
-footer
+            {/* Header */}
 
-}:Props){
+            <div
+                className="
+                    border-b
+                    border-white/10
+                    px-6
+                    py-5
+                "
+            >
 
-return(
+                <h2
+                    className="
+                        text-lg
+                        font-bold
+                        tracking-tight
+                        text-white
+                    "
+                >
+                    {title}
+                </h2>
 
-<div className="crm-card">
 
-<div className="rounded-3xl border border-white/10 bg-white/80 backdrop-blur-xl shadow-xl p-8">
+                {description && (
 
-<h2 className="text-xl font-semibold">
+                    <p
+                        className="
+                            mt-1
+                            text-sm
+                            text-slate-400
+                        "
+                    >
+                        {description}
+                    </p>
 
-{title}
+                )}
 
-</h2>
+            </div>
 
-</div>
 
-<div className="grid gap-6 p-8 md:grid-cols-2">
 
-{children}
+            {/* Form Body */}
 
-</div>
+            <div
+                className="
+                    grid
+                    gap-6
+                    p-6
+                    md:grid-cols-2
+                "
+            >
 
-{
+                {children}
 
-footer&&(
+            </div>
 
-<div className="sticky bottom-0 flex justify-end gap-3 border-t bg-white px-8 py-5">
 
-{footer}
 
-</div>
+            {/* Footer Actions */}
 
-)
+            {footer && (
+
+                <div
+                    className="
+                        flex
+                        justify-end
+                        gap-3
+                        border-t
+                        border-white/10
+                        bg-slate-900/60
+                        px-6
+                        py-4
+                    "
+                >
+
+                    {footer}
+
+                </div>
+
+            )}
+
+        </section>
+
+    );
 
 }
-
-</div>
-
-);
-
-}
-

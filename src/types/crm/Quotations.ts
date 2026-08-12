@@ -19,7 +19,7 @@ export type QuotationStatus =
 
 
 
-export interface QuotationItem {
+interface QuotationItem {
 
     id: string;
 

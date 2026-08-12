@@ -1,4 +1,4 @@
-export type ClientPortalStatus =
+type ClientPortalStatus =
     | 'Active'
     | 'Inactive'
     | 'Pending'
@@ -43,7 +43,7 @@ export interface ClientPortalSummary {
     archived:number;
 
 }
-export interface ClientPortalSearchFilters {
+interface ClientPortalSearchFilters {
 
     search?: string;
 

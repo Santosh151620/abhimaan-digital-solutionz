@@ -10,7 +10,7 @@ export type PermissionAction =
 
 
 
-export interface Permission {
+interface Permission {
 
 
     module:string;

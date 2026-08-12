@@ -13,7 +13,7 @@ export async function listAssets() {
     return AssetsServiceInstance.list();
 }
 
-export async function listArchivedAssets() {
+async function listArchivedAssets() {
     return AssetsServiceInstance.listArchived();
 }
 
@@ -39,19 +39,19 @@ export async function updateAsset(
     );
 }
 
-export async function deleteAsset(
+async function deleteAsset(
     id: string
 ) {
     return AssetsServiceInstance.delete(id);
 }
 
-export async function restoreAsset(
+async function restoreAsset(
     id: string
 ) {
     return AssetsServiceInstance.restore(id);
 }
 
-export async function updateAssetStatus(
+async function updateAssetStatus(
     id: string,
     status: AssetStatus
 ) {
@@ -61,7 +61,7 @@ export async function updateAssetStatus(
     );
 }
 
-export async function assetsSummary() {
+async function assetsSummary() {
     return AssetsServiceInstance.summary();
 }
 

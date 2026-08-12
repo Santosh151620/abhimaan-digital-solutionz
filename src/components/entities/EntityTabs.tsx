@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export interface EntityTab {
+interface EntityTab {
   id: string;
   label: string;
   content: React.ReactNode;
@@ -13,7 +13,7 @@ interface EntityTabsProps {
   defaultTab?: string;
 }
 
-export default function EntityTabs({
+function EntityTabs({
   tabs,
   defaultTab,
 }: EntityTabsProps) {

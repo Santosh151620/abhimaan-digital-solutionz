@@ -85,7 +85,7 @@ export interface CompanyOpportunity {
 
 
 
-export type CompanyActivityType =
+type CompanyActivityType =
     | 'CALL'
     | 'EMAIL'
     | 'MEETING'

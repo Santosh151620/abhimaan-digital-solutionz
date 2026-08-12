@@ -96,7 +96,7 @@ export interface ProductSummary {
 
 
 }
-export interface ProductSearchFilters {
+interface ProductSearchFilters {
 
     search?: string;
 

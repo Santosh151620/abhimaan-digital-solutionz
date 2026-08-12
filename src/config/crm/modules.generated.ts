@@ -1,4 +1,4 @@
-export const crmModules = [
+﻿export const crmModules = [
   '/crm/companies',
   '@/types/crm/Companies',
   'companies',
@@ -6,5 +6,6 @@ export const crmModules = [
 
 export const enabledModules = crmModules;
 
-export default crmModules;
+
+
 

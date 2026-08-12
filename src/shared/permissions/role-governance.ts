@@ -4,7 +4,7 @@ import type {
 
 
 
-export interface RoleGovernance {
+interface RoleGovernance {
 
 
     role: Role;
@@ -20,7 +20,7 @@ export interface RoleGovernance {
 
 
 
-export const ROLE_GOVERNANCE:
+const ROLE_GOVERNANCE:
 
 Record<Role, RoleGovernance> = {
 

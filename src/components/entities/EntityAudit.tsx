@@ -9,7 +9,7 @@ interface EntityAuditProps {
     }>;
 }
 
-export default function EntityAudit({
+function EntityAudit({
     entries,
 }: EntityAuditProps) {
 
@@ -47,3 +47,4 @@ export default function EntityAudit({
     );
 }
 
+export {};

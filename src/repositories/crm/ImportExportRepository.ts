@@ -12,7 +12,7 @@ import type {
     ImportJob,
 } from "@/types/crm/ImportExport";
 
-export class ImportExportRepository
+class ImportExportRepository
     extends BaseRepository<ImportJob> {
 
     constructor(
@@ -356,7 +356,7 @@ export function createImportExportRepository(
 
 }
 
-export const ImportExportRepositoryInstance = {
+const ImportExportRepositoryInstance = {
 
     listImports(
         ...args: unknown[]

@@ -1,4 +1,4 @@
-export type PolicyStatus =
+type PolicyStatus =
 
     | "Active"
 
@@ -8,7 +8,7 @@ export type PolicyStatus =
 
 
 
-export type PolicyType =
+type PolicyType =
 
     | "System"
 

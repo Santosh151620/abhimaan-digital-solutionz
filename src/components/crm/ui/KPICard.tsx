@@ -1,85 +1,117 @@
-import {
-    ArrowUpRight,
-} from "lucide-react";
-
-import type {
-    ReactNode,
-} from "react";
+import type { ReactNode } from "react";
+import { ArrowUpRight } from "lucide-react";
 
 
 interface Props {
+
     title: string;
+
     value: string;
+
     change?: string;
+
     icon: ReactNode;
-    color: string;
+
+    color?: string;
+
+    description?: string;
+
 }
 
 
 export default function KPICard({
+
     title,
+
     value,
+
     change,
+
     icon,
-    color,
+
+    color = "bg-cyan-400/10 text-cyan-300",
+
+    description,
+
 }: Props) {
+
 
     return (
 
         <div
             className="
                 group
+                min-w-0
                 overflow-hidden
-                rounded-3xl
+                rounded-2xl
                 border
-                border-amber-200/40
-                bg-gradient-to-br
-                from-white
-                via-[#faf7f0]
-                to-[#e7dcc8]
+                border-cyan-400/10
+                bg-slate-950/80
+                backdrop-blur-xl
                 shadow-xl
+                shadow-black/20
                 transition-all
                 duration-300
                 hover:-translate-y-1
-                hover:shadow-2xl
+                hover:border-cyan-400/25
+                hover:shadow-cyan-950/20
             "
         >
 
             <div
                 className="
                     flex
-                    items-center
+                    items-start
                     justify-between
-                    p-6
+                    gap-4
+                    p-5
                 "
             >
 
-                <div>
+                <div className="min-w-0">
 
                     <p
                         className="
-                            text-sm
-                            font-semibold
+                            truncate
+                            text-[11px]
+                            font-bold
                             uppercase
-                            tracking-wide
-                            text-slate-500
+                            tracking-[0.15em]
+                            text-slate-400
                         "
                     >
                         {title}
                     </p>
 
 
-                    <h2
+                    <p
                         className="
                             mt-3
-                            text-4xl
+                            truncate
+                            text-3xl
                             font-black
                             tracking-tight
-                            text-slate-900
+                            text-white
                         "
                     >
                         {value}
-                    </h2>
+                    </p>
+
+
+                    {description && (
+
+                        <p
+                            className="
+                                mt-2
+                                text-xs
+                                leading-relaxed
+                                text-slate-500
+                            "
+                        >
+                            {description}
+                        </p>
+
+                    )}
 
 
                     {change && (
@@ -92,18 +124,18 @@ export default function KPICard({
                                 gap-2
                                 rounded-full
                                 border
-                                border-emerald-200
-                                bg-emerald-50
+                                border-emerald-400/20
+                                bg-emerald-400/10
                                 px-3
                                 py-1
-                                text-sm
+                                text-xs
                                 font-semibold
-                                text-emerald-700
+                                text-emerald-300
                             "
                         >
 
                             <ArrowUpRight
-                                size={15}
+                                size={14}
                             />
 
                             {change}
@@ -118,35 +150,41 @@ export default function KPICard({
                 <div
                     className={`
                         flex
-                        h-16
-                        w-16
+                        h-12
+                        w-12
+                        shrink-0
                         items-center
                         justify-center
-                        rounded-2xl
-                        text-white
-                        shadow-lg
+                        rounded-xl
+                        border
+                        border-white/10
                         transition-transform
                         duration-300
                         group-hover:scale-105
                         ${color}
                     `}
                 >
-                    {icon}
-                </div>
 
+                    {icon}
+
+                </div>
 
             </div>
 
 
             <div
-                className={`
+                className="
                     h-1
                     w-full
-                    ${color}
-                `}
+                    bg-gradient-to-r
+                    from-cyan-400/70
+                    via-blue-400/40
+                    to-transparent
+                "
             />
 
         </div>
 
     );
+
 }

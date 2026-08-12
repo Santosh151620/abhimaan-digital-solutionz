@@ -2,40 +2,101 @@
 
 import Link from 'next/link';
 
-import type { Invoice } from '@/types/crm/Invoices';
+import type {
+    Invoice,
+} from '@/types/crm/Invoices';
+
 
 interface Props {
+
     invoices: Invoice[];
+
 }
 
+
+
 export default function InvoicesTable({
+
     invoices,
+
 }: Props) {
 
+
     if (invoices.length === 0) {
+
         return (
-            <div className="rounded-xl border bg-card p-10 text-center text-muted-foreground">
+
+            <div
+                className="
+                    rounded-xl
+                    border
+                    bg-card
+                    p-10
+                    text-center
+                    text-muted-foreground
+                "
+            >
                 No invoices found.
             </div>
+
         );
+
     }
+
+
 
     const badgeClasses: Record<
         Invoice['status'],
         string
     > = {
-        Draft: 'bg-gray-100 text-gray-700',
-        Sent: 'bg-blue-100 text-blue-700',
-        Paid: 'bg-green-100 text-green-700',
-        Overdue: 'bg-red-100 text-red-700',
-        Cancelled: 'bg-slate-200 text-slate-700',
+
+        Draft:
+            'bg-gray-100 text-gray-700',
+
+        Sent:
+            'bg-blue-100 text-blue-700',
+
+        Paid:
+            'bg-green-100 text-green-700',
+
+        Overdue:
+            'bg-red-100 text-red-700',
+
+        Cancelled:
+            'bg-slate-200 text-slate-700',
+
     };
+
+
+
+    const currencyFormatter =
+        new Intl.NumberFormat(
+
+            'en-IN',
+
+            {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0,
+            },
+
+        );
+
+
 
     return (
 
-        <div className="overflow-x-auto rounded-xl border bg-card">
+        <div
+            className="
+                overflow-x-auto
+                rounded-xl
+                border
+                bg-card
+            "
+        >
 
             <table className="min-w-full">
+
 
                 <thead className="bg-muted/40">
 
@@ -69,13 +130,18 @@ export default function InvoicesTable({
 
                 </thead>
 
+
+
                 <tbody>
 
                     {invoices.map((invoice) => (
 
                         <tr
                             key={invoice.id}
-                            className="border-t hover:bg-muted/20"
+                            className="
+                                border-t
+                                hover:bg-muted/20
+                            "
                         >
 
                             <td className="px-4 py-3">
@@ -90,28 +156,43 @@ export default function InvoicesTable({
 
                             </td>
 
+
                             <td className="px-4 py-3">
                                 {invoice.customerName}
                             </td>
+
 
                             <td className="px-4 py-3">
                                 {invoice.dueDate}
                             </td>
 
+
                             <td className="px-4 py-3">
-                                {invoice.currency}{' '}
-                                {invoice.total.toLocaleString()}
+
+                                {currencyFormatter.format(
+                                    Number(invoice.total ?? 0),
+                                )}
+
                             </td>
+
 
                             <td className="px-4 py-3">
 
                                 <span
-                                    className={`rounded-full px-3 py-1 text-xs font-medium ${badgeClasses[invoice.status]}`}
+                                    className={`
+                                        rounded-full
+                                        px-3
+                                        py-1
+                                        text-xs
+                                        font-medium
+                                        ${badgeClasses[invoice.status]}
+                                    `}
                                 >
                                     {invoice.status}
                                 </span>
 
                             </td>
+
 
                             <td className="px-4 py-3">
 
@@ -119,14 +200,29 @@ export default function InvoicesTable({
 
                                     <Link
                                         href={`/crm/invoices/${invoice.id}`}
-                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                        className="
+                                            rounded
+                                            border
+                                            px-3
+                                            py-1
+                                            text-sm
+                                            hover:bg-muted
+                                        "
                                     >
                                         View
                                     </Link>
 
+
                                     <Link
                                         href={`/crm/invoices/${invoice.id}/edit`}
-                                        className="rounded border px-3 py-1 text-sm hover:bg-muted"
+                                        className="
+                                            rounded
+                                            border
+                                            px-3
+                                            py-1
+                                            text-sm
+                                            hover:bg-muted
+                                        "
                                     >
                                         Edit
                                     </Link>
@@ -135,11 +231,13 @@ export default function InvoicesTable({
 
                             </td>
 
+
                         </tr>
 
                     ))}
 
                 </tbody>
+
 
             </table>
 
@@ -148,4 +246,3 @@ export default function InvoicesTable({
     );
 
 }
-

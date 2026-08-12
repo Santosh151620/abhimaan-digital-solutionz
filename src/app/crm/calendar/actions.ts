@@ -42,7 +42,7 @@ export async function getCalendarEvents() {
 
 }
 
-export async function getArchivedCalendarEvents() {
+async function getArchivedCalendarEvents() {
 
     return CalendarServiceInstance.listArchived();
 
@@ -72,7 +72,7 @@ export async function createCalendarEvent(
 
 }
 
-export async function updateCalendarEvent(
+async function updateCalendarEvent(
     id: string,
     data: Partial<CalendarEvent>,
 ) {
@@ -92,7 +92,7 @@ export async function updateCalendarEvent(
 
 }
 
-export async function deleteCalendarEvent(
+async function deleteCalendarEvent(
     id: string,
 ) {
 
@@ -108,7 +108,7 @@ export async function deleteCalendarEvent(
 
 }
 
-export async function restoreCalendarEvent(
+async function restoreCalendarEvent(
     id: string,
 ) {
 
@@ -124,7 +124,7 @@ export async function restoreCalendarEvent(
 
 }
 
-export async function updateCalendarEventStatus(
+async function updateCalendarEventStatus(
     id: string,
     status: CalendarStatus,
 ) {
@@ -144,7 +144,7 @@ export async function updateCalendarEventStatus(
 
 }
 
-export async function getCalendarSummary() {
+async function getCalendarSummary() {
 
     return CalendarServiceInstance.summary();
 

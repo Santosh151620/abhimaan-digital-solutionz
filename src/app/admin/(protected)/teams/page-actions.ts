@@ -46,7 +46,7 @@ export async function saveTeam(
 }
 
 
-export async function deleteTeam(
+async function deleteTeam(
     id: string,
 ): Promise<void> {
 

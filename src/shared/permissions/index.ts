@@ -13,11 +13,7 @@ import {
 } from "./crm.permissions";
 
 
-export {
-    PLATFORM_PERMISSIONS,
-    ADMIN_PERMISSIONS,
-    CRM_PERMISSIONS,
-};
+;
 
 
 export const PERMISSIONS = [
@@ -43,3 +39,6 @@ export const PERMISSION_SET =
 
 export * from "./role-governance";
 export * from "./role-permissions";
+
+
+

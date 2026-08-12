@@ -14,7 +14,7 @@ import type {
 } from '@/types/crm/Contracts';
 
 
-export class ContractsRepository
+class ContractsRepository
     extends BaseRepository<Contract> {
 
 

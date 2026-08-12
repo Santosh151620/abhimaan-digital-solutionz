@@ -66,7 +66,7 @@ type AnnouncementRow = {
 };
 
 
-export interface IAnnouncementsRepository {
+interface IAnnouncementsRepository {
 
     findAll(): Promise<Announcement[]>;
 

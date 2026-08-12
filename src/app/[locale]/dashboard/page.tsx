@@ -1,41 +1,115 @@
-﻿import type { ReactNode } from "react";
 
-import { AIInsightsPanel } from "@/modules/dashboard/ai";
+import {
+    AIInsightsPanel,
+} from "@/modules/dashboard/ai";
+
 import NotificationSummary from "@/modules/dashboard/notifications/NotificationSummary";
 import LiveActivityTicker from "@/modules/dashboard/live/LiveActivityTicker";
 
-import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
-import DashboardLiveRefresh from "@/modules/dashboard/components/DashboardLiveRefresh";
 import DashboardSectionSorter from "@/modules/dashboard/components/DashboardSectionSorter";
+import AnalyticsCards from "@/modules/dashboard/components/AnalyticsCards";
 
-import { BoardSummaryPanel } from "@/modules/dashboard/board-summary";
-import { MarketIntelligencePanel } from "@/modules/dashboard/market-intelligence";
-import { ExecutiveScorecardPanel } from "@/modules/dashboard/executive-scorecard";
-import { CommandCenterPanel } from "@/modules/dashboard/command-center";
-import { CEOBriefingPanel } from "@/modules/dashboard/ceo-briefing";
-import { DealIntelligencePanel } from "@/modules/dashboard/deal-intelligence";
-import { StrategicInsightsPanel } from "@/modules/dashboard/strategic-insights";
-import { GoalTrackerPanel } from "@/modules/dashboard/goal-tracker";
-import { BusinessHealthPanel } from "@/modules/dashboard/business-health";
-import { ExecutiveTimelinePanel } from "@/modules/dashboard/executive-timeline";
-import { PredictiveAnalyticsPanel } from "@/modules/dashboard/predictive-analytics";
-import { SalesVelocityPanel } from "@/modules/dashboard/sales-velocity";
-import { CustomerSuccessPanel } from "@/modules/dashboard/customer-success";
-import { RevenueIntelligencePanel } from "@/modules/dashboard/revenue-intelligence";
-import { KPITrendsPanel } from "@/modules/dashboard/kpi-trends";
-import { ExecutiveMetricsPanel } from "@/modules/dashboard/executive";
-import { InsightsPanel } from "@/modules/dashboard/insights";
-import { AutomationPanel } from "@/modules/dashboard/automation";
-import { RiskAlertsPanel } from "@/modules/dashboard/risk-alerts";
-import { AISummaryPanel } from "@/modules/dashboard/ai-summary";
-import { AIScorePanel } from "@/modules/dashboard/ai-score";
-import { QuickActionsPanel } from "@/modules/dashboard/quick-actions";
-import { RecentLeadsPanel } from "@/modules/dashboard/recent-leads";
-import { TeamPerformancePanel } from "@/modules/dashboard/team-performance";
+import {
+    BoardSummaryPanel,
+} from "@/modules/dashboard/board-summary";
+
+import {
+    MarketIntelligencePanel,
+} from "@/modules/dashboard/market-intelligence";
+
+import {
+    ExecutiveScorecardPanel,
+} from "@/modules/dashboard/executive-scorecard";
+
+import {
+    CommandCenterPanel,
+} from "@/modules/dashboard/command-center";
+
+import {
+    CEOBriefingPanel,
+} from "@/modules/dashboard/ceo-briefing";
+
+import {
+    DealIntelligencePanel,
+} from "@/modules/dashboard/deal-intelligence";
+
+import {
+    StrategicInsightsPanel,
+} from "@/modules/dashboard/strategic-insights";
+
+import {
+    GoalTrackerPanel,
+} from "@/modules/dashboard/goal-tracker";
+
+import {
+    BusinessHealthPanel,
+} from "@/modules/dashboard/business-health";
+
+import {
+    ExecutiveTimelinePanel,
+} from "@/modules/dashboard/executive-timeline";
+
+import {
+    PredictiveAnalyticsPanel,
+} from "@/modules/dashboard/predictive-analytics";
+
+import {
+    SalesVelocityPanel,
+} from "@/modules/dashboard/sales-velocity";
+
+import {
+    CustomerSuccessPanel,
+} from "@/modules/dashboard/customer-success";
+
+import {
+    RevenueIntelligencePanel,
+} from "@/modules/dashboard/revenue-intelligence";
+
+import {
+    KPITrendsPanel,
+} from "@/modules/dashboard/kpi-trends";
+
+import {
+    ExecutiveMetricsPanel,
+} from "@/modules/dashboard/executive";
+
+import {
+    InsightsPanel,
+} from "@/modules/dashboard/insights";
+
+import {
+    AutomationPanel,
+} from "@/modules/dashboard/automation";
+
+import {
+    RiskAlertsPanel,
+} from "@/modules/dashboard/risk-alerts";
+
+import {
+    AISummaryPanel,
+} from "@/modules/dashboard/ai-summary";
+
+import {
+    AIScorePanel,
+} from "@/modules/dashboard/ai-score";
+
+import {
+    QuickActionsPanel,
+} from "@/modules/dashboard/quick-actions";
+
+import {
+    RecentLeadsPanel,
+} from "@/modules/dashboard/recent-leads";
+
+import {
+    TeamPerformancePanel,
+} from "@/modules/dashboard/team-performance";
+
 
 import NotificationCenter from "@/modules/dashboard/notifications/NotificationCenter";
 import ActivityFeed from "@/modules/dashboard/activity/ActivityFeed";
 import LiveStatus from "@/modules/dashboard/live/LiveStatus";
+
 
 import ExecutiveSummaryCard from "@/modules/dashboard/components/ExecutiveSummaryCard";
 import PipelineIntelligenceCard from "@/modules/dashboard/components/PipelineIntelligenceCard";
@@ -43,7 +117,11 @@ import CRMHealthCard from "@/modules/dashboard/components/CRMHealthCard";
 import ActionCenterCard from "@/modules/dashboard/components/ActionCenterCard";
 import PriorityAlertsCard from "@/modules/dashboard/components/PriorityAlertsCard";
 
-import { getDashboardSnapshot } from "@/services/dashboard";
+
+import {
+    getDashboardSnapshot,
+} from "@/services/dashboard";
+
 
 import ExecutivePanel from "@/modules/crm/dashboard/components/ExecutivePanel";
 import PipelineOverview from "@/modules/crm/dashboard/components/PipelineOverview";
@@ -53,408 +131,463 @@ import SalesCopilot from "@/modules/crm/dashboard/components/SalesCopilot";
 import TodayWorkPanel from "@/modules/crm/dashboard/components/TodayWorkPanel";
 
 
-function DashboardFrame({
-  title,
-  description,
-  children,
-  defaultOpen = true,
-}: {
-  title: string;
-  description: string;
-  children: ReactNode;
-  defaultOpen?: boolean;
-}) {
-  return (
-    <details
-      open={defaultOpen}
-      className="group overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-xl shadow-black/10 backdrop-blur-xl"
-    >
-      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-4 transition-colors hover:bg-white/[0.025] sm:px-5 sm:py-5">
-        <div className="min-w-0">
-          <h2 className="text-sm font-semibold tracking-tight text-white sm:text-base">
-            {title}
-          </h2>
-
-          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-slate-400 sm:text-sm">
-            {description}
-          </p>
-        </div>
-
-        <span
-          aria-hidden="true"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.035] text-xs text-slate-400 transition-transform duration-200 group-open:rotate-180"
-        >
-          ↓
-        </span>
-      </summary>
-
-      <div className="border-t border-slate-800/80 p-3 sm:p-5">
-        {children}
-      </div>
-    </details>
-  );
-}
-
 
 export default async function DashboardPage() {
-  const dashboard = await getDashboardSnapshot();
 
-  const overview = dashboard.metrics.overview;
-  const payments = dashboard.metrics.payments;
 
+    const dashboard =
+        await getDashboardSnapshot();
 
-  return (
-    <main className="crm-page min-w-0 space-y-4 overflow-x-hidden bg-slate-950 px-3 py-4 text-white sm:space-y-5 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
 
 
-      <section className="relative overflow-hidden rounded-2xl border border-cyan-400/20 bg-gradient-to-br from-cyan-500/[0.12] via-blue-500/[0.06] to-slate-900/80 p-5 shadow-2xl shadow-cyan-950/20 sm:p-6 lg:p-7">
+    const overview =
+        dashboard.metrics.overview;
 
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-16 -top-20 h-52 w-52 rounded-full bg-cyan-400/10 blur-3xl"
-        />
 
-        <div className="relative flex min-w-0 flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+    const payments =
+        dashboard.metrics.payments;
 
-          <div className="min-w-0 max-w-4xl">
 
-            <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.22em] text-cyan-300 sm:text-xs">
-              Business Intelligence
-            </p>
 
-            <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
-              Dashboard
-            </h1>
+    const sections = [
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300 sm:text-base">
-              Real-time visibility into sales activity, pipeline health,
-              revenue performance, and business opportunities.
-            </p>
+        {
+            id:"executive-overview",
 
-          </div>
+            title:"Executive Overview",
 
+            description:
+                "Business health, strategic signals and leadership insights.",
 
-          <div className="relative shrink-0 lg:pb-1">
-            <DashboardLiveRefresh />
-          </div>
 
-        </div>
+            content:(
 
-      </section>
+                <div className="space-y-5">
 
+                    <CommandCenterPanel />
 
-      <DashboardFrame
-        title="Executive Overview"
-        description="A concise view of business health, strategic signals, leadership insights, and priority actions."
-      >
 
-        <div className="space-y-5">
+                    <div className="grid gap-5 xl:grid-cols-2">
 
-          <CommandCenterPanel />
+                        <ExecutiveScorecardPanel />
 
+                        <BusinessHealthPanel />
 
-          <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-            <ExecutiveScorecardPanel />
-            <BusinessHealthPanel />
-          </div>
+                    </div>
 
 
-          <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-            <ExecutivePanel executive={dashboard.executive} />
-            <ExecutiveMetricsPanel />
-          </div>
+                    <div className="grid gap-5 xl:grid-cols-2">
 
+                        <ExecutivePanel
+                            executive={
+                                dashboard.executive
+                            }
+                        />
 
-          <ExecutiveTimelinePanel />
+                        <ExecutiveMetricsPanel />
 
+                    </div>
 
-          <div className="grid min-w-0 gap-4 xl:grid-cols-2">
-            <CEOBriefingPanel />
-            <BoardSummaryPanel />
-          </div>
 
+                    <ExecutiveTimelinePanel />
 
-          <PriorityAlertsCard
-            metrics={dashboard.metrics}
-            workflow={dashboard.workflow}
-          />
 
-        </div>
+                    <div className="grid gap-5 xl:grid-cols-2">
 
-      </DashboardFrame>
+                        <CEOBriefingPanel />
 
+                        <BoardSummaryPanel />
 
+                    </div>
 
-      <DashboardFrame
-        title="CRM Overview & Performance"
-        description="Core customer relationship metrics, pipeline health, sales conversion, and operational performance."
-      >
 
-        <div className="space-y-5">
+                    <PriorityAlertsCard
+                        metrics={
+                            dashboard.metrics
+                        }
+                        workflow={
+                            dashboard.workflow
+                        }
+                    />
 
-
-          <div className="grid min-w-0 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-
-            <ExecutiveSummaryCard metrics={dashboard.metrics} />
-
-
-            <PipelineIntelligenceCard
-              metrics={{
-                totalLeads: overview.totalLeads,
-                qualifiedLeads: overview.qualifiedLeads,
-                proposalLeads: overview.proposalLeads,
-                wonLeads: overview.wonLeads,
-                conversionRate: overview.conversionRate,
-              }}
-            />
-
-
-            <CRMHealthCard metrics={dashboard.metrics} />
-
-
-            <ActionCenterCard
-              metrics={{
-                totalLeads: overview.totalLeads,
-                newLeads: overview.newLeads,
-                qualifiedLeads: overview.qualifiedLeads,
-                proposalLeads: overview.proposalLeads,
-                overduePayments: payments.overdue,
-              }}
-            />
-
-          </div>
-
-
-          <AnalyticsCards data={dashboard.metrics} />
-
-
-          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-
-            <PipelineOverview data={dashboard.pipeline} />
-
-            <RevenueKPI data={dashboard.revenue} />
-
-          </div>
-
-
-          <KPITrendsPanel />
-
-        </div>
-
-      </DashboardFrame>
-      
-      <DashboardFrame
-        title="Sales & Revenue Intelligence"
-        description="Revenue performance, forecasting, deal intelligence, and sales execution."
-      >
-        <div className="space-y-5">
-
-          <RevenueIntelligencePanel />
-
-
-          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-
-            <SalesVelocityPanel />
-
-            <DealIntelligencePanel />
-
-          </div>
-
-
-          <SalesCopilot data={dashboard.copilot} />
-
-
-          <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-
-            <PredictiveAnalyticsPanel />
-
-            <StrategicInsightsPanel />
-
-          </div>
-
-
-          <RevenueForecast {...dashboard.forecast} />
-
-        </div>
-
-      </DashboardFrame>
-
-
-
-      <DashboardFrame
-        title="Today's Work"
-        description="Recommended follow-ups, sales actions, and operational priorities for today."
-      >
-
-        <TodayWorkPanel items={dashboard.today} />
-
-      </DashboardFrame>
-
-
-
-      <DashboardSectionSorter
-        sections={[
-
-          {
-            id: "customer-operations",
-            title: "Customer & Operations",
-            content: (
-              <div className="space-y-5">
-
-                <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-
-                  <CustomerSuccessPanel />
-
-                  <GoalTrackerPanel />
 
                 </div>
 
-
-                <QuickActionsPanel />
-
-
-                <div className="grid min-w-0 gap-5 xl:grid-cols-2">
-
-                  <RecentLeadsPanel />
-
-                  <TeamPerformancePanel />
-
-                </div>
-
-              </div>
             ),
-          },
+        },
 
 
-          {
-            id: "market-intelligence",
-            title: "Market Intelligence",
-            content: (
-              <MarketIntelligencePanel />
-            ),
-          },
+        {
+            id:"crm-performance",
+
+            title:"CRM Overview & Performance",
+
+            description:
+                "Customer relationships, pipeline performance and operational KPIs.",
 
 
-          {
-            id: "ai-intelligence",
-            title: "AI Intelligence",
-            content: (
-              <div className="space-y-5">
+            content:(
 
-                <div className="grid min-w-0 gap-5 xl:grid-cols-3">
+                <div className="space-y-5">
 
-                  <AIScorePanel />
 
-                  <AISummaryPanel />
+                    <ExecutiveSummaryCard
+                        metrics={
+                            dashboard.metrics
+                        }
+                    />
 
-                  <RiskAlertsPanel />
+
+
+                    <div className="grid gap-5 xl:grid-cols-3">
+
+                        <PipelineIntelligenceCard
+                            metrics={{
+                                totalLeads:
+                                    overview.totalLeads,
+
+                                qualifiedLeads:
+                                    overview.qualifiedLeads,
+
+                                proposalLeads:
+                                    overview.proposalLeads,
+
+                                wonLeads:
+                                    overview.wonLeads,
+
+                                conversionRate:
+                                    overview.conversionRate,
+                            }}
+                        />
+
+
+                        <CRMHealthCard
+                            metrics={
+                                dashboard.metrics
+                            }
+                        />
+
+
+                        <ActionCenterCard
+                            metrics={{
+                                totalLeads:
+                                    overview.totalLeads,
+
+                                newLeads:
+                                    overview.newLeads,
+
+                                qualifiedLeads:
+                                    overview.qualifiedLeads,
+
+                                proposalLeads:
+                                    overview.proposalLeads,
+
+                                overduePayments:
+                                    payments.overdue,
+                            }}
+                        />
+
+                    </div>
+
+
+                    <AnalyticsCards
+                        data={
+                            dashboard.metrics
+                        }
+                    />
+
+
+                    <div className="grid gap-5 xl:grid-cols-2">
+
+                        <PipelineOverview
+                            data={
+                                dashboard.pipeline
+                            }
+                        />
+
+
+                        <RevenueKPI
+                            data={
+                                dashboard.revenue
+                            }
+                        />
+
+                    </div>
+
+
+                    <KPITrendsPanel />
 
                 </div>
 
-
-                <AIInsightsPanel />
-
-              </div>
             ),
-          },
+        },
 
 
-          {
-            id: "activity-notifications",
-            title: "Activity & Notifications",
-            content: (
-              <div className="space-y-5">
+        {
+            id:"sales-revenue",
 
-                <div className="grid min-w-0 gap-5 xl:grid-cols-3">
+            title:"Sales & Revenue Intelligence",
 
-                  <NotificationCenter />
+            description:
+                "Revenue performance, forecasting, deal intelligence and execution.",
 
-                  <ActivityFeed />
 
-                  <LiveStatus />
+            content:(
+
+                <div className="space-y-5">
+
+                    <RevenueIntelligencePanel />
+
+
+                    <div className="grid gap-5 xl:grid-cols-2">
+
+                        <SalesVelocityPanel />
+
+                        <DealIntelligencePanel />
+
+                    </div>
+
+
+                    <SalesCopilot
+                        data={
+                            dashboard.copilot
+                        }
+                    />
+
+
+                    <div className="grid gap-5 xl:grid-cols-2">
+
+                        <PredictiveAnalyticsPanel />
+
+                        <StrategicInsightsPanel />
+
+                    </div>
+
+
+                    <RevenueForecast
+                        {...dashboard.forecast}
+                    />
 
                 </div>
 
+            ),
+        },
 
-                <div className="grid min-w-0 gap-5 xl:grid-cols-3">
 
-                  <NotificationSummary />
+        {
+            id:"today-work",
 
-                  <LiveActivityTicker />
+            title:"Today's Work",
 
-                  <AutomationPanel />
+            description:
+                "Recommended follow-ups and operational priorities.",
+
+
+            content:(
+
+                <TodayWorkPanel
+                    items={
+                        dashboard.today
+                    }
+                />
+
+            ),
+        },
+
+
+
+        {
+            id:"operations",
+
+            title:"Customer & Operations",
+
+            description:
+                "Customer success, goals and team activity.",
+
+
+            content:(
+
+                <div className="space-y-5">
+
+                    <div className="grid gap-5 xl:grid-cols-2">
+
+                        <CustomerSuccessPanel />
+
+                        <GoalTrackerPanel />
+
+                    </div>
+
+
+                    <QuickActionsPanel />
+
+
+                    <div className="grid gap-5 xl:grid-cols-2">
+
+                        <RecentLeadsPanel />
+
+                        <TeamPerformancePanel />
+
+                    </div>
 
                 </div>
 
-
-                <InsightsPanel />
-
-              </div>
             ),
-          },
-
-        ]}
-      />
+        },
 
 
+        {
+            id:"market",
 
-      <section className="rounded-2xl border border-emerald-500/20 bg-slate-900/70 p-4 shadow-xl shadow-black/10 sm:p-5">
+            title:"Market Intelligence",
 
-        <div className="mb-4">
-
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-400">
-            Platform Status
-          </p>
-
-
-          <h2 className="mt-1 text-sm font-semibold text-white">
-            Business Platform Services
-          </h2>
-
-        </div>
+            description:
+                "Market signals and business intelligence.",
 
 
+            content:(
+                <MarketIntelligencePanel />
+            ),
+        },
 
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
 
-          {[
-            "Business Intelligence",
-            "Executive Intelligence",
-            "Revenue Forecast Engine",
-            "Workflow Intelligence",
-            "Dashboard Analytics",
-            "Production Services",
-          ].map((service) => (
+        {
+            id:"ai",
 
-            <div
-              key={service}
-              className="flex min-w-0 items-center gap-2 rounded-xl border border-white/5 bg-white/[0.025] px-3 py-2.5"
+            title:"AI Intelligence",
+
+            description:
+                "AI insights, scoring and predictive signals.",
+
+
+            content:(
+
+                <div className="space-y-5">
+
+                    <div className="grid gap-5 xl:grid-cols-3">
+
+                        <AIScorePanel />
+
+                        <AISummaryPanel />
+
+                        <RiskAlertsPanel />
+
+                    </div>
+
+
+                    <AIInsightsPanel />
+
+                </div>
+
+            ),
+        },
+
+
+        {
+            id:"activity",
+
+            title:"Activity & Notifications",
+
+            description:
+                "Notifications, live status and automation.",
+
+
+            content:(
+
+                <div className="space-y-5">
+
+
+                    <div className="grid gap-5 xl:grid-cols-3">
+
+                        <NotificationCenter />
+
+                        <ActivityFeed />
+
+                        <LiveStatus />
+
+                    </div>
+
+
+                    <div className="grid gap-5 xl:grid-cols-3">
+
+                        <NotificationSummary />
+
+                        <LiveActivityTicker />
+
+                        <AutomationPanel />
+
+                    </div>
+
+
+                    <InsightsPanel />
+
+                </div>
+
+            ),
+        },
+
+    ];
+
+
+
+    return (
+
+        <main
+            className="
+                min-w-0
+                space-y-5
+                overflow-x-hidden
+                bg-slate-950
+                px-3
+                py-4
+                text-white
+                sm:px-5
+                lg:px-6
+            "
+        >
+
+
+            <section
+                className="
+                    rounded-2xl
+                    border
+                    border-cyan-400/20
+                    bg-gradient-to-br
+                    from-cyan-500/[0.12]
+                    via-blue-500/[0.06]
+                    to-slate-900/80
+                    p-6
+                "
             >
 
-              <span
-                aria-hidden="true"
-                className="h-2 w-2 shrink-0 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.45)]"
-              />
+                <p className="text-xs uppercase tracking-[0.22em] text-cyan-300">
+                    Business Intelligence
+                </p>
 
 
-              <span className="truncate text-xs text-slate-300">
-                {service}
-              </span>
+                <h1 className="mt-2 text-3xl font-bold">
+                    Dashboard
+                </h1>
 
 
-              <span className="ml-auto shrink-0 text-[10px] font-medium text-emerald-400">
-                Ready
-              </span>
-
-            </div>
-
-          ))}
-
-        </div>
-
-      </section>
+                <p className="mt-2 text-slate-300">
+                    Real-time visibility into sales activity,
+                    pipeline health and revenue performance.
+                </p>
 
 
-    </main>
-  );
+            </section>
+
+
+
+            <DashboardSectionSorter
+                sections={
+                    sections
+                }
+            />
+
+
+        </main>
+
+    );
+
 }

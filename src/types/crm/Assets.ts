@@ -4,7 +4,7 @@ export type AssetStatus =
     | 'Maintenance'
     | 'Retired';
 
-export type AssetCategory =
+type AssetCategory =
     | 'Laptop'
     | 'Desktop'
     | 'Server'

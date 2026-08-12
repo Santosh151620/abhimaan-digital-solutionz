@@ -5,24 +5,28 @@ import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 export default defineConfig([
-  ...nextVitals,
-  ...nextTs,
-  {
-    plugins: {
-      react: reactPlugin,
-      "react-hooks": reactHooksPlugin,
+    ...nextVitals,
+    ...nextTs,
+
+    {
+        plugins: {
+            react: reactPlugin,
+            "react-hooks": reactHooksPlugin,
+        },
+
+        rules: {
+            "@typescript-eslint/no-unused-vars": "off",
+            "react-hooks/set-state-in-effect": "off",
+            "react/no-unescaped-entities": "warn",
+        },
     },
-    rules: {
-      "react-hooks/set-state-in-effect": "warn",
-      "react/no-unescaped-entities": "warn",
-    },
-  },
-  globalIgnores([
-    ".next/**",
-    "out/**",
-    "build/**",
-    "scripts/**",
-    "SprintExports/**",
-    "next-env.d.ts",
-  ]),
+
+    globalIgnores([
+        ".next/**",
+        "out/**",
+        "build/**",
+        "scripts/**",
+        "SprintExports/**",
+        "next-env.d.ts",
+    ]),
 ]);

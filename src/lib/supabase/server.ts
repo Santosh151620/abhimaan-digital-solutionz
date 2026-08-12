@@ -3,37 +3,42 @@ import { cookies } from "next/headers";
 
 import { env } from "../env";
 
+
 export async function createClient() {
-  const cookieStore = await cookies();
 
-  return createServerClient(
-    env.supabase.url,
-    env.supabase.anonKey,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
+    const cookieStore =
+        await cookies();
+
+
+    return createServerClient(
+
+        env.supabase.url,
+
+        env.supabase.anonKey,
+
+        {
+
+            cookies: {
+
+                getAll() {
+
+                    return cookieStore.getAll();
+
+                },
+
+
+                setAll() {
+
+                    // Cookie writes are handled by proxy.ts
+                    // Server Components cannot mutate cookies.
+                    // Intentionally empty.
+
+                },
+
+            },
+
         },
 
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(
-              ({ name, value, options }) =>
-                cookieStore.set(name, value, options)
-            );
-          } catch {
-            // Cookie writes from Server Components
-            // are ignored. Middleware/proxy or Route
-            // Handlers will refresh sessions.
-          }
-        },
-      },
-    }
-  );
+    );
+
 }
-
-
-
-
-
-

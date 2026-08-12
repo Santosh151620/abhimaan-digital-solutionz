@@ -1,66 +1,103 @@
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import WhatsAppButton from "@/components/layout/WhatsAppButton";
 import { CommandPaletteProvider } from "@/components/command-palette";
+
+import ThemeProvider from "@/components/providers/ThemeProvider";
 
 import { routing } from "@/i18n/routing";
 
-import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import {
+    NextIntlClientProvider,
+} from "next-intl";
+
+import {
+    getMessages,
+    setRequestLocale,
+} from "next-intl/server";
+
 import { notFound } from "next/navigation";
 
+
 export function generateStaticParams() {
+
     return routing.locales.map((locale) => ({
         locale,
     }));
+
 }
+
+
 
 interface LocaleLayoutProps {
+
     children: React.ReactNode;
+
     params: Promise<{
-        locale: string;
+        locale:string;
     }>;
+
 }
 
+
+
 export default async function LocaleLayout({
+
     children,
+
     params,
+
 }: LocaleLayoutProps) {
 
-    const { locale } = await params;
+
+    const {
+        locale,
+    } = await params;
+
+
 
     if (
         !routing.locales.includes(
-            locale as (typeof routing.locales)[number]
+            locale as (typeof routing.locales)[number],
         )
     ) {
+
         notFound();
+
     }
 
-    setRequestLocale(locale);
 
-    const messages = await getMessages();
+
+    setRequestLocale(
+        locale,
+    );
+
+
+
+    const messages =
+        await getMessages();
+
+
 
     return (
 
         <NextIntlClientProvider
+
             locale={locale}
+
             messages={messages}
+
         >
 
-            <CommandPaletteProvider>
+            <ThemeProvider>
 
-                <Header />
 
-                <main className="min-h-screen pt-24">
+                <CommandPaletteProvider>
+
                     {children}
-                </main>
 
-                <Footer />
+                </CommandPaletteProvider>
 
-                <WhatsAppButton />
 
-            </CommandPaletteProvider>
+            </ThemeProvider>
+
 
         </NextIntlClientProvider>
 

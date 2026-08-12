@@ -159,7 +159,7 @@ function normalizeUpdatePayload(
     };
 }
 
-export async function getAttachments(): Promise<Attachment[]> {
+async function getAttachments(): Promise<Attachment[]> {
     const service =
         await getService();
 
@@ -182,7 +182,7 @@ export async function getAttachment(
     );
 }
 
-export async function getEntityAttachments(
+async function getEntityAttachments(
     entityType: string,
     entityId: string,
 ): Promise<Attachment[]> {
@@ -213,7 +213,7 @@ export async function getEntityAttachments(
     );
 }
 
-export async function searchAttachments(
+async function searchAttachments(
     filters?: AttachmentSearchFilters,
 ): Promise<Attachment[]> {
     const service =
@@ -343,7 +343,7 @@ export async function restoreAttachment(
     };
 }
 
-export async function getAttachmentSummary() {
+async function getAttachmentSummary() {
     const service =
         await getService();
 

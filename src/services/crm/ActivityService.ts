@@ -229,7 +229,7 @@ class ActivityService {
 /**
  * Standard service instance.
  */
-export const activitiesService =
+const activitiesService =
     new ActivityService();
 
 
@@ -239,7 +239,7 @@ export const activitiesService =
 /**
  * New architecture export.
  */
-export const ActivitiesServiceInstance =
+const ActivitiesServiceInstance =
     activitiesService;
 
 

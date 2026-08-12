@@ -77,7 +77,7 @@ export async function savePolicy(
 
 
 
-export async function deletePolicy(
+async function deletePolicy(
 
 
 

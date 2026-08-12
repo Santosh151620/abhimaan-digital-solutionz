@@ -22,7 +22,7 @@ const styles: Record<string, string> = {
     converted: "bg-emerald-100 text-emerald-700",
 };
 
-export default function EntityStatusBadge({
+function EntityStatusBadge({
     status,
 }: EntityStatusBadgeProps) {
     const badgeClass =
@@ -38,7 +38,4 @@ export default function EntityStatusBadge({
     );
 }
 
-
-
-
-
+export {};

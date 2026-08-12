@@ -7,7 +7,7 @@ interface EntityNotesProps {
     notes: Note[];
 }
 
-export default function EntityNotes({
+function EntityNotes({
     notes,
 }: EntityNotesProps) {
 

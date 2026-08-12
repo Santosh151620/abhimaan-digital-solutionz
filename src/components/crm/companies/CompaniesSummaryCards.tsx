@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { useCompanies } from '@/hooks/crm/useCompanies';
 
-export function CompaniesSummaryCards() {
+function CompaniesSummaryCards() {
 
     const {
         data = [],
@@ -21,25 +21,25 @@ export function CompaniesSummaryCards() {
             active:
                 data.filter(
                     company =>
-                        company.status === 'ACTIVE'
+                        company.status === 'ACTIVE',
                 ).length,
 
             prospects:
                 data.filter(
                     company =>
-                        company.status === 'PROSPECT'
+                        company.status === 'PROSPECT',
                 ).length,
 
             inactive:
                 data.filter(
                     company =>
-                        company.status === 'INACTIVE'
+                        company.status === 'INACTIVE',
                 ).length,
 
             archived:
                 data.filter(
                     company =>
-                        company.status === 'ARCHIVED'
+                        company.status === 'ARCHIVED',
                 ).length,
 
         };
@@ -51,26 +51,31 @@ export function CompaniesSummaryCards() {
         {
             title: 'Total Companies',
             value: summary.total,
+            description: 'All companies in the current view',
         },
 
         {
             title: 'Active',
             value: summary.active,
+            description: 'Currently active companies',
         },
 
         {
             title: 'Prospects',
             value: summary.prospects,
+            description: 'Companies currently in prospect status',
         },
 
         {
             title: 'Inactive',
             value: summary.inactive,
+            description: 'Inactive companies',
         },
 
         {
             title: 'Archived',
             value: summary.archived,
+            description: 'Archived companies',
         },
 
     ];
@@ -79,24 +84,41 @@ export function CompaniesSummaryCards() {
 
         return (
 
-            <div className="grid gap-4 md:grid-cols-5">
+            <section
+                aria-label="Company summary"
+                aria-busy="true"
+                className="
+                    grid
+                    gap-4
+                    sm:grid-cols-2
+                    lg:grid-cols-5
+                "
+            >
 
                 {
-
-                    Array.from({
-                        length: 5,
-                    }).map((_, index) => (
+                    cards.map(card => (
 
                         <div
-                            key={index}
-                            className="h-28 animate-pulse rounded-xl border bg-muted"
-                        />
+                            key={card.title}
+                            className="
+                                h-28
+                                animate-pulse
+                                rounded-xl
+                                border
+                                bg-muted
+                            "
+                        >
+
+                            <span className="sr-only">
+                                Loading {card.title}
+                            </span>
+
+                        </div>
 
                     ))
-
                 }
 
-            </div>
+            </section>
 
         );
 
@@ -104,33 +126,45 @@ export function CompaniesSummaryCards() {
 
     return (
 
-        <section className="grid gap-4 md:grid-cols-5">
+        <section
+            aria-label="Company summary"
+            className="
+                grid
+                gap-4
+                sm:grid-cols-2
+                lg:grid-cols-5
+            "
+        >
 
             {
-
                 cards.map(card => (
 
                     <article
                         key={card.title}
-                        className="rounded-xl border bg-background p-5 shadow-sm transition hover:shadow-md"
+                        className="
+                            crm-card
+                            p-5
+                            transition
+                            hover:-translate-y-0.5
+                            hover:shadow-md
+                        "
                     >
 
                         <p className="text-sm text-muted-foreground">
-
                             {card.title}
-
                         </p>
 
-                        <h2 className="mt-3 text-3xl font-bold">
-
+                        <p className="mt-3 text-3xl font-bold tabular-nums">
                             {card.value}
+                        </p>
 
-                        </h2>
+                        <p className="mt-2 text-xs text-muted-foreground">
+                            {card.description}
+                        </p>
 
                     </article>
 
                 ))
-
             }
 
         </section>

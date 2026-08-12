@@ -14,7 +14,7 @@ export async function getArchivedQuotations() {
     return QuotationsServiceInstance.listArchived();
 }
 
-export async function getQuotation(
+async function getQuotation(
     id: string,
 ) {
     return QuotationsServiceInstance.details(id);
@@ -36,7 +36,7 @@ export async function updateQuotation(
     );
 }
 
-export async function archiveQuotation(
+async function archiveQuotation(
     id: string,
 ) {
     return QuotationsServiceInstance.delete(id);
@@ -48,7 +48,7 @@ export async function restoreQuotation(
     return QuotationsServiceInstance.restore(id);
 }
 
-export async function updateQuotationStatus(
+async function updateQuotationStatus(
     id: string,
     status: QuotationStatus,
 ) {
@@ -63,7 +63,7 @@ export async function getQuotationSummary() {
 
     
 }
-export async function searchQuotations(
+async function searchQuotations(
     filters?: {
         status?: QuotationStatus;
         search?: string;

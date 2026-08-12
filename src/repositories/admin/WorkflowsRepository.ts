@@ -28,7 +28,7 @@ type WorkflowRow = {
 };
 
 
-export interface IWorkflowsRepository {
+interface IWorkflowsRepository {
 
     findAll(): Promise<Workflow[]>;
 

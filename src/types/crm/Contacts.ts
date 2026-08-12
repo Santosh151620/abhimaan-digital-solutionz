@@ -220,7 +220,7 @@ export interface ContactDetails
  * ============================================================================
  */
 
-export type Contacts =
+type Contacts =
     ContactDetails;
 
 
@@ -390,7 +390,7 @@ export interface ContactsSummary {
  * ============================================================================
  */
 
-export type ContactActivityType =
+type ContactActivityType =
     | 'CALL'
     | 'EMAIL'
     | 'MEETING'
@@ -398,7 +398,7 @@ export type ContactActivityType =
     | 'TASK';
 
 
-export interface ContactActivity {
+interface ContactActivity {
 
     id: string;
 
@@ -421,7 +421,7 @@ export interface ContactActivity {
  * ============================================================================
  */
 
-export interface ContactOpportunity {
+interface ContactOpportunity {
 
     id: string;
 
@@ -444,7 +444,7 @@ export interface ContactOpportunity {
  * ============================================================================
  */
 
-export interface ContactRelationshipSummary {
+interface ContactRelationshipSummary {
 
     companyName?: string;
 

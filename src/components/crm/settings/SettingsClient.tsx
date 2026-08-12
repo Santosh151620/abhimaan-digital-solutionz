@@ -1,6 +1,8 @@
 'use client';
 
 import {
+    useEffect,
+    useRef,
     useState,
 } from 'react';
 
@@ -39,33 +41,27 @@ type MessageType =
     | null;
 
 
-
 export default function SettingsClient({
     initialSettings,
     summary,
 }: Props) {
 
-
     const router =
         useRouter();
 
 
-
-    const [settings] =
+    const [settings, setSettings] =
         useState<Setting[]>(
             initialSettings,
         );
-
 
 
     const [showForm, setShowForm] =
         useState(false);
 
 
-
     const [loading, setLoading] =
         useState(false);
-
 
 
     const [message, setMessage] =
@@ -74,40 +70,102 @@ export default function SettingsClient({
         );
 
 
-
     const [messageType, setMessageType] =
         useState<MessageType>(
             null,
         );
 
 
+    const messageTimer =
+        useRef<ReturnType<typeof setTimeout> | null>(
+            null,
+        );
+
+
+    useEffect(() => {
+
+        setSettings(
+            initialSettings,
+        );
+
+    }, [
+        initialSettings,
+    ]);
+
+
+    useEffect(() => {
+
+        return () => {
+
+            if (messageTimer.current) {
+
+                clearTimeout(
+                    messageTimer.current,
+                );
+
+            }
+
+        };
+
+    }, []);
+
+
+    function clearMessage() {
+
+        if (messageTimer.current) {
+
+            clearTimeout(
+                messageTimer.current,
+            );
+
+            messageTimer.current = null;
+
+        }
+
+
+        setMessage(null);
+
+        setMessageType(null);
+
+    }
+
 
     function showMessage(
-        text:string,
-        type:MessageType,
+        text: string,
+        type: MessageType,
     ) {
+
+        if (messageTimer.current) {
+
+            clearTimeout(
+                messageTimer.current,
+            );
+
+        }
+
 
         setMessage(text);
 
         setMessageType(type);
 
 
-        setTimeout(() => {
+        messageTimer.current =
+            setTimeout(() => {
 
-            setMessage(null);
+                setMessage(null);
 
-            setMessageType(null);
+                setMessageType(null);
 
-        }, 4000);
+                messageTimer.current = null;
+
+            }, 4000);
 
     }
 
 
-
     async function handleCreate(
-        values:Partial<Setting>,
+        values: Partial<Setting>,
     ) {
-
 
         if (loading) {
 
@@ -116,26 +174,35 @@ export default function SettingsClient({
         }
 
 
-
         try {
-
 
             setLoading(true);
 
-            setMessage(null);
-
-            setMessageType(null);
+            clearMessage();
 
 
+            const created =
+                await createSetting(
+                    values,
+                );
 
-            await createSetting(
-                values,
-            );
 
+            if (created) {
+
+                setSettings(
+                    current => [
+                        ...current,
+                        created,
+                    ],
+                );
+
+            }
 
 
             setShowForm(false);
 
+
+            router.refresh();
 
 
             showMessage(
@@ -144,19 +211,12 @@ export default function SettingsClient({
             );
 
 
-
-            router.refresh();
-
-
-
         } catch (error) {
-
 
             console.error(
                 'Create setting failed:',
                 error,
             );
-
 
 
             showMessage(
@@ -167,58 +227,54 @@ export default function SettingsClient({
             );
 
 
-
         } finally {
-
 
             setLoading(false);
 
-
         }
-
 
     }
 
 
-
     return (
-
 
         <div className="space-y-6">
 
-
-
-            <div className="crm-card flex items-center justify-between p-6">
-
+            <div
+                className="
+                    crm-card
+                    flex
+                    items-center
+                    justify-between
+                    gap-4
+                    p-6
+                "
+            >
 
                 <div>
-
 
                     <h1 className="text-2xl font-bold">
                         CRM Settings
                     </h1>
 
 
-
                     <p className="mt-1 text-sm text-muted-foreground">
                         Manage application configuration and preferences.
                     </p>
 
-
                 </div>
 
 
-
                 <button
-
                     type="button"
-
                     disabled={loading}
+                    onClick={() => {
 
-                    onClick={() =>
-                        setShowForm(true)
-                    }
+                        clearMessage();
 
+                        setShowForm(true);
+
+                    }}
                     className="
                         rounded-lg
                         bg-primary
@@ -228,119 +284,102 @@ export default function SettingsClient({
                         text-primary-foreground
                         transition
                         hover:opacity-90
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary/20
                         disabled:cursor-not-allowed
                         disabled:opacity-50
                     "
-
                 >
 
                     New Setting
 
                 </button>
 
-
             </div>
-
-
 
 
             {
                 message && (
 
-
                     <div
-
                         role="alert"
-
+                        aria-live="polite"
                         className={
-
                             messageType === 'success'
-
-                                ? 'crm-card border-green-500/30 bg-green-500/10 p-4 text-sm'
-
-                                : 'crm-card border-destructive/30 bg-destructive-10 p-4 text-sm'
-
+                                ? `
+                                    crm-card
+                                    border-green-500/30
+                                    bg-green-500/10
+                                    p-4
+                                    text-sm
+                                `
+                                : `
+                                    crm-card
+                                    border-destructive/30
+                                    bg-destructive/10
+                                    p-4
+                                    text-sm
+                                `
                         }
-
                     >
 
                         {message}
 
-
                     </div>
-
 
                 )
             }
 
 
-
-
             <SettingsSummary
-
                 summary={{
                     ...summary,
                     total: settings.length,
                 }}
-
             />
-
-
 
 
             {
                 showForm && (
 
-
                     <div className="crm-card p-6">
 
-
                         <SettingsForm
-
                             loading={
                                 loading
                             }
-
-
                             onSubmit={
                                 handleCreate
                             }
-
-
                             onCancel={() => {
+
+                                if (loading) {
+
+                                    return;
+
+                                }
 
                                 setShowForm(false);
 
-                                setMessage(null);
-
-                                setMessageType(null);
+                                clearMessage();
 
                             }}
-
                         />
 
-
                     </div>
-
 
                 )
             }
 
 
-
-
             <SettingsTable
-
                 settings={
                     settings
                 }
-
             />
 
-
-
         </div>
-
 
     );
 

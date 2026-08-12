@@ -28,7 +28,7 @@ type LocationRow = {
     updated_at: string;
 };
 
-export interface ILocationsRepository {
+interface ILocationsRepository {
     findAll(): Promise<Location[]>;
 
     findById(

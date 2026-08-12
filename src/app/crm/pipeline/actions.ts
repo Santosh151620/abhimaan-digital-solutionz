@@ -18,7 +18,7 @@ export async function getPipeline() {
 }
 
 
-export async function getPipelineStages() {
+async function getPipelineStages() {
     return PipelineServiceInstance.getStages();
 }
 
@@ -28,7 +28,7 @@ export async function getPipelineSummary(): Promise<PipelineSummary> {
 }
 
 
-export async function moveOpportunity(
+async function moveOpportunity(
     id: string,
     stage: OpportunityStage,
 ) {

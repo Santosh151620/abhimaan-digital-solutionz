@@ -2,7 +2,7 @@ import { getCRMAnalytics } from "@/services/analytics";
 import { getPipelineData } from "./pipeline";
 import { getRevenueIntelligence } from "./revenue-intelligence";
 
-export type BusinessMomentum =
+type BusinessMomentum =
   | "growing"
   | "stable"
   | "needs_attention";

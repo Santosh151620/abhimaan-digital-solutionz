@@ -73,7 +73,7 @@ type NotificationRow = {
 };
 
 
-export interface INotificationsRepository {
+interface INotificationsRepository {
 
     findAll(): Promise<Notification[]>;
 

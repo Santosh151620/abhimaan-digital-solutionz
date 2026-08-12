@@ -1,4 +1,4 @@
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+﻿import type { BaseEntity } from "@/types/platform/BaseEntity";
 
 export type ProjectStatus =
   | "planning"
@@ -9,7 +9,7 @@ export type ProjectStatus =
 
 export type ProjectPriority = "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
 
-export interface ProjectMilestone {
+interface ProjectMilestone {
   id: string;
   title: string;
   description?: string;
@@ -85,7 +85,7 @@ export interface ProjectCreateInput {
   progress_percentage?: number;
 }
 
-export interface ProjectUpdateInput {
+interface ProjectUpdateInput {
   name?: string;
   service_type?: string;
   status?: ProjectStatus;
@@ -96,6 +96,8 @@ export interface ProjectUpdateInput {
   notes?: string | null;
   progress_percentage?: number;
 }
+
+
 
 
 

@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+
 import {
     useParams,
     useRouter,
 } from 'next/navigation';
+
 import {
     useEffect,
     useState,
@@ -13,6 +15,8 @@ import {
 import {
     SettingsForm,
 } from '@/components/crm/settings';
+
+import Toast from '@/components/crm/ui/Toast';
 
 import {
     getSetting,
@@ -34,7 +38,6 @@ export default function EditSettingPage() {
     const router =
         useRouter();
 
-
     const id =
         params.id;
 
@@ -42,18 +45,21 @@ export default function EditSettingPage() {
     const [setting, setSetting] =
         useState<Setting | null>(null);
 
-
     const [loading, setLoading] =
         useState(true);
-
 
     const [saving, setSaving] =
         useState(false);
 
-
     const [error, setError] =
         useState<string | null>(null);
 
+    const [toast, setToast] =
+        useState<{
+            title: string;
+            message: string;
+            type: 'success' | 'error';
+        } | null>(null);
 
 
     useEffect(() => {
@@ -67,17 +73,25 @@ export default function EditSettingPage() {
 
                 setError(null);
 
-
                 const result =
                     await getSetting(id);
 
 
-                if (mounted) {
-
-                    setSetting(result);
-
+                if (!mounted) {
+                    return;
                 }
 
+
+                setSetting(result);
+
+
+                if (!result) {
+
+                    setError(
+                        'The requested setting could not be found.',
+                    );
+
+                }
 
             } catch (loadError) {
 
@@ -90,11 +104,10 @@ export default function EditSettingPage() {
                 if (mounted) {
 
                     setError(
-                        'Unable to load setting.',
+                        'Unable to load setting. Please try again.',
                     );
 
                 }
-
 
             } finally {
 
@@ -109,11 +122,20 @@ export default function EditSettingPage() {
         }
 
 
-        if (id) {
+        if (!id) {
 
-            void loadSetting();
+            setError(
+                'Invalid setting id.',
+            );
+
+            setLoading(false);
+
+            return;
 
         }
+
+
+        void loadSetting();
 
 
         return () => {
@@ -122,9 +144,7 @@ export default function EditSettingPage() {
 
         };
 
-
     }, [id]);
-
 
 
     async function handleSubmit(
@@ -151,13 +171,28 @@ export default function EditSettingPage() {
             );
 
 
+            setToast({
+
+                title:
+                    'Setting updated',
+
+                message:
+                    'CRM setting saved successfully.',
+
+                type:
+                    'success',
+
+            });
+
+
+            /*
+             * Navigate to the canonical detail page after
+             * successful persistence. The detail page performs
+             * its own server-side data load.
+             */
             router.push(
                 `/crm/settings/${id}`,
             );
-
-
-            router.refresh();
-
 
         } catch (updateError) {
 
@@ -167,10 +202,26 @@ export default function EditSettingPage() {
             );
 
 
-            setError(
-                'Unable to update setting. Please try again.',
-            );
+            const message =
+                updateError instanceof Error
+                    ? updateError.message
+                    : 'Unable to update setting. Please try again.';
 
+
+            setError(message);
+
+
+            setToast({
+
+                title:
+                    'Save failed',
+
+                message,
+
+                type:
+                    'error',
+
+            });
 
         } finally {
 
@@ -179,7 +230,6 @@ export default function EditSettingPage() {
         }
 
     }
-
 
 
     function handleCancel() {
@@ -198,19 +248,18 @@ export default function EditSettingPage() {
     }
 
 
-
     if (loading) {
 
         return (
 
             <div className="space-y-6">
 
-                <h1 className="text-2xl font-semibold">
+                <h1 className="crm-title">
                     Edit Setting
                 </h1>
 
 
-                <div className="rounded-xl border p-6 text-sm text-muted-foreground">
+                <div className="crm-card p-6 text-sm text-muted-foreground">
                     Loading setting...
                 </div>
 
@@ -221,15 +270,13 @@ export default function EditSettingPage() {
     }
 
 
-
     if (!setting) {
 
         return (
 
             <div className="space-y-6">
 
-
-                <h1 className="text-2xl font-semibold">
+                <h1 className="crm-title">
                     Setting Not Found
                 </h1>
 
@@ -237,7 +284,18 @@ export default function EditSettingPage() {
                 {
                     error && (
 
-                        <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                        <div
+                            role="alert"
+                            className="
+                                rounded-lg
+                                border
+                                border-destructive/30
+                                bg-destructive/10
+                                p-4
+                                text-sm
+                                text-destructive
+                            "
+                        >
                             {error}
                         </div>
 
@@ -247,11 +305,23 @@ export default function EditSettingPage() {
 
                 <Link
                     href="/crm/settings"
-                    className="text-sm underline"
+                    className="
+                        inline-flex
+                        rounded-lg
+                        border
+                        px-4
+                        py-2
+                        text-sm
+                        font-medium
+                        transition
+                        hover:bg-muted
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary/20
+                    "
                 >
                     Back to Settings
                 </Link>
-
 
             </div>
 
@@ -260,31 +330,92 @@ export default function EditSettingPage() {
     }
 
 
-
     return (
 
         <div className="space-y-6">
 
 
-            <div>
+            {
+                toast && (
 
-                <h1 className="text-2xl font-semibold">
-                    Edit Setting
-                </h1>
+                    <Toast
+                        title={toast.title}
+                        message={toast.message}
+                        type={toast.type}
+                        onClose={() =>
+                            setToast(null)
+                        }
+                    />
+
+                )
+            }
 
 
-                <p className="text-sm text-muted-foreground">
-                    Update CRM configuration setting.
-                </p>
+            <div className="
+                flex
+                flex-col
+                gap-4
+                sm:flex-row
+                sm:items-center
+                sm:justify-between
+            ">
+
+                <div>
+
+                    <h1 className="crm-title">
+                        Edit Setting
+                    </h1>
+
+
+                    <p className="crm-subtitle">
+                        Update CRM configuration setting.
+                    </p>
+
+                </div>
+
+
+                <Link
+                    href={`/crm/settings/${setting.id}`}
+                    aria-disabled={saving}
+                    className="
+                        inline-flex
+                        w-fit
+                        rounded-lg
+                        border
+                        px-4
+                        py-2
+                        text-sm
+                        font-medium
+                        transition
+                        hover:bg-muted
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary/20
+                        aria-disabled:pointer-events-none
+                        aria-disabled:opacity-50
+                    "
+                >
+                    Cancel
+                </Link>
 
             </div>
-
 
 
             {
                 error && (
 
-                    <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                    <div
+                        role="alert"
+                        className="
+                            rounded-lg
+                            border
+                            border-destructive/30
+                            bg-destructive/10
+                            p-4
+                            text-sm
+                            text-destructive
+                        "
+                    >
                         {error}
                     </div>
 
@@ -292,39 +423,16 @@ export default function EditSettingPage() {
             }
 
 
+            <div className="crm-card p-6">
 
-            <SettingsForm
+                <SettingsForm
+                    initialValues={setting}
+                    loading={saving}
+                    onSubmit={handleSubmit}
+                    onCancel={handleCancel}
+                />
 
-                initialValues={
-                    setting
-                }
-
-                loading={
-                    saving
-                }
-
-                onSubmit={
-                    handleSubmit
-                }
-
-                onCancel={
-                    handleCancel
-                }
-
-            />
-
-
-
-            <Link
-
-                href={`/crm/settings/${setting.id}`}
-
-                className="text-sm underline"
-
-            >
-                Back to Setting
-
-            </Link>
+            </div>
 
 
         </div>

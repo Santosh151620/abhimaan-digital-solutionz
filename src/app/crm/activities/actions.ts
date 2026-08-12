@@ -13,7 +13,7 @@ import type {
 
 
 
-export async function getActivities() {
+async function getActivities() {
 
 
     return ActivityServiceInstance.list();
@@ -24,7 +24,7 @@ export async function getActivities() {
 
 
 
-export async function getArchivedActivities() {
+async function getArchivedActivities() {
 
 
     return ActivityServiceInstance.listArchived();
@@ -35,7 +35,7 @@ export async function getArchivedActivities() {
 
 
 
-export async function getActivity(
+async function getActivity(
 
     id: string,
 
@@ -69,7 +69,7 @@ export async function createActivity(
 
 
 
-export async function updateActivity(
+async function updateActivity(
 
     id: string,
 
@@ -106,7 +106,7 @@ export async function deleteActivity(
 
 
 
-export async function restoreActivity(
+async function restoreActivity(
 
     id: string,
 
@@ -123,7 +123,7 @@ export async function restoreActivity(
 
 
 
-export async function updateActivityStatus(
+async function updateActivityStatus(
 
     id: string,
 
@@ -143,7 +143,7 @@ export async function updateActivityStatus(
 
 
 
-export async function getActivitySummary() {
+async function getActivitySummary() {
 
 
     return ActivityServiceInstance.summary();

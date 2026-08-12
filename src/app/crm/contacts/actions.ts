@@ -19,7 +19,7 @@ export async function listContacts() {
 
 
 
-export async function listArchivedContacts() {
+async function listArchivedContacts() {
 
     return ContactsServiceInstance.listArchived();
 
@@ -27,7 +27,7 @@ export async function listArchivedContacts() {
 
 
 
-export async function getContact(
+async function getContact(
     id: string,
 ) {
 
@@ -65,7 +65,7 @@ export async function updateContact(
 
 
 
-export async function deleteContact(
+async function deleteContact(
     id: string,
 ) {
 
@@ -77,7 +77,7 @@ export async function deleteContact(
 
 
 
-export async function restoreContact(
+async function restoreContact(
     id: string,
 ) {
 

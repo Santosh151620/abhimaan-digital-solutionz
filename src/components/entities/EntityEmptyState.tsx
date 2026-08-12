@@ -3,7 +3,7 @@ interface EntityEmptyStateProps {
     description?: string;
 }
 
-export default function EntityEmptyState({
+function EntityEmptyState({
     title,
     description,
 }: EntityEmptyStateProps) {
@@ -26,7 +26,4 @@ export default function EntityEmptyState({
     );
 }
 
-
-
-
-
+export {};

@@ -19,7 +19,7 @@ import type {
 
 
 
-export class ContactsService {
+class ContactsService {
 
 
     private async repository() {
@@ -424,7 +424,7 @@ export class ContactsService {
 /**
  * Production factory
  */
-export function createContactsService() {
+function createContactsService() {
 
     return new ContactsService();
 
@@ -450,5 +450,5 @@ export const ContactsServiceInstance =
  *
  * Existing imports continue working.
  */
-export const contactsService =
+const contactsService =
     ContactsServiceInstance;

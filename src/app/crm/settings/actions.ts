@@ -225,7 +225,7 @@ export async function getSettings() {
 
 
 
-export async function getArchivedSettings() {
+async function getArchivedSettings() {
 
     const repo =
         await repository();
@@ -345,7 +345,7 @@ export async function updateSetting(
 
 
 
-export async function deleteSetting(
+async function deleteSetting(
     id: string,
 ) {
 
@@ -375,7 +375,7 @@ export async function deleteSetting(
 
 
 
-export async function restoreSetting(
+async function restoreSetting(
     id: string,
 ) {
 
@@ -405,7 +405,7 @@ export async function restoreSetting(
 
 
 
-export async function updateSettingStatus(
+async function updateSettingStatus(
     id: string,
     status: SettingStatus,
 ) {

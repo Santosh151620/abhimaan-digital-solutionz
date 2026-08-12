@@ -1156,5 +1156,5 @@ export function createContactsRepository(
 /**
  * Standard repository export.
  */
-export const ContactsRepositoryInstance =
+const ContactsRepositoryInstance =
     createContactsRepository;

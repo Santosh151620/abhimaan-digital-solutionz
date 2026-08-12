@@ -8,7 +8,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className="overflow-x-hidden bg-slate-100 text-slate-900">
+            <body className="overflow-x-hidden">
                 <QueryProvider>
                     {children}
                 </QueryProvider>
@@ -16,4 +16,3 @@ export default function RootLayout({
         </html>
     );
 }
-

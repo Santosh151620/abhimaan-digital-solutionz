@@ -1,26 +1,31 @@
-import { notFound } from "next/navigation";
+import { notFound } from 'next/navigation';
 
-import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
-import CRMHeader from "@/components/crm/shared/layout/CRMHeader";
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 
-import EntityOverviewGrid from "@/components/entities/EntityOverviewGrid";
-import EntityWorkspace from "@/components/entities/EntityWorkspace";
+import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
+import EntityWorkspace from '@/components/entities/EntityWorkspace';
 
 import {
     ContactsServiceInstance,
-} from "@/services/crm/ContactsService";
+} from '@/services/crm/ContactsService';
 
 
 interface Props {
+
     params: Promise<{
         id: string;
     }>;
+
 }
 
 
 export default async function ContactPage({
+
     params,
+
 }: Props) {
+
 
     const {
         id,
@@ -28,31 +33,58 @@ export default async function ContactPage({
 
 
     const contact =
-        await ContactsServiceInstance.details(id);
+        await ContactsServiceInstance.details(
+            id,
+        );
 
 
     if (!contact) {
+
         notFound();
+
     }
+
+
+    const contactName =
+        [
+            contact.firstName,
+            contact.lastName,
+        ]
+            .filter(
+                Boolean,
+            )
+            .join(' ')
+            .trim()
+        || 'Contact';
 
 
     return (
 
         <CRMPageLayout>
 
+
             <CRMHeader
-                title={`${contact.firstName} ${contact.lastName}`}
+
+                title={
+                    contactName
+                }
+
                 description="Contact details and related CRM activity."
+
                 actions={[
+
                     {
-                        label: "Back",
-                        href: "/crm/contacts",
+                        label: 'Back',
+                        href: '/crm/contacts',
                     },
+
                     {
-                        label: "Edit",
+                        label: 'Edit',
                         href: `/crm/contacts/${contact.id}/edit`,
                     },
+
                 ]}
+
             />
 
 
@@ -60,7 +92,9 @@ export default async function ContactPage({
 
                 entityType="Contact"
 
-                entityId={contact.id}
+                entityId={
+                    contact.id
+                }
 
                 overview={
 
@@ -69,63 +103,75 @@ export default async function ContactPage({
                         items={[
 
                             {
-                                title: "Status",
-                                value: contact.status,
+                                title: 'Status',
+                                value:
+                                    contact.status,
                             },
 
                             {
-                                title: "Company",
-                                value: contact.companyName ?? "-",
+                                title: 'Company',
+                                value:
+                                    contact.companyName ?? '-',
                             },
 
                             {
-                                title: "Designation",
-                                value: contact.designation ?? "-",
+                                title: 'Designation',
+                                value:
+                                    contact.designation ?? '-',
                             },
 
                             {
-                                title: "Department",
-                                value: contact.department ?? "-",
+                                title: 'Department',
+                                value:
+                                    contact.department ?? '-',
                             },
 
                             {
-                                title: "Email",
-                                value: contact.email ?? "-",
+                                title: 'Email',
+                                value:
+                                    contact.email ?? '-',
                             },
 
                             {
-                                title: "Phone",
-                                value: contact.phone ?? "-",
+                                title: 'Phone',
+                                value:
+                                    contact.phone ?? '-',
                             },
 
                             {
-                                title: "Mobile",
-                                value: contact.mobile ?? "-",
+                                title: 'Mobile',
+                                value:
+                                    contact.mobile ?? '-',
                             },
 
                             {
-                                title: "City",
-                                value: contact.city ?? "-",
+                                title: 'City',
+                                value:
+                                    contact.city ?? '-',
                             },
 
                             {
-                                title: "State",
-                                value: contact.state ?? "-",
+                                title: 'State',
+                                value:
+                                    contact.state ?? '-',
                             },
 
                             {
-                                title: "Country",
-                                value: contact.country ?? "-",
+                                title: 'Country',
+                                value:
+                                    contact.country ?? '-',
                             },
 
                             {
-                                title: "Opportunities",
-                                value: contact.opportunities ?? 0,
+                                title: 'Opportunities',
+                                value:
+                                    contact.opportunities ?? 0,
                             },
 
                             {
-                                title: "Last Activity",
-                                value: contact.lastActivity ?? "-",
+                                title: 'Last Activity',
+                                value:
+                                    contact.lastActivity ?? '-',
                             },
 
                         ]}
@@ -135,6 +181,7 @@ export default async function ContactPage({
                 }
 
             />
+
 
         </CRMPageLayout>
 

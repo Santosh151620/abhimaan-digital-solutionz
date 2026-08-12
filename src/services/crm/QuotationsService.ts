@@ -239,7 +239,7 @@ class QuotationsService {
 
 
 
-export const quotationsService =
+const quotationsService =
     new QuotationsService();
 
 
@@ -253,5 +253,5 @@ export const QuotationsServiceInstance =
 
 
 
-export const quotationService =
+const quotationService =
     quotationsService;

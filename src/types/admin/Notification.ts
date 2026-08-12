@@ -1,4 +1,4 @@
-export type NotificationType =
+type NotificationType =
 
     | "INFO"
 
@@ -12,7 +12,7 @@ export type NotificationType =
 
 
 
-export type NotificationStatus =
+type NotificationStatus =
 
     | "READ"
 

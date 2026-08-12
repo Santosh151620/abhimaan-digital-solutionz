@@ -267,7 +267,7 @@ class PipelineService {
 
 
 
-export const pipelineService =
+const pipelineService =
     new PipelineService();
 
 

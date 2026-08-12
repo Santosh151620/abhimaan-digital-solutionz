@@ -24,7 +24,7 @@ type PolicyRow = {
     updated_at: string;
 };
 
-export interface IPoliciesRepository {
+interface IPoliciesRepository {
     findAll(): Promise<Policy[]>;
 
     findById(

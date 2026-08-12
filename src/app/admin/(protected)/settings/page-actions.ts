@@ -75,7 +75,7 @@ export async function getSettings():Promise<PlatformSetting[]> {
 
 
 
-export async function getSettingsByCategory(
+async function getSettingsByCategory(
 
     category:string,
 
@@ -99,7 +99,7 @@ return await repo.findByCategory(
 
 
 
-export async function getSettingByKey(
+async function getSettingByKey(
 
     key:string,
 

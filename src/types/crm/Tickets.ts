@@ -107,7 +107,7 @@ export interface Ticket {
 
 
 
-export interface CreateTicketInput {
+interface CreateTicketInput {
 
     ticketNumber?: string;
 
@@ -135,7 +135,7 @@ export interface CreateTicketInput {
 
 
 
-export type UpdateTicketInput =
+type UpdateTicketInput =
     Partial<CreateTicketInput>;
 
 

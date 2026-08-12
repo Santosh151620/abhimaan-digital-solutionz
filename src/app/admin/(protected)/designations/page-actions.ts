@@ -42,7 +42,7 @@ Promise<Designation[]> {
 
 }
 
-export async function getActiveDesignations():
+async function getActiveDesignations():
 Promise<Designation[]> {
 
     const service =
@@ -52,7 +52,7 @@ Promise<Designation[]> {
 
 }
 
-export async function getDesignation(
+async function getDesignation(
     id:string,
 ):
 Promise<Designation | null> {
@@ -66,7 +66,7 @@ Promise<Designation | null> {
 
 }
 
-export async function searchDesignations(
+async function searchDesignations(
     keyword:string,
 ):
 Promise<Designation[]> {

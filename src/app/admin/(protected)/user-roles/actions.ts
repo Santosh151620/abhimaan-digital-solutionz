@@ -34,7 +34,7 @@ async function getService(): Promise<UserRoleService> {
 
 
 
-export async function assignRoleToUser(
+async function assignRoleToUser(
 
     userId: string,
 
@@ -62,7 +62,7 @@ export async function assignRoleToUser(
 
 
 
-export async function removeRoleFromUser(
+async function removeRoleFromUser(
 
     userId: string,
 
@@ -90,7 +90,7 @@ export async function removeRoleFromUser(
 
 
 
-export async function setPrimaryUserRole(
+async function setPrimaryUserRole(
 
     userId: string,
 
@@ -118,7 +118,7 @@ export async function setPrimaryUserRole(
 
 
 
-export async function replaceUserRoles(
+async function replaceUserRoles(
 
     userId: string,
 

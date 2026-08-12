@@ -1,4 +1,4 @@
-export type ClientStatus =
+type ClientStatus =
   | "active"
   | "inactive"
   | "paused";
@@ -25,7 +25,7 @@ export interface Client {
   status: ClientStatus;
 }
 
-export interface ClientNote {
+interface ClientNote {
   id: string;
 
   client_id: string;
@@ -35,7 +35,7 @@ export interface ClientNote {
   created_at: string;
 }
 
-export interface ClientSummary {
+interface ClientSummary {
   total_clients: number;
 
   active_clients: number;

@@ -1,0 +1,1395 @@
+
+============================================================
+FILE: src/components/crm/settings/SettingsSummary.tsx
+============================================================
+'use client';
+
+
+import type {
+    SettingsSummary as SettingsSummaryModel,
+} from '@/types/crm/Settings';
+
+
+
+interface Props {
+
+    summary: SettingsSummaryModel;
+
+}
+
+
+
+interface CardProps {
+
+    title: string;
+
+    value: number;
+
+    description: string;
+
+}
+
+
+
+function SummaryCard({
+    title,
+    value,
+    description,
+}: CardProps) {
+
+
+    return (
+
+        <div
+            className="
+                crm-card
+                p-5
+                transition
+                hover:-translate-y-1
+                hover:shadow-md
+            "
+        >
+
+            <div className="text-sm text-muted-foreground">
+                {title}
+            </div>
+
+
+            <div className="mt-3 text-3xl font-bold">
+                {value}
+            </div>
+
+
+            <p className="mt-2 text-xs text-muted-foreground">
+                {description}
+            </p>
+
+
+        </div>
+
+    );
+
+}
+
+
+
+export default function SettingsSummary({
+    summary,
+}: Props) {
+
+
+    return (
+
+        <div
+            className="
+                grid
+                gap-5
+                sm:grid-cols-2
+                lg:grid-cols-5
+            "
+        >
+
+
+            <SummaryCard
+
+                title="Total"
+
+                value={
+                    summary.total
+                }
+
+                description="All configured settings"
+
+            />
+
+
+            <SummaryCard
+
+                title="Active"
+
+                value={
+                    summary.active
+                }
+
+                description="Currently enabled"
+
+            />
+
+
+            <SummaryCard
+
+                title="Inactive"
+
+                value={
+                    summary.inactive
+                }
+
+                description="Disabled settings"
+
+            />
+
+
+            <SummaryCard
+
+                title="Editable"
+
+                value={
+                    summary.editable
+                }
+
+                description="User editable values"
+
+            />
+
+
+            <SummaryCard
+
+                title="Encrypted"
+
+                value={
+                    summary.encrypted
+                }
+
+                description="Protected values"
+
+            />
+
+
+        </div>
+
+    );
+
+}
+
+============================================================
+FILE: src\components\crm\settings\index.ts
+============================================================
+export { default as SettingsClient } from './SettingsClient';
+export { default as SettingsForm } from './SettingsForm';
+export { default as SettingsSummary } from './SettingsSummary';
+export { default as SettingsTable } from './SettingsTable';
+
+
+
+============================================================
+FILE: src\components\crm\settings\SettingsClient.tsx
+============================================================
+'use client';
+
+import {
+    useState,
+} from 'react';
+
+import {
+    useRouter,
+} from 'next/navigation';
+
+import {
+    SettingsForm,
+    SettingsSummary,
+    SettingsTable,
+} from './index';
+
+import {
+    createSetting,
+} from '@/app/crm/settings/actions';
+
+import type {
+    Setting,
+    SettingsSummary as SettingsSummaryModel,
+} from '@/types/crm/Settings';
+
+
+interface Props {
+
+    initialSettings: Setting[];
+
+    summary: SettingsSummaryModel;
+
+}
+
+
+type MessageType =
+    | 'success'
+    | 'error'
+    | null;
+
+
+
+export default function SettingsClient({
+    initialSettings,
+    summary,
+}: Props) {
+
+
+    const router =
+        useRouter();
+
+
+
+    const [settings] =
+        useState<Setting[]>(
+            initialSettings,
+        );
+
+
+
+    const [showForm, setShowForm] =
+        useState(false);
+
+
+
+    const [loading, setLoading] =
+        useState(false);
+
+
+
+    const [message, setMessage] =
+        useState<string | null>(
+            null,
+        );
+
+
+
+    const [messageType, setMessageType] =
+        useState<MessageType>(
+            null,
+        );
+
+
+
+    function showMessage(
+        text:string,
+        type:MessageType,
+    ) {
+
+        setMessage(text);
+
+        setMessageType(type);
+
+
+        setTimeout(() => {
+
+            setMessage(null);
+
+            setMessageType(null);
+
+        }, 4000);
+
+    }
+
+
+
+    async function handleCreate(
+        values:Partial<Setting>,
+    ) {
+
+
+        if (loading) {
+
+            return;
+
+        }
+
+
+
+        try {
+
+
+            setLoading(true);
+
+            setMessage(null);
+
+            setMessageType(null);
+
+
+
+            await createSetting(
+                values,
+            );
+
+
+
+            setShowForm(false);
+
+
+
+            showMessage(
+                'Setting created successfully.',
+                'success',
+            );
+
+
+
+            router.refresh();
+
+
+
+        } catch (error) {
+
+
+            console.error(
+                'Create setting failed:',
+                error,
+            );
+
+
+
+            showMessage(
+                error instanceof Error
+                    ? error.message
+                    : 'Failed to create setting.',
+                'error',
+            );
+
+
+
+        } finally {
+
+
+            setLoading(false);
+
+
+        }
+
+
+    }
+
+
+
+    return (
+
+
+        <div className="space-y-6">
+
+
+
+            <div className="crm-card flex items-center justify-between p-6">
+
+
+                <div>
+
+
+                    <h1 className="text-2xl font-bold">
+                        CRM Settings
+                    </h1>
+
+
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                        Manage application configuration and preferences.
+                    </p>
+
+
+                </div>
+
+
+
+                <button
+
+                    type="button"
+
+                    disabled={loading}
+
+                    onClick={() =>
+                        setShowForm(true)
+                    }
+
+                    className="
+                        rounded-lg
+                        bg-primary
+                        px-5
+                        py-2.5
+                        font-medium
+                        text-primary-foreground
+                        transition
+                        hover:opacity-90
+                        disabled:cursor-not-allowed
+                        disabled:opacity-50
+                    "
+
+                >
+
+                    New Setting
+
+                </button>
+
+
+            </div>
+
+
+
+
+            {
+                message && (
+
+
+                    <div
+
+                        role="alert"
+
+                        className={
+
+                            messageType === 'success'
+
+                                ? 'crm-card border-green-500/30 bg-green-500/10 p-4 text-sm'
+
+                                : 'crm-card border-destructive/30 bg-destructive-10 p-4 text-sm'
+
+                        }
+
+                    >
+
+                        {message}
+
+
+                    </div>
+
+
+                )
+            }
+
+
+
+
+            <SettingsSummary
+
+                summary={{
+                    ...summary,
+                    total: settings.length,
+                }}
+
+            />
+
+
+
+
+            {
+                showForm && (
+
+
+                    <div className="crm-card p-6">
+
+
+                        <SettingsForm
+
+                            loading={
+                                loading
+                            }
+
+
+                            onSubmit={
+                                handleCreate
+                            }
+
+
+                            onCancel={() => {
+
+                                setShowForm(false);
+
+                                setMessage(null);
+
+                                setMessageType(null);
+
+                            }}
+
+                        />
+
+
+                    </div>
+
+
+                )
+            }
+
+
+
+
+            <SettingsTable
+
+                settings={
+                    settings
+                }
+
+            />
+
+
+
+        </div>
+
+
+    );
+
+}
+
+============================================================
+FILE: src\components\crm\settings\SettingsForm.tsx
+============================================================
+'use client';
+
+import {
+    useState,
+} from 'react';
+
+import type {
+    Setting,
+    SettingCategory,
+    SettingStatus,
+} from '@/types/crm/Settings';
+
+interface Props {
+
+    initialValues?: Partial<Setting>;
+
+    loading?: boolean;
+
+    onSubmit?: (
+        values: Partial<Setting>,
+    ) => void | Promise<void>;
+
+    onCancel?: () => void;
+
+}
+
+const categories: SettingCategory[] = [
+    'General',
+    'Company',
+    'CRM',
+    'Notifications',
+    'Security',
+    'Billing',
+    'Email',
+    'Integrations',
+    'Appearance',
+    'Other',
+];
+
+const statuses: SettingStatus[] = [
+    'Active',
+    'Inactive',
+];
+
+export default function SettingsForm({
+    initialValues,
+    loading = false,
+    onSubmit,
+    onCancel,
+}: Props) {
+
+    const [form, setForm] =
+        useState<Partial<Setting>>({
+            category: 'General',
+            status: 'Active',
+            editable: true,
+            encrypted: false,
+            ...initialValues,
+        });
+
+    const [error, setError] =
+        useState<string | null>(null);
+
+    function update<K extends keyof Setting>(
+        key: K,
+        value: Setting[K],
+    ) {
+
+        setForm(previous => ({
+            ...previous,
+            [key]: value,
+        }));
+
+        setError(null);
+    }
+
+    async function submit(
+        event: React.FormEvent<HTMLFormElement>,
+    ) {
+
+        event.preventDefault();
+
+        if (loading) {
+
+            return;
+
+        }
+
+        const name =
+            form.name?.trim() ?? '';
+
+        const key =
+            form.key?.trim() ?? '';
+
+        if (!name) {
+
+            setError(
+                'Setting name is required.',
+            );
+
+            return;
+
+        }
+
+        if (!key) {
+
+            setError(
+                'Setting key is required.',
+            );
+
+            return;
+
+        }
+
+        if (!/^[a-zA-Z0-9._-]+$/.test(key)) {
+
+            setError(
+                'Setting key may contain only letters, numbers, dots, underscores and hyphens.',
+            );
+
+            return;
+
+        }
+
+        try {
+
+            setError(null);
+
+            await onSubmit?.({
+                ...form,
+                name,
+                key,
+            });
+
+        } catch (submitError) {
+
+            console.error(
+                'Settings form submission failed:',
+                submitError,
+            );
+
+            setError(
+                'Unable to save the setting. Please try again.',
+            );
+
+        }
+
+    }
+
+    return (
+
+        <form
+            onSubmit={submit}
+            noValidate
+            className="space-y-6 rounded-xl border bg-background p-6"
+        >
+
+            {
+                error && (
+
+                    <div
+                        role="alert"
+                        className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                    >
+                        {error}
+                    </div>
+
+                )
+            }
+
+            <div className="grid gap-4 md:grid-cols-2">
+
+                <div>
+
+                    <label
+                        htmlFor="setting-name"
+                        className="mb-1 block text-sm font-medium"
+                    >
+                        Name
+                    </label>
+
+                    <input
+                        id="setting-name"
+                        name="name"
+                        type="text"
+                        required
+                        autoComplete="off"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={form.name ?? ''}
+                        onChange={event =>
+                            update(
+                                'name',
+                                event.target.value,
+                            )
+                        }
+                    />
+
+                </div>
+
+                <div>
+
+                    <label
+                        htmlFor="setting-key"
+                        className="mb-1 block text-sm font-medium"
+                    >
+                        Key
+                    </label>
+
+                    <input
+                        id="setting-key"
+                        name="key"
+                        type="text"
+                        required
+                        autoComplete="off"
+                        disabled={loading}
+                        placeholder="example.setting"
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={form.key ?? ''}
+                        onChange={event =>
+                            update(
+                                'key',
+                                event.target.value,
+                            )
+                        }
+                    />
+
+                </div>
+
+                <div>
+
+                    <label
+                        htmlFor="setting-category"
+                        className="mb-1 block text-sm font-medium"
+                    >
+                        Category
+                    </label>
+
+                    <select
+                        id="setting-category"
+                        name="category"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={
+                            form.category ??
+                            'General'
+                        }
+                        onChange={event =>
+                            update(
+                                'category',
+                                event.target.value as SettingCategory,
+                            )
+                        }
+                    >
+
+                        {
+                            categories.map(category => (
+
+                                <option
+                                    key={category}
+                                    value={category}
+                                >
+                                    {category}
+                                </option>
+
+                            ))
+                        }
+
+                    </select>
+
+                </div>
+
+                <div>
+
+                    <label
+                        htmlFor="setting-status"
+                        className="mb-1 block text-sm font-medium"
+                    >
+                        Status
+                    </label>
+
+                    <select
+                        id="setting-status"
+                        name="status"
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={
+                            form.status ??
+                            'Active'
+                        }
+                        onChange={event =>
+                            update(
+                                'status',
+                                event.target.value as SettingStatus,
+                            )
+                        }
+                    >
+
+                        {
+                            statuses.map(status => (
+
+                                <option
+                                    key={status}
+                                    value={status}
+                                >
+                                    {status}
+                                </option>
+
+                            ))
+                        }
+
+                    </select>
+
+                </div>
+
+                <div className="md:col-span-2">
+
+                    <label
+                        htmlFor="setting-value"
+                        className="mb-1 block text-sm font-medium"
+                    >
+                        Value
+                    </label>
+
+                    <textarea
+                        id="setting-value"
+                        name="value"
+                        rows={5}
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 font-mono text-sm disabled:cursor-not-allowed disabled:opacity-60"
+                        value={form.value ?? ''}
+                        onChange={event =>
+                            update(
+                                'value',
+                                event.target.value,
+                            )
+                        }
+                    />
+
+                </div>
+
+                <div className="md:col-span-2">
+
+                    <label
+                        htmlFor="setting-description"
+                        className="mb-1 block text-sm font-medium"
+                    >
+                        Description
+                    </label>
+
+                    <textarea
+                        id="setting-description"
+                        name="description"
+                        rows={3}
+                        disabled={loading}
+                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        value={form.description ?? ''}
+                        onChange={event =>
+                            update(
+                                'description',
+                                event.target.value,
+                            )
+                        }
+                    />
+
+                </div>
+
+                <label className="flex items-center gap-2">
+
+                    <input
+                        type="checkbox"
+                        name="editable"
+                        disabled={loading}
+                        checked={
+                            form.editable ??
+                            true
+                        }
+                        onChange={event =>
+                            update(
+                                'editable',
+                                event.target.checked,
+                            )
+                        }
+                    />
+
+                    Editable
+
+                </label>
+
+                <label className="flex items-center gap-2">
+
+                    <input
+                        type="checkbox"
+                        name="encrypted"
+                        disabled={loading}
+                        checked={
+                            form.encrypted ??
+                            false
+                        }
+                        onChange={event =>
+                            update(
+                                'encrypted',
+                                event.target.checked,
+                            )
+                        }
+                    />
+
+                    Encrypted
+
+                </label>
+
+            </div>
+
+            <div className="flex justify-end gap-3">
+
+                {
+                    onCancel && (
+
+                        <button
+                            type="button"
+                            onClick={onCancel}
+                            disabled={loading}
+                            className="rounded-lg border px-4 py-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            Cancel
+                        </button>
+
+                    )
+                }
+
+                <button
+                    type="submit"
+                    disabled={loading}
+                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                    {
+                        loading
+                            ? 'Saving...'
+                            : 'Save Setting'
+                    }
+                </button>
+
+            </div>
+
+        </form>
+
+    );
+
+}
+
+============================================================
+FILE: src\components\crm\settings\SettingsSummary.tsx
+============================================================
+'use client';
+
+
+import type {
+    SettingsSummary as SettingsSummaryModel,
+} from '@/types/crm/Settings';
+
+
+
+interface Props {
+
+    summary: SettingsSummaryModel;
+
+}
+
+
+
+interface CardProps {
+
+    title: string;
+
+    value: number;
+
+    description: string;
+
+}
+
+
+
+function SummaryCard({
+    title,
+    value,
+    description,
+}: CardProps) {
+
+
+    return (
+
+        <div
+            className="
+                crm-card
+                p-5
+                transition
+                hover:-translate-y-1
+                hover:shadow-md
+            "
+        >
+
+            <div className="text-sm text-muted-foreground">
+                {title}
+            </div>
+
+
+            <div className="mt-3 text-3xl font-bold">
+                {value}
+            </div>
+
+
+            <p className="mt-2 text-xs text-muted-foreground">
+                {description}
+            </p>
+
+
+        </div>
+
+    );
+
+}
+
+
+
+export default function SettingsSummary({
+    summary,
+}: Props) {
+
+
+    return (
+
+        <div
+            className="
+                grid
+                gap-5
+                sm:grid-cols-2
+                lg:grid-cols-5
+            "
+        >
+
+
+            <SummaryCard
+
+                title="Total"
+
+                value={
+                    summary.total
+                }
+
+                description="All configured settings"
+
+            />
+
+
+            <SummaryCard
+
+                title="Active"
+
+                value={
+                    summary.active
+                }
+
+                description="Currently enabled"
+
+            />
+
+
+            <SummaryCard
+
+                title="Inactive"
+
+                value={
+                    summary.inactive
+                }
+
+                description="Disabled settings"
+
+            />
+
+
+            <SummaryCard
+
+                title="Editable"
+
+                value={
+                    summary.editable
+                }
+
+                description="User editable values"
+
+            />
+
+
+            <SummaryCard
+
+                title="Encrypted"
+
+                value={
+                    summary.encrypted
+                }
+
+                description="Protected values"
+
+            />
+
+
+        </div>
+
+    );
+
+}
+
+============================================================
+FILE: src\components\crm\settings\SettingsTable.tsx
+============================================================
+'use client';
+
+import Link from 'next/link';
+
+import type {
+    Setting,
+} from '@/types/crm/Settings';
+
+
+interface Props {
+
+    settings: Setting[];
+
+}
+
+
+
+function Badge({
+    value,
+}: {
+    value: string;
+}) {
+
+    return (
+
+        <span className="inline-flex rounded-full border px-3 py-1 text-xs font-medium">
+            {value}
+        </span>
+
+    );
+
+}
+
+
+
+export default function SettingsTable({
+    settings,
+}: Props) {
+
+
+    if (!settings.length) {
+
+        return (
+
+            <div className="crm-card p-8 text-center">
+
+                <div className="font-medium">
+                    No settings found.
+                </div>
+
+                <p className="mt-2 text-sm text-muted-foreground">
+                    Create a new CRM setting to get started.
+                </p>
+
+            </div>
+
+        );
+
+    }
+
+
+
+    return (
+
+        <div className="crm-card overflow-hidden">
+
+            <div className="overflow-x-auto">
+
+                <table className="w-full">
+
+
+                    <thead>
+
+                        <tr className="border-b bg-muted/30 text-left">
+
+
+                            <th className="p-4 text-sm font-semibold">
+                                Name
+                            </th>
+
+
+                            <th className="p-4 text-sm font-semibold">
+                                Key
+                            </th>
+
+
+                            <th className="p-4 text-sm font-semibold">
+                                Category
+                            </th>
+
+
+                            <th className="p-4 text-sm font-semibold">
+                                Status
+                            </th>
+
+
+                            <th className="p-4 text-sm font-semibold">
+                                Editable
+                            </th>
+
+
+                            <th className="p-4 text-sm font-semibold">
+                                Encrypted
+                            </th>
+
+
+                            <th className="p-4 text-right text-sm font-semibold">
+                                Actions
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+                    <tbody>
+
+                        {
+                            settings.map(setting => (
+
+                                <tr
+                                    key={setting.id}
+                                    className="border-b transition hover:bg-muted/20"
+                                >
+
+
+                                    <td className="p-4">
+
+                                        <div className="font-medium">
+                                            {setting.name}
+                                        </div>
+
+
+                                        {
+                                            setting.description && (
+
+                                                <div className="mt-1 max-w-xs truncate text-sm text-muted-foreground">
+                                                    {setting.description}
+                                                </div>
+
+                                            )
+                                        }
+
+
+                                    </td>
+
+
+
+                                    <td className="p-4 text-sm">
+                                        {setting.key}
+                                    </td>
+
+
+
+                                    <td className="p-4">
+
+                                        <Badge
+                                            value={setting.category}
+                                        />
+
+                                    </td>
+
+
+
+                                    <td className="p-4">
+
+                                        <Badge
+                                            value={setting.status}
+                                        />
+
+                                    </td>
+
+
+
+                                    <td className="p-4 text-sm">
+
+                                        {
+                                            setting.editable
+                                                ? 'Yes'
+                                                : 'No'
+                                        }
+
+                                    </td>
+
+
+
+                                    <td className="p-4 text-sm">
+
+                                        {
+                                            setting.encrypted
+                                                ? 'Yes'
+                                                : 'No'
+                                        }
+
+                                    </td>
+
+
+
+                                    <td className="p-4">
+
+                                        <div className="flex justify-end gap-2">
+
+
+                                            <Link
+                                                href={`/crm/settings/${setting.id}`}
+                                                className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-muted"
+                                            >
+                                                View
+                                            </Link>
+
+
+                                            {
+                                                setting.editable && (
+
+                                                    <Link
+                                                        href={`/crm/settings/${setting.id}/edit`}
+                                                        className="inline-flex rounded-lg border px-3 py-2 text-sm font-medium transition hover:bg-muted"
+                                                    >
+                                                        Edit
+                                                    </Link>
+
+                                                )
+                                            }
+
+
+                                        </div>
+
+                                    </td>
+
+
+                                </tr>
+
+                            ))
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+    );
+
+}

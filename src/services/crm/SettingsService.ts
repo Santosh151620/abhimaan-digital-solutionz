@@ -11,7 +11,7 @@ import type {
     SettingStatus,
 } from '@/types/crm/Settings';
 
-export class SettingsService {
+class SettingsService {
 
     private async repository(): Promise<SettingsRepository> {
 

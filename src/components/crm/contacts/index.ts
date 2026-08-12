@@ -1,5 +1,4 @@
-export { default as ContactsClient }
-from './ContactsClient';
+;
 
 export { default as ContactsForm }
 from './ContactsForm';

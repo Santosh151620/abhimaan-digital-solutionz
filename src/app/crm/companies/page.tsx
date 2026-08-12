@@ -1,4 +1,4 @@
-import {
+﻿import {
 
     searchCompanies,
 
@@ -236,4 +236,5 @@ export default async function CompaniesPage(
     );
 
 }
+
 

@@ -36,7 +36,7 @@ export const ROLE_HIERARCHY: Record<Role, number> = {
 };
 
 
-export function getRoleLevel(
+function getRoleLevel(
     role: string,
 ): number | null {
 

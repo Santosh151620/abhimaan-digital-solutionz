@@ -1,206 +1,363 @@
+import {
+    Activity,
+    Building2,
+    FolderKanban,
+    IndianRupee,
+} from "lucide-react";
+
 import type { CRMAnalytics } from "@/services/analytics";
 
+
 type ExecutiveSummaryCardProps = {
-  metrics: CRMAnalytics;
+    metrics: CRMAnalytics;
 };
 
-function formatCount(value: number | undefined): string {
-  return typeof value === "number" && Number.isFinite(value)
-    ? value.toLocaleString("en-IN")
-    : "—";
+
+
+function formatCount(
+    value: number | undefined,
+): string {
+
+    return typeof value === "number" &&
+        Number.isFinite(value)
+
+        ? value.toLocaleString("en-IN")
+
+        : "0";
+
 }
 
-function formatRevenue(value: number | undefined): string {
-  if (typeof value !== "number" || !Number.isFinite(value)) {
-    return "—";
-  }
 
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(value);
+
+function formatRevenue(
+    value: number | undefined,
+): string {
+
+    if (
+        typeof value !== "number" ||
+        !Number.isFinite(value)
+    ) {
+        return "₹0";
+    }
+
+
+    return new Intl.NumberFormat(
+        "en-IN",
+        {
+            style: "currency",
+            currency: "INR",
+            maximumFractionDigits: 0,
+        },
+    ).format(value);
+
 }
+
+
 
 export default function ExecutiveSummaryCard({
-  metrics,
+
+    metrics,
+
 }: ExecutiveSummaryCardProps) {
-  const items = [
-    {
-      label: "Total Leads",
-      value: formatCount(metrics.overview.totalLeads),
-      description: "Active sales opportunities",
-    },
-    {
-      label: "Active Clients",
-      value: formatCount(metrics.overview.activeClients),
-      description: "Current customer relationships",
-    },
-    {
-      label: "Active Projects",
-      value: formatCount(metrics.overview.activeProjects),
-      description: "Running business engagements",
-    },
-    {
-      label: "Total Revenue",
-      value: formatRevenue(metrics.revenue.totalRevenue),
-      description: "Recorded revenue performance",
-    },
-  ];
 
-  return (
-    <section
-      aria-labelledby="executive-summary-title"
-      className="
-        min-w-0
-        rounded-2xl
-        border
-        border-white/10
-        bg-slate-950/80
-        p-5
-        shadow-xl
-        shadow-black/20
-        transition-all
-        duration-300
-        hover:border-amber-300/30
-        sm:p-6
-      "
-    >
-      <div className="flex items-start justify-between gap-4">
 
-        <div className="min-w-0">
 
-          <p
+    const items = [
+
+        {
+            label: "Total Leads",
+
+            value:
+                formatCount(
+                    metrics.overview.totalLeads,
+                ),
+
+            description:
+                "Active opportunities",
+
+            icon: Activity,
+
+        },
+
+
+        {
+            label: "Active Clients",
+
+            value:
+                formatCount(
+                    metrics.overview.activeClients,
+                ),
+
+            description:
+                "Customer relationships",
+
+            icon: Building2,
+
+        },
+
+
+        {
+            label: "Active Projects",
+
+            value:
+                formatCount(
+                    metrics.overview.activeProjects,
+                ),
+
+            description:
+                "Running engagements",
+
+            icon: FolderKanban,
+
+        },
+
+
+        {
+            label: "Revenue",
+
+            value:
+                formatRevenue(
+                    metrics.revenue.totalRevenue,
+                ),
+
+            description:
+                "Collected revenue",
+
+            icon: IndianRupee,
+
+        },
+
+    ];
+
+
+
+
+    return (
+
+        <section
+
+            aria-labelledby="executive-summary-title"
+
             className="
-              text-[11px]
-              font-bold
-              uppercase
-              tracking-[0.2em]
-              text-amber-300
+                rounded-2xl
+                border
+                border-amber-300/20
+                bg-slate-900/70
+                p-5
+                shadow-xl
+                shadow-black/20
+                backdrop-blur-xl
             "
-          >
-            Executive Overview
-          </p>
+
+        >
 
 
-          <h2
-            id="executive-summary-title"
-            className="
-              mt-2
-              text-xl
-              font-black
-              tracking-tight
-              text-white
-            "
-          >
-            Executive Summary
-          </h2>
-
-
-          <p
-            className="
-              mt-1
-              text-sm
-              text-slate-400
-            "
-          >
-            Current business performance snapshot.
-          </p>
-
-        </div>
-
-
-        <span
-          aria-hidden="true"
-          className="
-            mt-2
-            h-2.5
-            w-2.5
-            shrink-0
-            rounded-full
-            bg-amber-300
-            shadow-[0_0_12px_rgba(252,211,77,0.45)]
-          "
-        />
-
-      </div>
-
-
-      <div
-        className="
-          mt-6
-          grid
-          gap-4
-          sm:grid-cols-2
-          xl:grid-cols-4
-        "
-      >
-
-        {items.map((item) => (
-
-          <div
-            key={item.label}
-            className="
-              min-w-0
-              rounded-2xl
-              border
-              border-white/10
-              bg-white/[0.04]
-              p-4
-              transition-all
-              duration-200
-              hover:bg-white/[0.07]
-            "
-          >
-
-            <p
-              className="
-                whitespace-normal
-                text-xs
-                font-bold
-                uppercase
-                leading-5
-                tracking-wide
-                text-slate-400
-              "
+            <div
+                className="
+                    mb-5
+                "
             >
-              {item.label}
-            </p>
+
+                <p
+                    className="
+                        text-[10px]
+                        font-bold
+                        uppercase
+                        tracking-[0.2em]
+                        text-amber-300
+                    "
+                >
+                    Executive Overview
+                </p>
 
 
-            <p
-              className="
-                mt-3
-                whitespace-normal
-                break-words
-                text-2xl
-                font-black
-                tracking-tight
-                text-white
-                sm:text-3xl
-              "
+                <h2
+                    id="executive-summary-title"
+                    className="
+                        mt-1
+                        text-lg
+                        font-semibold
+                        text-white
+                    "
+                >
+                    Executive Summary
+                </h2>
+
+
+                <p
+                    className="
+                        mt-1
+                        text-sm
+                        text-slate-400
+                    "
+                >
+                    Current business performance snapshot.
+                </p>
+
+            </div>
+
+
+
+
+
+            <div
+
+                className="
+                    grid
+                    gap-4
+                    sm:grid-cols-2
+                    xl:grid-cols-4
+                "
+
             >
-              {item.value}
-            </p>
 
 
-            <p
-              className="
-                mt-2
-                text-xs
-                leading-relaxed
-                text-slate-500
-              "
-            >
-              {item.description}
-            </p>
+                {items.map((item) => {
 
-          </div>
 
-        ))}
+                    const Icon =
+                        item.icon;
 
-      </div>
 
-    </section>
-  );
+
+                    return (
+
+                        <div
+
+                            key={item.label}
+
+                            className="
+                                min-w-0
+                                rounded-xl
+                                border
+                                border-slate-800
+                                bg-slate-950/70
+                                px-4
+                                py-4
+                                transition-all
+                                duration-200
+                                hover:border-amber-300/30
+                            "
+
+                        >
+
+
+
+                            <div
+
+                                className="
+                                    flex
+                                    min-w-0
+                                    items-center
+                                    gap-3
+                                "
+
+                            >
+
+
+                                <div
+
+                                    className="
+                                        flex
+                                        h-8
+                                        w-8
+                                        shrink-0
+                                        items-center
+                                        justify-center
+                                        rounded-lg
+                                        bg-amber-300/10
+                                    "
+
+                                >
+
+                                    <Icon
+
+                                        className="
+                                            h-4
+                                            w-4
+                                            text-amber-300
+                                        "
+
+                                    />
+
+                                </div>
+
+
+
+                                <p
+
+                                    className="
+                                       text-xs
+                                        font-semibold
+                                        uppercase
+                                        leading-tight
+                                        tracking-wide
+                                        text-slate-300
+                                    "
+
+                                >
+
+                                    {item.label}
+
+                                </p>
+
+
+                            </div>
+
+
+
+
+
+                            <p
+
+                                className="
+                                    mt-4
+                                    whitespace-nowrap
+                                    text-3xl
+                                    font-bold
+                                    tracking-tight
+                                    text-white
+                                "
+
+                            >
+
+                                {item.value}
+
+                            </p>
+
+
+
+
+
+                            <p
+
+                                className="
+                                    mt-2
+                                    text-xs
+                                    text-slate-500
+                                "
+
+                            >
+
+                                {item.description}
+
+                            </p>
+
+
+
+                        </div>
+
+                    );
+
+
+                })}
+
+
+            </div>
+
+
+        </section>
+
+    );
+
 }

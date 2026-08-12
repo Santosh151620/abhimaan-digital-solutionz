@@ -7,7 +7,7 @@ interface EntityActivityFeedProps {
     activities: Activity[];
 }
 
-export default function EntityActivityFeed({
+function EntityActivityFeed({
     activities,
 }: EntityActivityFeedProps) {
 

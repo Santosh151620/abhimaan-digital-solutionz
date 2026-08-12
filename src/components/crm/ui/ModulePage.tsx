@@ -1,46 +1,134 @@
 import type { ReactNode } from "react";
 
+
 interface Props {
-  title: string;
-  description: string;
-  toolbar?: ReactNode;
-  summary?: ReactNode;
-  children: ReactNode;
+
+    title: string;
+
+    description: string;
+
+    toolbar?: ReactNode;
+
+    summary?: ReactNode;
+
+    children: ReactNode;
+
 }
+
 
 export default function ModulePage({
-  title,
-  description,
-  toolbar,
-  summary,
-  children,
+
+    title,
+
+    description,
+
+    toolbar,
+
+    summary,
+
+    children,
+
 }: Props) {
-  return (
-    <div className="space-y-6">
 
-      <div>
 
-        <h1 className="crm-title">
-          {title}
-        </h1>
+    return (
 
-        <p className="crm-subtitle mt-2">
-          {description}
-        </p>
+        <main
+            className="
+                min-w-0
+                space-y-6
+            "
+        >
 
-      </div>
+            {/* Page Header */}
 
-      {toolbar}
+            <section
+                className="
+                    rounded-2xl
+                    border
+                    border-cyan-400/10
+                    bg-slate-950/70
+                    p-5
+                    shadow-xl
+                    shadow-black/20
+                    backdrop-blur-xl
+                "
+            >
 
-      {summary}
+                <h1
+                    className="
+                        text-2xl
+                        font-black
+                        tracking-tight
+                        text-white
+                        sm:text-3xl
+                    "
+                >
+                    {title}
+                </h1>
 
-      <div className="crm-panel">
 
-        {children}
+                <p
+                    className="
+                        mt-2
+                        max-w-3xl
+                        text-sm
+                        leading-relaxed
+                        text-slate-400
+                    "
+                >
+                    {description}
+                </p>
 
-      </div>
 
-    </div>
-  );
+            </section>
+
+
+
+            {toolbar && (
+
+                <div>
+
+                    {toolbar}
+
+                </div>
+
+            )}
+
+
+
+            {summary && (
+
+                <div>
+
+                    {summary}
+
+                </div>
+
+            )}
+
+
+
+            <section
+                className="
+                    rounded-2xl
+                    border
+                    border-cyan-400/10
+                    bg-slate-950/70
+                    p-5
+                    shadow-xl
+                    shadow-black/20
+                    backdrop-blur-xl
+                "
+            >
+
+                {children}
+
+            </section>
+
+
+        </main>
+
+    );
+
 }
-

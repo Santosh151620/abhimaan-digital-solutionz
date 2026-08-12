@@ -13,7 +13,7 @@ import type {
     ImportExecutionResult,
 } from "@/types/crm/ImportExport";
 
-export interface ImportDuplicateProvider {
+interface ImportDuplicateProvider {
 
     isDuplicate(
         row: Record<string, string>,
@@ -21,7 +21,7 @@ export interface ImportDuplicateProvider {
 
 }
 
-export interface ImportPersistenceProvider {
+interface ImportPersistenceProvider {
 
     save(
         row: Record<string, string>,
@@ -225,5 +225,5 @@ export class ImportService {
  * This service is intentionally stateless,
  * making it safe to reuse across all CRM modules.
  */
-export const ImportServiceInstance =
+const ImportServiceInstance =
     new ImportService();

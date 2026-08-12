@@ -136,7 +136,7 @@ export interface Task {
 
 
 
-export interface CreateTaskInput {
+interface CreateTaskInput {
 
 
     taskNumber?: string;
@@ -186,7 +186,7 @@ export interface CreateTaskInput {
 
 
 
-export type UpdateTaskInput =
+type UpdateTaskInput =
     Partial<CreateTaskInput>
     & {
 

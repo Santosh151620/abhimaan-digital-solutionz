@@ -15,7 +15,7 @@ import type {
 
 
 
-export class QuotationsRepository
+class QuotationsRepository
     extends BaseRepository<Quotation> {
 
 
@@ -595,5 +595,5 @@ export function createQuotationsRepository(
 /**
  * Standard export
  */
-export const QuotationsRepositoryInstance =
+const QuotationsRepositoryInstance =
     createQuotationsRepository;

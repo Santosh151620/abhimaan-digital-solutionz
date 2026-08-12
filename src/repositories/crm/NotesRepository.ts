@@ -397,7 +397,7 @@ export function createNotesRepository(
 /**
  * Compatibility export.
  */
-export const NotesRepositoryInstance =
+const NotesRepositoryInstance =
   createNotesRepository;
 
 

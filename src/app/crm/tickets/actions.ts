@@ -11,7 +11,7 @@ export async function getTickets() {
     return TicketsServiceInstance.list();
 }
 
-export async function searchTickets(
+async function searchTickets(
     filters?: {
         status?: TicketStatus;
         priority?: Ticket['priority'];
@@ -47,19 +47,19 @@ export async function updateTicket(
     );
 }
 
-export async function deleteTicket(
+async function deleteTicket(
     id: string
 ) {
     return TicketsServiceInstance.delete(id);
 }
 
-export async function restoreTicket(
+async function restoreTicket(
     id: string
 ) {
     return TicketsServiceInstance.restore(id);
 }
 
-export async function updateTicketStatus(
+async function updateTicketStatus(
     id: string,
     status: TicketStatus
 ) {

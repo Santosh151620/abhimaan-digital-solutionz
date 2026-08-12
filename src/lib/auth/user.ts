@@ -1,4 +1,4 @@
-import type { User } from "@supabase/supabase-js";
+﻿import type { User } from "@supabase/supabase-js";
 
 import { createServerClient } from "@/lib/supabase";
 
@@ -79,6 +79,7 @@ export async function requireUser(): Promise<AuthUser> {
 
   return user;
 }
+
 
 
 

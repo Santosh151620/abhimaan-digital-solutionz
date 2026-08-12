@@ -36,7 +36,7 @@ const statuses: ContactStatus[] = [
 ];
 
 
-export function ContactsForm({
+function ContactsForm({
 
     initialValues,
 

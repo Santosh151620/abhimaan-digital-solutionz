@@ -7,7 +7,7 @@ interface Props {
   metrics: Metric[];
 }
 
-export default function EntityMetrics({
+function EntityMetrics({
   metrics,
 }: Props) {
   return (
@@ -32,7 +32,4 @@ export default function EntityMetrics({
   );
 }
 
-
-
-
-
+export {};

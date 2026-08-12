@@ -1,4 +1,4 @@
-import {
+﻿import {
   LeadEntity,
   LEAD_ENTITY_TYPE,
 } from "../types/lead.entity";
@@ -27,7 +27,7 @@ function mapLead(input: ApiLead): LeadEntity {
   };
 }
 
-export interface CreateLeadRequest {
+interface CreateLeadRequest {
   entityId: string;
   title: string;
   email?: string;
@@ -119,6 +119,8 @@ export async function updateLead(
 
   return mapLead(await res.json());
 }
+
+
 
 
 

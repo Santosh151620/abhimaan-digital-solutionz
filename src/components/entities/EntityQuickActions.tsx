@@ -5,7 +5,7 @@ interface Props {
   module: string;
 }
 
-export default function EntityQuickActions({
+function EntityQuickActions({
   entityId,
   module,
 }: Props) {

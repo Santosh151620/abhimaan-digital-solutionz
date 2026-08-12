@@ -1,4 +1,4 @@
-export type ActivityType =
+type ActivityType =
     | 'Call'
     | 'Meeting'
     | 'Email'
@@ -10,7 +10,7 @@ export type ActivityType =
     | 'Other';
 
 
-export type ActivityStatus =
+type ActivityStatus =
     | 'Planned'
     | 'In Progress'
     | 'Completed'
@@ -18,7 +18,7 @@ export type ActivityStatus =
     | 'Missed';
 
 
-export type ActivityPriority =
+type ActivityPriority =
     | 'Low'
     | 'Medium'
     | 'High'
@@ -84,7 +84,7 @@ export interface Activity {
 
 
 
-export interface ActivitySummary {
+interface ActivitySummary {
 
     total: number;
 

@@ -175,7 +175,7 @@ class TasksService {
 }
 
 
-export const tasksService =
+const tasksService =
     new TasksService();
 
 

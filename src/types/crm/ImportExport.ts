@@ -1,4 +1,4 @@
-export type ImportExportEntityType =
+﻿export type ImportExportEntityType =
     | "Lead"
     | "Contact"
     | "Company"
@@ -24,7 +24,7 @@ export type ImportExportFormat =
     | "Excel"
     | "JSON";
 
-export type ImportExportStatus =
+type ImportExportStatus =
     | "Pending"
     | "Running"
     | "Completed"
@@ -162,7 +162,7 @@ export interface ImportExportSummary {
  * ============================================================
  */
 
-export type DuplicateHandlingStrategy =
+type DuplicateHandlingStrategy =
     | "Skip"
     | "Reject"
     | "Update"
@@ -179,7 +179,7 @@ export type DuplicateHandlingStrategy =
     options?: ImportOptions;
 
 }
-export interface ImportOptions {
+interface ImportOptions {
 
     /**
      * Validate only.
@@ -236,7 +236,7 @@ export interface ImportPreviewRow {
 
 }
 
-export interface ImportPreview {
+interface ImportPreview {
 
     totalRows: number;
 
@@ -251,7 +251,7 @@ export interface ImportPreview {
     warnings: ImportWarning[];
 
 }
-export interface ImportTemplate {
+interface ImportTemplate {
 
     entityType: ImportExportEntityType;
 
@@ -263,7 +263,7 @@ export interface ImportTemplate {
 
 }
 
-export interface ImportDuplicateResult {
+interface ImportDuplicateResult {
 
     row: number;
 
@@ -275,7 +275,7 @@ export interface ImportDuplicateResult {
 
 }
 
-export interface ImportHistoryItem {
+interface ImportHistoryItem {
 
     jobId: string;
 
@@ -302,7 +302,7 @@ export interface CsvTemplateColumn {
     description?: string;
 
 }
-export interface ImportExecutionSummary {
+interface ImportExecutionSummary {
 
     totalRows: number;
 
@@ -359,7 +359,7 @@ export interface ImportExecutionResult {
 
 }
 
-export interface DuplicateCheckResult {
+interface DuplicateCheckResult {
 
     duplicate: boolean;
 
@@ -367,7 +367,7 @@ export interface DuplicateCheckResult {
 
 }
 
-export interface DuplicateRule {
+interface DuplicateRule {
 
     field: string;
 
@@ -384,7 +384,7 @@ export interface ImportConfiguration {
     duplicateRules: DuplicateRule[];
 
 }
-export interface ImportAcknowledgement {
+interface ImportAcknowledgement {
 
     success: boolean;
 
@@ -401,3 +401,8 @@ export interface ImportAcknowledgement {
     failedRows: number;
 
 }
+
+
+
+
+

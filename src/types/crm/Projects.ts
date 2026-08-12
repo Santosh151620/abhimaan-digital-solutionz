@@ -34,7 +34,7 @@ export interface Project {
 
 }
 
-export interface ProjectSearchFilters {
+interface ProjectSearchFilters {
 
     search?: string;
 
@@ -46,7 +46,7 @@ export interface ProjectSearchFilters {
 
 }
 
-export interface ProjectSummary {
+interface ProjectSummary {
 
     total: number;
 

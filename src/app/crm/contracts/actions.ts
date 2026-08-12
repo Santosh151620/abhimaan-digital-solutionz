@@ -15,7 +15,7 @@ export async function getContracts() {
 
 }
 
-export async function getArchivedContracts() {
+async function getArchivedContracts() {
 
     return await ContractsServiceInstance.listArchived();
 
@@ -53,7 +53,7 @@ export async function updateContract(
 
 }
 
-export async function deleteContract(
+async function deleteContract(
     id: string,
 ) {
 
@@ -63,7 +63,7 @@ export async function deleteContract(
 
 }
 
-export async function restoreContract(
+async function restoreContract(
     id: string,
 ) {
 
@@ -73,7 +73,7 @@ export async function restoreContract(
 
 }
 
-export async function updateContractStatus(
+async function updateContractStatus(
     id: string,
     status: ContractStatus,
 ) {
@@ -85,7 +85,7 @@ export async function updateContractStatus(
 
 }
 
-export async function getContractsSummary() {
+async function getContractsSummary() {
 
     return await ContractsServiceInstance.summary();
 

@@ -31,7 +31,7 @@ type BranchRow = {
     updated_at: string;
 };
 
-export interface IBranchesRepository {
+interface IBranchesRepository {
     findAll(): Promise<Branch[]>;
 
     findById(

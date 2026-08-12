@@ -1,29 +1,50 @@
 import type { ReactNode } from "react";
 
-export default function Card({
-    children,
-}:{
-    children:ReactNode;
-}){
 
-return(
+interface CardProps {
 
-<div
-className="rounded-3xl
-border border-white/10
-bg-white/75
-backdrop-blur-xl
-shadow-xl
-transition-all
-duration-300
-hover:-translate-y-1
-hover:shadow-2xl">
+    children: ReactNode;
 
-{children}
-
-</div>
-
-);
+    className?: string;
 
 }
 
+
+export default function Card({
+
+    children,
+
+    className = "",
+
+}: CardProps) {
+
+
+    return (
+
+        <div
+
+            className={`
+                min-w-0
+                rounded-2xl
+                border
+                border-cyan-400/20
+                bg-slate-950/80
+                shadow-xl
+                shadow-black/20
+                backdrop-blur-xl
+                transition-all
+                duration-300
+                hover:border-cyan-400/30
+                hover:shadow-cyan-950/20
+                ${className}
+            `}
+
+        >
+
+            {children}
+
+        </div>
+
+    );
+
+}

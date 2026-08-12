@@ -234,7 +234,7 @@ export async function getCRMAnalytics(): Promise<CRMAnalytics> {
  * Retained because existing dashboard/CRM consumers may
  * import this function directly.
  */
-export function calculateGrowth(
+function calculateGrowth(
   current: number,
   previous: number,
 ): number {
@@ -248,7 +248,4 @@ export function calculateGrowth(
 /**
  * Public compatibility exports retained for existing consumers.
  */
-export {
-  calculateConversion,
-  calculatePaymentRate,
-};
+;

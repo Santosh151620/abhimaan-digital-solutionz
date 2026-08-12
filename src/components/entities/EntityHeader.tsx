@@ -7,7 +7,7 @@ interface EntityHeaderProps {
   actions?: React.ReactNode;
 }
 
-export default function EntityHeader({
+function EntityHeader({
   title,
   subtitle,
   status,
@@ -46,7 +46,4 @@ export default function EntityHeader({
   );
 }
 
-
-
-
-
+export {};

@@ -37,7 +37,7 @@ export async function updateNote(
 
 
 
-export async function deleteNote(
+async function deleteNote(
     id: string
 ) {
 

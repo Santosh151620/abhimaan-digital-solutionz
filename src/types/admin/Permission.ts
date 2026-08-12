@@ -1,4 +1,4 @@
-import type {
+﻿import type {
     BaseEntity,
 } from "@/types/platform/BaseEntity";
 
@@ -224,7 +224,7 @@ export interface PermissionGroup {
  * ============================================================================
  * Role Permission Mapping
  *
- * Role ↔ Permission relationship
+ * Role â†” Permission relationship
  * ============================================================================
  */
 
@@ -311,3 +311,7 @@ export interface UserPermission {
 
 
 }
+
+
+
+

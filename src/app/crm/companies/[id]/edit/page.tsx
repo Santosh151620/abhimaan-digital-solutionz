@@ -1,90 +1,95 @@
 import {
-  notFound,
-  redirect,
+    notFound,
+    redirect,
 } from 'next/navigation';
 
+import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
 import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
 
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
-
 import {
-  CompaniesForm,
+    CompaniesForm,
 } from '@/components/crm/companies';
 
 import {
-  getCompany,
-  updateCompany,
+    getCompany,
+    updateCompany,
 } from '../../actions';
 
 import type {
-  CompanyDetails,
+    CompanyDetails,
 } from '@/types/crm/Companies';
 
 
 interface PageProps {
-  params: Promise<{
-    id: string;
-  }>;
+
+    params: Promise<{
+        id: string;
+    }>;
+
 }
 
 
 export default async function EditCompanyPage({
-  params,
+    params,
 }: PageProps) {
 
-  const {
-    id,
-  } = await params;
+    const {
+        id,
+    } = await params;
 
 
-  const company = await getCompany(id);
+    const company =
+        await getCompany(
+            id,
+        );
 
 
-  if (!company) {
-    notFound();
-  }
+    if (!company) {
+
+        notFound();
+
+    }
 
 
-  async function submit(
-    values: Partial<CompanyDetails>
-  ) {
-    'use server';
+    async function submit(
+        values: Partial<CompanyDetails>,
+    ) {
+        'use server';
+
+        await updateCompany(
+            id,
+            values,
+        );
+
+        redirect(
+            `/crm/companies/${id}`,
+        );
+
+    }
 
 
-    await updateCompany(
-      id,
-      values
+    return (
+
+        <CRMPageLayout>
+
+            <CRMHeader
+                title="Edit Company"
+                description="Update company information and subscription details."
+                actions={[
+                    {
+                        label: 'Back',
+                        href: `/crm/companies/${id}`,
+                    },
+                ]}
+            />
+
+            <CompaniesForm
+                initialValues={company}
+                onSubmit={submit}
+            />
+
+        </CRMPageLayout>
+
     );
 
-
-    redirect(
-      `/crm/companies/${id}`
-    );
-  }
-
-
-  return (
-
-    <CRMPageLayout>
-
-     <CRMHeader
-    title="Edit Company"
-    description="Update company information and subscription details."
-    actions={[
-        {
-            label: 'Back',
-            href: `/crm/companies/${id}`,
-        },
-    ]}
-/>
-
-
-      <CompaniesForm
-        initialValues={company}
-        onSubmit={submit}
-      />
-
-    </CRMPageLayout>
-
-  );
 }

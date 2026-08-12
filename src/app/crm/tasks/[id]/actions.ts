@@ -30,7 +30,7 @@ export async function updateTaskDetails(
 
 }
 
-export async function changeTaskStatus(
+async function changeTaskStatus(
     id: string,
     status: TaskStatus,
 ) {

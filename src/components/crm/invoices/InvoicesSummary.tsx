@@ -1,159 +1,163 @@
 'use client';
 
-import type { Invoice } from '@/types/crm/Invoices';
+import type {
+    Invoice,
+} from '@/types/crm/Invoices';
+
 
 interface Props {
+
     invoices: Invoice[];
+
 }
 
+
 export default function InvoicesSummary({
+
     invoices,
+
 }: Props) {
+
 
     const totalInvoices =
         invoices.length;
 
+
     const draft =
         invoices.filter(
             (invoice) =>
-                invoice.status === 'Draft'
+                invoice.status === 'Draft',
         ).length;
+
 
     const sent =
         invoices.filter(
             (invoice) =>
-                invoice.status === 'Sent'
+                invoice.status === 'Sent',
         ).length;
+
 
     const paid =
         invoices.filter(
             (invoice) =>
-                invoice.status === 'Paid'
+                invoice.status === 'Paid',
         ).length;
+
 
     const overdue =
         invoices.filter(
             (invoice) =>
-                invoice.status === 'Overdue'
+                invoice.status === 'Overdue',
         ).length;
+
 
     const cancelled =
         invoices.filter(
             (invoice) =>
-                invoice.status === 'Cancelled'
+                invoice.status === 'Cancelled',
         ).length;
+
 
 
     const totalValue =
         invoices.reduce(
+
             (sum, invoice) =>
-                sum + invoice.total,
-            0
+                sum + Number(invoice.total ?? 0),
+
+            0,
+
         );
+
 
 
     const outstandingValue =
         invoices.reduce(
+
             (sum, invoice) =>
                 sum +
                 (
-                    invoice.total -
-                    (invoice.paidAmount ?? 0)
+                    Number(invoice.total ?? 0) -
+                    Number(invoice.paidAmount ?? 0)
                 ),
-            0
+
+            0,
+
         );
+
+
+
+    const currencyFormatter =
+        new Intl.NumberFormat(
+
+            'en-IN',
+
+            {
+                style: 'currency',
+                currency: 'INR',
+                maximumFractionDigits: 0,
+            },
+
+        );
+
 
 
     return (
 
         <div className="grid gap-4 md:grid-cols-4">
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Total Invoices
-                </div>
 
-                <div className="mt-2 text-3xl font-bold">
-                    {totalInvoices}
-                </div>
-            </div>
+            <SummaryCard
+                label="Total Invoices"
+                value={totalInvoices}
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Draft
-                </div>
-
-                <div className="mt-2 text-3xl font-bold">
-                    {draft}
-                </div>
-            </div>
+            <SummaryCard
+                label="Draft"
+                value={draft}
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Sent
-                </div>
-
-                <div className="mt-2 text-3xl font-bold">
-                    {sent}
-                </div>
-            </div>
+            <SummaryCard
+                label="Sent"
+                value={sent}
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Paid
-                </div>
-
-                <div className="mt-2 text-3xl font-bold">
-                    {paid}
-                </div>
-            </div>
+            <SummaryCard
+                label="Paid"
+                value={paid}
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Overdue
-                </div>
-
-                <div className="mt-2 text-3xl font-bold">
-                    {overdue}
-                </div>
-            </div>
+            <SummaryCard
+                label="Overdue"
+                value={overdue}
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Cancelled
-                </div>
-
-                <div className="mt-2 text-3xl font-bold">
-                    {cancelled}
-                </div>
-            </div>
+            <SummaryCard
+                label="Cancelled"
+                value={cancelled}
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Total Value
-                </div>
-
-                <div className="mt-2 text-3xl font-bold">
-                    ₹ {totalValue.toLocaleString()}
-                </div>
-            </div>
+            <SummaryCard
+                label="Total Value"
+                value={
+                    currencyFormatter.format(totalValue)
+                }
+            />
 
 
-            <div className="rounded-xl border bg-card p-5">
-                <div className="text-sm text-muted-foreground">
-                    Outstanding
-                </div>
+            <SummaryCard
+                label="Outstanding"
+                value={
+                    currencyFormatter.format(outstandingValue)
+                }
+            />
 
-                <div className="mt-2 text-3xl font-bold">
-                    ₹ {outstandingValue.toLocaleString()}
-                </div>
-            </div>
 
         </div>
 
@@ -161,3 +165,57 @@ export default function InvoicesSummary({
 
 }
 
+
+
+function SummaryCard({
+
+    label,
+
+    value,
+
+}: {
+
+    label: string;
+
+    value: string | number;
+
+}) {
+
+
+    return (
+
+        <div
+            className="
+                rounded-xl
+                border
+                bg-card
+                p-5
+            "
+        >
+
+            <div
+                className="
+                    text-sm
+                    text-muted-foreground
+                "
+            >
+                {label}
+            </div>
+
+
+            <div
+                className="
+                    mt-2
+                    text-3xl
+                    font-bold
+                "
+            >
+                {value}
+            </div>
+
+
+        </div>
+
+    );
+
+}

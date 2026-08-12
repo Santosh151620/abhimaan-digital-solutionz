@@ -77,7 +77,7 @@ search(
 
 }
 
-export async function createCalendarService() {
+async function createCalendarService() {
 
     return new CalendarService();
 

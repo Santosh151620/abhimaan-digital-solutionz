@@ -179,7 +179,7 @@ export interface CreateOpportunityInput {
 export type UpdateOpportunityInput =
     Partial<CreateOpportunityInput>;
 
-export interface OpportunityFilters {
+interface OpportunityFilters {
 
     stage?: OpportunityStage;
 
@@ -239,7 +239,7 @@ export interface OpportunitySummary {
 
 }
 
-export interface PipelineOpportunity {
+interface PipelineOpportunity {
 
     id: string;
 
@@ -255,7 +255,7 @@ export interface PipelineOpportunity {
 
 }
 
-export interface PipelineStage {
+interface PipelineStage {
 
     id?: OpportunityStage;
 

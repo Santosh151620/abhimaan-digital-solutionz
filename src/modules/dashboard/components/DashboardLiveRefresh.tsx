@@ -106,7 +106,6 @@ const feedbackTimerRef =
 
 
   useEffect(() => {
-mountedRef.current = true;
 
 
 const initialUpdateTimer =

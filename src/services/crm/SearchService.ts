@@ -264,5 +264,5 @@ export class SearchService {
  *
  * new SearchService(supabase)
  */
-export const SearchServiceInstance =
+const SearchServiceInstance =
     new SearchService();

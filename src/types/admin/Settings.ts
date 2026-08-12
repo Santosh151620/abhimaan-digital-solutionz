@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * ADS ENTERPRISE PLATFORM
  * Platform Settings Contract
@@ -231,3 +231,5 @@ export interface OrganizationSettings {
 
 
 }
+
+

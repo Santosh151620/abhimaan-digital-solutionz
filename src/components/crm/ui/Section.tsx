@@ -1,30 +1,46 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 interface Props {
-title:string;
-children:ReactNode;
+
+    title:string;
+
+    children:ReactNode;
+
 }
+
 
 export default function Section({
-title,
-children
+
+    title,
+
+    children,
+
 }:Props){
 
-return(
 
-<div className="space-y-4">
+    return (
 
-<h2 className="text-lg font-semibold text-white">
+        <section
+            className="
+                space-y-4
+            "
+        >
 
-{title}
+            <h2
+                className="
+                    text-lg
+                    font-semibold
+                    text-white
+                "
+            >
+                {title}
+            </h2>
 
-</h2>
 
-{children}
+            {children}
 
-</div>
+        </section>
 
-);
+    );
 
 }
-

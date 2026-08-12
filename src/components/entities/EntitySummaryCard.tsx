@@ -6,7 +6,7 @@ interface Props {
   summary: EntitySummary;
 }
 
-export default function EntitySummaryCard({
+function EntitySummaryCard({
   summary,
 }: Props) {
   const items = [

@@ -40,7 +40,7 @@ Promise<Permission[]> {
     return await service.list();
 }
 
-export async function getActivePermissions():
+async function getActivePermissions():
 Promise<Permission[]> {
 
     const service =
@@ -49,7 +49,7 @@ Promise<Permission[]> {
     return await service.active();
 }
 
-export async function searchPermissions(
+async function searchPermissions(
     keyword:string,
 ):
 Promise<Permission[]> {
@@ -62,7 +62,7 @@ Promise<Permission[]> {
     );
 }
 
-export async function getPermission(
+async function getPermission(
     id:string,
 ):
 Promise<Permission | null> {

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * Abhimaan Digital Solutionz
  * Admin Platform Contract
@@ -60,3 +60,6 @@ export interface AdminDashboard {
     generatedAt: string;
 
 }
+
+
+

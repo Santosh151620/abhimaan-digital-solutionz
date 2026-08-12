@@ -3,13 +3,13 @@ import { getPipelineData } from "./pipeline";
 import { getRevenueIntelligence } from "./revenue-intelligence";
 import { getProjects } from "@/modules/projects/services/projects";
 
-export interface WorkflowLead {
+interface WorkflowLead {
   id: string;
   name: string;
   email: string;
 }
 
-export interface TodayTask {
+interface TodayTask {
   id: string;
   title: string;
   description?: string;

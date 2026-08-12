@@ -45,7 +45,7 @@ export async function getAnnouncements():Promise<Announcement[]> {
 
 
 
-export async function getPublishedAnnouncements():Promise<Announcement[]> {
+async function getPublishedAnnouncements():Promise<Announcement[]> {
 
 
 

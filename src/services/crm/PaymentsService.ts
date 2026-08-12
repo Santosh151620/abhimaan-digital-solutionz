@@ -226,7 +226,7 @@ async restore(
 
 
 
-export async function createPaymentsService(): Promise<PaymentsService> {
+async function createPaymentsService(): Promise<PaymentsService> {
 
     return new PaymentsService();
 
@@ -241,6 +241,4 @@ export const PaymentsServiceInstance =
 
 
 
-export {
-    PaymentsService,
-};
+;

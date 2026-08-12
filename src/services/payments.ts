@@ -1,6 +1,6 @@
 import { createClient as createSupabaseClient } from "@/lib/supabase/server";
 
-export interface Payment {
+interface Payment {
   id: string;
 
   created_at: string;
@@ -16,7 +16,7 @@ export interface Payment {
   notes: string | null;
 }
 
-export interface PaymentFilters {
+interface PaymentFilters {
   projectId?: string;
 
   status?: string;
@@ -26,7 +26,7 @@ export interface PaymentFilters {
   pageSize?: number;
 }
 
-export interface PaginatedPayments {
+interface PaginatedPayments {
   payments: Payment[];
 
   total: number;
@@ -40,7 +40,7 @@ export interface PaginatedPayments {
 
 const TABLE = "payments";
 
-export async function getPayments(
+async function getPayments(
   filters: PaymentFilters = {}
 ): Promise<PaginatedPayments> {
   const supabase = await createSupabaseClient();
@@ -82,7 +82,7 @@ export async function getPayments(
   };
 }
 
-export async function getPaymentById(
+async function getPaymentById(
   id: string
 ): Promise<Payment | null> {
   const supabase = await createSupabaseClient();
@@ -100,7 +100,7 @@ export async function getPaymentById(
   return data as Payment;
 }
 
-export async function createPayment(
+async function createPayment(
   payment: Omit<Payment, "id" | "created_at">
 ): Promise<Payment> {
   const supabase = await createSupabaseClient();
@@ -118,7 +118,7 @@ export async function createPayment(
   return data as Payment;
 }
 
-export async function updatePayment(
+async function updatePayment(
   id: string,
   updates: Partial<Omit<Payment, "id" | "created_at">>
 ): Promise<Payment> {
@@ -138,7 +138,7 @@ export async function updatePayment(
   return data as Payment;
 }
 
-export async function deletePayment(
+async function deletePayment(
   id: string
 ): Promise<boolean> {
   const supabase = await createSupabaseClient();

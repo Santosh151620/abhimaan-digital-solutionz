@@ -7,7 +7,7 @@ interface EntityLayoutProps {
   children: ReactNode;
 }
 
-export default function EntityLayout({
+function EntityLayout({
   header,
   children,
 }: EntityLayoutProps) {

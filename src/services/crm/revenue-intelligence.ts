@@ -5,7 +5,7 @@ import {
 } from "@/services/payments";
 import { getProjectRevenue } from "@/modules/projects/services/projects";
 
-export type RevenueHealth =
+type RevenueHealth =
   | "excellent"
   | "good"
   | "warning"

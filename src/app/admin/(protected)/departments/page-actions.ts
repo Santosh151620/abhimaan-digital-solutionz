@@ -40,7 +40,7 @@ Promise<Department[]> {
     return service.list();
 }
 
-export async function getActiveDepartments():
+async function getActiveDepartments():
 Promise<Department[]> {
 
     const service =
@@ -49,7 +49,7 @@ Promise<Department[]> {
     return service.active();
 }
 
-export async function getDepartment(
+async function getDepartment(
     id:string,
 ):
 Promise<Department | null> {
@@ -62,7 +62,7 @@ Promise<Department | null> {
     );
 }
 
-export async function getDepartmentByCode(
+async function getDepartmentByCode(
     code:string,
 ):
 Promise<Department | null> {

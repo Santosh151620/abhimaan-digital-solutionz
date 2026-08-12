@@ -226,7 +226,7 @@ async delete(
 
 
 
-export const notesService =
+const notesService =
     new NotesService();
 
 

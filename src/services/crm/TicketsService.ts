@@ -114,7 +114,7 @@ class TicketsService {
 
 }
 
-export async function createTicketsService() {
+async function createTicketsService() {
 
     return new TicketsService();
 
@@ -124,7 +124,7 @@ export const
     TicketsServiceInstance =
         new TicketsService();
 
-export const
+const
     TicketServiceInstance =
         TicketsServiceInstance;
 

@@ -8,12 +8,8 @@ export {
 } from './AttachmentForm';
 
 
-export {
-    default as AttachmentTable,
-} from './AttachmentTable';
+;
 
 
-export {
-    default as AttachmentSummary,
-} from './AttachmentSummary';
+;
 

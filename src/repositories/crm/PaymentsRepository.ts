@@ -15,7 +15,7 @@ import type {
 
 
 
-export class PaymentsRepository
+class PaymentsRepository
     extends BaseRepository<Payment> {
 
 
@@ -659,5 +659,5 @@ export function createPaymentsRepository(
 
 
 
-export const PaymentsRepositoryInstance =
+const PaymentsRepositoryInstance =
     createPaymentsRepository;

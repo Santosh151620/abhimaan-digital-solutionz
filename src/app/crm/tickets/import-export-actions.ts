@@ -8,7 +8,7 @@ export async function exportTicketsCSV() {
     return TicketImportExportServiceInstance.exportCSV();
 }
 
-export async function importTicketsCSV(
+async function importTicketsCSV(
     csv: string,
 ) {
     return TicketImportExportServiceInstance.importCSV(

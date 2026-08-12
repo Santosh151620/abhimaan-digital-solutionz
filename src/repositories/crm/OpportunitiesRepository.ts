@@ -1583,5 +1583,5 @@ export function createOpportunitiesRepository(
 /**
  * Standard repository export.
  */
-export const OpportunitiesRepositoryInstance =
+const OpportunitiesRepositoryInstance =
     createOpportunitiesRepository;

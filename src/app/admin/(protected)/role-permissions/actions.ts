@@ -32,7 +32,7 @@ async function getService() {
 
 
 
-export async function assignPermission(
+async function assignPermission(
 
     roleId: string,
 
@@ -56,7 +56,7 @@ export async function assignPermission(
 
 
 
-export async function revokePermission(
+async function revokePermission(
 
     roleId: string,
 
@@ -104,7 +104,7 @@ export async function replacePermissions(
 
 
 
-export async function getRolePermissions(
+async function getRolePermissions(
     roleId: string,
 ) {
 

@@ -39,7 +39,7 @@ export async function getProjects() {
 
 }
 
-export async function getArchivedProjects() {
+async function getArchivedProjects() {
 
     return (
         await service()
@@ -57,7 +57,7 @@ export async function getProject(
 
 }
 
-export async function getProjectsSummary() {
+async function getProjectsSummary() {
 
     return (
         await service()
@@ -143,7 +143,7 @@ export async function updateProject(
 
 }
 
-export async function updateProjectStatus(
+async function updateProjectStatus(
     id: string,
     status: ProjectStatus,
 ) {
@@ -184,7 +184,7 @@ export async function updateProjectStatus(
 
 }
 
-export async function deleteProject(
+async function deleteProject(
     id: string,
 ) {
 
@@ -219,7 +219,7 @@ export async function deleteProject(
 
 }
 
-export async function restoreProject(
+async function restoreProject(
     id: string,
 ) {
 

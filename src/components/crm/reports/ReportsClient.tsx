@@ -21,7 +21,7 @@ type ReportType =
     | 'Custom';
 
 
-export interface DashboardReport {
+interface DashboardReport {
 
     id: string;
 

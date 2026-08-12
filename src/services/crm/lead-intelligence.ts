@@ -1,6 +1,6 @@
 import type { Lead } from "@/types/lead";
 
-export type LeadPriority = "hot" | "warm" | "cold";
+type LeadPriority = "hot" | "warm" | "cold";
 
 export interface LeadWithScore extends Lead {
   score: number;
@@ -13,7 +13,7 @@ const DAY_IN_MS = 1000 * 60 * 60 * 24;
 /**
  * Returns the age of a lead in whole days.
  */
-export function getLeadAgeInDays(createdAt: string): number {
+function getLeadAgeInDays(createdAt: string): number {
   return Math.floor(
     (Date.now() - new Date(createdAt).getTime()) / DAY_IN_MS
   );
@@ -116,7 +116,7 @@ export function calculateLeadScore(lead: Lead): LeadWithScore {
 /**
  * Filters leads that require immediate attention.
  */
-export function getActionableLeads(
+function getActionableLeads(
   leads: readonly Lead[]
 ): LeadWithScore[] {
   return leads
@@ -160,7 +160,7 @@ return fallback;
 /**
  * Executive summary of lead priorities.
  */
-export function summarizeLeadHealth(
+function summarizeLeadHealth(
   leads: readonly Lead[]
 ) {
   const scored = leads.map(calculateLeadScore);

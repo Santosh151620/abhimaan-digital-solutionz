@@ -1,4 +1,4 @@
-export type LocationStatus =
+type LocationStatus =
     | "Active"
     | "Inactive";
 

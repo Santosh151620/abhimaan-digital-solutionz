@@ -207,7 +207,7 @@ class InvoicesService {
 
 
 
-export const invoicesService =
+const invoicesService =
     new InvoicesService();
 
 
@@ -220,5 +220,5 @@ export const InvoicesServiceInstance =
 
 
 
-export const invoiceService =
+const invoiceService =
     invoicesService;

@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start",
-  "lint": "eslint .",
-  "format": "prettier --write .",
-  "lint:dead": "knip --config knip.json",
-  "lint:exports": "ts-prune",
-  "lint:circular": "madge src --circular",
-  "lint:all": "npm run lint && npm run lint:dead && npm run lint:exports && npm run lint:circular && npx tsc --noEmit"
-},
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "lint:dead": "knip --config knip.json",
+    "lint:exports": "ts-prune",
+    "lint:circular": "madge src --circular",
+    "lint:all": "npm run lint && npm run lint:dead && npm run lint:exports && npm run lint:circular && npx tsc --noEmit"
+  },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
@@ -26,19 +26,14 @@
     "next-intl": "^4.3.5",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
-    "resend": "^6.14.0",
-    "tailwindcss": "^4.3.1",
-    "zod": "^4.4.3"
+    "resend": "^6.14.0"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^16.2.9",
     "@types/node": "^22.15.21",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.5",
-    "autoprefixer": "^10.4.21",
     "eslint": "^9.28.0",
     "eslint-config-next": "^16.2.9",
-    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "knip": "^6.24.0",
     "madge": "^8.0.0",

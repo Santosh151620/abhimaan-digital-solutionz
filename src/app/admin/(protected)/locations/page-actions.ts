@@ -53,7 +53,7 @@ export async function saveLocation(
 
 
 
-export async function deleteLocation(
+async function deleteLocation(
 
     id:string,
 

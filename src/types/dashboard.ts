@@ -46,7 +46,7 @@ export interface DashboardLead {
   client_id: string | null;
 }
 
-export interface DashboardClient {
+interface DashboardClient {
   id: string;
 
   created_at: string;
@@ -68,7 +68,7 @@ export interface DashboardClient {
   converted_from_lead_id: string | null;
 }
 
-export interface DashboardProject {
+interface DashboardProject {
   id: string;
 
   created_at: string;
@@ -92,7 +92,7 @@ export interface DashboardProject {
   notes: string | null;
 }
 
-export interface DashboardPayment {
+interface DashboardPayment {
   id: string;
 
   created_at: string;
@@ -108,7 +108,7 @@ export interface DashboardPayment {
   notes: string | null;
 }
 
-export interface DashboardMetrics {
+interface DashboardMetrics {
   totalLeads: number;
 
   newLeads: number;
@@ -130,19 +130,19 @@ export interface DashboardMetrics {
   recentLeads: DashboardLead[];
 }
 
-export interface MonthlyLeads {
+interface MonthlyLeads {
   month: string;
 
   total: number;
 }
 
-export interface RevenueSummary {
+interface RevenueSummary {
   totalRevenue: number;
 
   outstandingRevenue: number;
 }
 
-export interface DashboardOverview {
+interface DashboardOverview {
   metrics: DashboardMetrics;
 
   monthlyLeads: MonthlyLeads[];

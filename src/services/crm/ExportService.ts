@@ -80,5 +80,5 @@ export class ExportService {
 
 }
 
-export const ExportServiceInstance =
+const ExportServiceInstance =
     new ExportService();

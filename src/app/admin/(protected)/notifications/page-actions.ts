@@ -45,7 +45,7 @@ export async function getNotifications():Promise<Notification[]> {
 
 
 
-export async function getUserNotifications(
+async function getUserNotifications(
 
 
 
@@ -77,7 +77,7 @@ export async function getUserNotifications(
 
 
 
-export async function markNotificationAsRead(
+async function markNotificationAsRead(
 
 
 

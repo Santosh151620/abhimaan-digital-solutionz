@@ -114,7 +114,7 @@ class KnowledgeBaseService {
 
 }
 
-export async function createKnowledgeBaseService() {
+async function createKnowledgeBaseService() {
 
     return new KnowledgeBaseService();
 

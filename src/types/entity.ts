@@ -1,6 +1,6 @@
-export type EntityType = string;
+type EntityType = string;
 
-export interface EntityRecord {
+interface EntityRecord {
   id: string;
   entityType: EntityType;
 

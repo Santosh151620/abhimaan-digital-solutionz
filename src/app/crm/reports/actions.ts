@@ -34,14 +34,14 @@ function can(
 }
 
 
-export async function getReports() {
+async function getReports() {
 
     return ReportServiceInstance.list();
 
 }
 
 
-export async function getArchivedReports() {
+async function getArchivedReports() {
 
     return ReportServiceInstance.listArchived();
 
@@ -59,7 +59,7 @@ export async function getReport(
 }
 
 
-export async function createReport(
+async function createReport(
     data: Partial<Report>,
 ) {
 
@@ -79,7 +79,7 @@ export async function createReport(
 }
 
 
-export async function updateReport(
+async function updateReport(
     id: string,
     data: Partial<Report>,
 ) {
@@ -101,7 +101,7 @@ export async function updateReport(
 }
 
 
-export async function deleteReport(
+async function deleteReport(
     id: string,
 ) {
 
@@ -121,7 +121,7 @@ export async function deleteReport(
 }
 
 
-export async function restoreReport(
+async function restoreReport(
     id: string,
 ) {
 
@@ -141,7 +141,7 @@ export async function restoreReport(
 }
 
 
-export async function updateReportStatus(
+async function updateReportStatus(
     id: string,
     status: ReportStatus,
 ) {
@@ -163,7 +163,7 @@ export async function updateReportStatus(
 }
 
 
-export async function getReportsSummary() {
+async function getReportsSummary() {
 
     return ReportServiceInstance.summary();
 

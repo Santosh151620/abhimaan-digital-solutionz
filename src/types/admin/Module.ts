@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * Platform Module
  * CRM + ERP + Future Enterprise
@@ -97,3 +97,6 @@ export interface PlatformModule extends BaseEntity {
     metadata?: Record<string, unknown>;
 
 }
+
+
+

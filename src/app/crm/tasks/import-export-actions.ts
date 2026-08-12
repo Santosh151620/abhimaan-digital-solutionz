@@ -15,7 +15,7 @@ export async function exportTasksCSV() {
 
 
 
-export async function importTasksCSV(
+async function importTasksCSV(
     csv:string
 ) {
 

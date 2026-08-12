@@ -7,7 +7,7 @@ export interface AuthSession {
   user: User;
 }
 
-export async function getSession(): Promise<AuthSession | null> {
+async function getSession(): Promise<AuthSession | null> {
   const supabase = await createServerClient();
 
   const {
@@ -39,7 +39,7 @@ export async function requireSession(): Promise<AuthSession> {
   return auth;
 }
 
-export async function getSupabase() {
+async function getSupabase() {
   return createServerClient();
 }
 

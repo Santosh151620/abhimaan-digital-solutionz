@@ -86,42 +86,88 @@ export default async function SettingDetailsPage({
         <div className="space-y-8">
 
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
 
-                <div>
-
-                    <h1 className="text-2xl font-semibold">
-                        {setting.name}
-                    </h1>
+                <div className="flex items-start gap-3">
 
 
-                    <p className="text-sm text-muted-foreground">
-                        {setting.settingNumber}
-                    </p>
+                    <Link
+
+                        href="/crm/settings"
+
+                        className="
+                            inline-flex
+                            items-center
+                            rounded-lg
+                            border
+                            px-3
+                            py-2
+                            text-sm
+                            font-medium
+                            transition
+                            hover:bg-muted
+                            focus:outline-none
+                            focus:ring-2
+                            focus:ring-primary/20
+                        "
+
+                    >
+
+                        ← Back
+
+                    </Link>
+
+
+                    <div>
+
+                        <h1 className="text-2xl font-semibold">
+                            {setting.name}
+                        </h1>
+
+
+                        <p className="text-sm text-muted-foreground">
+                            {setting.settingNumber}
+                        </p>
+
+                    </div>
 
                 </div>
 
 
 
-                <Link
+                {
+                    setting.editable && (
 
-                    href={`/crm/settings/${setting.id}/edit`}
+                        <Link
 
-                    className="
-                        rounded-lg
-                        border
-                        px-4
-                        py-2
-                        transition
-                        hover:bg-muted
-                    "
+                            href={`/crm/settings/${setting.id}/edit`}
 
-                >
+                            className="
+                                inline-flex
+                                items-center
+                                justify-center
+                                rounded-lg
+                                border
+                                px-4
+                                py-2
+                                text-sm
+                                font-medium
+                                transition
+                                hover:bg-muted
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-primary/20
+                            "
 
-                    Edit
+                        >
 
-                </Link>
+                            Edit
+
+                        </Link>
+
+                    )
+                }
 
 
             </div>
@@ -285,7 +331,6 @@ function Info({
             <div className="text-sm text-muted-foreground">
                 {label}
             </div>
-
 
 
             <div className="break-words font-medium">

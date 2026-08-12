@@ -49,7 +49,7 @@ function can(
 
 
 
-export async function getCompanies(){
+async function getCompanies(){
 
     return CompaniesServiceInstance.list();
 
@@ -83,7 +83,7 @@ export async function searchCompanies(
 
 
 
-export async function getArchivedCompanies(){
+async function getArchivedCompanies(){
 
     return CompaniesServiceInstance.listArchived();
 
@@ -171,7 +171,7 @@ export async function updateCompany(
 
 
 
-export async function deleteCompany(
+async function deleteCompany(
 
     id:string
 
@@ -199,7 +199,7 @@ export async function deleteCompany(
 
 
 
-export async function restoreCompany(
+async function restoreCompany(
 
     id:string
 

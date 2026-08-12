@@ -15,12 +15,12 @@ export default function CRMLayout({
 
         <div
             className="
-                flex
-                min-h-screen
-                overflow-hidden
-                bg-[#09090B]
-                bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.18),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(203,213,225,0.10),transparent_32%),linear-gradient(135deg,#09090B_0%,#111111_45%,#1A140B_100%)]
-            "
+        flex
+        min-h-screen
+        overflow-hidden
+        bg-background
+        text-foreground
+    "
         >
 
             <CRMSidebar />
@@ -63,19 +63,19 @@ export default function CRMLayout({
                     >
 
                         <div
-                            className="
-                                rounded-[32px]
-                                border
-                                border-white/[0.08]
-                                bg-white/[0.025]
-                                p-4
-                                shadow-2xl
-                                shadow-black/20
-                                backdrop-blur-xl
-                                sm:p-6
-                                lg:p-8
-                            "
-                        >
+    className="
+        rounded-3xl
+        border
+        border-border
+        bg-surface/40
+        p-4
+        shadow-xl
+        shadow-black/20
+        backdrop-blur-xl
+        sm:p-6
+        lg:p-8
+    "
+>
 
                             {children}
 

@@ -46,7 +46,7 @@ export async function getOpportunitySummary() {
 }
 
 
-export async function getOpportunity(
+async function getOpportunity(
     id: string,
 ) {
 
@@ -131,7 +131,7 @@ export async function updateOpportunity(
 }
 
 
-export async function deleteOpportunity(
+async function deleteOpportunity(
     id: string,
 ) {
 

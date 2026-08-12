@@ -1,4 +1,4 @@
-export type LeadStatus =
+﻿export type LeadStatus =
   | "new"
   | "contacted"
   | "qualified"
@@ -30,7 +30,7 @@ export interface Lead {
   client_id: string | null;
 }
 
-export interface LeadNote {
+interface LeadNote {
   id: string;
 
   lead_id: string;
@@ -40,14 +40,14 @@ export interface LeadNote {
   created_at: string;
 }
 
-export type LeadTimelineEvent =
+type LeadTimelineEvent =
   | "created"
   | "status_change"
   | "note"
   | "conversion"
   | "updated";
 
-export interface LeadTimeline {
+interface LeadTimeline {
   id: string;
 
   lead_id: string;
@@ -65,7 +65,7 @@ export interface LeadFilters {
   status: LeadStatus | "all";
 }
 
-export interface LeadStats {
+interface LeadStats {
   total: number;
 
   new: number;
@@ -81,13 +81,14 @@ export interface LeadStats {
   lost: number;
 }
 
-export interface ConvertLeadResponse {
+interface ConvertLeadResponse {
   success: boolean;
 
   clientId: string;
 
   leadId: string;
 }
+
 
 
 

@@ -82,7 +82,7 @@ export async function saveDesignation(
 
 }
 
-export async function deleteDesignation(
+async function deleteDesignation(
 
     id:string,
 

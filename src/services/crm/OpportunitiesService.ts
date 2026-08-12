@@ -34,7 +34,7 @@ import type {
  * The service itself is request-scoped.
  * Do not create a global Supabase client or global repository instance.
  */
-export class OpportunitiesService {
+class OpportunitiesService {
 
     private readonly repository: OpportunitiesRepository;
 
@@ -539,7 +539,7 @@ export class OpportunitiesService {
  * This prevents Promise<SupabaseClient> from being incorrectly passed
  * into the repository layer.
  */
-export function createOpportunitiesService(
+function createOpportunitiesService(
     supabase: SupabaseClient,
 ): OpportunitiesService {
 

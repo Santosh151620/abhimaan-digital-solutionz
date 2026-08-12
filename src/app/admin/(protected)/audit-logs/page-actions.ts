@@ -45,7 +45,7 @@ export async function getAuditLogs():Promise<AuditLog[]> {
 
 
 
-export async function getEntityAuditLogs(
+async function getEntityAuditLogs(
 
 
 

@@ -7,7 +7,7 @@ interface EntityCardProps {
   children: ReactNode;
 }
 
-export default function EntityCard({
+function EntityCard({
   title,
   children,
 }: EntityCardProps) {

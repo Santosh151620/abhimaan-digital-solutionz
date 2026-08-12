@@ -1,4 +1,4 @@
-export const WorkflowEvents = {
+const WorkflowEvents = {
 
 
     EntityCreated:

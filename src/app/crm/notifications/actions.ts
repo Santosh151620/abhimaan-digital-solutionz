@@ -111,7 +111,7 @@ export async function createNotification(
 
 
 
-export async function markNotificationRead(
+async function markNotificationRead(
 
     id: string,
 

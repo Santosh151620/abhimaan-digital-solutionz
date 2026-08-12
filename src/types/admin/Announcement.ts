@@ -1,4 +1,4 @@
-export type AnnouncementStatus =
+type AnnouncementStatus =
 
     | "DRAFT"
 
@@ -10,7 +10,7 @@ export type AnnouncementStatus =
 
 
 
-export type AnnouncementPriority =
+type AnnouncementPriority =
 
     | "LOW"
 

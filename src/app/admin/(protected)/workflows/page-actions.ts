@@ -23,7 +23,7 @@ export async function saveWorkflow(
     );
 }
 
-export async function deleteWorkflow(
+async function deleteWorkflow(
     id: string,
 ): Promise<void> {
     await repository.delete(

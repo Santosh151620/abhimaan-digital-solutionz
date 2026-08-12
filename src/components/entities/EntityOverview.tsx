@@ -9,7 +9,7 @@ interface EntityOverviewProps {
     }>;
 }
 
-export default function EntityOverview({
+function EntityOverview({
     items,
 }: EntityOverviewProps) {
 

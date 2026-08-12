@@ -42,7 +42,7 @@ export async function getPayments() {
 
 }
 
-export async function getArchivedPayments() {
+async function getArchivedPayments() {
 
     return PaymentsServiceInstance.listArchived();
 
@@ -100,7 +100,7 @@ export async function updatePayment(
 
 }
 
-export async function deletePayment(
+async function deletePayment(
     id: string,
 ) {
 
@@ -120,7 +120,7 @@ export async function deletePayment(
 
 }
 
-export async function restorePayment(
+async function restorePayment(
     id: string,
 ) {
 
@@ -140,7 +140,7 @@ export async function restorePayment(
 
 }
 
-export async function updatePaymentStatus(
+async function updatePaymentStatus(
     id: string,
     status: PaymentStatus,
 ) {

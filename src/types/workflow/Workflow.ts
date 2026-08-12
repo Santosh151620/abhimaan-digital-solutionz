@@ -1,23 +1,23 @@
-import type {
+﻿import type {
     WorkflowEventName,
 } from "./Events";
 
 
-export type WorkflowActionType =
+type WorkflowActionType =
     | "notification"
     | "task"
     | "email"
     | "webhook";
 
 
-export type WorkflowTrigger =
+type WorkflowTrigger =
     | "Manual"
     | "Automatic"
     | "Event"
     | "Schedule";
 
 
-export type WorkflowStatus =
+type WorkflowStatus =
     | "Active"
     | "Inactive"
     | "Draft";
@@ -103,7 +103,7 @@ export interface WorkflowContext {
 
 
 
-export interface WorkflowAction {
+interface WorkflowAction {
 
 
     id:
@@ -144,3 +144,4 @@ export interface WorkflowRule {
         WorkflowAction[];
 
 }
+

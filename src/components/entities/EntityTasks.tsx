@@ -7,7 +7,7 @@ interface EntityTasksProps {
     tasks: Task[];
 }
 
-export default function EntityTasks({
+function EntityTasks({
     tasks,
 }: EntityTasksProps) {
 

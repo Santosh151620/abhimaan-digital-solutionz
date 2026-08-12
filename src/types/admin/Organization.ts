@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ============================================================================
  * ADS ENTERPRISE PLATFORM
  * Organization Contract
@@ -195,3 +195,6 @@ export interface OrganizationSummary {
     createdAt: string;
 
 }
+
+
+

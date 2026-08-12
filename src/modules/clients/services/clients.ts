@@ -4,7 +4,7 @@ import type { Client } from "@/modules/clients/types/client";
 
 const TABLE = "clients";
 
-export interface ClientFilters {
+interface ClientFilters {
   search?: string;
 
   status?: string;
@@ -14,7 +14,7 @@ export interface ClientFilters {
   pageSize?: number;
 }
 
-export interface PaginatedClients {
+interface PaginatedClients {
   clients: Client[];
 
   total: number;
@@ -26,7 +26,7 @@ export interface PaginatedClients {
   totalPages: number;
 }
 
-export async function getClients(
+async function getClients(
   filters: ClientFilters = {}
 ): Promise<PaginatedClients> {
   const supabase = await createSupabaseClient();
@@ -79,7 +79,7 @@ export async function getClients(
   };
 }
 
-export async function getClientById(
+async function getClientById(
   id: string
 ): Promise<Client | null> {
   const supabase = await createSupabaseClient();
@@ -97,7 +97,7 @@ export async function getClientById(
   return data as Client;
 }
 
-export async function createClientRecord(
+async function createClientRecord(
   client: Omit<
     Client,
     "id" | "created_at" | "updated_at"
@@ -118,7 +118,7 @@ export async function createClientRecord(
   return data as Client;
 }
 
-export async function updateClient(
+async function updateClient(
   id: string,
   updates: Partial<
     Omit<Client, "id" | "created_at">
@@ -143,7 +143,7 @@ export async function updateClient(
   return data as Client;
 }
 
-export async function deleteClient(
+async function deleteClient(
   id: string
 ): Promise<boolean> {
   const supabase = await createSupabaseClient();
@@ -178,7 +178,7 @@ export async function getActiveClientsCount(): Promise<number> {
   return count ?? 0;
 }
 
-export async function convertLeadToClient(
+async function convertLeadToClient(
   leadId: string,
   client: Omit<
     Client,

@@ -1,4 +1,4 @@
-export type CalendarEventType =
+type CalendarEventType =
     | 'Meeting'
     | 'Call'
     | 'Demo'
@@ -19,7 +19,7 @@ export type CalendarStatus =
     | 'Cancelled'
     | 'Missed';
 
-export type CalendarPriority =
+type CalendarPriority =
     | 'Low'
     | 'Medium'
     | 'High'

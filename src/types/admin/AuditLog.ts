@@ -1,4 +1,4 @@
-export type AuditAction =
+type AuditAction =
 
     | "CREATE"
 

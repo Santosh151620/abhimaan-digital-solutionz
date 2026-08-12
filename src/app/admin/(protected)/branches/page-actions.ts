@@ -70,7 +70,7 @@ export async function saveBranch(
 
 
 
-export async function deleteBranch(
+async function deleteBranch(
 
 
     id:string,

@@ -1,4 +1,4 @@
-export type BranchStatus =
+type BranchStatus =
 
     | "Active"
 

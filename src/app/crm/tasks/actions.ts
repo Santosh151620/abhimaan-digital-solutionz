@@ -71,7 +71,7 @@ export async function searchTasks(
 
 
 
-export async function getArchivedTasks() {
+async function getArchivedTasks() {
 
     return await TasksServiceInstance.listArchived();
 
@@ -91,7 +91,7 @@ export async function getTask(
 
 
 
-export async function createTask(
+async function createTask(
     data:Partial<Task>
 ) {
 
@@ -116,7 +116,7 @@ export async function createTask(
 
 
 
-export async function updateTask(
+async function updateTask(
     id:string,
     data:Partial<Task>
 ) {

@@ -171,7 +171,7 @@ class ContractsService {
 
 }
 
-export const contractsService =
+const contractsService =
     new ContractsService();
 
 /**
@@ -180,6 +180,6 @@ export const contractsService =
 export const ContractsServiceInstance =
     contractsService;
 
-export const contractService =
+const contractService =
     contractsService;
     

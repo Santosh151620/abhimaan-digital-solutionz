@@ -7,7 +7,7 @@ interface EntityKPIStripProps {
     items: KPIItem[];
 }
 
-export default function EntityKPIStrip({
+function EntityKPIStrip({
     items,
 }: EntityKPIStripProps) {
     return (
@@ -30,7 +30,4 @@ export default function EntityKPIStrip({
     );
 }
 
-
-
-
-
+export {};

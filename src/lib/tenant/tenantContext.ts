@@ -109,7 +109,7 @@ export const TenantContextManager = {
   },
 };
 
-export type ReadonlyTenantContext = Readonly<TenantContext>;
+type ReadonlyTenantContext = Readonly<TenantContext>;
 
 
 

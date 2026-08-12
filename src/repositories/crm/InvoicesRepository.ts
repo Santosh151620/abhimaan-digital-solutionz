@@ -15,7 +15,7 @@ import type {
 
 
 
-export class InvoicesRepository
+class InvoicesRepository
     extends BaseRepository<Invoice> {
 
 

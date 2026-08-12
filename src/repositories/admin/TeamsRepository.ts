@@ -18,7 +18,7 @@ type TeamRow = {
     updated_at: string;
 };
 
-export interface ITeamsRepository {
+interface ITeamsRepository {
     findAll(): Promise<Team[]>;
 
     findById(

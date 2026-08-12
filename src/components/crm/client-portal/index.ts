@@ -10,6 +10,5 @@ export { default as ClientPortalSummary }
 from './ClientPortalSummary';
 
 
-export { default as ClientPortalTable }
-from './ClientPortalTable';
+;
 
