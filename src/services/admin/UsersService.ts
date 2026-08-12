@@ -6,10 +6,7 @@ import type {
 import type {
     IUsersRepository,
 } from "@/repositories/admin/UsersRepository";
-
-
 export class UsersService {
-
 
 
     constructor(
@@ -19,33 +16,21 @@ export class UsersService {
 
     ) {}
 
-
-
-
-
-
-
-
-
     async list():
 
     Promise<AdminUser[]> {
 
-
-
         return this.repository.list();
-
-
 
     }
 
+    async active():
 
+    Promise<AdminUser[]> {
 
+        return this.repository.active();
 
-
-
-
-
+    }
 
     async findById(
 
@@ -55,37 +40,18 @@ export class UsersService {
 
     Promise<AdminUser | null> {
 
-
-
-        this.validateId(
-
-            id,
-
-            "User",
-
-        );
-
-
-
-
-
+        const normalizedId =
+            this.validateId(
+                id,
+                "User",
+            );
 
 
         return this.repository.findById(
-
-            id,
-
+            normalizedId,
         );
 
-
-
     }
-
-
-
-
-
-
 
 
 
@@ -97,49 +63,17 @@ export class UsersService {
 
     Promise<AdminUser | null> {
 
-
-
-        if(!email?.trim()) {
-
-
-
-            throw new Error(
-
-                "Email is required."
-
+        const normalizedEmail =
+            this.normalizeEmail(
+                email,
             );
 
 
-
-        }
-
-
-
-
-
-
-
         return this.repository.findByEmail(
-
-            email
-
-                .trim()
-
-                .toLowerCase(),
-
+            normalizedEmail,
         );
 
-
-
     }
-
-
-
-
-
-
-
-
 
     async save(
 
@@ -147,51 +81,26 @@ export class UsersService {
 
     ):
 
-    Promise<void> {
-
-
+    Promise<AdminUser> {
 
         this.validateUser(
-
             user,
-
         );
 
 
-
-
-
-
-
-        const normalizedEmail =
-
-            user.email
-
-                .trim()
-
-                .toLowerCase();
-
-
-
-
-
-
-
-        const existing =
-
-            await this.repository.findByEmail(
-
-                normalizedEmail,
-
+        const email =
+            this.normalizeEmail(
+                user.email,
             );
 
 
+        const existing =
+            await this.repository.findByEmail(
+                email,
+            );
 
 
-
-
-
-        if(
+        if (
 
             existing &&
 
@@ -199,58 +108,55 @@ export class UsersService {
 
         ) {
 
-
-
             throw new Error(
-
-                "Email already exists."
-
+                "Email already exists.",
             );
-
-
 
         }
 
 
-
-
-
-
-
-        await this.repository.save(
+        return this.repository.save(
 
             {
 
                 ...user,
 
-
-                email:
-
-                    normalizedEmail,
-
+                email,
 
                 updatedAt:
-
                     new Date()
-
-                    .toISOString(),
+                        .toISOString(),
 
             },
 
         );
 
-
-
     }
 
+    async updatePreferences(
+
+        userId:string,
+
+        _preferences:
+            Record<string,unknown>,
+
+    ):
+
+    Promise<void> {
+
+        this.validateId(
+            userId,
+            "User",
+        );
 
 
+        throw new Error(
 
+            "User preference management is handled by UserPreferenceService.",
 
+        );
 
-
-
-
+    }
     async delete(
 
         id:string,
@@ -259,264 +165,173 @@ export class UsersService {
 
     Promise<void> {
 
-
-
-        this.validateId(
-
-            id,
-
-            "User",
-
-        );
-
-
-
-
-
+        const normalizedId =
+            this.validateId(
+                id,
+                "User",
+            );
 
 
         const user =
-
             await this.repository.findById(
-
-                id,
-
+                normalizedId,
             );
 
 
-
-
-
-
-
-        if(!user) {
-
-
+        if (!user) {
 
             throw new Error(
-
-                "User not found."
-
+                "User not found.",
             );
-
-
 
         }
 
 
-
-
-
-
-
-        if(
+        if (
 
             user.userType === "System"
 
         ) {
 
-
-
             throw new Error(
-
-                "System users cannot be deleted."
-
+                "System users cannot be deleted.",
             );
-
-
 
         }
 
 
-
-
-
-
-
         await this.repository.delete(
-
-            id,
-
+            normalizedId,
         );
 
-
-
     }
-
-
-
-
-
-
-
-
-
     private validateUser(
 
         user:AdminUser,
 
-    ) {
+    ):void {
 
-
-
-        if(!user.fullName?.trim()) {
-
-
+        if (!user) {
 
             throw new Error(
-
-                "Full name is required."
-
+                "User is required.",
             );
-
-
 
         }
 
 
-
-
-
-
-
-        if(!user.email?.trim()) {
-
-
+        if (
+            !user.fullName?.trim()
+        ) {
 
             throw new Error(
-
-                "Email is required."
-
+                "Full name is required.",
             );
-
-
 
         }
 
 
+        this.normalizeEmail(
+            user.email,
+        );
 
 
+        if (
+            !user.userType
+        ) {
+
+            throw new Error(
+                "User type is required.",
+            );
+
+        }
 
 
+        if (
+            !user.status
+        ) {
 
-        const email =
+            throw new Error(
+                "User status is required.",
+            );
 
-            user.email
+        }
 
+    }
+
+    private normalizeEmail(
+
+        email:string,
+
+    ):string {
+
+        if (
+            !email?.trim()
+        ) {
+
+            throw new Error(
+                "Email is required.",
+            );
+
+        }
+
+
+        const normalized =
+            email
                 .trim()
-
                 .toLowerCase();
 
 
-
-
-
-
-
         const emailRegex =
-
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-
-
-
-
-
-        if(!emailRegex.test(email)) {
-
-
+        if (
+            !emailRegex.test(
+                normalized,
+            )
+        ) {
 
             throw new Error(
-
-                "Invalid email address."
-
+                "Invalid email address.",
             );
-
-
 
         }
 
 
-
-
-
-
-
-        if(!user.userType) {
-
-
-
-            throw new Error(
-
-                "User type is required."
-
-            );
-
-
-
-        }
-
-
-
-
-
-
-
-        if(!user.status) {
-
-
-
-            throw new Error(
-
-                "User status is required."
-
-            );
-
-
-
-        }
-
-
+        return normalized;
 
     }
 
 
 
-
-
-
-
-
-
+    /**
+     * Validate and normalize an entity identifier.
+     */
     private validateId(
 
         id:string,
 
         entity:string,
 
-    ) {
+    ):string {
+
+        const normalized =
+            id?.trim();
 
 
-
-        if(!id?.trim()) {
-
-
+        if (!normalized) {
 
             throw new Error(
-
-                `${entity} id is required.`
-
+                `${entity} id is required.`,
             );
-
-
 
         }
 
 
+        return normalized;
 
     }
-
 
 
 }

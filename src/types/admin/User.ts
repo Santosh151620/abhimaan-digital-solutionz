@@ -6,8 +6,6 @@
 
 
 
-
-
 export type UserType =
 
     | "Internal"
@@ -17,7 +15,6 @@ export type UserType =
     | "System"
 
     | "Service";
-
 
 
 
@@ -43,6 +40,60 @@ export type UserStatus =
 
 
 
+export type UserThemePreference =
+
+    | "default"
+
+    | "ocean"
+
+    | "emerald"
+
+    | "royal"
+
+    | null;
+
+
+
+
+
+
+export interface UserAccessibilityPreferences {
+
+
+    reducedMotion?: boolean;
+
+
+    highContrast?: boolean;
+
+
+    compactMode?: boolean;
+
+
+}
+
+
+
+
+
+
+export interface UserNotificationPreferences {
+
+
+    email?: boolean;
+
+
+    inApp?: boolean;
+
+
+    push?: boolean;
+
+
+}
+
+
+
+
+
 
 
 
@@ -54,13 +105,14 @@ export type UserStatus =
  *
  * Identity + Access Management
  *
+ * Shared across:
+ * Website
+ * CRM
+ * ERP
+ * Admin
+ *
  * ============================================================================
  */
-
-
-
-
-
 
 
 export interface AdminUser
@@ -84,9 +136,6 @@ export interface AdminUser
     profileId?:string;
 
 
-
-
-
     authUserId?:string;
 
 
@@ -99,37 +148,19 @@ export interface AdminUser
     fullName:string;
 
 
-
-
-
     firstName?:string;
-
-
-
 
 
     lastName?:string;
 
 
-
-
-
     displayName?:string;
-
-
-
 
 
     email:string;
 
 
-
-
-
     phone?:string;
-
-
-
 
 
     avatarUrl?:string;
@@ -144,13 +175,7 @@ export interface AdminUser
     jobTitle?:string;
 
 
-
-
-
     department?:string;
-
-
-
 
 
     employeeCode?:string;
@@ -165,13 +190,7 @@ export interface AdminUser
     userType:UserType;
 
 
-
-
-
     status:UserStatus;
-
-
-
 
 
     isActive:boolean;
@@ -186,9 +205,6 @@ export interface AdminUser
     roleIds:string[];
 
 
-
-
-
     primaryRoleId?:string;
 
 
@@ -199,9 +215,6 @@ export interface AdminUser
      * Verification
      */
     emailVerified?:boolean;
-
-
-
 
 
     phoneVerified?:boolean;
@@ -216,25 +229,13 @@ export interface AdminUser
     lastLoginAt?:string;
 
 
-
-
-
     lastActivityAt?:string;
-
-
-
 
 
     passwordChangedAt?:string;
 
 
-
-
-
     failedLoginAttempts?:number;
-
-
-
 
 
     lockedUntil?:string;
@@ -244,15 +245,26 @@ export interface AdminUser
 
 
     /**
-     * Preferences
+     * User Experience Preferences
+     *
+     * Personal settings.
+     *
+     * Organization policy can override
+     * when enabled.
      */
     locale?:string;
 
 
-
-
-
     timezone?:string;
+
+
+    themePreference?:UserThemePreference;
+
+
+    accessibility?:UserAccessibilityPreferences;
+
+
+    notificationPreferences?:UserNotificationPreferences;
 
 
 
@@ -264,13 +276,7 @@ export interface AdminUser
     createdBy?:string;
 
 
-
-
-
     updatedBy?:string;
-
-
-
 
 
     metadata?:Record<string, unknown>;
@@ -285,13 +291,18 @@ export interface AdminUser
 
 
 
+
+
 /**
  * ============================================================================
+ *
  * User Session Contract
  *
  * Runtime authenticated user context
+ *
  * ============================================================================
  */
+
 
 export interface UserSession {
 
@@ -337,11 +348,14 @@ export interface UserSession {
 
 /**
  * ============================================================================
+ *
  * User Role Assignment
  *
- * User â†” Role mapping
+ * User ↔ Role mapping
+ *
  * ============================================================================
  */
+
 
 export interface UserRoleAssignment {
 
@@ -380,4 +394,3 @@ export interface UserRoleAssignment {
 
 
 }
-

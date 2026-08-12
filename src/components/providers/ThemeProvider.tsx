@@ -1,5 +1,6 @@
 "use client";
 
+
 import {
     createContext,
     useCallback,
@@ -9,57 +10,32 @@ import {
     useState,
 } from "react";
 
+
 import type {
     ReactNode,
 } from "react";
 
 
-export type ADSTheme =
-    | "default"
-    | "ocean"
-    | "emerald"
-    | "royal";
-
-
-interface ThemeConfig {
-
-    name: string;
-
-    colors: {
-
-        background: string;
-
-        foreground: string;
-
-        primary: string;
-
-        primarySoft: string;
-
-        surface: string;
-
-        surfaceMuted: string;
-
-        border: string;
-
-        muted: string;
-
-    };
-
-}
-
-
-
-const ADS_THEMES: Record<
+import type {
     ADSTheme,
-    ThemeConfig
-> = {
+    ThemeConfig,
+} from "@/types/theme/Theme";
 
 
-    default: {
 
-        name: "ADS Default",
 
-        colors: {
+
+export const ADS_THEMES:
+Record<ADSTheme, ThemeConfig>
+=
+{
+
+
+    default:{
+
+        name:"ADS Default",
+
+        colors:{
 
             background:"#090d16",
 
@@ -83,11 +59,13 @@ const ADS_THEMES: Record<
 
 
 
-    ocean: {
+
+
+    ocean:{
 
         name:"Ocean Blue",
 
-        colors: {
+        colors:{
 
             background:"#071426",
 
@@ -111,11 +89,13 @@ const ADS_THEMES: Record<
 
 
 
-    emerald: {
+
+
+    emerald:{
 
         name:"Emerald Business",
 
-        colors: {
+        colors:{
 
             background:"#071812",
 
@@ -139,11 +119,13 @@ const ADS_THEMES: Record<
 
 
 
-    royal: {
+
+
+    royal:{
 
         name:"Royal Professional",
 
-        colors: {
+        colors:{
 
             background:"#120b24",
 
@@ -165,38 +147,51 @@ const ADS_THEMES: Record<
 
     },
 
+
 };
+
+
+
 
 
 
 interface ThemeContextValue {
 
 
-    theme: ADSTheme;
+    theme:ADSTheme;
 
 
-    setTheme: (
-        theme: ADSTheme,
-    ) => void;
+    setTheme:
+    (
+        theme:ADSTheme
+    )=>void;
 
 
-    themes: typeof ADS_THEMES;
+    themes:
+    typeof ADS_THEMES;
 
 
 }
 
 
 
+
+
 const ThemeContext =
-    createContext<
-        ThemeContextValue | undefined
-    >(undefined);
+createContext<
+ThemeContextValue | undefined
+>(undefined);
+
+
+
+
 
 
 
 function applyTheme(
-    theme: ADSTheme,
-) {
+    theme:ADSTheme,
+){
+
 
     const config =
         ADS_THEMES[theme];
@@ -206,75 +201,77 @@ function applyTheme(
         document.documentElement;
 
 
-    root.style.setProperty(
-        "--background",
-        config.colors.background,
+
+
+    Object.entries(
+        config.colors,
+    )
+    .forEach(
+        ([
+            key,
+            value,
+        ])=>{
+
+
+            const cssKey =
+                key.replace(
+                    /[A-Z]/g,
+                    letter =>
+                    `-${letter.toLowerCase()}`,
+                );
+
+
+
+            root.style.setProperty(
+                `--${cssKey}`,
+                value,
+            );
+
+
+        },
     );
 
 
-    root.style.setProperty(
-        "--foreground",
-        config.colors.foreground,
-    );
 
+    root.dataset.adsTheme =
+        theme;
 
-    root.style.setProperty(
-        "--primary",
-        config.colors.primary,
-    );
-
-
-    root.style.setProperty(
-        "--primary-soft",
-        config.colors.primarySoft,
-    );
-
-
-    root.style.setProperty(
-        "--surface",
-        config.colors.surface,
-    );
-
-
-    root.style.setProperty(
-        "--surface-muted",
-        config.colors.surfaceMuted,
-    );
-
-
-    root.style.setProperty(
-        "--border",
-        config.colors.border,
-    );
-
-
-    root.style.setProperty(
-        "--muted",
-        config.colors.muted,
-    );
 
 }
 
 
 
+
+
+
+
+
 export default function ThemeProvider({
+
     children,
+
 }:{
+
     children:ReactNode;
-}) {
+
+}){
 
 
     const [
         theme,
         setThemeState,
     ] =
-        useState<ADSTheme>(
-            "default",
-        );
+    useState<ADSTheme>(
+        "default",
+    );
 
 
 
-    useEffect(() => {
+
+
+
+    useEffect(()=>{
+
 
         const stored =
             window.localStorage.getItem(
@@ -282,89 +279,114 @@ export default function ThemeProvider({
             );
 
 
-        if (
+
+        const activeTheme =
             stored &&
             stored in ADS_THEMES
-        ) {
 
-            setThemeState(
-                stored as ADSTheme,
-            );
+            ?
 
-            applyTheme(
-                stored as ADSTheme,
-            );
+            stored as ADSTheme
 
-            return;
+            :
 
-        }
+            "default";
+
+
+
+
+
+        setThemeState(
+            activeTheme,
+        );
 
 
         applyTheme(
-            "default",
+            activeTheme,
         );
+
 
 
     },[]);
 
 
 
+
+
+
+
+
+
     const setTheme =
-        useCallback(
-            (
-                value:ADSTheme,
-            ) => {
+    useCallback(
+        (
+            value:ADSTheme,
+        )=>{
 
 
-                setThemeState(
-                    value,
-                );
+            setThemeState(
+                value,
+            );
 
 
-                applyTheme(
-                    value,
-                );
+
+            applyTheme(
+                value,
+            );
 
 
-                window.localStorage.setItem(
-                    "ads-theme",
-                    value,
-                );
+
+            window.localStorage.setItem(
+                "ads-theme",
+                value,
+            );
 
 
-            },
-            [],
-        );
+
+        },
+        [],
+    );
+
+
+
+
+
 
 
 
     const contextValue =
-        useMemo(
-            () => ({
+    useMemo(
+        ()=>({
 
-                theme,
+            theme,
 
-                setTheme,
+            setTheme,
 
-                themes:
-                    ADS_THEMES,
+            themes:
+                ADS_THEMES,
 
-            }),
+        }),
 
-            [
-                theme,
-                setTheme,
-            ],
-        );
+        [
+            theme,
+            setTheme,
+        ],
+    );
+
+
+
+
 
 
 
     return (
 
         <ThemeContext.Provider
+
             value={
                 contextValue
             }
+
         >
 
             {children}
@@ -377,7 +399,14 @@ export default function ThemeProvider({
 
 
 
-function useADSTheme() {
+
+
+
+
+
+
+export function useADSTheme(){
+
 
     const context =
         useContext(
@@ -385,7 +414,8 @@ function useADSTheme() {
         );
 
 
-    if (!context) {
+
+    if(!context){
 
         throw new Error(
             "useADSTheme must be used inside ThemeProvider",
@@ -394,6 +424,8 @@ function useADSTheme() {
     }
 
 
+
     return context;
+
 
 }
