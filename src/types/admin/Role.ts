@@ -3,11 +3,6 @@
 } from "@/types/platform/BaseEntity";
 
 
-
-
-
-
-
 /**
  * ============================================================================
  * ADS ENTERPRISE PLATFORM
@@ -33,27 +28,15 @@ export type RoleType =
 
     | "Custom";
 
-
-
-
-
-
-
-
-
 export type RoleStatus =
 
     | "Active"
 
-    | "Inactive";
+    | "Inactive"
 
+    | "Suspended"
 
-
-
-
-
-
-
+    | "Archived";
 
 export type RoleLevel =
 
@@ -67,155 +50,45 @@ export type RoleLevel =
 
     | "Team";
 
-
-
-
-
-
-
-
-
 export interface Role
 
     extends BaseEntity {
-
-
-
     organizationId?:string;
-
-
-
     name:string;
-
-
-
     code:string;
-
-
-
     description?:string;
-
-
-
-    type:RoleType;
-
-
-
+   type:RoleType;
     level:RoleLevel;
-
-
-
     status:RoleStatus;
-
-
-
-    permissionIds:string[];
-
-
-
+    permissionIds?:string[];
     isSystem:boolean;
-
-
-
-    isDefault:boolean;
-
-
-
+   isDefault:boolean;
     isActive:boolean;
-
-
-
     metadata?:Record<string,unknown>;
-
-
-
 }
 
-
-
-
-
-
-
-
-
-/**
- * User â†” Role assignment
+/**  * User â†” Role assignment
  */
 
 export interface RoleAssignment {
-
-
-
     id:string;
-
-
-
     organizationId?:string;
-
-
-
     userId:string;
-
-
-
     roleId:string;
-
-
-
     assignedBy?:string;
-
-
-
     assignedAt:string;
-
-
-
     expiresAt?:string;
-
-
-
     isActive:boolean;
-
-
-
 }
-
-
-
-
-
-
-
-
 
 /**
  * Role hierarchy mapping
  */
 
 export interface RoleHierarchy {
-
-
-
     id:string;
-
-
-
     parentRoleId:string;
-
-
-
     childRoleId:string;
-
-
-
     organizationId?:string;
-
-
-
     createdAt:string;
-
-
-
 }
-

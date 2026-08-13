@@ -2,10 +2,7 @@ import {
     getPermissions,
 } from "./page-actions";
 
-
-import PermissionsClient
-from "@/components/admin/permissions/PermissionsClient";
-
+import PermissionsClient from "@/components/admin/permissions/PermissionsClient";
 
 import type {
     Permission,

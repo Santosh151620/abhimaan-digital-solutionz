@@ -1,24 +1,30 @@
 ﻿'use client';
 
+
 import {
     useState,
 } from 'react';
+
 
 import {
     useRouter,
 } from 'next/navigation';
 
+
 import {
     createCompany,
 } from './actions';
+
+
+import {
+    CompaniesDataTable,
+} from '@/components/crm/companies';
+
 
 import type {
     Company,
 } from '@/types/crm/Companies';
 
-import {
-    CompaniesDataTable,
-} from '@/components/crm/companies';
 
 
 interface Props {
@@ -26,6 +32,7 @@ interface Props {
     initialCompanies: Company[];
 
 }
+
 
 
 export default function CompaniesClient({
@@ -39,10 +46,12 @@ export default function CompaniesClient({
         useRouter();
 
 
+
     const [
         name,
         setName,
     ] = useState('');
+
 
 
     const [
@@ -51,16 +60,22 @@ export default function CompaniesClient({
     ] = useState(false);
 
 
+
     const [
         createError,
         setCreateError,
     ] = useState<string | null>(null);
 
 
+
+
+
     async function handleCreate() {
+
 
         const companyName =
             name.trim();
+
 
 
         if (!companyName) {
@@ -74,6 +89,7 @@ export default function CompaniesClient({
         }
 
 
+
         if (isCreating) {
 
             return;
@@ -81,11 +97,14 @@ export default function CompaniesClient({
         }
 
 
+
         try {
+
 
             setIsCreating(true);
 
             setCreateError(null);
+
 
 
             await createCompany({
@@ -96,10 +115,8 @@ export default function CompaniesClient({
                 status:
                     'ACTIVE',
 
-                entityType:
-                    'Company',
-
             });
+
 
 
             setName('');
@@ -107,89 +124,158 @@ export default function CompaniesClient({
             router.refresh();
 
 
+
         } catch (error) {
 
+
             console.error(
-                'Create CRM company failed:',
+                'Create company failed:',
                 error,
             );
+
 
 
             setCreateError(
 
                 error instanceof Error
+
                     ? error.message
-                    : 'Unable to create company. Please try again.',
+
+                    : 'Unable to create company.',
 
             );
 
+
         } finally {
 
+
             setIsCreating(false);
+
 
         }
 
     }
 
 
+
+
+
     return (
 
         <div className="space-y-6">
 
+
             <section
+
                 aria-label="Create company"
+
                 className="crm-card p-5"
+
             >
+
 
                 <div className="mb-4">
 
+
                     <h2 className="text-lg font-semibold">
+
                         Quick Add Company
+
                     </h2>
 
+
+
                     <p className="mt-1 text-sm text-muted-foreground">
+
                         Create a company directly from the
                         Companies workspace.
+
                     </p>
+
 
                 </div>
 
 
+
+
+
                 <div className="flex flex-col gap-3 md:flex-row">
 
+
+
                     <label
+
                         htmlFor="new-company-name"
+
                         className="sr-only"
+
                     >
+
                         Company name
+
                     </label>
 
 
+
+
                     <input
+
+
                         id="new-company-name"
-                        name="new-company-name"
+
+
                         value={name}
+
+
                         onChange={(event) => {
-                            setName(event.target.value);
+
+
+                            setName(
+                                event.target.value,
+                            );
+
+
 
                             if (createError) {
+
                                 setCreateError(null);
+
                             }
+
+
                         }}
+
+
+
                         onKeyDown={(event) => {
+
 
                             if (event.key === 'Enter') {
 
+
                                 event.preventDefault();
+
 
                                 void handleCreate();
 
+
                             }
 
+
                         }}
+
+
+
                         placeholder="Company name"
+
+
                         autoComplete="organization"
+
+
                         disabled={isCreating}
+
+
+
                         className="
                             flex-1
                             rounded-lg
@@ -207,18 +293,36 @@ export default function CompaniesClient({
                             disabled:cursor-not-allowed
                             disabled:opacity-60
                         "
+
+
                     />
 
 
+
+
+
                     <button
+
+
                         type="button"
+
+
                         disabled={
+
                             isCreating ||
+
                             !name.trim()
+
                         }
+
+
+
                         onClick={() =>
                             void handleCreate()
                         }
+
+
+
                         className="
                             inline-flex
                             items-center
@@ -238,46 +342,65 @@ export default function CompaniesClient({
                             disabled:cursor-not-allowed
                             disabled:opacity-50
                         "
+
+
                     >
-                        {isCreating
-                            ? 'Creating...'
-                            : 'Add Company'}
+
+                        {
+                            isCreating
+
+                                ? 'Creating...'
+
+                                : 'Add Company'
+                        }
+
+
                     </button>
 
+
                 </div>
+
+
+
 
 
                 {
                     createError && (
 
+
                         <p
+
                             role="alert"
+
                             className="mt-3 text-sm text-destructive"
+
                         >
+
                             {createError}
+
+
                         </p>
+
 
                     )
                 }
 
+
             </section>
 
 
-            {/*
-             * CompaniesDataTable intentionally retains its own
-             * React Query data source and advanced table behaviour.
-             *
-             * initialCompanies is kept in this page-level contract
-             * for the server-rendered Companies page and future
-             * server/client synchronization, but is not forced into
-             * the DataTable API.
-             */}
-            <CompaniesDataTable />
+
+
+
+            <CompaniesDataTable
+
+                initialCompanies={initialCompanies}
+
+            />
+
 
         </div>
 
     );
 
 }
-
-

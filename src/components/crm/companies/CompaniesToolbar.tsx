@@ -31,8 +31,7 @@ export function CompaniesToolbar({
                         {selected > 0 && (
                             <>
                                 {' • '}
-                                {selected}{' '}
-                                {selected === 1 ? 'selected' : 'selected'}
+                             {selected} selected
                             </>
                         )}
                     </p>

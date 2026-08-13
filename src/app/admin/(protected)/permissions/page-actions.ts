@@ -16,20 +16,26 @@ import type {
     Permission,
 } from "@/types/admin/Permission";
 
+
 async function getService() {
 
     const supabase =
         await createClient();
+
 
     const repository =
         new PermissionsRepository(
             supabase,
         );
 
+
     return new PermissionsService(
         repository,
     );
+
 }
+
+
 
 export async function getPermissions():
 Promise<Permission[]> {
@@ -37,40 +43,78 @@ Promise<Permission[]> {
     const service =
         await getService();
 
-    return await service.list();
+
+    return service.list();
+
 }
+
+
+
 
 async function getActivePermissions():
 Promise<Permission[]> {
 
+
     const service =
         await getService();
 
-    return await service.active();
+
+    return service.active();
+
 }
+
+
+
+
 
 async function searchPermissions(
     keyword:string,
 ):
 Promise<Permission[]> {
 
+
+    if(!keyword.trim()) {
+
+        return [];
+
+    }
+
+
     const service =
         await getService();
 
-    return await service.search(
-        keyword,
+
+    return service.search(
+        keyword.trim(),
     );
+
 }
+
+
+
+
 
 async function getPermission(
     id:string,
 ):
 Promise<Permission | null> {
 
+
+    if(!id.trim()) {
+
+        throw new Error(
+            "Permission ID is required.",
+        );
+
+    }
+
+
     const service =
         await getService();
 
-    return await service.findById(
+
+    return service.findById(
         id,
     );
+
 }

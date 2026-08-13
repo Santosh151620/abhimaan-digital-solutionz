@@ -1,22 +1,33 @@
-import Link from "next/link";
+import Link from 'next/link';
 
-import CRMPageLayout from "@/components/crm/shared/layout/CRMPageLayout";
 
-import EntityOverviewGrid from "@/components/entities/EntityOverviewGrid";
-import EntityWorkspace from "@/components/entities/EntityWorkspace";
+import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
+
+
+import EntityOverviewGrid from '@/components/entities/EntityOverviewGrid';
+
+import EntityWorkspace from '@/components/entities/EntityWorkspace';
+
 
 import {
     CompaniesServiceInstance,
-} from "@/services/crm/CompaniesService";
+} from '@/services/crm/CompaniesService';
+
+
+
 
 
 interface PageProps {
 
     params: Promise<{
+
         id: string;
+
     }>;
 
 }
+
+
 
 
 
@@ -28,17 +39,29 @@ export default async function CompanyDetailsPage({
 
 
     const {
+
         id,
+
     } = await params;
 
 
 
+
+
     const company =
-        await CompaniesServiceInstance.details(id);
+
+        await CompaniesServiceInstance.details(
+
+            id
+
+        );
+
+
 
 
 
     if (!company) {
+
 
         return (
 
@@ -81,9 +104,7 @@ export default async function CompanyDetailsPage({
 
 
                     <Link
-
                         href="/crm/companies"
-
                         className="
                             mt-5
                             inline-flex
@@ -95,11 +116,8 @@ export default async function CompanyDetailsPage({
                             font-semibold
                             text-black
                         "
-
                     >
-
                         Back to Companies
-
                     </Link>
 
 
@@ -111,6 +129,8 @@ export default async function CompanyDetailsPage({
         );
 
     }
+
+
 
 
 
@@ -156,12 +176,15 @@ export default async function CompanyDetailsPage({
 
 
 
+
+
                 <div
                     className="
                         flex
                         gap-2
                     "
                 >
+
 
                     <Link
 
@@ -179,10 +202,10 @@ export default async function CompanyDetailsPage({
                         "
 
                     >
-
                         Back
-
                     </Link>
+
+
 
 
 
@@ -201,9 +224,7 @@ export default async function CompanyDetailsPage({
                         "
 
                     >
-
                         Edit
-
                     </Link>
 
 
@@ -211,6 +232,8 @@ export default async function CompanyDetailsPage({
 
 
             </div>
+
+
 
 
 
@@ -222,49 +245,68 @@ export default async function CompanyDetailsPage({
 
                 overview={
 
+
                     <EntityOverviewGrid
 
                         items={[
 
+
                             {
-                                title: "Status",
+                                title: 'Status',
                                 value: company.status,
                             },
 
-                            {
-                                title: "Industry",
-                                value: company.industry ?? "—",
-                            },
 
                             {
-                                title: "Employees",
-                                value: company.employees ?? "—",
+                                title: 'Industry',
+                                value:
+                                    company.industry ?? '—',
                             },
 
-                            {
-                                title: "Website",
-                                value: company.website ?? "—",
-                            },
 
                             {
-                                title: "Email",
-                                value: company.email ?? "—",
+                                title: 'Employees',
+                                value:
+                                    company.employees !== undefined
+                                        ? String(company.employees)
+                                        : '—',
                             },
 
-                            {
-                                title: "Phone",
-                                value: company.phone ?? "—",
-                            },
 
                             {
-                                title: "Legal Name",
-                                value: company.legalName ?? "—",
+                                title: 'Website',
+                                value:
+                                    company.website ?? '—',
                             },
 
+
                             {
-                                title: "Address",
-                                value: company.address ?? "—",
+                                title: 'Email',
+                                value:
+                                    company.email ?? '—',
                             },
+
+
+                            {
+                                title: 'Phone',
+                                value:
+                                    company.phone ?? '—',
+                            },
+
+
+                            {
+                                title: 'Legal Name',
+                                value:
+                                    company.legalName ?? '—',
+                            },
+
+
+                            {
+                                title: 'Address',
+                                value:
+                                    company.address ?? '—',
+                            },
+
 
                         ]}
 

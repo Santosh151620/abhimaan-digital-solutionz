@@ -2,42 +2,20 @@ import {
     createClient,
 } from '@/lib/supabase/server';
 
+
 import {
     CompaniesRepository,
 } from '@/repositories/crm/CompaniesRepository';
 
+
 import type {
     Company,
     CompanyDetails,
+    CompanySearchFilters,
+    CompaniesSummary,
+    CreateCompanyInput,
+    UpdateCompanyInput,
 } from '@/types/crm/Companies';
-
-
-
-interface CompanySearchFilters {
-
-    status?: Company['status'];
-
-    industry?: string;
-
-    search?: string;
-
-}
-
-
-
-interface CompaniesSummary {
-
-    total: number;
-
-    active: number;
-
-    inactive: number;
-
-    prospect: number;
-
-    archived: number;
-
-}
 
 
 
@@ -83,8 +61,18 @@ class CompaniesService {
 
 
     async findById(
-        id: string
+        id: string,
     ): Promise<Company | null> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
+
 
         const repository =
             await this.repository();
@@ -99,8 +87,18 @@ class CompaniesService {
 
 
     async details(
-        id: string
+        id: string,
     ): Promise<CompanyDetails | null> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
+
 
         const repository =
             await this.repository();
@@ -115,7 +113,7 @@ class CompaniesService {
 
 
     async search(
-        filters?: CompanySearchFilters
+        filters?: CompanySearchFilters,
     ): Promise<Company[]> {
 
         const repository =
@@ -131,23 +129,37 @@ class CompaniesService {
 
 
     async create(
-        data: Partial<Company>
+        data: CreateCompanyInput,
     ): Promise<Company> {
+
+
+        const name =
+            data.name?.trim();
+
+
+        if (!name) {
+
+            throw new Error(
+                'Company name is required'
+            );
+
+        }
+
 
         const repository =
             await this.repository();
 
 
-        return repository.create(
-            {
+        return repository.create({
 
-                ...data,
+            ...data,
 
-                entityType:
-                    'Company',
+            name,
 
-            }
-        );
+            entityType:
+                'Company',
+
+        });
 
     }
 
@@ -156,9 +168,30 @@ class CompaniesService {
     async update(
         id: string,
 
-        data: Partial<Company>
+        data: UpdateCompanyInput,
 
     ): Promise<Company> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
+
+
+        if (
+            Object.keys(data).length === 0
+        ) {
+
+            throw new Error(
+                'Company update data is required'
+            );
+
+        }
+
 
         const repository =
             await this.repository();
@@ -180,9 +213,22 @@ class CompaniesService {
         );
 
     }
-        async delete(
-        id: string
+
+
+
+    async delete(
+        id: string,
     ): Promise<void> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
+
 
         const repository =
             await this.repository();
@@ -197,10 +243,10 @@ class CompaniesService {
 
 
     async archive(
-        id: string
+        id: string,
     ): Promise<void> {
 
-        return this.delete(
+        await this.delete(
             id
         );
 
@@ -209,8 +255,18 @@ class CompaniesService {
 
 
     async restore(
-        id: string
+        id: string,
     ): Promise<boolean> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
+
 
         const repository =
             await this.repository();

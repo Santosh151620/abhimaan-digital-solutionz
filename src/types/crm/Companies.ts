@@ -57,6 +57,10 @@ export interface CompanyContact {
 
     id: string;
 
+    firstName?: string;
+
+    lastName?: string;
+
     name: string;
 
     email?: string;
@@ -77,6 +81,8 @@ export interface CompanyOpportunity {
 
     value: number;
 
+    currency?: string;
+
     stage: string;
 
     probability: number;
@@ -85,7 +91,7 @@ export interface CompanyOpportunity {
 
 
 
-type CompanyActivityType =
+export type CompanyActivityType =
     | 'CALL'
     | 'EMAIL'
     | 'MEETING'
@@ -117,5 +123,73 @@ export interface CompanyDetails extends Company {
     opportunities: CompanyOpportunity[];
 
     activities: CompanyActivity[];
+
+}
+
+
+export interface CreateCompanyInput {
+
+    name: string;
+
+    legalName?: string;
+
+    industry?: string;
+
+    website?: string;
+
+    phone?: string;
+
+    email?: string;
+
+    status?: CompanyStatus;
+
+    address?: string;
+
+    city?: string;
+
+    state?: string;
+
+    country?: string;
+
+    postalCode?: string;
+
+    employees?: number;
+
+    annualRevenue?: number;
+
+    taxId?: string;
+
+    description?: string;
+
+}
+
+
+export type UpdateCompanyInput =
+    Partial<CreateCompanyInput>;
+
+
+export interface CompanySearchFilters {
+
+    status?: CompanyStatus;
+
+    industry?: string;
+
+    search?: string;
+
+}
+
+
+
+export interface CompaniesSummary {
+
+    total: number;
+
+    active: number;
+
+    inactive: number;
+
+    prospects: number;
+
+    archived: number;
 
 }

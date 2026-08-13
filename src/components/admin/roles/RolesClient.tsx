@@ -17,11 +17,11 @@ import type {
 
 
 import RolesTable
-from "./RolesTable";
+    from "./RolesTable";
 
 
 import RoleDialog
-from "./RoleDialog";
+    from "./RoleDialog";
 
 
 import {
@@ -40,7 +40,7 @@ interface RolesClientProps {
 
 
 
-    initialRoles:Role[];
+    initialRoles: Role[];
 
 
 
@@ -62,7 +62,7 @@ export default function RolesClient({
 
 
 
-}:RolesClientProps) {
+}: RolesClientProps) {
 
 
 
@@ -192,7 +192,7 @@ export default function RolesClient({
 
     function openEdit(
 
-        role:Role,
+        role: Role,
 
     ) {
 
@@ -264,7 +264,7 @@ export default function RolesClient({
 
     async function handleDelete(
 
-        id:string,
+        id: string,
 
     ) {
 
@@ -322,7 +322,7 @@ export default function RolesClient({
 
         }
 
-        catch(error) {
+        catch (error) {
 
 
 
@@ -332,9 +332,9 @@ export default function RolesClient({
 
                 error instanceof Error
 
-                ? error.message
+                    ? error.message
 
-                : "Unable to delete role."
+                    : "Unable to delete role."
 
 
 
@@ -553,48 +553,16 @@ export default function RolesClient({
             {
 
                 dialogOpen && (
-
-
-
                     <RoleDialog
-
-
-
                         role={selectedRole}
-
-
-
                         onClose={() => {
-
-
 
                             closeDialog();
 
-
-
-                            router.refresh();
-
-
-
                         }}
-
-
-
                     />
-
-
-
                 )
-
             }
-
-
-
-
-
-
-
-
 
             {
 

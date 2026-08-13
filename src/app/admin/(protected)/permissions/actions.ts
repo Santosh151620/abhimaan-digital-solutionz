@@ -20,15 +20,19 @@ import type {
     Permission,
 } from "@/types/admin/Permission";
 
+
+
 async function getService() {
 
     const supabase =
         await createClient();
 
+
     const repository =
         new PermissionsRepository(
             supabase,
         );
+
 
     return new PermissionsService(
         repository,
@@ -36,122 +40,55 @@ async function getService() {
 
 }
 
-export async function createPermission(
 
-    data: Partial<Permission>,
 
+
+function validatePermissionInput(
+    data:Partial<Permission>,
 ) {
 
-    const service =
-        await getService();
 
-    const now =
-        new Date()
-            .toISOString();
+    if (!data.key?.trim()) {
 
-    const permission: Permission = {
+        throw new Error(
+            "Permission key is required.",
+        );
 
-        id:
-            data.id ??
-            crypto.randomUUID(),
+    }
 
-        organizationId:
-            data.organizationId,
 
-        key:
-            data.key ?? "",
+    if (!data.name?.trim()) {
 
-        name:
-            data.name ?? "",
+        throw new Error(
+            "Permission name is required.",
+        );
 
-        description:
-            data.description,
+    }
 
-        module:
-            data.module ?? "",
 
-        action:
-            data.action ?? "",
+    if (!data.module?.trim()) {
 
-        type:
-            data.type ?? "Custom",
+        throw new Error(
+            "Permission module is required.",
+        );
 
-        isSystem:
-            data.isSystem ?? false,
+    }
 
-        isActive:
-            data.isActive ?? true,
 
-        metadata:
-            data.metadata ?? {},
+    if (!data.action?.trim()) {
 
-        createdAt:
-            data.createdAt ??
-            now,
+        throw new Error(
+            "Permission action is required.",
+        );
 
-        updatedAt:
-            now,
-
-    };
-
-    await service.save(
-        permission,
-    );
-
-    revalidatePath(
-        "/admin/permissions",
-    );
-
-    return {
-
-        success: true,
-
-        id:
-            permission.id,
-
-    };
+    }
 
 }
 
-export async function updatePermission(
 
-    permission: Permission,
 
-) {
-
-    const service =
-        await getService();
-
-    await service.save(
-
-        {
-
-            ...permission,
-
-            updatedAt:
-                new Date()
-                    .toISOString(),
-
-        },
-
-    );
-
-    revalidatePath(
-        "/admin/permissions",
-    );
-
-    return {
-
-        success: true,
-
-    };
-
-}
-
-export async function deletePermission(
-
-    id: string,
-
+function validateId(
+    id:string,
 ) {
 
     if (!id.trim()) {
@@ -162,20 +99,253 @@ export async function deletePermission(
 
     }
 
+}
+
+
+
+function protectSystemPermission(
+    permission:Permission,
+) {
+
+    if(permission.isSystem){
+
+        throw new Error(
+            "System permissions cannot be modified.",
+        );
+
+    }
+
+}
+
+
+
+
+export async function createPermission(
+
+    data:Partial<Permission>,
+
+) {
+
+
+    validatePermissionInput(
+        data,
+    );
+
+
     const service =
         await getService();
 
-    await service.delete(
-        id,
+
+    const now =
+        new Date()
+            .toISOString();
+
+
+
+    const permission:Permission = {
+
+
+        id:
+            crypto.randomUUID(),
+
+
+        organizationId:
+            data.organizationId,
+
+
+        key:
+            data.key!
+                .trim()
+                .toLowerCase(),
+
+
+        name:
+            data.name!
+                .trim(),
+
+
+        description:
+            data.description?.trim(),
+
+
+        module:
+            data.module!
+                .trim(),
+
+
+        action:
+            data.action!
+                .trim(),
+
+
+        type:
+            data.type ?? "Custom",
+
+
+        isSystem:
+            false,
+
+
+        isActive:
+            data.isActive ?? true,
+
+
+        metadata:
+            data.metadata ?? {},
+
+
+        createdAt:
+            now,
+
+
+        updatedAt:
+            now,
+
+    };
+
+
+
+    await service.save(
+        permission,
     );
+
+
 
     revalidatePath(
         "/admin/permissions",
     );
 
+
+
     return {
 
-        success: true,
+        success:true,
+
+        id:
+            permission.id,
+
+    };
+
+}
+
+
+
+
+export async function updatePermission(
+
+    permission:Permission,
+
+) {
+
+
+    validateId(
+        permission.id,
+    );
+
+
+    protectSystemPermission(
+        permission,
+    );
+
+
+    validatePermissionInput(
+        permission,
+    );
+
+
+
+    const service =
+        await getService();
+
+
+
+    await service.save({
+
+        ...permission,
+
+
+        key:
+            permission.key
+                .trim()
+                .toLowerCase(),
+
+
+        name:
+            permission.name
+                .trim(),
+
+
+        module:
+            permission.module
+                .trim(),
+
+
+        action:
+            permission.action
+                .trim(),
+
+
+        description:
+            permission.description?.trim(),
+
+
+        updatedAt:
+            new Date()
+                .toISOString(),
+
+    });
+
+
+
+    revalidatePath(
+        "/admin/permissions",
+    );
+
+
+
+    return {
+
+        success:true,
+
+    };
+
+}
+
+
+
+
+
+export async function deletePermission(
+
+    id:string,
+
+) {
+
+
+    validateId(
+        id,
+    );
+
+
+    const service =
+        await getService();
+
+
+    await service.delete(
+        id,
+    );
+
+
+
+    revalidatePath(
+        "/admin/permissions",
+    );
+
+
+
+    return {
+
+        success:true,
 
     };
 

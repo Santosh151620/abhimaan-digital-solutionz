@@ -2,9 +2,11 @@ import type {
     SupabaseClient,
 } from '@supabase/supabase-js';
 
+
 import {
     BaseRepository,
 } from '@/lib/db/base-repository';
+
 
 import type {
     Company,
@@ -12,18 +14,9 @@ import type {
     CompanyActivity,
     CompanyContact,
     CompanyOpportunity,
+    CompanySearchFilters,
+    CompaniesSummary,
 } from '@/types/crm/Companies';
-
-
-interface CompanySearchFilters {
-
-    status?: Company['status'];
-
-    industry?: string;
-
-    search?: string;
-
-}
 
 
 
@@ -83,6 +76,8 @@ export class CompaniesRepository
 
 
 
+
+
     async listArchived(): Promise<Company[]> {
 
         const {
@@ -122,9 +117,21 @@ export class CompaniesRepository
 
 
 
+
+
     async findById(
         id: string
     ): Promise<Company | null> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
+
 
         return super.findById(
             id
@@ -134,9 +141,12 @@ export class CompaniesRepository
 
 
 
+
+
     async details(
         id: string
     ): Promise<CompanyDetails | null> {
+
 
         const company =
             await this.findById(
@@ -158,11 +168,17 @@ export class CompaniesRepository
         ] =
             await Promise.all([
 
-                this.loadContacts(id),
+                this.loadContacts(
+                    id
+                ),
 
-                this.loadOpportunities(id),
+                this.loadOpportunities(
+                    id
+                ),
 
-                this.loadActivities(id),
+                this.loadActivities(
+                    id
+                ),
 
             ]);
 
@@ -181,6 +197,8 @@ export class CompaniesRepository
         };
 
     }
+
+
 
 
 
@@ -212,12 +230,23 @@ export class CompaniesRepository
 
 
 
+
+
     async update(
         id: string,
 
         data: Partial<Company>
 
     ): Promise<Company> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required'
+            );
+
+        }
 
 
         return super.update(
@@ -239,30 +268,25 @@ export class CompaniesRepository
 
 
 
+
+
     async delete(
         id: string
     ): Promise<void> {
 
 
         await this.update(
-
             id,
-
-            {
-
-                status:
+            {                status:
                     'ARCHIVED',
-
                 deletedAt:
                     new Date()
                         .toISOString(),
-
             }
-
         );
-
     }
-        async restore(
+
+    async restore(
         id: string
     ): Promise<boolean> {
 
@@ -280,27 +304,28 @@ export class CompaniesRepository
         }
 
 
-
         await this.update(
 
-            id,
+    id,
 
-            {
+    {
 
-                status:
-                    'ACTIVE',
+        status:
+            'ACTIVE',
 
-                deletedAt:
-                    undefined,
+        deletedAt:
+            undefined,
 
-            }
+    }
 
-        );
+);
 
 
         return true;
 
     }
+
+
 
 
 
@@ -374,13 +399,15 @@ export class CompaniesRepository
             data,
             error,
         } =
-            await query
-                .order(
-                    'created_at',
-                    {
-                        ascending: false,
-                    }
-                );
+            await query.order(
+
+                'created_at',
+
+                {
+                    ascending: false,
+                }
+
+            );
 
 
         if (error) {
@@ -399,7 +426,9 @@ export class CompaniesRepository
 
 
 
-    async summary() {
+
+
+    async summary(): Promise<CompaniesSummary> {
 
 
         const companies =
@@ -427,7 +456,7 @@ export class CompaniesRepository
                 ).length,
 
 
-            prospect:
+            prospects:
                 companies.filter(
                     company =>
                         company.status === 'PROSPECT'
@@ -443,6 +472,8 @@ export class CompaniesRepository
         };
 
     }
+
+
 
 
 
@@ -489,6 +520,8 @@ export class CompaniesRepository
 
 
 
+
+
     private async loadOpportunities(
         companyId: string
     ): Promise<CompanyOpportunity[]> {
@@ -529,7 +562,12 @@ export class CompaniesRepository
         ) as CompanyOpportunity[];
 
     }
-        private async loadActivities(
+
+
+
+
+
+    private async loadActivities(
         companyId: string
     ): Promise<CompanyActivity[]> {
 

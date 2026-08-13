@@ -1,58 +1,145 @@
-import { redirect } from 'next/navigation';
-
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-
-import {
-    CompaniesForm,
-} from '@/components/crm/companies';
-
-import {
-    createCompany,
-} from '../actions';
-
-import type {
-    CompanyDetails,
+﻿import type {
+    Company,
+    CreateCompanyInput,
 } from '@/types/crm/Companies';
 
 
-export default function NewCompaniesPage() {
+import {
+    createCompany,
+} from '@/app/crm/companies/actions';
+
+
+import {
+    CompaniesForm,
+} from '@/components/crm/companies/CompaniesForm';
+
+
+
+
+
+export default function NewCompanyPage() {
+
 
     async function submit(
-        values: Partial<CompanyDetails>,
+
+        values: Partial<Company>
+
     ) {
-        'use server';
+
+
+        const payload: CreateCompanyInput = {
+
+
+            name:
+
+                values.name
+                ??
+                '',
+
+
+            legalName:
+
+                values.legalName,
+
+
+            industry:
+
+                values.industry,
+
+
+            website:
+
+                values.website,
+
+
+            phone:
+
+                values.phone,
+
+
+            email:
+
+                values.email,
+
+
+            status:
+
+                values.status
+                ??
+                'ACTIVE',
+
+
+            address:
+
+                values.address,
+
+
+            city:
+
+                values.city,
+
+
+            state:
+
+                values.state,
+
+
+            country:
+
+                values.country,
+
+
+            postalCode:
+
+                values.postalCode,
+
+
+            employees:
+
+                values.employees,
+
+
+            annualRevenue:
+
+                values.annualRevenue,
+
+
+            taxId:
+
+                values.taxId,
+
+
+            description:
+
+                values.description,
+
+
+        };
+
+
+
+
 
         await createCompany(
-            values,
+
+            payload
+
         );
 
-        redirect(
-            '/crm/companies',
-        );
+
     }
+
+
+
 
 
     return (
 
-        <CRMPageLayout>
+        <CompaniesForm
 
-            <CRMHeader
-                title="New Company"
-                description="Register a new customer organization in the CRM."
-                actions={[
-                    {
-                        label: 'Back',
-                        href: '/crm/companies',
-                    },
-                ]}
-            />
+            onSubmit={submit}
 
-            <CompaniesForm
-                onSubmit={submit}
-            />
-
-        </CRMPageLayout>
+        />
 
     );
 

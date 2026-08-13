@@ -1,20 +1,18 @@
 ﻿import {
-
     searchCompanies,
-
     getCompaniesSummary,
-
 } from './actions';
 
 
-
 import type {
-
     Company,
-
+    CompanySearchFilters,
 } from '@/types/crm/Companies';
 
+
 import CompaniesClient from './CompaniesClient';
+
+
 
 
 
@@ -23,11 +21,11 @@ interface Props {
 
     searchParams?: Promise<{
 
-        status?:string;
+        status?: string;
 
-        industry?:string;
+        industry?: string;
 
-        search?:string;
+        search?: string;
 
     }>;
 
@@ -37,12 +35,12 @@ interface Props {
 
 
 
+
 export default async function CompaniesPage(
 
-    props:Props
+    props: Props
 
 ) {
-
 
 
     const searchParams =
@@ -52,26 +50,58 @@ export default async function CompaniesPage(
 
 
 
+
+    const filters: CompanySearchFilters = {
+
+
+        status:
+
+            searchParams?.status &&
+            [
+
+                'ACTIVE',
+
+                'INACTIVE',
+
+                'PROSPECT',
+
+                'ARCHIVED',
+
+            ].includes(
+
+                searchParams.status
+
+            )
+
+                ? searchParams.status as Company['status']
+
+                : undefined,
+
+
+
+        industry:
+
+            searchParams?.industry,
+
+
+
+        search:
+
+            searchParams?.search,
+
+    };
+
+
+
+
+
     const companies =
 
-        await searchCompanies({
+        await searchCompanies(
 
-            status:
+            filters
 
-                searchParams?.status as Company['status'],
-
-
-            industry:
-
-                searchParams?.industry,
-
-
-            search:
-
-                searchParams?.search,
-
-
-        });
+        );
 
 
 
@@ -89,7 +119,6 @@ export default async function CompaniesPage(
 
 
         <div className="space-y-6">
-
 
 
             <div>
@@ -122,7 +151,6 @@ export default async function CompaniesPage(
 
                 <div className="rounded-lg border p-4">
 
-
                     <p className="text-sm text-muted-foreground">
 
                         Total
@@ -135,7 +163,6 @@ export default async function CompaniesPage(
                         {summary.total}
 
                     </p>
-
 
                 </div>
 
@@ -178,7 +205,7 @@ export default async function CompaniesPage(
 
                     <p className="text-2xl font-bold">
 
-                        {summary.prospect}
+                        {summary.prospects}
 
                     </p>
 
@@ -209,7 +236,6 @@ export default async function CompaniesPage(
                 </div>
 
 
-
             </div>
 
 
@@ -229,12 +255,9 @@ export default async function CompaniesPage(
             </div>
 
 
-
         </div>
 
 
     );
 
 }
-
-

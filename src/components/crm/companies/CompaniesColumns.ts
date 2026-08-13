@@ -1,9 +1,14 @@
 import type { Company } from '@/types/crm/Companies';
 
 export interface CompanyColumn {
+
     key:
-        | keyof Company
         | 'select'
+        | 'name'
+        | 'industry'
+        | 'website'
+        | 'phone'
+        | 'status'
         | 'actions';
 
     label: string;
@@ -12,10 +17,8 @@ export interface CompanyColumn {
 
     className?: string;
 
-    /**
-     * Optional accessibility label for column-specific controls.
-     */
     ariaLabel?: string;
+
 }
 
 export const CompaniesColumns: CompanyColumn[] = [

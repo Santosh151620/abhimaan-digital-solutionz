@@ -1,94 +1,175 @@
-import {
-    notFound,
-    redirect,
-} from 'next/navigation';
-
-import CRMHeader from '@/components/crm/shared/layout/CRMHeader';
-import CRMPageLayout from '@/components/crm/shared/layout/CRMPageLayout';
-
-import {
-    CompaniesForm,
-} from '@/components/crm/companies';
-
-import {
-    getCompany,
-    updateCompany,
-} from '../../actions';
-
-import type {
-    CompanyDetails,
+﻿import type {
+    Company,
+    UpdateCompanyInput,
 } from '@/types/crm/Companies';
 
 
-interface PageProps {
+import {
+    updateCompany,
+} from '@/app/crm/companies/actions';
+
+
+import {
+    CompaniesForm,
+} from '@/components/crm/companies/CompaniesForm';
+
+
+
+
+
+interface Props {
 
     params: Promise<{
+
         id: string;
+
     }>;
 
 }
 
 
-export default async function EditCompanyPage({
-    params,
-}: PageProps) {
+
+
+
+export default async function EditCompanyPage(
+
+    {
+        params,
+    }: Props
+
+) {
+
 
     const {
+
         id,
+
     } = await params;
 
 
-    const company =
-        await getCompany(
-            id,
-        );
 
-
-    if (!company) {
-
-        notFound();
-
-    }
 
 
     async function submit(
-        values: Partial<CompanyDetails>,
+
+        values: Partial<Company>
+
     ) {
-        'use server';
+
+
+        const payload: UpdateCompanyInput = {
+
+
+            name:
+
+                values.name
+                ??
+                '',
+
+
+            legalName:
+
+                values.legalName,
+
+
+            industry:
+
+                values.industry,
+
+
+            website:
+
+                values.website,
+
+
+            phone:
+
+                values.phone,
+
+
+            email:
+
+                values.email,
+
+
+            status:
+
+                values.status,
+
+
+            address:
+
+                values.address,
+
+
+            city:
+
+                values.city,
+
+
+            state:
+
+                values.state,
+
+
+            country:
+
+                values.country,
+
+
+            postalCode:
+
+                values.postalCode,
+
+
+            employees:
+
+                values.employees,
+
+
+            annualRevenue:
+
+                values.annualRevenue,
+
+
+            taxId:
+
+                values.taxId,
+
+
+            description:
+
+                values.description,
+
+
+        };
+
+
+
+
 
         await updateCompany(
+
             id,
-            values,
+
+            payload
+
         );
 
-        redirect(
-            `/crm/companies/${id}`,
-        );
 
     }
+
+
+
 
 
     return (
 
-        <CRMPageLayout>
+        <CompaniesForm
 
-            <CRMHeader
-                title="Edit Company"
-                description="Update company information and subscription details."
-                actions={[
-                    {
-                        label: 'Back',
-                        href: `/crm/companies/${id}`,
-                    },
-                ]}
-            />
+            onSubmit={submit}
 
-            <CompaniesForm
-                initialValues={company}
-                onSubmit={submit}
-            />
-
-        </CRMPageLayout>
+        />
 
     );
 

@@ -39,62 +39,48 @@ export default function RolePermissionAssignment({
 }: RolePermissionAssignmentProps) {
 
     const [
-
         selected,
-
         setSelected,
-
     ] = useState<string[]>(
-
         selectedPermissionIds,
-
     );
 
     const [
-
         pending,
-
         startTransition,
-
     ] = useTransition();
+const [
+    error,
+    setError,
+] = useState<string | null>(null);
 
     function toggle(
-
         permissionId: string,
-
     ) {
 
         setSelected(
-
             previous =>
-
                 previous.includes(permissionId)
-
                     ? previous.filter(
-
                         id =>
-
                             id !== permissionId,
-
                     )
-
                     : [
-
                         ...previous,
-
                         permissionId,
-
                     ],
-
         );
-
     }
 
     function save() {
 
-        startTransition(
+    setError(null);
 
-            async () => {
+    startTransition(
+
+        async () => {
+
+            try {
 
                 await replacePermissions(
 
@@ -106,11 +92,27 @@ export default function RolePermissionAssignment({
 
                 onSaved?.();
 
-            },
+            }
 
-        );
+            catch (error) {
 
-    }
+                setError(
+
+                    error instanceof Error
+
+                        ? error.message
+
+                        : "Unable to update permissions."
+
+                );
+
+            }
+
+        },
+
+    );
+
+}
 
     return (
 
@@ -129,7 +131,26 @@ export default function RolePermissionAssignment({
                     Assign permissions to this role.
 
                 </p>
+{
+    error && (
 
+        <div
+            className="
+                rounded-md
+                border
+                border-destructive
+                p-3
+                text-sm
+                text-destructive
+            "
+        >
+
+            {error}
+
+        </div>
+
+    )
+}
             </div>
 
             <div className="max-h-[500px] overflow-y-auto rounded-md border">

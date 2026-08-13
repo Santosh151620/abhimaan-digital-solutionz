@@ -1,10 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import {
+    useState,
+} from 'react';
+
+import type {
+    ReactNode,
+} from 'react';
+
 
 import type {
     Company,
 } from '@/types/crm/Companies';
+
+
+
 
 
 interface CompaniesFormProps {
@@ -12,14 +22,20 @@ interface CompaniesFormProps {
     initialValues?: Partial<Company>;
 
     onSubmit?: (
-        values: Partial<Company>,
+
+        values: Partial<Company>
+
     ) => void | Promise<void>;
+
 
     onCancel?: () => void;
 
     loading?: boolean;
 
 }
+
+
+
 
 
 export function CompaniesForm({
@@ -35,14 +51,34 @@ export function CompaniesForm({
 }: CompaniesFormProps) {
 
 
-    const [form, setForm] =
-        useState<Partial<Company>>({
+    const [
 
-            status: 'ACTIVE',
+        error,
 
-            ...initialValues,
+        setError,
 
-        });
+    ] = useState<string | null>(null);
+
+
+
+
+
+    const [
+
+        form,
+
+        setForm,
+
+    ] = useState<Partial<Company>>({
+
+        status: 'ACTIVE',
+
+        ...initialValues,
+
+    });
+
+
+
 
 
     function update<K extends keyof Company>(
@@ -53,24 +89,34 @@ export function CompaniesForm({
 
     ) {
 
+
         setForm(
+
             previous => ({
 
                 ...previous,
 
                 [key]: value,
 
-            }),
+            })
+
         );
 
     }
 
 
+
+
+
     async function submit(
-        event: React.FormEvent<HTMLFormElement>,
+
+        event: React.FormEvent<HTMLFormElement>
+
     ) {
 
+
         event.preventDefault();
+
 
 
         if (loading) {
@@ -80,10 +126,11 @@ export function CompaniesForm({
         }
 
 
+
         if (!form.name?.trim()) {
 
-            alert(
-                'Company name is required.',
+            setError(
+                'Company name is required.'
             );
 
             return;
@@ -91,15 +138,47 @@ export function CompaniesForm({
         }
 
 
-        await onSubmit?.({
 
-            ...form,
+        try {
 
-            name: form.name.trim(),
 
-        });
+            setError(null);
+
+
+
+            await onSubmit?.({
+
+                ...form,
+
+                name:
+
+                    form.name.trim(),
+
+            });
+
+
+
+        } catch (error) {
+
+
+            setError(
+
+                error instanceof Error
+
+                    ? error.message
+
+                    : 'Unable to save company.'
+
+            );
+
+
+        }
+
 
     }
+
+
+
 
 
     const inputClass = `
@@ -123,6 +202,9 @@ export function CompaniesForm({
     `;
 
 
+
+
+
     const labelClass = `
         mb-1.5
         block
@@ -130,6 +212,9 @@ export function CompaniesForm({
         font-medium
         text-foreground
     `;
+
+
+
 
 
     return (
@@ -153,25 +238,25 @@ export function CompaniesForm({
 
             <div>
 
-                <h2
-                    className="
-                        text-xl
-                        font-semibold
-                        text-foreground
-                    "
-                >
+                <h2 className="
+                    text-xl
+                    font-semibold
+                    text-foreground
+                ">
+
                     Company Details
+
                 </h2>
 
 
-                <p
-                    className="
-                        mt-1
-                        text-sm
-                        text-muted-foreground
-                    "
-                >
+                <p className="
+                    mt-1
+                    text-sm
+                    text-muted-foreground
+                ">
+
                     Create or update CRM company information.
+
                 </p>
 
 
@@ -179,324 +264,205 @@ export function CompaniesForm({
 
 
 
+            {
+                error && (
+
+                    <p
+                        role="alert"
+                        className="
+                            rounded-lg
+                            border
+                            border-destructive/20
+                            bg-destructive/10
+                            p-3
+                            text-sm
+                            text-destructive
+                        "
+                    >
+
+                        {error}
+
+                    </p>
+
+                )
+            }
+
+
+
+
+
             <div className="grid gap-5 md:grid-cols-2">
 
 
-
-                <Field
+                <InputField
                     label="Company Name *"
+                    value={form.name}
+                    onChange={
+                        value =>
+                            update(
+                                'name',
+                                value
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
-
-                    <input
-
-                        className={inputClass}
-
-                        value={
-                            form.name ?? ''
-                        }
-
-                        disabled={loading}
-
-                        autoComplete="organization"
-
-                        onChange={
-                            e =>
-                                update(
-                                    'name',
-                                    e.target.value,
-                                )
-                        }
-
-                    />
-
-                </Field>
+                />
 
 
 
-                <Field
+                <InputField
                     label="Legal Name"
+                    value={form.legalName}
+                    onChange={
+                        value =>
+                            update(
+                                'legalName',
+                                value
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
-
-                    <input
-
-                        className={inputClass}
-
-                        value={
-                            form.legalName ?? ''
-                        }
-
-                        disabled={loading}
-
-                        autoComplete="organization"
-
-                        onChange={
-                            e =>
-                                update(
-                                    'legalName',
-                                    e.target.value,
-                                )
-                        }
-
-                    />
-
-                </Field>
+                />
 
 
 
-                <Field
+                <InputField
                     label="Industry"
+                    value={form.industry}
+                    onChange={
+                        value =>
+                            update(
+                                'industry',
+                                value
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
-
-                    <input
-
-                        className={inputClass}
-
-                        value={
-                            form.industry ?? ''
-                        }
-
-                        disabled={loading}
-
-                        onChange={
-                            e =>
-                                update(
-                                    'industry',
-                                    e.target.value,
-                                )
-                        }
-
-                    />
-
-                </Field>
+                />
 
 
 
-
-                <Field
-                    label="Status"
-                    labelClass={labelClass}
-                >
-
-                    <select
-
-                        className={inputClass}
-
-                        value={
-                            form.status ?? 'ACTIVE'
-                        }
-
-                        disabled={loading}
-
-                        onChange={
-                            e =>
-                                update(
-                                    'status',
-                                    e.target.value as Company['status'],
-                                )
-                        }
-
-                    >
-
-                        <option value="ACTIVE">
-                            ACTIVE
-                        </option>
-
-                        <option value="PROSPECT">
-                            PROSPECT
-                        </option>
-
-                        <option value="INACTIVE">
-                            INACTIVE
-                        </option>
-
-                        <option value="ARCHIVED">
-                            ARCHIVED
-                        </option>
-
-                    </select>
-
-                </Field>
-
-
-
-                <Field
+                <InputField
                     label="Website"
+                    value={form.website}
+                    onChange={
+                        value =>
+                            update(
+                                'website',
+                                value
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
-
-                    <input
-
-                        type="url"
-
-                        className={inputClass}
-
-                        value={
-                            form.website ?? ''
-                        }
-
-                        disabled={loading}
-
-                        autoComplete="url"
-
-                        onChange={
-                            e =>
-                                update(
-                                    'website',
-                                    e.target.value,
-                                )
-                        }
-
-                    />
-
-                </Field>
+                />
 
 
 
-                <Field
+                <InputField
                     label="Email"
+                    value={form.email}
+                    onChange={
+                        value =>
+                            update(
+                                'email',
+                                value
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
-
-                    <input
-
-                        type="email"
-
-                        className={inputClass}
-
-                        value={
-                            form.email ?? ''
-                        }
-
-                        disabled={loading}
-
-                        autoComplete="email"
-
-                        onChange={
-                            e =>
-                                update(
-                                    'email',
-                                    e.target.value,
-                                )
-                        }
-
-                    />
-
-                </Field>
+                />
 
 
 
-                <Field
+                <InputField
                     label="Phone"
+                    value={form.phone}
+                    onChange={
+                        value =>
+                            update(
+                                'phone',
+                                value
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
-
-                    <input
-
-                        type="tel"
-
-                        className={inputClass}
-
-                        value={
-                            form.phone ?? ''
-                        }
-
-                        disabled={loading}
-
-                        autoComplete="tel"
-
-                        onChange={
-                            e =>
-                                update(
-                                    'phone',
-                                    e.target.value,
-                                )
-                        }
-
-                    />
-
-                </Field>
+                />
 
 
 
-                <Field
+                <InputField
                     label="Employees"
+                    value={
+                        form.employees?.toString()
+                    }
+                    onChange={
+                        value =>
+                            update(
+                                'employees',
+                                value
+                                    ? Number(value)
+                                    : undefined
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
                     labelClass={labelClass}
-                >
+                    type="number"
+                />
 
-                    <input
 
-                        type="number"
 
-                        min="0"
-
-                        className={inputClass}
-
-                        value={
-                            form.employees ?? ''
-                        }
-
-                        disabled={loading}
-
-                        onChange={
-                            e => {
-
-                                const value =
-                                    e.target.value;
-
-                                update(
-                                    'employees',
-                                    value === ''
-                                        ? undefined
-                                        : Number(value),
-                                );
-
-                            }
-                        }
-
-                    />
-
-                </Field>
+                <InputField
+                    label="Annual Revenue"
+                    value={
+                        form.annualRevenue?.toString()
+                    }
+                    onChange={
+                        value =>
+                            update(
+                                'annualRevenue',
+                                value
+                                    ? Number(value)
+                                    : undefined
+                            )
+                    }
+                    disabled={loading}
+                    className={inputClass}
+                    labelClass={labelClass}
+                    type="number"
+                />
 
 
 
                 <div className="md:col-span-2">
 
-                    <Field
+                    <InputField
                         label="Address"
+                        value={form.address}
+                        onChange={
+                            value =>
+                                update(
+                                    'address',
+                                    value
+                                )
+                        }
+                        disabled={loading}
+                        className={inputClass}
                         labelClass={labelClass}
-                    >
-
-                        <input
-
-                            className={inputClass}
-
-                            value={
-                                form.address ?? ''
-                            }
-
-                            disabled={loading}
-
-                            autoComplete="street-address"
-
-                            onChange={
-                                e =>
-                                    update(
-                                        'address',
-                                        e.target.value,
-                                    )
-                            }
-
-                        />
-
-                    </Field>
+                    />
 
                 </div>
 
 
             </div>
+
+
 
 
 
@@ -526,16 +492,10 @@ export function CompaniesForm({
                                 border-border
                                 px-5
                                 py-2
-                                text-sm
-                                font-medium
-                                text-foreground
-                                transition
-                                hover:bg-muted
-                                disabled:cursor-not-allowed
-                                disabled:opacity-50
                             "
 
                         >
+
                             Cancel
 
                         </button>
@@ -556,13 +516,6 @@ export function CompaniesForm({
                         bg-primary
                         px-5
                         py-2
-                        text-sm
-                        font-semibold
-                        text-primary-foreground
-                        transition
-                        hover:opacity-90
-                        disabled:cursor-not-allowed
-                        disabled:opacity-50
                     "
 
                 >
@@ -587,6 +540,82 @@ export function CompaniesForm({
 
 
 
+
+
+function InputField({
+
+    label,
+
+    value,
+
+    onChange,
+
+    disabled,
+
+    className,
+
+    labelClass,
+
+    type = 'text',
+
+}: {
+
+    label:string;
+
+    value?:string;
+
+    onChange:(value:string)=>void;
+
+    disabled:boolean;
+
+    className:string;
+
+    labelClass:string;
+
+    type?:string;
+
+}) {
+
+
+    return (
+
+        <Field
+
+            label={label}
+
+            labelClass={labelClass}
+
+        >
+
+            <input
+
+                type={type}
+
+                value={value ?? ''}
+
+                disabled={disabled}
+
+                className={className}
+
+                onChange={
+                    event =>
+                        onChange(
+                            event.target.value
+                        )
+                }
+
+            />
+
+        </Field>
+
+    );
+
+}
+
+
+
+
+
 function Field({
 
     label,
@@ -597,13 +626,14 @@ function Field({
 
 }: {
 
-    label: string;
+    label:string;
 
-    labelClass: string;
+    labelClass:string;
 
-    children: React.ReactNode;
+    children:ReactNode;
 
 }) {
+
 
     return (
 
