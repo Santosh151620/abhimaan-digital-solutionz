@@ -1,24 +1,33 @@
+"use client";
+
+
 import {
     useState,
 } from "react";
+
 
 import {
     useRouter,
 } from "next/navigation";
 
+
 import type {
     Role,
 } from "@/types/admin/Role";
 
+
 import RolesTable
     from "./RolesTable";
+
 
 import RoleDialog
     from "./RoleDialog";
 
+
 import {
     deleteRole,
 } from "@/app/admin/(protected)/roles/actions";
+
 
 
 interface RolesClientProps {
@@ -28,14 +37,17 @@ interface RolesClientProps {
 }
 
 
+
 export default function RolesClient({
 
     initialRoles,
 
 }: RolesClientProps) {
 
+
     const router =
         useRouter();
+
 
 
     const [
@@ -46,10 +58,12 @@ export default function RolesClient({
     );
 
 
+
     const [
         selectedRole,
         setSelectedRole,
     ] = useState<Role | undefined>();
+
 
 
     const [
@@ -58,10 +72,12 @@ export default function RolesClient({
     ] = useState(false);
 
 
+
     const [
         loading,
         setLoading,
     ] = useState(false);
+
 
 
     const [
@@ -70,11 +86,16 @@ export default function RolesClient({
     ] = useState<string | null>(null);
 
 
+
     function openCreate() {
 
+
         if (loading) {
+
             return;
+
         }
+
 
 
         setSelectedRole(
@@ -94,13 +115,20 @@ export default function RolesClient({
     }
 
 
+
     function openEdit(
+
         role: Role,
+
     ) {
 
+
         if (loading) {
+
             return;
+
         }
+
 
 
         setSelectedRole(
@@ -120,11 +148,16 @@ export default function RolesClient({
     }
 
 
+
     function closeDialog() {
 
+
         if (loading) {
+
             return;
+
         }
+
 
 
         setDialogOpen(
@@ -144,20 +177,30 @@ export default function RolesClient({
     }
 
 
+
     async function handleDelete(
+
         id: string,
+
     ) {
 
+
         if (loading) {
+
             return;
+
         }
+
 
 
         const role =
             roles.find(
+
                 item =>
                     item.id === id,
+
             );
+
 
 
         if (!role) {
@@ -171,6 +214,7 @@ export default function RolesClient({
         }
 
 
+
         if (role.isSystem) {
 
             setError(
@@ -182,18 +226,26 @@ export default function RolesClient({
         }
 
 
+
         const confirmed =
             window.confirm(
+
                 `Delete role "${role.name}"? This action cannot be undone.`,
+
             );
 
 
+
         if (!confirmed) {
+
             return;
+
         }
 
 
+
         try {
+
 
             setLoading(
                 true,
@@ -211,17 +263,22 @@ export default function RolesClient({
 
 
             setRoles(
+
                 previous =>
                     previous.filter(
+
                         item =>
                             item.id !== id,
+
                     ),
+
             );
 
 
             if (
                 selectedRole?.id === id
             ) {
+
 
                 setSelectedRole(
                     undefined,
@@ -235,11 +292,13 @@ export default function RolesClient({
             }
 
 
+
             router.refresh();
 
         }
 
         catch (caughtError) {
+
 
             setError(
 
@@ -255,6 +314,7 @@ export default function RolesClient({
 
         finally {
 
+
             setLoading(
                 false,
             );
@@ -262,6 +322,7 @@ export default function RolesClient({
         }
 
     }
+
 
 
     return (
@@ -277,6 +338,7 @@ export default function RolesClient({
                 sm:items-center
                 sm:justify-between
             ">
+
 
                 <div>
 
@@ -302,6 +364,7 @@ export default function RolesClient({
                     </p>
 
                 </div>
+
 
 
                 <button
@@ -336,6 +399,7 @@ export default function RolesClient({
                 </button>
 
             </div>
+
 
 
             {
@@ -393,6 +457,7 @@ export default function RolesClient({
             }
 
 
+
             <RolesTable
 
                 roles={roles}
@@ -402,6 +467,7 @@ export default function RolesClient({
                 onDelete={handleDelete}
 
             />
+
 
 
             {
@@ -417,6 +483,7 @@ export default function RolesClient({
 
                 )
             }
+
 
 
             {

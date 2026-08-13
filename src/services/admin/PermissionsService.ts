@@ -28,10 +28,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     async list():
 
     Promise<Permission[]> {
@@ -46,10 +42,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     async active():
 
     Promise<Permission[]> {
@@ -59,10 +51,6 @@ export class PermissionsService {
 
 
     }
-
-
-
-
 
 
 
@@ -99,10 +87,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     async findByKey(
 
         key: string,
@@ -134,10 +118,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     async search(
 
         keyword: string,
@@ -164,10 +144,6 @@ export class PermissionsService {
 
 
     }
-
-
-
-
 
 
 
@@ -260,10 +236,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     async delete(
 
         id: string,
@@ -332,10 +304,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     private validatePermission(
 
         permission: Permission,
@@ -387,7 +355,7 @@ export class PermissionsService {
 
 
 
-        const module =
+        const normalizedModule =
             this.normalizeRequiredText(
 
                 permission.module,
@@ -429,7 +397,8 @@ export class PermissionsService {
 
             name,
 
-            module,
+            module:
+                normalizedModule,
 
             action,
 
@@ -437,10 +406,6 @@ export class PermissionsService {
 
 
     }
-
-
-
-
 
 
 
@@ -489,10 +454,6 @@ export class PermissionsService {
 
 
 
-
-
-
-
     private normalizeSearchKeyword(
 
         keyword: string,
@@ -509,10 +470,6 @@ export class PermissionsService {
 
 
     }
-
-
-
-
 
 
 
@@ -556,10 +513,6 @@ export class PermissionsService {
 
 
     }
-
-
-
-
 
 
 
