@@ -2,13 +2,16 @@ import type {
     AuditLog,
 } from "@/types/admin/AuditLog";
 
+
 import {
     createSupabaseServerClient,
 } from "@/lib/supabase/server-client";
 
+
 import {
     TenantContextManager,
 } from "@/lib/tenant/tenantContext";
+
 
 
 type AuditLogRow = {
@@ -40,6 +43,7 @@ type AuditLogRow = {
 };
 
 
+
 export class AuditLogsRepository {
 
 
@@ -64,6 +68,7 @@ export class AuditLogsRepository {
         const supabase =
             await this.client();
 
+
         const {
             data,
             error,
@@ -81,9 +86,13 @@ export class AuditLogsRepository {
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? []).map(
             row =>
@@ -91,13 +100,18 @@ export class AuditLogsRepository {
                     row as AuditLogRow,
                 ),
         );
+
     }
 
 
     async findByEntity(
+
         entityType: string,
+
         entityId: string,
+
     ): Promise<AuditLog[]> {
+
 
         const normalizedEntityType =
             this.requireValue(
@@ -105,14 +119,17 @@ export class AuditLogsRepository {
                 "Audit entity type",
             );
 
+
         const normalizedEntityId =
             this.requireValue(
                 entityId,
                 "Audit entity id",
             );
 
+
         const supabase =
             await this.client();
+
 
         const {
             data,
@@ -139,9 +156,13 @@ export class AuditLogsRepository {
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? []).map(
             row =>
@@ -149,12 +170,16 @@ export class AuditLogsRepository {
                     row as AuditLogRow,
                 ),
         );
+
     }
 
 
     async findById(
+
         id: string,
+
     ): Promise<AuditLog | null> {
+
 
         const normalizedId =
             this.requireValue(
@@ -162,8 +187,10 @@ export class AuditLogsRepository {
                 "Audit log id",
             );
 
+
         const supabase =
             await this.client();
+
 
         const {
             data,
@@ -181,39 +208,58 @@ export class AuditLogsRepository {
             )
             .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return data
             ? this.mapAuditLog(
                 data as AuditLogRow,
             )
             : null;
+
     }
 
 
     private requireValue(
+
         value: string,
+
         fieldName: string,
+
     ): string {
 
+
         const normalized =
-            value?.trim();
+            typeof value === "string"
+                ? value.trim()
+                : "";
+
 
         if (!normalized) {
+
             throw new Error(
                 `${fieldName} is required.`,
             );
+
         }
 
+
         return normalized;
+
     }
 
 
     private mapAuditLog(
+
         row: AuditLogRow,
+
     ): AuditLog {
+
 
         return {
 
@@ -221,13 +267,16 @@ export class AuditLogsRepository {
                 row.id,
 
             organizationId:
-                row.organization_id ?? "",
+                row.organization_id ??
+                undefined,
 
             userId:
-                row.user_id ?? undefined,
+                row.user_id ??
+                undefined,
 
             userName:
-                row.user_name ?? undefined,
+                row.user_name ??
+                undefined,
 
             action:
                 row.action as AuditLog["action"],
@@ -236,24 +285,30 @@ export class AuditLogsRepository {
                 row.entity_type,
 
             entityId:
-                row.entity_id ?? "",
+                row.entity_id ??
+                undefined,
 
             description:
-                row.description ?? undefined,
+                row.description ??
+                undefined,
 
             metadata:
-                row.metadata ?? {},
+                row.metadata ??
+                {},
 
             ipAddress:
-                row.ip_address ?? undefined,
+                row.ip_address ??
+                undefined,
 
             userAgent:
-                row.user_agent ?? undefined,
+                row.user_agent ??
+                undefined,
 
             createdAt:
                 row.created_at,
 
         };
+
     }
 
 }
