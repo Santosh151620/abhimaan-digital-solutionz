@@ -29,6 +29,7 @@ export class NotificationsService {
     }
 
 
+
     async getAll():
 
     Promise<Notification[]> {
@@ -36,6 +37,7 @@ export class NotificationsService {
         return this.repository.findAll();
 
     }
+
 
 
     async getById(
@@ -61,6 +63,7 @@ export class NotificationsService {
     }
 
 
+
     async getByUser(
 
         userId: string,
@@ -84,6 +87,7 @@ export class NotificationsService {
     }
 
 
+
     async create(
 
         notification:
@@ -93,24 +97,43 @@ export class NotificationsService {
 
     Promise<Notification> {
 
-        if (!notification) {
-
-            throw new Error(
-
-                "Notification is required.",
-
-            );
-
-        }
-
-
-        return this.repository.create(
+        this.validateNotification(
 
             notification,
 
         );
 
+
+        const normalizedNotification:
+            Partial<Notification> = {
+
+            ...notification,
+
+        };
+
+
+       if (
+    normalizedNotification.userId !==
+    undefined &&
+    normalizedNotification.userId !==
+    null
+) {
+
+    normalizedNotification.userId =
+        this.validateUserId(
+            normalizedNotification.userId,
+        );
+
+}
+
+        return this.repository.create(
+
+            normalizedNotification,
+
+        );
+
     }
+
 
 
     async markAsRead(
@@ -127,6 +150,25 @@ export class NotificationsService {
             );
 
 
+        const notification =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!notification) {
+
+            throw new Error(
+
+                "Notification not found.",
+
+            );
+
+        }
+
+
         await this.repository.markAsRead(
 
             normalizedId,
@@ -134,6 +176,7 @@ export class NotificationsService {
         );
 
     }
+
 
 
     async delete(
@@ -150,6 +193,25 @@ export class NotificationsService {
             );
 
 
+        const notification =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!notification) {
+
+            throw new Error(
+
+                "Notification not found.",
+
+            );
+
+        }
+
+
         await this.repository.delete(
 
             normalizedId,
@@ -157,6 +219,39 @@ export class NotificationsService {
         );
 
     }
+
+
+
+    private validateNotification(
+
+        notification:
+            Partial<Notification>,
+
+    ): void {
+
+        if (
+
+            !notification ||
+
+            typeof notification !==
+                "object" ||
+
+            Array.isArray(
+                notification,
+            )
+
+        ) {
+
+            throw new Error(
+
+                "Notification is required.",
+
+            );
+
+        }
+
+    }
+
 
 
     private validateId(
@@ -186,6 +281,7 @@ export class NotificationsService {
         return normalizedId;
 
     }
+
 
 
     private validateUserId(
