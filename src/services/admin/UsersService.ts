@@ -50,19 +50,22 @@ export class UsersService {
 
     async findById(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<AdminUser | null> {
 
-
-        return this.repository.findById(
-
+        const normalizedId =
             this.validateId(
                 id,
                 "User",
-            ),
+            );
+
+
+        return this.repository.findById(
+
+            normalizedId,
 
         );
 
@@ -74,18 +77,21 @@ export class UsersService {
 
     async findByEmail(
 
-        email:string,
+        email: string,
 
     ):
 
     Promise<AdminUser | null> {
 
+        const normalizedEmail =
+            this.normalizeEmail(
+                email,
+            );
+
 
         return this.repository.findByEmail(
 
-            this.normalizeEmail(
-                email,
-            ),
+            normalizedEmail,
 
         );
 
@@ -97,7 +103,7 @@ export class UsersService {
 
     async save(
 
-        user:AdminUser,
+        user: AdminUser,
 
     ):
 
@@ -109,18 +115,18 @@ export class UsersService {
         );
 
 
-        const email =
+        const normalizedEmail =
             this.normalizeEmail(
                 user.email,
             );
 
 
-
         const existing =
             await this.repository.findByEmail(
-                email,
-            );
 
+                normalizedEmail,
+
+            );
 
 
         if (
@@ -138,18 +144,21 @@ export class UsersService {
         }
 
 
-
         return this.repository.save(
 
             {
 
                 ...user,
 
-                email,
+                email:
+                    normalizedEmail,
+
+                fullName:
+                    user.fullName.trim(),
 
                 updatedAt:
                     new Date()
-                    .toISOString(),
+                        .toISOString(),
 
             },
 
@@ -161,14 +170,11 @@ export class UsersService {
 
 
 
-
-
-
     async update(
 
-        id:string,
+        id: string,
 
-        user:Partial<AdminUser>,
+        user: Partial<AdminUser>,
 
     ):
 
@@ -182,7 +188,6 @@ export class UsersService {
             );
 
 
-
         if (!user) {
 
             throw new Error(
@@ -192,35 +197,26 @@ export class UsersService {
         }
 
 
-
-        let payload:
+        const payload:
             Partial<AdminUser> = {
-
-            ...user,
-
-        };
+                ...user,
+            };
 
 
+        if (payload.email !== undefined) {
 
-        if (
-
-            payload.email
-
-        ) {
-
-
-            const email =
+            const normalizedEmail =
                 this.normalizeEmail(
                     payload.email,
                 );
 
 
-
             const existing =
                 await this.repository.findByEmail(
-                    email,
-                );
 
+                    normalizedEmail,
+
+                );
 
 
             if (
@@ -238,17 +234,58 @@ export class UsersService {
             }
 
 
-
-            payload = {
-
-                ...payload,
-
-                email,
-
-            };
+            payload.email =
+                normalizedEmail;
 
         }
 
+
+        if (payload.fullName !== undefined) {
+
+            const normalizedFullName =
+                typeof payload.fullName ===
+                "string"
+                    ? payload.fullName.trim()
+                    : "";
+
+
+            if (!normalizedFullName) {
+
+                throw new Error(
+                    "Full name is required.",
+                );
+
+            }
+
+
+            payload.fullName =
+                normalizedFullName;
+
+        }
+
+
+        if (
+            payload.userType !== undefined &&
+            !payload.userType
+        ) {
+
+            throw new Error(
+                "User type is required.",
+            );
+
+        }
+
+
+        if (
+            payload.status !== undefined &&
+            !payload.status
+        ) {
+
+            throw new Error(
+                "User status is required.",
+            );
+
+        }
 
 
         return this.repository.update(
@@ -261,7 +298,7 @@ export class UsersService {
 
                 updatedAt:
                     new Date()
-                    .toISOString(),
+                        .toISOString(),
 
             },
 
@@ -273,12 +310,9 @@ export class UsersService {
 
 
 
-
-
-
     async delete(
 
-        id:string,
+        id: string,
 
     ):
 
@@ -292,12 +326,12 @@ export class UsersService {
             );
 
 
-
         const user =
             await this.repository.findById(
-                normalizedId,
-            );
 
+                normalizedId,
+
+            );
 
 
         if (!user) {
@@ -307,7 +341,6 @@ export class UsersService {
             );
 
         }
-
 
 
         if (
@@ -323,7 +356,6 @@ export class UsersService {
         }
 
 
-
         await this.repository.delete(
 
             normalizedId,
@@ -336,15 +368,12 @@ export class UsersService {
 
 
 
-
-
-
     async updatePreferences(
 
-        userId:string,
+        userId: string,
 
         _preferences:
-            Record<string,unknown>,
+            Record<string, unknown>,
 
     ):
 
@@ -367,14 +396,11 @@ export class UsersService {
 
 
 
-
-
-
     private validateUser(
 
-        user:AdminUser,
+        user: AdminUser,
 
-    ):void {
+    ): void {
 
 
         if (!user) {
@@ -386,12 +412,7 @@ export class UsersService {
         }
 
 
-
-        if (
-
-            !user.fullName?.trim()
-
-        ) {
+        if (!user.fullName?.trim()) {
 
             throw new Error(
                 "Full name is required.",
@@ -400,11 +421,9 @@ export class UsersService {
         }
 
 
-
         this.normalizeEmail(
             user.email,
         );
-
 
 
         if (!user.userType) {
@@ -414,7 +433,6 @@ export class UsersService {
             );
 
         }
-
 
 
         if (!user.status) {
@@ -431,21 +449,17 @@ export class UsersService {
 
 
 
-
-
-
     private normalizeEmail(
 
-        email:string,
+        email: string,
 
-    ):string {
+    ): string {
 
 
         const normalized =
-            email
-            ?.trim()
-            .toLowerCase();
-
+            typeof email === "string"
+                ? email.trim().toLowerCase()
+                : "";
 
 
         if (!normalized) {
@@ -457,18 +471,14 @@ export class UsersService {
         }
 
 
-
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
-
         if (
-
             !emailRegex.test(
                 normalized,
             )
-
         ) {
 
             throw new Error(
@@ -476,7 +486,6 @@ export class UsersService {
             );
 
         }
-
 
 
         return normalized;
@@ -487,21 +496,19 @@ export class UsersService {
 
 
 
-
-
-
     private validateId(
 
-        id:string,
+        id: string,
 
-        entity:string,
+        entity: string,
 
-    ):string {
+    ): string {
 
 
         const normalized =
-            id?.trim();
-
+            typeof id === "string"
+                ? id.trim()
+                : "";
 
 
         if (!normalized) {
@@ -513,10 +520,8 @@ export class UsersService {
         }
 
 
-
         return normalized;
 
     }
-
 
 }

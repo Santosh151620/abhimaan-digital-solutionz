@@ -1,27 +1,76 @@
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Policies Service
+ *
+ * Application layer for administrative policy management.
+ *
+ * Responsibilities:
+ * - Policy listing
+ * - Policy lookup by ID
+ * - Policy lookup by code
+ * - Policy persistence
+ * - Policy deletion
+ * - Policy input validation
+ * - Policy code normalization
+ * - Duplicate policy-code protection
+ * ============================================================================
+ */
+
+
 import type {
     Policy,
 } from "@/types/admin/Policy";
+
 
 import {
     PoliciesRepository,
 } from "@/repositories/admin/PoliciesRepository";
 
+
+
+
+
 export class PoliciesService {
+
+
+
+
 
     constructor(
 
-        private readonly repository =
-            new PoliciesRepository(),
+        private readonly repository:
+            PoliciesRepository =
+                new PoliciesRepository(),
 
     ) {}
+
+
+
+
+
+
+
+
 
     async list():
 
     Promise<Policy[]> {
 
+
         return this.repository.findAll();
 
+
     }
+
+
+
+
+
+
+
+
 
     async findById(
 
@@ -31,15 +80,32 @@ export class PoliciesService {
 
     Promise<Policy | null> {
 
-        this.validateId(
-            id,
-        );
+
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
+
 
         return this.repository.findById(
-            id.trim(),
+
+            normalizedId,
+
         );
 
+
     }
+
+
+
+
+
+
+
+
 
     async findByCode(
 
@@ -49,19 +115,32 @@ export class PoliciesService {
 
     Promise<Policy | null> {
 
-        this.validateCode(
-            code,
-        );
+
+        const normalizedCode =
+            this.normalizeCode(
+
+                code,
+
+            );
+
+
 
         return this.repository.findByCode(
 
-            code
-                .trim()
-                .toUpperCase(),
+            normalizedCode,
 
         );
 
+
     }
+
+
+
+
+
+
+
+
 
     async save(
 
@@ -71,26 +150,73 @@ export class PoliciesService {
 
     Promise<Policy> {
 
-        this.validatePolicy(
-            policy,
+
+        const normalizedPolicy =
+            this.validatePolicy(
+
+                policy,
+
+            );
+
+
+
+        const existing =
+            await this.repository.findByCode(
+
+                normalizedPolicy.policyCode,
+
+            );
+
+
+
+        if (
+
+            existing &&
+
+            existing.id !== policy.id
+
+        ) {
+
+
+            throw new Error(
+
+                "Policy code already exists.",
+
+            );
+
+
+        }
+
+
+
+        return this.repository.save(
+
+            {
+
+                ...policy,
+
+
+                policyCode:
+                    normalizedPolicy.policyCode,
+
+
+                policyName:
+                    normalizedPolicy.policyName,
+
+            },
+
         );
 
-        return this.repository.save({
-
-            ...policy,
-
-            policyCode:
-                policy.policyCode!
-                    .trim()
-                    .toUpperCase(),
-
-            policyName:
-                policy.policyName!
-                    .trim(),
-
-        });
 
     }
+
+
+
+
+
+
+
+
 
     async delete(
 
@@ -100,79 +226,201 @@ export class PoliciesService {
 
     Promise<void> {
 
-        this.validateId(
-            id,
-        );
+
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
+
 
         await this.repository.delete(
-            id.trim(),
+
+            normalizedId,
+
         );
 
+
     }
+
+
+
+
+
+
+
+
 
     private validatePolicy(
 
         policy: Partial<Policy>,
 
-    ): void {
+    ): {
+
+        policyCode: string;
+
+        policyName: string;
+
+    } {
+
 
         if (!policy) {
 
+
             throw new Error(
+
                 "Policy is required.",
+
             );
+
 
         }
 
-        this.validateCode(
-            policy.policyCode ?? "",
-        );
 
-        if (
-            !policy.policyName?.trim()
-        ) {
+
+        const policyCode =
+            this.normalizeCode(
+
+                policy.policyCode ?? "",
+
+            );
+
+
+
+        const policyName =
+            typeof policy.policyName ===
+            "string"
+
+                ? policy.policyName.trim()
+
+                : "";
+
+
+
+        if (!policyName) {
+
 
             throw new Error(
+
                 "Policy name is required.",
+
             );
 
+
         }
+
+
+
+        return {
+
+            policyCode,
+
+            policyName,
+
+        };
+
 
     }
 
-    private validateCode(
+
+
+
+
+
+
+
+
+    private normalizeCode(
 
         code: string,
 
-    ): void {
+    ): string {
 
-        if (!code?.trim()) {
+
+        const normalizedCode =
+
+            typeof code ===
+            "string"
+
+                ? code
+                    .trim()
+                    .toUpperCase()
+
+                : "";
+
+
+
+        if (!normalizedCode) {
+
 
             throw new Error(
+
                 "Policy code is required.",
+
             );
+
 
         }
 
+
+
+        return normalizedCode;
+
+
     }
+
+
+
+
+
+
+
+
 
     private validateId(
 
         id: string,
 
-    ): void {
+    ): string {
 
-        if (!id?.trim()) {
+
+        const normalizedId =
+
+            typeof id ===
+            "string"
+
+                ? id.trim()
+
+                : "";
+
+
+
+        if (!normalizedId) {
+
 
             throw new Error(
+
                 "Policy id is required.",
+
             );
 
+
         }
+
+
+
+        return normalizedId;
+
 
     }
 
 }
+
+
+
+
 
 export const policiesService =
     new PoliciesService();

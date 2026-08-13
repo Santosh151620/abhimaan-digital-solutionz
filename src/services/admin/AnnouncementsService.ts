@@ -2,18 +2,22 @@ import type {
     Announcement,
 } from "@/types/admin/Announcement";
 
-import {
+
+import type {
     AnnouncementsRepository,
 } from "@/repositories/admin/AnnouncementsRepository";
 
+
 export class AnnouncementsService {
+
 
     constructor(
 
-        private readonly repository =
-            new AnnouncementsRepository(),
+        private readonly repository:
+            AnnouncementsRepository,
 
     ) {}
+
 
     async list():
 
@@ -23,6 +27,7 @@ export class AnnouncementsService {
 
     }
 
+
     async listPublished():
 
     Promise<Announcement[]> {
@@ -30,6 +35,7 @@ export class AnnouncementsService {
         return this.repository.findPublished();
 
     }
+
 
     async findById(
 
@@ -39,39 +45,55 @@ export class AnnouncementsService {
 
     Promise<Announcement | null> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+                id,
+            );
+
 
         return this.repository.findById(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
 
+
     async save(
 
-        announcement: Partial<Announcement>,
+        announcement:
+            Partial<Announcement>,
 
     ):
 
     Promise<Announcement> {
 
         this.validateAnnouncement(
+
             announcement,
+
         );
 
-        return this.repository.save({
 
-            ...announcement,
+        const title =
+            announcement.title!.trim();
 
-            title:
-                announcement.title!
-                    .trim(),
 
-        });
+        return this.repository.save(
+
+            {
+
+                ...announcement,
+
+                title,
+
+            },
+
+        );
 
     }
+
 
     async delete(
 
@@ -81,59 +103,81 @@ export class AnnouncementsService {
 
     Promise<void> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
 
         await this.repository.delete(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
 
+
     private validateAnnouncement(
 
-        announcement: Partial<Announcement>,
+        announcement:
+            Partial<Announcement>,
 
     ): void {
 
         if (!announcement) {
 
             throw new Error(
+
                 "Announcement is required.",
+
             );
 
         }
+
 
         if (
             !announcement.title?.trim()
         ) {
 
             throw new Error(
+
                 "Announcement title is required.",
+
             );
 
         }
 
     }
+
 
     private validateId(
 
         id: string,
 
-    ): void {
+    ): string {
 
-        if (!id?.trim()) {
+        const normalizedId =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
 
             throw new Error(
+
                 "Announcement id is required.",
+
             );
 
         }
 
+
+        return normalizedId;
+
     }
 
 }
-
-export const announcementsService =
-    new AnnouncementsService();

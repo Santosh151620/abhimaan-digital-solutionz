@@ -20,7 +20,6 @@ interface RolesTableProps {
 }
 
 
-
 export default function RolesTable({
 
     roles,
@@ -36,9 +35,9 @@ export default function RolesTable({
 
         role: Role,
 
-    ) {
+    ): Promise<void> {
 
-        if (!onDelete) {
+        if (!onDelete || role.isSystem) {
 
             return;
 
@@ -47,7 +46,7 @@ export default function RolesTable({
 
         const confirmed =
             window.confirm(
-                `Delete role "${role.name}"?`,
+                `Delete role "${role.name}"?\n\nThis action cannot be undone.`,
             );
 
 
@@ -58,300 +57,645 @@ export default function RolesTable({
         }
 
 
-        try {
+        await onDelete(
+            role.id,
+        );
 
-            await onDelete(
-                role.id,
-            );
+    }
 
-        }
 
-        catch (error) {
+    function statusClass(
 
-            console.error(
-                "Failed to delete role:",
-                error,
-            );
+        status: Role["status"],
+
+    ): string {
+
+        switch (status) {
+
+            case "Active":
+
+                return `
+                    border-green-500/20
+                    bg-green-500/10
+                    text-green-700
+                    dark:text-green-400
+                `;
+
+            case "Inactive":
+
+                return `
+                    border-border
+                    bg-muted
+                    text-muted-foreground
+                `;
+
+            case "Suspended":
+
+                return `
+                    border-yellow-500/20
+                    bg-yellow-500/10
+                    text-yellow-700
+                    dark:text-yellow-400
+                `;
+
+            case "Archived":
+
+                return `
+                    border-red-500/20
+                    bg-red-500/10
+                    text-red-700
+                    dark:text-red-400
+                `;
+
+            default:
+
+                return `
+                    border-border
+                    bg-muted
+                    text-muted-foreground
+                `;
 
         }
 
     }
 
 
+    if (roles.length === 0) {
+
+        return (
+
+            <div
+                className="
+                    rounded-xl
+                    border
+                    border-border
+                    bg-background
+                    p-10
+                    text-center
+                "
+            >
+
+                <div
+                    className="
+                        mx-auto
+                        max-w-md
+                        space-y-2
+                    "
+                >
+
+                    <h3
+                        className="
+                            text-base
+                            font-semibold
+                            text-foreground
+                        "
+                    >
+
+                        No roles found
+
+                    </h3>
+
+
+                    <p
+                        className="
+                            text-sm
+                            text-muted-foreground
+                        "
+                    >
+
+                        Create a role to begin configuring
+                        organization access.
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        );
+
+    }
+
 
     return (
 
         <div
             className="
-                overflow-x-auto
+                overflow-hidden
                 rounded-xl
                 border
+                border-border
                 bg-background
             "
         >
 
-            <table
+            <div
                 className="
-                    min-w-full
-                    divide-y
+                    overflow-x-auto
                 "
             >
 
-                <thead
+                <table
                     className="
-                        bg-muted/30
+                        min-w-[900px]
+                        w-full
+                        divide-y
+                        divide-border
                     "
                 >
 
-                    <tr>
+                    <thead
+                        className="
+                            bg-muted/30
+                        "
+                    >
 
-                        <th className="p-3 text-left text-sm font-medium">
-                            Name
-                        </th>
+                        <tr>
 
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-left
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
 
-                        <th className="p-3 text-left text-sm font-medium">
-                            Code
-                        </th>
+                                Name
 
-
-                        <th className="p-3 text-left text-sm font-medium">
-                            Type
-                        </th>
-
-
-                        <th className="p-3 text-left text-sm font-medium">
-                            Level
-                        </th>
-
-
-                        <th className="p-3 text-left text-sm font-medium">
-                            Status
-                        </th>
-
-
-                        <th className="p-3 text-left text-sm font-medium">
-                            System
-                        </th>
+                            </th>
 
 
-                        <th className="p-3 text-right text-sm font-medium">
-                            Actions
-                        </th>
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-left
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
+
+                                Code
+
+                            </th>
 
 
-                    </tr>
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-left
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
 
-                </thead>
+                                Type
 
-
-
-                <tbody>
-
-
-                    {
-                        roles.length === 0 && (
-
-                            <tr>
-
-                                <td
-
-                                    colSpan={7}
-
-                                    className="
-                                        p-8
-                                        text-center
-                                        text-sm
-                                        text-muted-foreground
-                                    "
-
-                                >
-
-                                    No roles found.
-
-                                </td>
+                            </th>
 
 
-                            </tr>
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-left
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
 
-                        )
-                    }
+                                Level
 
-
-
-                    {
-                        roles.map(
-
-                            role => (
-
-                                <tr
-
-                                    key={role.id}
-
-                                    className="
-                                        border-t
-                                        hover:bg-muted/20
-                                    "
-
-                                >
-
-                                    <td className="p-3 font-medium">
-
-                                        {role.name}
-
-                                    </td>
+                            </th>
 
 
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-left
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
 
-                                    <td
+                                Status
 
+                            </th>
+
+
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-left
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
+
+                                System
+
+                            </th>
+
+
+                            <th
+                                scope="col"
+                                className="
+                                    whitespace-nowrap
+                                    px-4
+                                    py-3
+                                    text-right
+                                    text-xs
+                                    font-semibold
+                                    uppercase
+                                    tracking-wide
+                                    text-muted-foreground
+                                "
+                            >
+
+                                Actions
+
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody
+                        className="
+                            divide-y
+                            divide-border
+                        "
+                    >
+
+                        {
+                            roles.map(
+
+                                role => (
+
+                                    <tr
+                                        key={role.id}
                                         className="
-                                            p-3
-                                            font-mono
-                                            text-sm
+                                            transition-colors
+                                            hover:bg-muted/20
                                         "
-
                                     >
 
-                                        {role.code}
-
-                                    </td>
-
-
-
-                                    <td className="p-3">
-
-                                        {role.type}
-
-                                    </td>
-
-
-
-                                    <td className="p-3">
-
-                                        {role.level}
-
-                                    </td>
-
-
-
-                                    <td className="p-3">
-
-                                        {role.status}
-
-                                    </td>
-
-
-
-                                    <td className="p-3">
-
-                                        {
-                                            role.isSystem
-                                                ? "Yes"
-                                                : "No"
-                                        }
-
-                                    </td>
-
-
-
-                                    <td className="p-3">
-
-                                        <div
-
+                                        <td
                                             className="
-                                                flex
-                                                justify-end
-                                                gap-2
+                                                px-4
+                                                py-4
                                             "
-
                                         >
 
+                                            <div
+                                                className="
+                                                    min-w-48
+                                                "
+                                            >
+
+                                                <p
+                                                    className="
+                                                        font-medium
+                                                        text-foreground
+                                                    "
+                                                >
+
+                                                    {role.name}
+
+                                                </p>
+
+
+                                                {
+                                                    role.description && (
+
+                                                        <p
+                                                            className="
+                                                                mt-1
+                                                                max-w-md
+                                                                truncate
+                                                                text-xs
+                                                                text-muted-foreground
+                                                            "
+                                                            title={
+                                                                role.description
+                                                            }
+                                                        >
+
+                                                            {
+                                                                role.description
+                                                            }
+
+                                                        </p>
+
+                                                    )
+                                                }
+
+                                            </div>
+
+                                        </td>
+
+
+                                        <td
+                                            className="
+                                                px-4
+                                                py-4
+                                            "
+                                        >
+
+                                            <code
+                                                className="
+                                                    rounded
+                                                    bg-muted
+                                                    px-2
+                                                    py-1
+                                                    text-xs
+                                                    text-foreground
+                                                "
+                                            >
+
+                                                {role.code}
+
+                                            </code>
+
+                                        </td>
+
+
+                                        <td
+                                            className="
+                                                whitespace-nowrap
+                                                px-4
+                                                py-4
+                                                text-sm
+                                                text-foreground
+                                            "
+                                        >
+
+                                            {role.type}
+
+                                        </td>
+
+
+                                        <td
+                                            className="
+                                                whitespace-nowrap
+                                                px-4
+                                                py-4
+                                                text-sm
+                                                text-foreground
+                                            "
+                                        >
+
+                                            {role.level}
+
+                                        </td>
+
+
+                                        <td
+                                            className="
+                                                px-4
+                                                py-4
+                                            "
+                                        >
+
+                                            <span
+                                                className={`
+                                                    inline-flex
+                                                    items-center
+                                                    rounded-full
+                                                    border
+                                                    px-2.5
+                                                    py-1
+                                                    text-xs
+                                                    font-medium
+                                                    ${statusClass(
+                                                        role.status,
+                                                    )}
+                                                `}
+                                            >
+
+                                                {role.status}
+
+                                            </span>
+
+                                        </td>
+
+
+                                        <td
+                                            className="
+                                                px-4
+                                                py-4
+                                            "
+                                        >
 
                                             {
-                                                onEdit && (
+                                                role.isSystem
+                                                    ? (
 
-                                                    <button
+                                                        <span
+                                                            className="
+                                                                inline-flex
+                                                                items-center
+                                                                rounded-full
+                                                                border
+                                                                border-primary/20
+                                                                bg-primary/10
+                                                                px-2.5
+                                                                py-1
+                                                                text-xs
+                                                                font-medium
+                                                                text-primary
+                                                            "
+                                                        >
 
-                                                        type="button"
+                                                            System
 
-                                                        aria-label={`Edit ${role.name}`}
+                                                        </span>
 
-                                                        onClick={() =>
-                                                            onEdit(role)
-                                                        }
+                                                    )
+                                                    : (
 
-                                                        className="
-                                                            rounded-md
-                                                            border
-                                                            px-3
-                                                            py-1
-                                                            text-sm
-                                                        "
+                                                        <span
+                                                            className="
+                                                                text-sm
+                                                                text-muted-foreground
+                                                            "
+                                                        >
 
-                                                    >
+                                                            No
 
-                                                        Edit
+                                                        </span>
 
-                                                    </button>
-
-                                                )
+                                                    )
                                             }
 
+                                        </td>
 
 
-                                            {
-                                                onDelete &&
-                                                !role.isSystem && (
+                                        <td
+                                            className="
+                                                px-4
+                                                py-4
+                                            "
+                                        >
 
-                                                    <button
+                                            <div
+                                                className="
+                                                    flex
+                                                    items-center
+                                                    justify-end
+                                                    gap-2
+                                                "
+                                            >
 
-                                                        type="button"
+                                                {
+                                                    onEdit && (
 
-                                                        aria-label={`Delete ${role.name}`}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                onEdit(
+                                                                    role,
+                                                                )
+                                                            }
+                                                            aria-label={
+                                                                `Edit role ${role.name}`
+                                                            }
+                                                            className="
+                                                                rounded-lg
+                                                                border
+                                                                border-border
+                                                                px-3
+                                                                py-1.5
+                                                                text-sm
+                                                                font-medium
+                                                                text-foreground
+                                                                transition
+                                                                hover:bg-muted
+                                                                focus:outline-none
+                                                                focus:ring-2
+                                                                focus:ring-primary/30
+                                                            "
+                                                        >
 
-                                                        onClick={() =>
-                                                            handleDelete(role)
-                                                        }
+                                                            Edit
 
-                                                        className="
-                                                            rounded-md
-                                                            border
-                                                            px-3
-                                                            py-1
-                                                            text-sm
-                                                            text-destructive
-                                                        "
+                                                        </button>
 
-                                                    >
-
-                                                        Delete
-
-                                                    </button>
-
-                                                )
-                                            }
+                                                    )
+                                                }
 
 
-                                        </div>
+                                                {
+                                                    onDelete && (
+                                                        role.isSystem
+                                                            ? (
 
+                                                                <span
+                                                                    className="
+                                                                        px-3
+                                                                        py-1.5
+                                                                        text-xs
+                                                                        text-muted-foreground
+                                                                    "
+                                                                    title="
+                                                                        System roles cannot be deleted
+                                                                    "
+                                                                >
 
-                                    </td>
+                                                                    Protected
 
+                                                                </span>
 
-                                </tr>
+                                                            )
+                                                            : (
+
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        void handleDelete(
+                                                                            role,
+                                                                        )
+                                                                    }
+                                                                    aria-label={
+                                                                        `Delete role ${role.name}`
+                                                                    }
+                                                                    className="
+                                                                        rounded-lg
+                                                                        border
+                                                                        border-destructive/30
+                                                                        px-3
+                                                                        py-1.5
+                                                                        text-sm
+                                                                        font-medium
+                                                                        text-destructive
+                                                                        transition
+                                                                        hover:bg-destructive/10
+                                                                        focus:outline-none
+                                                                        focus:ring-2
+                                                                        focus:ring-destructive/30
+                                                                    "
+                                                                >
+
+                                                                    Delete
+
+                                                                </button>
+
+                                                            )
+                                                    )
+                                                }
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                ),
 
                             )
+                        }
 
-                        )
-                    }
+                    </tbody>
 
+                </table>
 
-                </tbody>
-
-
-            </table>
-
+            </div>
 
         </div>
 

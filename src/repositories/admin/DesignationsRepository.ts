@@ -1,23 +1,47 @@
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
 
-import { BaseRepository } from "@/lib/db/base-repository";
+import {
+    BaseRepository,
+} from "@/lib/db/base-repository";
 
-import type { Designation } from "@/types/admin/Designation";
+import type {
+    Designation,
+} from "@/types/admin/Designation";
+
 
 type DesignationRow = {
+
     id: string;
+
     organization_id: string;
+
     department_id: string | null;
+
     designation_code: string;
+
     designation_name: string;
+
     description: string | null;
-    status: Designation["status"] | null;
-    metadata: Record<string, unknown> | null;
+
+    status:
+        Designation["status"] |
+        null;
+
+    metadata:
+        Record<string, unknown> |
+        null;
+
     created_at: string;
+
     updated_at: string;
+
 };
 
+
 export interface IDesignationsRepository {
+
     list(): Promise<Designation[]>;
 
     active(): Promise<Designation[]>;
@@ -41,32 +65,45 @@ export interface IDesignationsRepository {
     delete(
         id: string,
     ): Promise<void>;
+
 }
+
 
 export class DesignationsRepository
     extends BaseRepository<Designation>
     implements IDesignationsRepository
 {
+
     constructor(
         supabase: SupabaseClient,
     ) {
+
         super(
             supabase,
             "designations",
         );
+
     }
 
-    async list(): Promise<Designation[]> {
+
+    async list():
+
+    Promise<Designation[]> {
+
         const {
             data,
             error,
         } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .order(
                 "designation_name",
                 {
@@ -74,9 +111,13 @@ export class DesignationsRepository
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? []).map(
             (row) =>
@@ -84,23 +125,33 @@ export class DesignationsRepository
                     row as DesignationRow,
                 ),
         );
+
     }
 
-    async active(): Promise<Designation[]> {
+
+    async active():
+
+    Promise<Designation[]> {
+
         const {
             data,
             error,
         } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .eq(
                 "status",
                 "Active",
             )
+
             .order(
                 "designation_name",
                 {
@@ -108,9 +159,13 @@ export class DesignationsRepository
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? []).map(
             (row) =>
@@ -118,116 +173,177 @@ export class DesignationsRepository
                     row as DesignationRow,
                 ),
         );
+
     }
 
-    async findById(
-        id: string,
-    ): Promise<Designation | null> {
-        const normalizedId =
-            id?.trim();
 
-        if (!normalizedId) {
-            throw new Error(
-                "Designation id is required.",
+    async findById(
+
+        id: string,
+
+    ):
+
+    Promise<Designation | null> {
+
+        const normalizedId =
+            this.normalizeId(
+                id,
             );
-        }
+
 
         const {
             data,
             error,
         } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .eq(
                 "id",
                 normalizedId,
             )
+
             .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return data
+
             ? this.mapDesignation(
-                data as DesignationRow,
-            )
+                  data as DesignationRow,
+              )
+
             : null;
+
     }
 
-    async findByCode(
-        code: string,
-    ): Promise<Designation | null> {
-        const normalizedCode =
-            code
-                ?.trim()
-                .toUpperCase();
 
-        if (!normalizedCode) {
-            throw new Error(
-                "Designation code is required.",
+    async findByCode(
+
+        code: string,
+
+    ):
+
+    Promise<Designation | null> {
+
+        const normalizedCode =
+            this.normalizeCode(
+                code,
             );
-        }
+
 
         const {
             data,
             error,
         } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .eq(
                 "designation_code",
                 normalizedCode,
             )
+
             .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return data
+
             ? this.mapDesignation(
-                data as DesignationRow,
-            )
+                  data as DesignationRow,
+              )
+
             : null;
+
     }
 
+
     async search(
+
         keyword: string,
-    ): Promise<Designation[]> {
+
+    ):
+
+    Promise<Designation[]> {
+
         const search =
-            keyword?.trim();
+            typeof keyword === "string"
+                ? keyword.trim()
+                : "";
+
 
         if (!search) {
+
             return this.list();
+
         }
+
 
         const escapedSearch =
             search
-                .replace(/\\/g, "\\\\")
-                .replace(/%/g, "\\%")
-                .replace(/_/g, "\\_")
-                .replace(/,/g, "\\,")
-                .replace(/\./g, "\\.");
+                .replace(
+                    /\\/g,
+                    "\\\\",
+                )
+                .replace(
+                    /%/g,
+                    "\\%",
+                )
+                .replace(
+                    /_/g,
+                    "\\_",
+                )
+                .replace(
+                    /,/g,
+                    "\\,",
+                )
+                .replace(
+                    /\./g,
+                    "\\.",
+                );
+
 
         const {
             data,
             error,
         } = await this
+
             .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .or(
                 [
                     `designation_name.ilike.%${escapedSearch}%`,
@@ -235,6 +351,7 @@ export class DesignationsRepository
                     `description.ilike.%${escapedSearch}%`,
                 ].join(","),
             )
+
             .order(
                 "designation_name",
                 {
@@ -242,9 +359,13 @@ export class DesignationsRepository
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? []).map(
             (row) =>
@@ -252,45 +373,56 @@ export class DesignationsRepository
                     row as DesignationRow,
                 ),
         );
+
     }
 
+
     async save(
-        designation: Partial<Designation>,
-    ): Promise<Designation> {
+
+        designation:
+            Partial<Designation>,
+
+    ):
+
+    Promise<Designation> {
+
+        if (!designation) {
+
+            throw new Error(
+                "Designation is required.",
+            );
+
+        }
+
+
         const designationCode =
-            designation.designationCode
-                ?.trim()
-                .toUpperCase();
+            this.normalizeCode(
+                designation.designationCode,
+            );
+
 
         const designationName =
-            designation.designationName
-                ?.trim();
-
-        if (!designationCode) {
-            throw new Error(
-                "Designation code is required.",
+            this.normalizeName(
+                designation.designationName,
             );
-        }
 
-        if (!designationName) {
-            throw new Error(
-                "Designation name is required.",
-            );
-        }
 
         const now =
             new Date().toISOString();
+
 
         const payload: Record<
             string,
             unknown
         > = {
+
             organization_id:
                 this.organizationId,
 
             department_id:
-                designation.departmentId ??
-                null,
+                this.normalizeOptionalId(
+                    designation.departmentId,
+                ),
 
             designation_code:
                 designationCode,
@@ -299,8 +431,9 @@ export class DesignationsRepository
                 designationName,
 
             description:
-                designation.description ??
-                null,
+                this.normalizeDescription(
+                    designation.description,
+                ),
 
             status:
                 designation.status ??
@@ -312,65 +445,223 @@ export class DesignationsRepository
 
             updated_at:
                 now,
+
         };
 
+
         if (designation.id) {
+
             payload.id =
-                designation.id;
+                this.normalizeId(
+                    designation.id,
+                );
+
 
             if (designation.createdAt) {
+
                 payload.created_at =
                     designation.createdAt;
+
             }
+
         } else {
+
             payload.created_at =
                 now;
+
         }
+
 
         const {
             data,
             error,
         } = await this
+
             .tableRef()
+
             .upsert(
                 payload,
                 {
                     onConflict: "id",
                 },
             )
-            .select()
+
+            .select("*")
+
             .single();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return this.mapDesignation(
             data as DesignationRow,
         );
+
     }
 
-    async delete(
-        id: string,
-    ): Promise<void> {
-        const normalizedId =
-            id?.trim();
 
-        if (!normalizedId) {
-            throw new Error(
-                "Designation id is required.",
+    async delete(
+
+        id: string,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedId =
+            this.normalizeId(
+                id,
             );
-        }
+
 
         await super.delete(
             normalizedId,
         );
+
     }
 
+
+    private normalizeId(
+
+        id: string,
+
+    ): string {
+
+        const normalized =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Designation id is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeCode(
+
+        code: string | undefined,
+
+    ): string {
+
+        const normalized =
+            typeof code === "string"
+                ? code.trim().toUpperCase()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Designation code is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeName(
+
+        name: string | undefined,
+
+    ): string {
+
+        const normalized =
+            typeof name === "string"
+                ? name.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Designation name is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeOptionalId(
+
+        id: string | null | undefined,
+
+    ): string | null {
+
+        if (
+            typeof id !== "string"
+        ) {
+
+            return null;
+
+        }
+
+
+        const normalized =
+            id.trim();
+
+
+        return normalized || null;
+
+    }
+
+
+    private normalizeDescription(
+
+        description:
+            string | null | undefined,
+
+    ): string | null {
+
+        if (
+            typeof description !==
+            "string"
+        ) {
+
+            return null;
+
+        }
+
+
+        const normalized =
+            description.trim();
+
+
+        return normalized || null;
+
+    }
+
+
     private mapDesignation(
+
         row: DesignationRow,
+
     ): Designation {
+
         return {
+
             id:
                 row.id,
 
@@ -404,6 +695,9 @@ export class DesignationsRepository
 
             updatedAt:
                 row.updated_at,
+
         };
+
     }
+
 }

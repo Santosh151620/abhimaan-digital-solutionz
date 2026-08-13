@@ -2,199 +2,385 @@ import type {
     Designation,
 } from "@/types/admin/Designation";
 
+
 import type {
     IDesignationsRepository,
 } from "@/repositories/admin/DesignationsRepository";
 
+
 export class DesignationsService {
 
+
     constructor(
+
         private readonly repository:
             IDesignationsRepository,
+
     ) {}
 
+
     async list():
+
     Promise<Designation[]> {
 
         return this.repository.list();
 
     }
 
+
     async active():
+
     Promise<Designation[]> {
 
         return this.repository.active();
 
     }
 
+
     async findById(
-        id:string,
+
+        id: string,
+
     ):
+
     Promise<Designation | null> {
 
-        this.validateId(
-            id,
-        );
-
-        return this.repository.findById(
-            id,
-        );
-
-    }
-
-    async findByCode(
-        code:string,
-    ):
-    Promise<Designation | null> {
-
-        if(!code?.trim()) {
-
-            throw new Error(
-                "Designation code is required."
-            );
-
-        }
-
-        return this.repository.findByCode(
-            code
-                .trim()
-                .toUpperCase(),
-        );
-
-    }
-
-    async search(
-        keyword:string,
-    ):
-    Promise<Designation[]> {
-
-        return this.repository.search(
-            keyword.trim(),
-        );
-
-    }
-
-    async save(
-        designation:Designation,
-    ):
-    Promise<void> {
-
-        this.validateDesignation(
-            designation,
-        );
-
-        const existing =
-            await this.repository.findByCode(
-                designation.designationCode,
-            );
-
-        if(
-            existing &&
-            existing.id !== designation.id
-        ) {
-
-            throw new Error(
-                "Designation code already exists."
-            );
-
-        }
-
-        await this.repository.save({
-
-            ...designation,
-
-            designationCode:
-                designation.designationCode
-                    .trim()
-                    .toUpperCase(),
-
-            designationName:
-                designation.designationName
-                    .trim(),
-
-            updatedAt:
-                new Date()
-                    .toISOString(),
-
-        });
-
-    }
-
-    async delete(
-        id:string,
-    ):
-    Promise<void> {
-
-        this.validateId(
-            id,
-        );
-
-        const designation =
-            await this.repository.findById(
+        const normalizedId =
+            this.validateId(
                 id,
             );
 
-        if(!designation) {
 
-            throw new Error(
-                "Designation not found."
-            );
+        return this.repository.findById(
 
-        }
+            normalizedId,
 
-        await this.repository.delete(
-            id,
         );
 
     }
 
+
+    async findByCode(
+
+        code: string,
+
+    ):
+
+    Promise<Designation | null> {
+
+        const normalizedCode =
+            this.normalizeCode(
+                code,
+            );
+
+
+        return this.repository.findByCode(
+
+            normalizedCode,
+
+        );
+
+    }
+
+
+    async search(
+
+        keyword: string,
+
+    ):
+
+    Promise<Designation[]> {
+
+        const normalizedKeyword =
+            this.normalizeSearchKeyword(
+                keyword,
+            );
+
+
+        return this.repository.search(
+
+            normalizedKeyword,
+
+        );
+
+    }
+
+
+    async save(
+
+        designation: Designation,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedDesignation =
+            this.validateDesignation(
+                designation,
+            );
+
+
+        const existing =
+            await this.repository.findByCode(
+
+                normalizedDesignation
+                    .designationCode,
+
+            );
+
+
+        if (
+
+            existing &&
+
+            existing.id !==
+                designation.id
+
+        ) {
+
+            throw new Error(
+
+                "Designation code already exists.",
+
+            );
+
+        }
+
+
+        await this.repository.save(
+
+            {
+
+                ...designation,
+
+                designationCode:
+                    normalizedDesignation
+                        .designationCode,
+
+                designationName:
+                    normalizedDesignation
+                        .designationName,
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+
+        );
+
+    }
+
+
+    async delete(
+
+        id: string,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedId =
+            this.validateId(
+                id,
+            );
+
+
+        const designation =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!designation) {
+
+            throw new Error(
+
+                "Designation not found.",
+
+            );
+
+        }
+
+
+        await this.repository.delete(
+
+            normalizedId,
+
+        );
+
+    }
+
+
     private validateDesignation(
-        designation:Designation,
-    ) {
 
-        if(
-            !designation.designationCode?.trim()
-        ) {
+        designation: Designation,
+
+    ): {
+
+        designationCode: string;
+
+        designationName: string;
+
+    } {
+
+        if (!designation) {
 
             throw new Error(
-                "Designation code is required."
+
+                "Designation is required.",
+
             );
 
         }
 
-        if(
-            !designation.designationName?.trim()
-        ) {
+
+        const designationCode =
+            typeof designation.designationCode ===
+            "string"
+                ? designation.designationCode
+                    .trim()
+                    .toUpperCase()
+                : "";
+
+
+        const designationName =
+            typeof designation.designationName ===
+            "string"
+                ? designation.designationName.trim()
+                : "";
+
+
+        if (!designationCode) {
 
             throw new Error(
-                "Designation name is required."
+
+                "Designation code is required.",
+
             );
 
         }
 
-        if(
+
+        if (!designationName) {
+
+            throw new Error(
+
+                "Designation name is required.",
+
+            );
+
+        }
+
+
+        if (
             !designation.organizationId?.trim()
         ) {
 
             throw new Error(
-                "Organization is required."
+
+                "Organization is required.",
+
             );
 
         }
+
+
+        return {
+
+            designationCode,
+
+            designationName,
+
+        };
 
     }
 
-    private validateId(
-        id:string,
-    ) {
 
-        if(!id?.trim()) {
+    private normalizeCode(
+
+        code: string,
+
+    ): string {
+
+        const normalizedCode =
+            typeof code === "string"
+                ? code
+                    .trim()
+                    .toUpperCase()
+                : "";
+
+
+        if (!normalizedCode) {
 
             throw new Error(
-                "Designation id is required."
+
+                "Designation code is required.",
+
             );
 
         }
+
+
+        return normalizedCode;
+
+    }
+
+
+    private normalizeSearchKeyword(
+
+        keyword: string,
+
+    ): string {
+
+        const normalizedKeyword =
+            typeof keyword === "string"
+                ? keyword.trim()
+                : "";
+
+
+        if (!normalizedKeyword) {
+
+            throw new Error(
+
+                "Designation search keyword is required.",
+
+            );
+
+        }
+
+
+        return normalizedKeyword;
+
+    }
+
+
+    private validateId(
+
+        id: string,
+
+    ): string {
+
+        const normalizedId =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
+
+            throw new Error(
+
+                "Designation id is required.",
+
+            );
+
+        }
+
+
+        return normalizedId;
 
     }
 

@@ -11,54 +11,76 @@ import {
 } from "@/repositories/admin/LocationsRepository";
 
 
-
-const repository =
-
-    new LocationsRepository();
-
+import {
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
 
 
 
+async function getRepository():
 
-export async function getLocations(): Promise<Location[]> {
+Promise<LocationsRepository> {
+
+    const supabase =
+        await createSupabaseServerClient();
 
 
-    return await repository.findAll();
-
+    return new LocationsRepository(
+        supabase,
+    );
 
 }
 
 
+
+export async function getLocations():
+
+Promise<Location[]> {
+
+    const repository =
+        await getRepository();
+
+
+    return repository.findAll();
+
+}
 
 
 
 export async function saveLocation(
 
-    location: Partial<Location>,
+    location:
+        Partial<Location>,
 
-): Promise<Location> {
+):
+
+Promise<Location> {
+
+    const repository =
+        await getRepository();
 
 
-
-    return await repository.save(
+    return repository.save(
 
         location,
 
     );
 
-
 }
 
 
 
+export async function deleteLocation(
 
+    id:
+        string,
 
-async function deleteLocation(
+):
 
-    id:string,
+Promise<void> {
 
-): Promise<void> {
-
+    const repository =
+        await getRepository();
 
 
     await repository.delete(
@@ -66,6 +88,5 @@ async function deleteLocation(
         id,
 
     );
-
 
 }

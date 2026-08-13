@@ -1,45 +1,62 @@
-import type { ReactNode } from "react";
+import type {
+    ReactNode,
+} from "react";
+
 
 import AdminHeader from "./AdminHeader";
+
 import AdminSidebar from "./AdminSidebar";
 
 
+
 interface AdminLayoutProps {
-    children: ReactNode;
+
+    children:ReactNode;
+
 }
 
 
+
 export default function AdminLayout({
+
     children,
-}: AdminLayoutProps) {
+
+}:AdminLayoutProps) {
+
 
     return (
 
         <div
+
             className="
                 flex
                 min-h-screen
-                bg-[#050505]
-                text-white
+                bg-background
+                text-foreground
             "
+
         >
+
 
             <AdminSidebar />
 
 
-            <div
-                className="
-                    flex
-                    min-w-0
-                    flex-1
-                    flex-col
-                "
-            >
+
+        <div className="
+    flex
+    min-w-0
+    flex-1
+    flex-col
+    overflow-hidden
+">
+
 
                 <AdminHeader />
 
 
+
                 <main
+
                     className="
                         flex-1
                         overflow-y-auto
@@ -48,23 +65,30 @@ export default function AdminLayout({
                         lg:px-8
                         lg:py-8
                     "
+
                 >
 
+
                     <div
+
                         className="
                             mx-auto
                             w-full
                             max-w-[1600px]
                         "
+
                     >
 
                         {children}
 
                     </div>
 
+
                 </main>
 
+
             </div>
+
 
         </div>
 

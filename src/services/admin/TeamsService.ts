@@ -2,25 +2,53 @@ import type {
     Team,
 } from "@/types/admin/Team";
 
+
 import {
     TeamsRepository,
 } from "@/repositories/admin/TeamsRepository";
 
+
+
+
+
 export class TeamsService {
+
+
+
+
 
     constructor(
 
-        private readonly repository: TeamsRepository,
+        private readonly repository:
+            TeamsRepository,
 
     ) {}
+
+
+
+
+
+
+
+
 
     async getAll():
 
     Promise<Team[]> {
 
+
         return this.repository.findAll();
 
+
     }
+
+
+
+
+
+
+
+
 
     async findById(
 
@@ -30,15 +58,32 @@ export class TeamsService {
 
     Promise<Team | null> {
 
-        this.validateId(
-            id,
-        );
+
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
+
 
         return this.repository.findById(
-            id.trim(),
+
+            normalizedId,
+
         );
 
+
     }
+
+
+
+
+
+
+
+
 
     async save(
 
@@ -48,26 +93,44 @@ export class TeamsService {
 
     Promise<Team> {
 
-        this.validateTeam(
-            team,
+
+        const normalizedTeam =
+            this.validateTeam(
+
+                team,
+
+            );
+
+
+
+        return this.repository.save(
+
+            {
+
+                ...team,
+
+
+                teamCode:
+                    normalizedTeam.teamCode,
+
+
+                teamName:
+                    normalizedTeam.teamName,
+
+            },
+
         );
 
-        return this.repository.save({
-
-            ...team,
-
-            teamCode:
-                team.teamCode!
-                    .trim()
-                    .toUpperCase(),
-
-            teamName:
-                team.teamName!
-                    .trim(),
-
-        });
 
     }
+
+
+
+
+
+
+
+
 
     async delete(
 
@@ -77,67 +140,166 @@ export class TeamsService {
 
     Promise<void> {
 
-        this.validateId(
-            id,
-        );
+
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
+
 
         await this.repository.delete(
-            id.trim(),
+
+            normalizedId,
+
         );
 
+
     }
+
+
+
+
+
+
+
+
 
     private validateTeam(
 
         team: Partial<Team>,
 
-    ): void {
+    ): {
+
+        teamCode: string;
+
+        teamName: string;
+
+    } {
+
 
         if (!team) {
 
+
             throw new Error(
+
                 "Team is required.",
+
             );
+
 
         }
 
-        if (
-            !team.teamCode?.trim()
-        ) {
+
+
+        const teamCode =
+
+            typeof team.teamCode ===
+            "string"
+
+                ? team.teamCode
+                    .trim()
+                    .toUpperCase()
+
+                : "";
+
+
+
+        if (!teamCode) {
+
 
             throw new Error(
+
                 "Team code is required.",
+
             );
+
 
         }
 
-        if (
-            !team.teamName?.trim()
-        ) {
+
+
+        const teamName =
+
+            typeof team.teamName ===
+            "string"
+
+                ? team.teamName.trim()
+
+                : "";
+
+
+
+        if (!teamName) {
+
 
             throw new Error(
+
                 "Team name is required.",
+
             );
 
+
         }
+
+
+
+        return {
+
+            teamCode,
+
+            teamName,
+
+        };
+
 
     }
+
+
+
+
+
+
+
+
 
     private validateId(
 
         id: string,
 
-    ): void {
+    ): string {
 
-        if (!id?.trim()) {
+
+        const normalizedId =
+
+            typeof id ===
+            "string"
+
+                ? id.trim()
+
+                : "";
+
+
+
+        if (!normalizedId) {
+
 
             throw new Error(
+
                 "Team id is required.",
+
             );
 
+
         }
+
+
+
+        return normalizedId;
+
 
     }
 
 }
-

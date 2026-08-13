@@ -10,117 +10,98 @@ import type {
 
 
 export class RolesService {
+
+
     constructor(
+
         private readonly repository:
             IRolesRepository,
+
     ) {}
 
+
+
     async list():
+
     Promise<Role[]> {
+
         return this.repository.list();
+
     }
+
+
+
     async active():
+
     Promise<Role[]> {
+
         return this.repository.active();
+
     }
+
+
 
     async findById(
-        id:string,
+
+        id: string,
+
     ):
+
     Promise<Role | null> {
-        this.validateId(
 
-            id,
+        const normalizedId =
+            this.validateId(
 
-            "Role",
+                id,
 
-        );
+                "Role",
 
-
-
-
-
+            );
 
 
         return this.repository.findById(
 
-            id,
+            normalizedId,
 
         );
 
-
-
     }
-
-
-
-
-
-
 
 
 
     async findByCode(
 
-        code:string,
+        code: string,
 
     ):
 
     Promise<Role | null> {
 
+        const normalizedCode =
+            this.normalizeCode(
 
-
-        if(!code?.trim()) {
-
-
-
-            throw new Error(
-
-                "Role code is required."
+                code,
 
             );
 
 
-
-        }
-
-
-
-
-
-
-
         return this.repository.findByCode(
 
-            code
-
-                .trim()
-
-                .toLowerCase(),
+            normalizedCode,
 
         );
-
-
 
     }
 
 
 
-
-
-
-
-
-
     async save(
 
-        role:Role,
+        role: Role,
 
     ):
 
     Promise<void> {
-
-
 
         this.validateRole(
 
@@ -129,26 +110,23 @@ export class RolesService {
         );
 
 
-
-
-
-
-
-        const existing =
-
-            await this.repository.findByCode(
+        const normalizedCode =
+            this.normalizeCode(
 
                 role.code,
 
             );
 
 
+        const existing =
+            await this.repository.findByCode(
+
+                normalizedCode,
+
+            );
 
 
-
-
-
-        if(
+        if (
 
             existing &&
 
@@ -156,22 +134,13 @@ export class RolesService {
 
         ) {
 
-
-
             throw new Error(
 
-                "Role code already exists."
+                "Role code already exists.",
 
             );
 
-
-
         }
-
-
-
-
-
 
 
         await this.repository.save(
@@ -180,251 +149,227 @@ export class RolesService {
 
                 ...role,
 
+                name:
+                    role.name.trim(),
+
                 code:
+                    normalizedCode,
 
-                    role.code
-
-                    .trim()
-
-                    .toLowerCase(),
+                description:
+                    role.description?.trim()
+                    || undefined,
 
                 updatedAt:
-
                     new Date()
-
-                    .toISOString(),
+                        .toISOString(),
 
             },
 
         );
 
-
-
     }
-
-
-
-
-
-
 
 
 
     async delete(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<void> {
 
-
-
-        this.validateId(
-
-            id,
-
-            "Role",
-
-        );
-
-
-
-
-
-
-
-        const role =
-
-            await this.repository.findById(
+        const normalizedId =
+            this.validateId(
 
                 id,
 
+                "Role",
+
             );
 
 
+        const role =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
 
 
-
-
-
-        if(!role) {
-
-
+        if (!role) {
 
             throw new Error(
 
-                "Role not found."
+                "Role not found.",
 
             );
-
-
 
         }
 
 
-
-
-
-
-
-        if(role.isSystem) {
-
-
+        if (role.isSystem) {
 
             throw new Error(
 
-                "System roles cannot be deleted."
+                "System roles cannot be deleted.",
 
             );
 
-
-
         }
-
-
-
-
-
 
 
         await this.repository.delete(
 
-            id,
+            normalizedId,
 
         );
 
-
-
     }
-
-
-
-
-
-
 
 
 
     private validateRole(
 
-        role:Role,
+        role: Role,
 
-    ) {
+    ): void {
 
-
-
-        if(!role.name?.trim()) {
-
-
+        if (!role) {
 
             throw new Error(
 
-                "Role name is required."
+                "Role is required.",
 
             );
-
-
 
         }
 
 
-
-
-
-
-
-        if(!role.code?.trim()) {
-
-
+        if (!role.name?.trim()) {
 
             throw new Error(
 
-                "Role code is required."
+                "Role name is required.",
 
             );
-
-
 
         }
 
 
+        this.normalizeCode(
+
+            role.code,
+
+        );
 
 
-
-
-
-        if(!role.type) {
-
-
+        if (!role.type) {
 
             throw new Error(
 
-                "Role type is required."
+                "Role type is required.",
 
             );
-
-
 
         }
 
 
-
-
-
-
-
-        if(!role.level) {
-
-
+        if (!role.level) {
 
             throw new Error(
 
-                "Role level is required."
+                "Role level is required.",
 
             );
-
-
 
         }
 
 
+        if (!role.status) {
+
+            throw new Error(
+
+                "Role status is required.",
+
+            );
+
+        }
 
     }
 
 
 
+    private normalizeCode(
+
+        code: string,
+
+    ): string {
+
+        const normalized =
+            code?.trim().toLowerCase();
 
 
+        if (!normalized) {
 
+            throw new Error(
+
+                "Role code is required.",
+
+            );
+
+        }
+
+
+        if (
+
+            !/^[a-z0-9_-]+$/.test(
+
+                normalized,
+
+            )
+
+        ) {
+
+            throw new Error(
+
+                "Role code may contain only lowercase letters, numbers, underscores, and hyphens.",
+
+            );
+
+        }
+
+
+        return normalized;
+
+    }
 
 
 
     private validateId(
 
-        id:string,
+        id: string,
 
-        entity:string,
+        entity: string,
 
-    ) {
+    ): string {
+
+        const normalized =
+            id?.trim();
 
 
-
-        if(!id?.trim()) {
-
-
+        if (!normalized) {
 
             throw new Error(
 
-                `${entity} id is required.`
+                `${entity} id is required.`,
 
             );
-
-
 
         }
 
 
+        return normalized;
 
     }
 

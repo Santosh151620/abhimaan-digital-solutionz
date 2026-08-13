@@ -8,54 +8,124 @@ import type {
 } from "@/repositories/admin/PermissionsRepository";
 
 
+
+
+
 export class PermissionsService {
+
+
+
+
+
     constructor(
+
         private readonly repository:
             IPermissionsRepository,
+
     ) {}
 
+
+
+
+
+
+
+
+
     async list():
+
     Promise<Permission[]> {
+
+
         return this.repository.list();
+
+
     }
+
+
+
+
+
+
+
+
+
     async active():
+
     Promise<Permission[]> {
+
+
         return this.repository.active();
+
+
     }
+
+
+
+
+
+
+
+
 
     async findById(
-        id:string,
+
+        id: string,
+
     ):
 
     Promise<Permission | null> {
-        this.validateId(
-            id,
-        );
+
+
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
+
+
         return this.repository.findById(
-            id,
+
+            normalizedId,
+
         );
+
+
     }
 
+
+
+
+
+
+
+
+
     async findByKey(
-        key:string,
+
+        key: string,
+
     ):
 
     Promise<Permission | null> {
-        if(!key?.trim()) {
-            throw new Error(
-                "Permission key is required."
+
+
+        const normalizedKey =
+            this.normalizeKey(
+
+                key,
+
             );
-        }
+
+
+
         return this.repository.findByKey(
 
-            key
-
-                .trim()
-
-                .toLowerCase(),
+            normalizedKey,
 
         );
-
 
 
     }
@@ -70,16 +140,28 @@ export class PermissionsService {
 
     async search(
 
-        keyword:string,
+        keyword: string,
 
     ):
 
     Promise<Permission[]> {
 
 
-return this.repository.search(
-    keyword.trim(),
-);
+        const normalizedKeyword =
+            this.normalizeSearchKeyword(
+
+                keyword,
+
+            );
+
+
+
+        return this.repository.search(
+
+            normalizedKeyword,
+
+        );
+
 
     }
 
@@ -93,36 +175,32 @@ return this.repository.search(
 
     async save(
 
-        permission:Permission,
+        permission: Permission,
 
     ):
 
     Promise<void> {
 
 
+        const normalizedPermission =
+            this.validatePermission(
 
-        this.validatePermission(
+                permission,
 
-            permission,
-
-        );
-
-
+            );
 
 
 
+        const existing =
+            await this.repository.findByKey(
+
+                normalizedPermission.key,
+
+            );
 
 
-        const normalizedKey =
-    permission.key
-        .trim()
-        .toLowerCase();
 
-const existing =
-    await this.repository.findByKey(
-        normalizedKey,
-    );
-        if(
+        if (
 
             existing &&
 
@@ -131,40 +209,50 @@ const existing =
         ) {
 
 
-
             throw new Error(
 
-                "Permission key already exists."
+                "Permission key already exists.",
 
             );
 
 
-
         }
 
- await this.repository.save({
 
-    ...permission,
 
-    key:
-        permission.key
-            .trim()
-            .toLowerCase(),
+        await this.repository.save(
 
-    name:
-        permission.name.trim(),
+            {
 
-    module:
-        permission.module.trim(),
+                ...permission,
 
-    action:
-        permission.action.trim(),
 
-    updatedAt:
-        new Date()
-            .toISOString(),
+                key:
+                    normalizedPermission.key,
 
-});
+
+                name:
+                    normalizedPermission.name,
+
+
+                module:
+                    normalizedPermission.module,
+
+
+                action:
+                    normalizedPermission.action,
+
+
+                updatedAt:
+
+                    new Date()
+
+                        .toISOString(),
+
+            },
+
+        );
+
 
     }
 
@@ -178,71 +266,64 @@ const existing =
 
     async delete(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<void> {
 
 
+        const normalizedId =
+            this.validateId(
 
-        this.validateId(
+                id,
 
-            id,
+            );
 
-        );
+
 
         const permission =
             await this.repository.findById(
-                id,
+
+                normalizedId,
+
             );
 
-        if(!permission) {
 
+
+        if (!permission) {
 
 
             throw new Error(
 
-                "Permission not found."
+                "Permission not found.",
 
             );
-
 
 
         }
 
 
 
-
-
-
-
-        if(permission.isSystem) {
-
+        if (permission.isSystem) {
 
 
             throw new Error(
 
-                "System permissions cannot be deleted."
+                "System permissions cannot be deleted.",
 
             );
 
 
-
         }
-
-
-
-
 
 
 
         await this.repository.delete(
 
-            id,
+            normalizedId,
 
         );
-
 
 
     }
@@ -257,66 +338,268 @@ const existing =
 
     private validatePermission(
 
-        permission:Permission,
+        permission: Permission,
 
-    ) {
+    ): {
+
+        key: string;
+
+        name: string;
+
+        module: string;
+
+        action: string;
+
+    } {
 
 
-
-        if(!permission.key?.trim()) {
-
+        if (!permission) {
 
 
             throw new Error(
 
-                "Permission key is required."
+                "Permission is required.",
+
+            );
+
+
+        }
+
+
+
+        const key =
+            this.normalizeKey(
+
+                permission.key,
 
             );
 
 
 
-        }
+        const name =
+            this.normalizeRequiredText(
 
-        if(!permission.name?.trim()) {
+                permission.name,
 
-
-
-            throw new Error(
-
-                "Permission name is required."
+                "Permission name is required.",
 
             );
 
 
 
-        }
+        const module =
+            this.normalizeRequiredText(
 
-        if(!permission.module?.trim()) {
-            throw new Error(
-                "Permission module is required."
+                permission.module,
+
+                "Permission module is required.",
+
             );
 
-        }
-        if(!permission.action?.trim()) {
-            throw new Error(
-                "Permission action is required."
+
+
+        const action =
+            this.normalizeRequiredText(
+
+                permission.action,
+
+                "Permission action is required.",
+
             );
-        }
+
+
+
         if (!permission.type) {
 
-    throw new Error(
-        "Permission type is required.",
-    );
 
-}
-    }
-    private validateId(
-        id:string,
-    ) {
-        if(!id?.trim()) {
             throw new Error(
-                "Permission id is required."
+
+                "Permission type is required.",
+
             );
+
+
         }
+
+
+
+        return {
+
+            key,
+
+            name,
+
+            module,
+
+            action,
+
+        };
+
+
     }
+
+
+
+
+
+
+
+
+
+    private normalizeKey(
+
+        key: string,
+
+    ): string {
+
+
+        const normalizedKey =
+
+            typeof key ===
+            "string"
+
+                ? key
+                    .trim()
+                    .toLowerCase()
+
+                : "";
+
+
+
+        if (!normalizedKey) {
+
+
+            throw new Error(
+
+                "Permission key is required.",
+
+            );
+
+
+        }
+
+
+
+        return normalizedKey;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private normalizeSearchKeyword(
+
+        keyword: string,
+
+    ): string {
+
+
+        return typeof keyword ===
+            "string"
+
+            ? keyword.trim()
+
+            : "";
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private normalizeRequiredText(
+
+        value: string,
+
+        message: string,
+
+    ): string {
+
+
+        const normalizedValue =
+
+            typeof value ===
+            "string"
+
+                ? value.trim()
+
+                : "";
+
+
+
+        if (!normalizedValue) {
+
+
+            throw new Error(
+
+                message,
+
+            );
+
+
+        }
+
+
+
+        return normalizedValue;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private validateId(
+
+        id: string,
+
+    ): string {
+
+
+        const normalizedId =
+
+            typeof id ===
+            "string"
+
+                ? id.trim()
+
+                : "";
+
+
+
+        if (!normalizedId) {
+
+
+            throw new Error(
+
+                "Permission id is required.",
+
+            );
+
+
+        }
+
+
+
+        return normalizedId;
+
+
+    }
+
 }

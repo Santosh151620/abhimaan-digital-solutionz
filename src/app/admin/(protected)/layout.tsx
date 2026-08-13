@@ -1,24 +1,36 @@
+import type {
+    ReactNode,
+} from "react";
+
+
 import {
     requireAdmin,
 } from "@/lib/requireAdmin";
 
+
 import AdminLayout from "@/components/admin/AdminLayout";
+
+
+
+interface AdminProtectedLayoutProps {
+
+    children:ReactNode;
+
+}
+
 
 
 export default async function AdminProtectedLayout({
 
     children,
 
-}: {
-
-    children: React.ReactNode;
-
-}) {
+}:AdminProtectedLayoutProps) {
 
 
     await requireAdmin(
         "ORGANIZATION_ADMIN",
     );
+
 
 
     return (

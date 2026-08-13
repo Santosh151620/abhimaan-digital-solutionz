@@ -1,127 +1,205 @@
+"use client";
+
 import Link from "next/link";
+
+import {
+    usePathname,
+} from "next/navigation";
 
 
 const actions = [
+
     {
         name: "Profile",
         href: "/admin/profile",
     },
+
     {
         name: "Security",
         href: "/admin/security",
     },
+
     {
         name: "Settings",
         href: "/admin/settings",
     },
+
     {
         name: "Language",
         href: "/admin/change-language",
     },
+
     {
         name: "Theme",
         href: "/admin/change-theme",
     },
-    {
-        name: "Logout",
-        href: "/admin/logout",
-    },
+
 ];
+
 
 
 export default function AdminHeader() {
 
+
+    const pathname =
+        usePathname();
+
+
+
+    function active(
+        href:string,
+    ) {
+
+        return pathname === href;
+
+    }
+
+
+
     return (
 
         <header
+
             className="
                 flex
                 h-16
                 items-center
                 justify-between
                 border-b
-                border-white/10
-                bg-[#0b0b0b]
+                border-border
+                bg-background
                 px-6
             "
+
         >
+
 
             <div>
 
                 <h1
+
                     className="
                         text-lg
                         font-semibold
-                        text-white
+                        text-foreground
                     "
+
                 >
+
                     Admin Portal
+
                 </h1>
 
+
                 <p
+
                     className="
                         text-sm
-                        text-slate-400
+                        text-muted-foreground
                     "
+
                 >
+
                     Platform administration and configuration
+
                 </p>
+
 
             </div>
 
 
-            <div className="flex items-center gap-3">
 
 
-                <div
+
+            <div
+
+                className="
+                    flex
+                    items-center
+                    gap-3
+                "
+
+            >
+
+
+                <nav
+
                     className="
                         hidden
                         items-center
                         gap-2
                         xl:flex
                     "
+
+                    aria-label="Admin shortcuts"
+
                 >
 
-                    {actions.map((action) => (
+                    {
+                        actions.map(
+                            action => (
 
-                        <Link
-                            key={action.href}
-                            href={action.href}
-                            className="
-                                rounded-lg
-                                border
-                                border-white/10
-                                px-3
-                                py-2
-                                text-sm
-                                text-slate-300
-                                transition
-                                hover:border-amber-300/30
-                                hover:text-amber-300
-                            "
-                        >
-                            {action.name}
-                        </Link>
+                                <Link
 
-                    ))}
+                                    key={action.href}
 
-                </div>
+                                    href={action.href}
+
+                                    className={`
+                                        rounded-lg
+                                        border
+                                        px-3
+                                        py-2
+                                        text-sm
+                                        transition
+                                        ${
+                                            active(action.href)
+                                            ?
+                                            "border-primary/30 bg-primary/10 text-primary"
+                                            :
+                                            "border-border text-muted-foreground hover:bg-muted hover:text-foreground"
+                                        }
+                                    `}
+
+                                >
+
+                                    {action.name}
+
+                                </Link>
+
+                            ),
+                        )
+                    }
 
 
-                <div
+                </nav>
+
+
+
+
+
+                <Link
+
+                    href="/admin/profile"
+
                     className="
                         flex
                         items-center
                         gap-3
                         rounded-lg
                         border
-                        border-white/10
+                        border-border
                         px-3
                         py-2
+                        transition
+                        hover:bg-muted
                     "
+
                 >
 
+
                     <div
+
                         className="
                             flex
                             h-8
@@ -129,43 +207,68 @@ export default function AdminHeader() {
                             items-center
                             justify-center
                             rounded-full
-                            bg-amber-300
+                            bg-primary
                             text-sm
                             font-bold
-                            text-black
+                            text-primary-foreground
                         "
+
                     >
+
                         A
+
                     </div>
 
 
-                    <div className="hidden sm:block">
+
+
+                    <div
+
+                        className="
+                            hidden
+                            sm:block
+                        "
+
+                    >
 
                         <p
+
                             className="
                                 text-sm
                                 font-medium
-                                text-white
+                                text-foreground
                             "
+
                         >
+
                             Administrator
+
                         </p>
 
+
+
                         <p
+
                             className="
                                 text-xs
-                                text-slate-500
+                                text-muted-foreground
                             "
+
                         >
+
                             Organization Admin
+
                         </p>
+
 
                     </div>
 
-                </div>
+
+                </Link>
 
 
             </div>
+
 
         </header>
 

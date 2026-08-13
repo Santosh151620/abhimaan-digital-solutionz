@@ -1,13 +1,13 @@
 "use client";
 
 import {
+    useEffect,
     useState,
 } from "react";
 
 import {
     useRouter,
 } from "next/navigation";
-
 
 import type {
     Role,
@@ -16,128 +16,447 @@ import type {
     RoleType,
 } from "@/types/admin/Role";
 
-
 import {
     createRole,
     updateRole,
 } from "@/app/admin/(protected)/roles/actions";
 
 
-
 interface RoleDialogProps {
+
     role?: Role;
+
     onClose: () => void;
+
 }
 
-const defaultForm: Partial<Role> = {
+
+interface RoleFormState {
+
+    name: string;
+
+    code: string;
+
+    description: string;
+
+    type: RoleType;
+
+    level: RoleLevel;
+
+    status: RoleStatus;
+
+}
+
+
+const DEFAULT_FORM: RoleFormState = {
+
     name: "",
+
     code: "",
+
     description: "",
+
     type: "Custom",
+
     level: "Organization",
+
     status: "Active",
-    permissionIds: [],
-    isSystem: false,
-    isDefault: false,
-    isActive: true,
+
 };
 
 
+const ROLE_TYPES: RoleType[] = [
+
+    "System",
+
+    "Organization",
+
+    "Custom",
+
+];
+
+
+const ROLE_LEVELS: RoleLevel[] = [
+
+    "Platform",
+
+    "Application",
+
+    "Organization",
+
+    "Department",
+
+    "Team",
+
+];
+
+
+const ROLE_STATUSES: RoleStatus[] = [
+
+    "Active",
+
+    "Inactive",
+
+    "Suspended",
+
+    "Archived",
+
+];
+
+
+function createForm(
+    role?: Role,
+): RoleFormState {
+
+    if (!role) {
+
+        return {
+            ...DEFAULT_FORM,
+        };
+
+    }
+
+    return {
+
+        name:
+            role.name ?? "",
+
+        code:
+            role.code ?? "",
+
+        description:
+            role.description ?? "",
+
+        type:
+            role.type ?? "Custom",
+
+        level:
+            role.level ?? "Organization",
+
+        status:
+            role.status ?? "Active",
+
+    };
+
+}
+
+
 export default function RoleDialog({
+
     role,
+
     onClose,
+
 }: RoleDialogProps) {
 
     const router =
         useRouter();
+
+
     const [
         form,
         setForm,
-    ] = useState<Partial<Role>>(
-        {
-            ...defaultForm,
-            ...role,
-        }
-    );
+    ] =
+        useState<RoleFormState>(
+            () => createForm(role),
+        );
+
 
     const [
         loading,
         setLoading,
-    ] = useState(false);
+    ] =
+        useState(false);
+
 
     const [
         error,
         setError,
-    ] = useState<string | null>(null);
+    ] =
+        useState<string | null>(
+            null,
+        );
 
 
-    function updateField<K extends keyof Role>(
+    const isEditing =
+        Boolean(role);
+
+
+    const isSystemRole =
+        role?.isSystem === true;
+
+
+    useEffect(() => {
+
+        setForm(
+            createForm(role),
+        );
+
+        setError(null);
+
+    }, [role]);
+
+
+    function updateField<K extends keyof RoleFormState>(
+
         key: K,
-        value: Role[K],
+
+        value: RoleFormState[K],
 
     ) {
 
         setForm(
             previous => ({
+
                 ...previous,
+
                 [key]: value,
+
             }),
         );
+
     }
 
+
+    function validate(): boolean {
+
+        const name =
+            form.name.trim();
+
+        const code =
+            form.code.trim();
+
+
+        if (!name) {
+
+            setError(
+                "Role name is required.",
+            );
+
+            return false;
+
+        }
+
+
+        if (!code) {
+
+            setError(
+                "Role code is required.",
+            );
+
+            return false;
+
+        }
+
+
+        if (
+            !/^[a-zA-Z0-9_-]+$/.test(
+                code,
+            )
+        ) {
+
+            setError(
+                "Role code may contain only letters, numbers, underscores, and hyphens.",
+            );
+
+            return false;
+
+        }
+
+
+        if (!form.type) {
+
+            setError(
+                "Role type is required.",
+            );
+
+            return false;
+
+        }
+
+
+        if (!form.level) {
+
+            setError(
+                "Role level is required.",
+            );
+
+            return false;
+
+        }
+
+
+        if (!form.status) {
+
+            setError(
+                "Role status is required.",
+            );
+
+            return false;
+
+        }
+
+
+        return true;
+
+    }
+
+
     async function submit() {
+
         setError(null);
-        if (!form.name?.trim()) {
-            setError(
-                "Role name is required."
 
-            );
-            return;
-        }
-        if (!form.code?.trim()) {
-            setError(
-                "Role code is required."
 
-            );
+        if (!validate()) {
+
             return;
+
         }
+
+
         try {
-            setLoading(true);
-            if (role) {
-                await updateRole(
-                    {
-                        ...role,
-                        ...form,
-                    } as Role,
 
-                );
+            setLoading(true);
+
+
+            if (role) {
+
+                await updateRole({
+
+                    ...role,
+
+                    name:
+                        form.name.trim(),
+
+                    code:
+                        isSystemRole
+                            ? role.code
+                            : form.code
+                                .trim()
+                                .toLowerCase(),
+
+                    description:
+                        form.description.trim()
+                        || undefined,
+
+                    type:
+                        isSystemRole
+                            ? role.type
+                            : form.type,
+
+                    level:
+                        form.level,
+
+                    status:
+                        form.status,
+
+                    isActive:
+                        form.status === "Active",
+
+                });
+
             }
 
             else {
-                await createRole(
-                    form,
 
-                );
+                await createRole({
+
+                    name:
+                        form.name.trim(),
+
+                    code:
+                        form.code
+                            .trim()
+                            .toLowerCase(),
+
+                    description:
+                        form.description.trim()
+                        || undefined,
+
+                    type:
+                        form.type,
+
+                    level:
+                        form.level,
+
+                    status:
+                        form.status,
+
+                    permissionIds:
+                        [],
+
+                    isSystem:
+                        false,
+
+                    isDefault:
+                        false,
+
+                    isActive:
+                        form.status === "Active",
+
+                    metadata:
+                        {},
+
+                });
+
             }
+
+
             router.refresh();
+
             onClose();
+
         }
 
-        catch (error) {
+        catch (caughtError) {
+
             setError(
-                error instanceof Error
-                    ? error.message
-                    : "Unable to save role."
+
+                caughtError instanceof Error
+
+                    ? caughtError.message
+
+                    : "Unable to save role.",
+
             );
+
         }
 
         finally {
+
             setLoading(false);
+
         }
+
     }
 
+
+    function handleBackdropClick(
+        event: React.MouseEvent<HTMLDivElement>,
+    ) {
+
+        if (
+            event.target === event.currentTarget
+            && !loading
+        ) {
+
+            onClose();
+
+        }
+
+    }
+
+
     return (
+
         <div
+
+            role="presentation"
+
+            onMouseDown={
+                handleBackdropClick
+            }
+
             className="
                 fixed
                 inset-0
@@ -145,237 +464,645 @@ export default function RoleDialog({
                 flex
                 items-center
                 justify-center
+                overflow-y-auto
                 bg-black/40
                 p-4
-
             "
 
         >
+
             <div
+
+                role="dialog"
+
+                aria-modal="true"
+
+                aria-labelledby="role-dialog-title"
+
                 className="
                     w-full
                     max-w-xl
                     rounded-xl
+                    border
+                    border-border
                     bg-background
                     p-6
-                    space-y-5
                     shadow-xl
-
                 "
+
             >
-                <div>
+
+                <div className="space-y-1">
+
                     <h2
+
+                        id="role-dialog-title"
+
                         className="
                             text-xl
                             font-semibold
-                       "
+                            text-foreground
+                        "
 
                     >
+
                         {
-                            role
+                            isEditing
                                 ? "Edit Role"
                                 : "Create Role"
-
                         }
+
                     </h2>
+
+
+                    <p className="
+                        text-sm
+                        text-muted-foreground
+                    ">
+
+                        {
+                            isEditing
+                                ? "Update the role configuration."
+                                : "Create a role for the organization."
+                        }
+
+                    </p>
+
                 </div>
+
+
                 {
                     error && (
+
                         <div
+
+                            role="alert"
+
                             className="
-                                rounded-md
+                                mt-5
+                                rounded-lg
                                 border
-                                border-destructive
+                                border-destructive/30
+                                bg-destructive/10
                                 p-3
+                                text-sm
                                 text-destructive
-
                             "
+
                         >
+
                             {error}
+
                         </div>
-                   )
+
+                    )
                 }
-                <input
-                    className="
-                        w-full
-                        rounded-md
-                        border
-                        p-2
 
-                    "
-                    placeholder="Role Name"
-                    value={form.name ?? ""}
-                    onChange={event =>
-                        updateField(
-                            "name",
-                            event.target.value,
-                        )
-                    }
-                />
-                <input
-                    className="
-                        w-full
-                        rounded-md
-                        border
-                        p-2
 
-                   "
-                    placeholder="Role Code"
-                    disabled={role?.isSystem}
-                    value={form.code ?? ""}
-                    onChange={event =>
-                        updateField(
-                            "code",
-                            event.target.value,
-                        )
-                    }
+                <div className="
+                    mt-5
+                    space-y-4
+                ">
 
-                />
-                <textarea
-                    className="
-                        w-full
-                        rounded-md
-                        border
-                        p-2
 
-                   "
-                    placeholder="Description"
-                    value={form.description ?? ""}
-                    onChange={event =>
-                        updateField(
-                            "description",
-                            event.target.value,
-                        )
-                    }
-                />
-                <select
-                    className="
-                        w-full
-                        rounded-md
-                        border
-                        p-2
-                    "
-                    value={form.type ?? "Custom"}
-                    disabled={role?.isSystem}
-                    onChange={event =>
-                        updateField(
-                            "type",
-                            event.target.value as RoleType,
-                        )
-                    }
+                    <div>
 
-                >
-                    <option value="System">
-                        System
+                        <label
 
-                    </option>
-                    <option value="Organization">
-                        Organization
+                            htmlFor="role-name"
 
-                    </option>
-                    <option value="Custom">
-                        Custom
+                            className="
+                                mb-1.5
+                                block
+                                text-sm
+                                font-medium
+                            "
 
-                    </option>
-                </select>
+                        >
 
-                <select
-                    className="
-                        w-full
-                        rounded-md
-                        border
-                        p-2
+                            Role Name
 
-                 "
-                    value={form.level ?? "Organization"}
-                    onChange={event =>
-                        updateField(
-                            "level",
-                            event.target.value as RoleLevel,
-                       )
-                    }
-                >
-                    <option value="Platform">
-                        Platform
+                        </label>
 
-                    </option>
-                   <option value="Organization">
-                        Organization
 
-                    </option>
-                    <option value="Department">
-                        Department
-                    </option>
-                    <option value="Team">
-                        Team
-                    </option>
-                </select>
+                        <input
 
-                <select
-                    className="
-                        w-full
-                        rounded-md
-                        border
-                        p-2
-                    "
-                    value={form.status ?? "Active"}
-                    onChange={event =>
-                        updateField(
-                            "status",
-                            event.target.value as RoleStatus,
-                        )
-                    }
-                >
-                    <option value="Active">
-                        Active
-                    </option>
-                    <option value="Inactive">
-                        Inactive
-                    </option>
-                    <option value="Suspended">
-                        Suspended
-                    </option>
-                </select>
-                <div
-                    className="
-                        flex
-                        justify-end
-                     gap-3
-                  "
-                >
+                            id="role-name"
+
+                            type="text"
+
+                            autoComplete="off"
+
+                            value={form.name}
+
+                            disabled={loading}
+
+                            onChange={
+                                event =>
+                                    updateField(
+                                        "name",
+                                        event.target.value,
+                                    )
+                            }
+
+                            className="
+                                w-full
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                outline-none
+                                focus:border-primary
+                                focus:ring-2
+                                focus:ring-primary/20
+                                disabled:cursor-not-allowed
+                                disabled:opacity-60
+                            "
+
+                            placeholder="Organization Administrator"
+
+                        />
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+
+                            htmlFor="role-code"
+
+                            className="
+                                mb-1.5
+                                block
+                                text-sm
+                                font-medium
+                            "
+
+                        >
+
+                            Role Code
+
+                        </label>
+
+
+                        <input
+
+                            id="role-code"
+
+                            type="text"
+
+                            autoComplete="off"
+
+                            value={form.code}
+
+                            disabled={
+                                loading
+                                || isSystemRole
+                            }
+
+                            onChange={
+                                event =>
+                                    updateField(
+                                        "code",
+                                        event.target.value,
+                                    )
+                            }
+
+                            className="
+                                w-full
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                font-mono
+                                outline-none
+                                focus:border-primary
+                                focus:ring-2
+                                focus:ring-primary/20
+                                disabled:cursor-not-allowed
+                                disabled:opacity-60
+                            "
+
+                            placeholder="organization_admin"
+
+                        />
+
+
+                        {
+                            isSystemRole && (
+
+                                <p className="
+                                    mt-1.5
+                                    text-xs
+                                    text-muted-foreground
+                                ">
+
+                                    System role codes cannot be changed.
+
+                                </p>
+
+                            )
+                        }
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+
+                            htmlFor="role-description"
+
+                            className="
+                                mb-1.5
+                                block
+                                text-sm
+                                font-medium
+                            "
+
+                        >
+
+                            Description
+
+                        </label>
+
+
+                        <textarea
+
+                            id="role-description"
+
+                            rows={3}
+
+                            value={form.description}
+
+                            disabled={loading}
+
+                            onChange={
+                                event =>
+                                    updateField(
+                                        "description",
+                                        event.target.value,
+                                    )
+                            }
+
+                            className="
+                                w-full
+                                resize-y
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                outline-none
+                                focus:border-primary
+                                focus:ring-2
+                                focus:ring-primary/20
+                                disabled:cursor-not-allowed
+                                disabled:opacity-60
+                            "
+
+                            placeholder="Describe the purpose of this role."
+
+                        />
+
+                    </div>
+
+
+                    <div className="
+                        grid
+                        gap-4
+                        sm:grid-cols-2
+                    ">
+
+
+                        <div>
+
+                            <label
+
+                                htmlFor="role-type"
+
+                                className="
+                                    mb-1.5
+                                    block
+                                    text-sm
+                                    font-medium
+                                "
+
+                            >
+
+                                Role Type
+
+                            </label>
+
+
+                            <select
+
+                                id="role-type"
+
+                                value={form.type}
+
+                                disabled={
+                                    loading
+                                    || isSystemRole
+                                }
+
+                                onChange={
+                                    event =>
+                                        updateField(
+                                            "type",
+                                            event.target.value as RoleType,
+                                        )
+                                }
+
+                                className="
+                                    w-full
+                                    rounded-lg
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    outline-none
+                                    focus:border-primary
+                                    focus:ring-2
+                                    focus:ring-primary/20
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-60
+                                "
+
+                            >
+
+                                {
+                                    ROLE_TYPES.map(
+                                        type => (
+
+                                            <option
+                                                key={type}
+                                                value={type}
+                                            >
+
+                                                {type}
+
+                                            </option>
+
+                                        ),
+                                    )
+                                }
+
+                            </select>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+
+                                htmlFor="role-level"
+
+                                className="
+                                    mb-1.5
+                                    block
+                                    text-sm
+                                    font-medium
+                                "
+
+                            >
+
+                                Role Level
+
+                            </label>
+
+
+                            <select
+
+                                id="role-level"
+
+                                value={form.level}
+
+                                disabled={loading}
+
+                                onChange={
+                                    event =>
+                                        updateField(
+                                            "level",
+                                            event.target.value as RoleLevel,
+                                        )
+                                }
+
+                                className="
+                                    w-full
+                                    rounded-lg
+                                    border
+                                    border-border
+                                    bg-background
+                                    px-3
+                                    py-2
+                                    text-sm
+                                    outline-none
+                                    focus:border-primary
+                                    focus:ring-2
+                                    focus:ring-primary/20
+                                    disabled:cursor-not-allowed
+                                    disabled:opacity-60
+                                "
+
+                            >
+
+                                {
+                                    ROLE_LEVELS.map(
+                                        level => (
+
+                                            <option
+                                                key={level}
+                                                value={level}
+                                            >
+
+                                                {level}
+
+                                            </option>
+
+                                        ),
+                                    )
+                                }
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label
+
+                            htmlFor="role-status"
+
+                            className="
+                                mb-1.5
+                                block
+                                text-sm
+                                font-medium
+                            "
+
+                        >
+
+                            Status
+
+                        </label>
+
+
+                        <select
+
+                            id="role-status"
+
+                            value={form.status}
+
+                            disabled={loading}
+
+                            onChange={
+                                event =>
+                                    updateField(
+                                        "status",
+                                        event.target.value as RoleStatus,
+                                    )
+                            }
+
+                            className="
+                                w-full
+                                rounded-lg
+                                border
+                                border-border
+                                bg-background
+                                px-3
+                                py-2
+                                text-sm
+                                outline-none
+                                focus:border-primary
+                                focus:ring-2
+                                focus:ring-primary/20
+                                disabled:cursor-not-allowed
+                                disabled:opacity-60
+                            "
+
+                        >
+
+                            {
+                                ROLE_STATUSES.map(
+                                    status => (
+
+                                        <option
+                                            key={status}
+                                            value={status}
+                                        >
+
+                                            {status}
+
+                                        </option>
+
+                                    ),
+                                )
+                            }
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <div className="
+                    mt-6
+                    flex
+                    justify-end
+                    gap-3
+                    border-t
+                    border-border
+                    pt-5
+                ">
+
+
                     <button
+
                         type="button"
+
                         onClick={onClose}
+
                         disabled={loading}
+
                         className="
-                            rounded-md
+                            rounded-lg
                             border
+                            border-border
                             px-4
                             py-2
+                            text-sm
+                            font-medium
+                            text-foreground
+                            transition
+                            hover:bg-muted
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
                         "
+
                     >
+
                         Cancel
+
                     </button>
+
+
                     <button
+
                         type="button"
+
                         onClick={submit}
+
                         disabled={loading}
+
                         className="
-                            rounded-md
+                            rounded-lg
                             bg-primary
                             px-4
                             py-2
+                            text-sm
+                            font-medium
                             text-primary-foreground
+                            transition
+                            hover:opacity-90
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
                         "
+
                     >
+
                         {
                             loading
                                 ? "Saving..."
-                                : "Save"
+                                : isEditing
+                                    ? "Save Changes"
+                                    : "Create Role"
                         }
+
                     </button>
+
                 </div>
+
             </div>
+
         </div>
+
     );
+
 }

@@ -10,7 +10,12 @@ import type {
 
 
 
+
+
 export class SettingsService {
+
+
+
 
 
     constructor(
@@ -19,6 +24,10 @@ export class SettingsService {
             ISettingsRepository,
 
     ) {}
+
+
+
+
 
 
 
@@ -40,6 +49,8 @@ export class SettingsService {
 
 
 
+
+
     async find(
 
         category: SettingCategory,
@@ -51,21 +62,29 @@ export class SettingsService {
     Promise<PlatformSetting | null> {
 
 
-        this.validateCategory(
-            category,
-        );
+        const normalizedCategory =
+            this.validateCategory(
+
+                category,
+
+            );
 
 
-        this.validateKey(
-            key,
-        );
+
+        const normalizedKey =
+            this.validateKey(
+
+                key,
+
+            );
+
 
 
         return this.repository.find(
 
-            category,
+            normalizedCategory,
 
-            key.trim(),
+            normalizedKey,
 
         );
 
@@ -73,99 +92,280 @@ export class SettingsService {
     }
 
 
-async findByCategory(
-    category: SettingCategory,
-): Promise<{
-    category: SettingCategory;
-    settings: PlatformSetting[];
-}>
 
-     {
-        this.validateCategory(
-            category,
-        );
+
+
+
+
+
+
+    async findByCategory(
+
+        category: SettingCategory,
+
+    ): Promise<{
+
+        category: SettingCategory;
+
+        settings: PlatformSetting[];
+
+    }> {
+
+
+        const normalizedCategory =
+            this.validateCategory(
+
+                category,
+
+            );
+
+
 
         return this.repository.findByCategory(
 
-            category,
+            normalizedCategory,
 
         );
 
 
     }
+
+
+
+
+
+
+
+
 
     async findByKey(
-        key:string,
-    ) : Promise<PlatformSetting | null> {
-        this.validateKey(
-            key,
-        );
+
+        key: string,
+
+    ):
+
+    Promise<PlatformSetting | null> {
+
+
+        const normalizedKey =
+            this.validateKey(
+
+                key,
+
+            );
+
+
+
         return this.repository.findByKey(
 
-            key.trim(),
-       );
+            normalizedKey,
+
+        );
+
+
     }
 
+
+
+
+
+
+
+
+
     async save(
+
         setting: PlatformSetting,
+
     ):
+
     Promise<void> {
-        this.validateSetting(
-            setting,
-        );
+
+
+        const normalizedSetting =
+            this.validateSetting(
+
+                setting,
+
+            );
+
+
+
         await this.repository.save(
 
             {
+
                 ...setting,
+
+
                 category:
-                   setting.category,
+                    normalizedSetting.category,
+
+
                 key:
-                    setting.key
-                        .trim(),
+                    normalizedSetting.key,
+
+
                 updatedAt:
+
                     new Date()
+
                         .toISOString(),
+
             },
+
         );
+
+
     }
+
+
+
+
+
+
+
+
 
     private validateSetting(
-        setting: PlatformSetting,
-    ) {
-        if(!setting) {
-            throw new Error(
-                "Setting is required.",
-            );
-        }
-        this.validateCategory(
-            setting.category,
-        );
 
-        this.validateKey(
-            setting.key,
-        );
+        setting: PlatformSetting,
+
+    ): {
+
+        category: SettingCategory;
+
+        key: string;
+
+    } {
+
+
+        if (!setting) {
+
+
+            throw new Error(
+
+                "Setting is required.",
+
+            );
+
+
+        }
+
+
+
+        const category =
+            this.validateCategory(
+
+                setting.category,
+
+            );
+
+
+
+        const key =
+            this.validateKey(
+
+                setting.key,
+
+            );
+
+
+
+        return {
+
+            category,
+
+            key,
+
+        };
+
+
     }
+
+
+
+
+
+
+
+
 
     private validateCategory(
+
         category: SettingCategory,
-    ) {
-        if(
+
+    ): SettingCategory {
+
+
+        if (
+
             !category ||
+
             !String(category).trim()
+
         ) {
 
+
             throw new Error(
+
                 "Setting category is required.",
+
             );
+
+
         }
+
+
+
+        return category;
+
+
     }
+
+
+
+
+
+
+
+
+
     private validateKey(
-        key:string,
-    ) {
-        if(!key?.trim()) {
+
+        key: string,
+
+    ): string {
+
+
+        const normalizedKey =
+
+            typeof key ===
+            "string"
+
+                ? key.trim()
+
+                : "";
+
+
+
+        if (!normalizedKey) {
+
+
             throw new Error(
+
                 "Setting key is required.",
+
             );
+
+
         }
+
+
+
+        return normalizedKey;
+
+
     }
+
 }

@@ -1,21 +1,43 @@
 import ModulesTable from "@/components/admin/modules/ModulesTable";
-import { ModulesRepository } from "@/repositories/admin/ModulesRepository";
-import { ModulesService } from "@/services/admin/ModulesService";
 
-export const dynamic = "force-dynamic";
+import {
+    ModulesRepository,
+} from "@/repositories/admin/ModulesRepository";
+
+import {
+    ModulesService,
+} from "@/services/admin/ModulesService";
+
+import {
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
+
+
+export const dynamic =
+    "force-dynamic";
+
 
 export default async function ModulesPage() {
 
+    const supabase =
+        await createSupabaseServerClient();
+
+
     const repository =
-        await ModulesRepository.create();
+        new ModulesRepository(
+            supabase,
+        );
+
 
     const service =
         new ModulesService(
             repository,
         );
 
+
     const modules =
         await service.list();
+
 
     return (
 
@@ -33,7 +55,8 @@ export default async function ModulesPage() {
 
             </section>
 
-            <section className="rounded-xl border overflow-x-auto">
+
+            <section className="overflow-x-auto rounded-xl border">
 
                 <ModulesTable
                     modules={modules}

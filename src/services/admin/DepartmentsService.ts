@@ -2,190 +2,344 @@ import type {
     Department,
 } from "@/types/admin/Department";
 
+
 import type {
     IDepartmentsRepository,
 } from "@/repositories/admin/DepartmentsRepository";
 
+
 export class DepartmentsService {
 
+
     constructor(
+
         private readonly repository:
             IDepartmentsRepository,
+
     ) {}
 
+
     async list():
-        Promise<Department[]> {
+
+    Promise<Department[]> {
 
         return this.repository.list();
+
     }
+
 
     async active():
-        Promise<Department[]> {
+
+    Promise<Department[]> {
 
         return this.repository.active();
+
     }
+
 
     async findById(
-        id:string,
+
+        id: string,
+
     ):
-        Promise<Department | null> {
 
-        this.validateId(
-            id,
-        );
+    Promise<Department | null> {
 
-        return this.repository.findById(
-            id,
-        );
-    }
-
-    async findByCode(
-        code:string,
-    ):
-        Promise<Department | null> {
-
-        if(!code?.trim()) {
-
-            throw new Error(
-                "Department code is required.",
-            );
-
-        }
-
-        return this.repository.findByCode(
-            code
-                .trim()
-                .toUpperCase(),
-        );
-    }
-
-    async save(
-        department:Department,
-    ):
-        Promise<void> {
-
-        this.validateDepartment(
-            department,
-        );
-
-        const existing =
-            await this.repository.findByCode(
-                department.departmentCode,
-            );
-
-        if(
-            existing &&
-            existing.id !== department.id
-        ) {
-
-            throw new Error(
-                "Department code already exists.",
-            );
-
-        }
-
-        await this.repository.save({
-
-            ...department,
-
-            departmentCode:
-                department.departmentCode
-                    .trim()
-                    .toUpperCase(),
-
-            departmentName:
-                department.departmentName
-                    .trim(),
-
-            updatedAt:
-                new Date()
-                    .toISOString(),
-
-        });
-    }
-
-    async delete(
-        id:string,
-    ):
-        Promise<void> {
-
-        this.validateId(
-            id,
-        );
-
-        const department =
-            await this.repository.findById(
+        const normalizedId =
+            this.validateId(
                 id,
             );
 
-        if(!department) {
 
-            throw new Error(
-                "Department not found.",
-            );
+        return this.repository.findById(
 
-        }
+            normalizedId,
 
-        await this.repository.delete(
-            id,
         );
+
     }
 
+
+    async findByCode(
+
+        code: string,
+
+    ):
+
+    Promise<Department | null> {
+
+        const normalizedCode =
+            this.normalizeCode(
+                code,
+            );
+
+
+        return this.repository.findByCode(
+
+            normalizedCode,
+
+        );
+
+    }
+
+
+    async save(
+
+        department: Department,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedDepartment =
+            this.validateDepartment(
+                department,
+            );
+
+
+        const existing =
+            await this.repository.findByCode(
+
+                normalizedDepartment
+                    .departmentCode,
+
+            );
+
+
+        if (
+
+            existing &&
+
+            existing.id !==
+                department.id
+
+        ) {
+
+            throw new Error(
+
+                "Department code already exists.",
+
+            );
+
+        }
+
+
+        await this.repository.save(
+
+            {
+
+                ...department,
+
+                departmentCode:
+                    normalizedDepartment
+                        .departmentCode,
+
+                departmentName:
+                    normalizedDepartment
+                        .departmentName,
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+
+        );
+
+    }
+
+
+    async delete(
+
+        id: string,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedId =
+            this.validateId(
+                id,
+            );
+
+
+        const department =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!department) {
+
+            throw new Error(
+
+                "Department not found.",
+
+            );
+
+        }
+
+
+        await this.repository.delete(
+
+            normalizedId,
+
+        );
+
+    }
+
+
     private validateDepartment(
-        department:Department,
-    ) {
 
-        if(
-            !department.departmentCode?.trim()
-        ) {
+        department: Department,
+
+    ): {
+
+        departmentCode: string;
+
+        departmentName: string;
+
+    } {
+
+        if (!department) {
 
             throw new Error(
+
+                "Department is required.",
+
+            );
+
+        }
+
+
+        const departmentCode =
+            typeof department.departmentCode ===
+            "string"
+                ? department.departmentCode
+                    .trim()
+                    .toUpperCase()
+                : "";
+
+
+        const departmentName =
+            typeof department.departmentName ===
+            "string"
+                ? department.departmentName.trim()
+                : "";
+
+
+        if (!departmentCode) {
+
+            throw new Error(
+
                 "Department code is required.",
+
             );
 
         }
 
-        if(
-            !department.departmentName?.trim()
-        ) {
+
+        if (!departmentName) {
 
             throw new Error(
+
                 "Department name is required.",
+
             );
 
         }
 
-        if(
+
+        if (
             !department.organizationId?.trim()
         ) {
 
             throw new Error(
+
                 "Organization is required.",
+
             );
 
         }
 
-        if(
-            !department.status
-        ) {
+
+        if (!department.status) {
 
             throw new Error(
+
                 "Department status is required.",
+
             );
 
         }
+
+
+        return {
+
+            departmentCode,
+
+            departmentName,
+
+        };
+
     }
+
+
+    private normalizeCode(
+
+        code: string,
+
+    ): string {
+
+        const normalizedCode =
+            typeof code === "string"
+                ? code.trim().toUpperCase()
+                : "";
+
+
+        if (!normalizedCode) {
+
+            throw new Error(
+
+                "Department code is required.",
+
+            );
+
+        }
+
+
+        return normalizedCode;
+
+    }
+
 
     private validateId(
-        id:string,
-    ) {
 
-        if(!id?.trim()) {
+        id: string,
+
+    ): string {
+
+        const normalizedId =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
 
             throw new Error(
+
                 "Department id is required.",
+
             );
 
         }
+
+
+        return normalizedId;
+
     }
+
 }

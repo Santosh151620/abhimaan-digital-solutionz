@@ -44,9 +44,30 @@ class EventBus {
     ): void {
 
 
+        if (
+            !event
+        ) {
+
+            throw new Error(
+                "Workflow event name is required.",
+            );
+
+        }
+
+
+        if (
+            typeof handler !== "function"
+        ) {
+
+            throw new Error(
+                "Workflow event handler is required.",
+            );
+
+        }
+
+
         const handlers =
             this.handlers.get(event) ?? [];
-
 
 
         if (
@@ -58,13 +79,11 @@ class EventBus {
         }
 
 
-
         handlers.push(
 
             handler,
 
         );
-
 
 
         this.handlers.set(
@@ -92,7 +111,6 @@ class EventBus {
             this.handlers.get(event);
 
 
-
         if (!handlers) {
 
             return;
@@ -100,16 +118,35 @@ class EventBus {
         }
 
 
+        const remainingHandlers =
+            handlers.filter(
+
+                existing =>
+                    existing !== handler,
+
+            );
+
+
+        if (
+            remainingHandlers.length === 0
+        ) {
+
+            this.handlers.delete(
+
+                event,
+
+            );
+
+            return;
+
+        }
+
 
         this.handlers.set(
 
             event,
 
-            handlers.filter(
-
-                existing => existing !== handler,
-
-            ),
+            remainingHandlers,
 
         );
 
@@ -124,6 +161,28 @@ class EventBus {
     ): Promise<void> {
 
 
+        if (
+            !event?.name
+        ) {
+
+            throw new Error(
+                "Workflow event is required.",
+            );
+
+        }
+
+
+        if (
+            !event.context
+        ) {
+
+            throw new Error(
+                "Workflow event context is required.",
+            );
+
+        }
+
+
         const handlers = [
 
             ...(this.handlers.get(event.name) ?? []),
@@ -131,13 +190,20 @@ class EventBus {
         ];
 
 
-
-        for (const handler of handlers) {
+        for (
+            const handler of handlers
+        ) {
 
 
             try {
 
-                await handler(event);
+
+                await handler(
+
+                    event,
+
+                );
+
 
             }
 
@@ -152,6 +218,18 @@ class EventBus {
 
                         event:
                             event.name,
+
+                        organizationId:
+                            event.context
+                                .organizationId,
+
+                        entityType:
+                            event.context
+                                .entityType,
+
+                        entityId:
+                            event.context
+                                .entityId,
 
                         error,
 

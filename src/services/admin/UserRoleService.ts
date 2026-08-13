@@ -9,153 +9,306 @@ import type {
 
 
 export class UserRoleService {
+
+
     constructor(
+
         private readonly repository:
             IUserRoleRepository,
+
     ) {}
 
+
+
+
     async rolesForUser(
-        userId:string,
+
+        userId: string,
 
     ):
 
     Promise<UserRole[]> {
-        this.validateId(
 
-            userId,
+        const normalizedUserId =
+            this.validateId(
+                userId,
+                "User",
+            );
 
-            "User",
-
-        );
 
         return this.repository.rolesForUser(
 
-            userId,
+            normalizedUserId,
 
         );
+
     }
+
+
+
+
     async assignRole(
-        userId:string,
-        roleId:string,
+
+        userId: string,
+
+        roleId: string,
 
     ):
 
     Promise<void> {
-        this.validateId(
-            userId,
-            "User",
-        );
-        this.validateId(
-            roleId,
-            "Role",
-        );
 
-       const existing =
-            await this.repository.rolesForUser(
+        const normalizedUserId =
+            this.validateId(
                 userId,
+                "User",
             );
 
-       const alreadyAssigned =
-            existing.some(
-                item =>
-                    item.roleId === roleId
-                    && item.isActive,
+
+        const normalizedRoleId =
+            this.validateId(
+                roleId,
+                "Role",
             );
-        if(alreadyAssigned) {
+
+
+        const existing =
+            await this.repository.rolesForUser(
+
+                normalizedUserId,
+
+            );
+
+
+        const alreadyAssigned =
+            existing.some(
+
+                item =>
+
+                    item.roleId ===
+                        normalizedRoleId &&
+
+                    item.isActive,
+
+            );
+
+
+        if (alreadyAssigned) {
+
             return;
+
         }
+
+
         await this.repository.assignRole(
-            userId,
-            roleId,
+
+            normalizedUserId,
+
+            normalizedRoleId,
+
         );
+
     }
+
+
+
+
     async removeRole(
-        userId:string,
-        roleId:string,
+
+        userId: string,
+
+        roleId: string,
+
     ):
 
     Promise<void> {
-        this.validateId(
-            userId,
-            "User",
-        );
-        this.validateId(
-            roleId,
-            "Role",
-        );
+
+        const normalizedUserId =
+            this.validateId(
+                userId,
+                "User",
+            );
+
+
+        const normalizedRoleId =
+            this.validateId(
+                roleId,
+                "Role",
+            );
+
 
         await this.repository.removeRole(
-            userId,
-            roleId,
+
+            normalizedUserId,
+
+            normalizedRoleId,
+
         );
+
     }
+
+
+
+
     async replaceRoles(
-        userId:string,
-        roleIds:string[],
+
+        userId: string,
+
+        roleIds: string[],
+
     ):
 
     Promise<void> {
-        this.validateId(
-            userId,
-            "User",
-        );
+
+        const normalizedUserId =
+            this.validateId(
+                userId,
+                "User",
+            );
+
+
+        if (!Array.isArray(roleIds)) {
+
+            throw new Error(
+                "Role ids are required.",
+            );
+
+        }
+
+
         const uniqueRoles =
             Array.from(
+
                 new Set(
+
                     roleIds
+
+                        .filter(
+                            (
+                                roleId,
+                            ): roleId is string =>
+                                typeof roleId ===
+                                "string",
+                        )
+
+                        .map(
+                            roleId =>
+                                roleId.trim(),
+                        )
+
+                        .filter(
+                            Boolean,
+                        ),
+
                 ),
+
             );
+
+
         await this.repository.replaceRoles(
-            userId,
+
+            normalizedUserId,
+
             uniqueRoles,
+
         );
+
     }
+
+
+
+
     async setPrimaryRole(
-        userId:string,
-        roleId:string,
+
+        userId: string,
+
+        roleId: string,
+
     ):
 
     Promise<void> {
-        this.validateId(
-            userId,
-            "User",
-        );
-        this.validateId(
-            roleId,
-            "Role",
-        );
+
+        const normalizedUserId =
+            this.validateId(
+                userId,
+                "User",
+            );
+
+
+        const normalizedRoleId =
+            this.validateId(
+                roleId,
+                "Role",
+            );
+
 
         const roles =
             await this.repository.rolesForUser(
-                userId,
+
+                normalizedUserId,
+
             );
+
 
         const assigned =
             roles.some(
+
                 role =>
-                    role.roleId === roleId
-                    && role.isActive,
+
+                    role.roleId ===
+                        normalizedRoleId &&
+
+                    role.isActive,
+
             );
 
-        if(!assigned) {
+
+        if (!assigned) {
+
             throw new Error(
-                "Cannot set primary role before assignment."
+                "Cannot set primary role before assignment.",
             );
+
         }
+
+
         await this.repository.setPrimaryRole(
-            userId,
-            roleId,
+
+            normalizedUserId,
+
+            normalizedRoleId,
+
         );
+
     }
 
+
+
+
     private validateId(
-        id:string,
-        entity:string,
-    ) {
-        if(!id?.trim()) {
+
+        id: string,
+
+        entity: string,
+
+    ): string {
+
+        const normalizedId =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
+
             throw new Error(
-                `${entity} id is required.`
+                `${entity} id is required.`,
             );
+
         }
-   }
+
+
+        return normalizedId;
+
+    }
+
 }

@@ -9,91 +9,142 @@ import type {
 
 
 
+
+
 export class RolePermissionService {
 
 
+
+
+
     constructor(
+
         private readonly repository:
             IRolePermissionRepository,
+
     ) {}
 
 
 
 
 
+
+
+
+
     async listByRole(
-        roleId:string,
+
+        roleId: string,
+
     ):
+
     Promise<RolePermission[]> {
 
 
-        this.validateId(
-            roleId,
-            "Role",
-        );
+        const normalizedRoleId =
+            this.validateId(
+
+                roleId,
+
+                "Role",
+
+            );
+
 
 
         return this.repository.listByRole(
-            roleId,
+
+            normalizedRoleId,
+
         );
 
+
     }
+
+
+
+
 
 
 
 
 
     async assign(
-        roleId:string,
-        permissionId:string,
+
+        roleId: string,
+
+        permissionId: string,
+
     ):
+
     Promise<void> {
 
 
-        this.validateId(
-            roleId,
-            "Role",
-        );
+        const normalizedRoleId =
+            this.validateId(
+
+                roleId,
+
+                "Role",
+
+            );
 
 
-        this.validateId(
-            permissionId,
-            "Permission",
-        );
+
+        const normalizedPermissionId =
+            this.validateId(
+
+                permissionId,
+
+                "Permission",
+
+            );
 
 
 
         const existing =
             await this.repository.listByRole(
-                roleId,
+
+                normalizedRoleId,
+
             );
 
 
 
         const alreadyAssigned =
             existing.some(
+
                 item =>
-                    item.permissionId === permissionId,
+
+                    item.permissionId ===
+                    normalizedPermissionId,
+
             );
 
 
 
-        if(alreadyAssigned) {
+        if (alreadyAssigned) {
+
 
             return;
+
 
         }
 
 
 
-
         await this.repository.assign(
-            roleId,
-            permissionId,
+
+            normalizedRoleId,
+
+            normalizedPermissionId,
+
         );
 
 
     }
+
+
 
 
 
@@ -102,32 +153,49 @@ export class RolePermissionService {
 
 
     async revoke(
-        roleId:string,
-        permissionId:string,
+
+        roleId: string,
+
+        permissionId: string,
+
     ):
+
     Promise<void> {
 
 
-        this.validateId(
-            roleId,
-            "Role",
-        );
+        const normalizedRoleId =
+            this.validateId(
+
+                roleId,
+
+                "Role",
+
+            );
 
 
-        this.validateId(
-            permissionId,
-            "Permission",
-        );
+
+        const normalizedPermissionId =
+            this.validateId(
+
+                permissionId,
+
+                "Permission",
+
+            );
 
 
 
         await this.repository.revoke(
-            roleId,
-            permissionId,
+
+            normalizedRoleId,
+
+            normalizedPermissionId,
+
         );
 
 
     }
+
 
 
 
@@ -137,32 +205,83 @@ export class RolePermissionService {
 
 
     async replace(
-        roleId:string,
-        permissionIds:string[],
+
+        roleId: string,
+
+        permissionIds: string[],
+
     ):
+
     Promise<void> {
 
 
-        this.validateId(
-            roleId,
-            "Role",
-        );
+        const normalizedRoleId =
+            this.validateId(
+
+                roleId,
+
+                "Role",
+
+            );
+
+
+
+        if (!Array.isArray(permissionIds)) {
+
+
+            throw new Error(
+
+                "Permission ids are required.",
+
+            );
+
+
+        }
 
 
 
         const uniquePermissions =
             Array.from(
+
                 new Set(
+
                     permissionIds
-                        .filter(Boolean),
+
+                        .filter(
+
+                            (
+                                permissionId,
+                            ): permissionId is string =>
+
+                                typeof permissionId ===
+                                "string" &&
+
+                                Boolean(
+                                    permissionId.trim(),
+                                ),
+
+                        )
+
+                        .map(
+
+                            permissionId =>
+
+                                permissionId.trim(),
+
+                        ),
+
                 ),
+
             );
 
 
 
         await this.repository.replace(
-            roleId,
+
+            normalizedRoleId,
+
             uniquePermissions,
+
         );
 
 
@@ -175,19 +294,42 @@ export class RolePermissionService {
 
 
 
+
     private validateId(
-        id:string,
-        entity:string,
-    ) {
+
+        id: string,
+
+        entity: string,
+
+    ): string {
 
 
-        if(!id?.trim()) {
+        const normalizedId =
+
+            typeof id ===
+            "string"
+
+                ? id.trim()
+
+                : "";
+
+
+
+        if (!normalizedId) {
+
 
             throw new Error(
+
                 `${entity} id is required.`,
+
             );
 
+
         }
+
+
+
+        return normalizedId;
 
 
     }

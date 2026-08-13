@@ -11,13 +11,15 @@
  *
  * RBAC Foundation
  *
+ * Shared across:
+ * Platform
+ * Admin
+ * CRM
+ * Website
+ * ERP
+ *
  * ============================================================================
  */
-
-
-
-
-
 
 
 export type RoleType =
@@ -28,6 +30,7 @@ export type RoleType =
 
     | "Custom";
 
+
 export type RoleStatus =
 
     | "Active"
@@ -37,6 +40,7 @@ export type RoleStatus =
     | "Suspended"
 
     | "Archived";
+
 
 export type RoleLevel =
 
@@ -50,45 +54,135 @@ export type RoleLevel =
 
     | "Team";
 
-export interface Role
 
+
+/**
+ * ============================================================================
+ * ROLE
+ * ============================================================================
+ *
+ * Represents an RBAC role.
+ *
+ * System roles are platform-defined and protected from organization-level
+ * modification/deletion.
+ *
+ * Organization roles belong to an organization and may be customized
+ * according to the organization's access model.
+ *
+ * ============================================================================
+ */
+
+export interface Role
     extends BaseEntity {
+
+    /**
+     * Organization ownership.
+     *
+     * Undefined for platform/system roles where applicable.
+     */
     organizationId?:string;
+
+
+    /**
+     * Role identity.
+     */
     name:string;
+
     code:string;
+
     description?:string;
-   type:RoleType;
+
+
+    /**
+     * RBAC classification.
+     */
+    type:RoleType;
+
     level:RoleLevel;
+
     status:RoleStatus;
+
+
+    /**
+     * Permissions assigned to this role.
+     *
+     * Permission relationships may also be represented by the
+     * role_permissions persistence layer.
+     */
     permissionIds?:string[];
+
+
+    /**
+     * Lifecycle and protection flags.
+     */
     isSystem:boolean;
-   isDefault:boolean;
+
+    isDefault:boolean;
+
     isActive:boolean;
+
+
+    /**
+     * Extensible role metadata.
+     */
     metadata?:Record<string,unknown>;
+
 }
 
-/**  * User â†” Role assignment
+
+
+/**
+ * ============================================================================
+ * ROLE ASSIGNMENT
+ * ============================================================================
+ *
+ * Represents assignment of a role to a user.
+ *
+ * ============================================================================
  */
 
 export interface RoleAssignment {
+
     id:string;
+
     organizationId?:string;
+
     userId:string;
+
     roleId:string;
+
     assignedBy?:string;
+
     assignedAt:string;
+
     expiresAt?:string;
+
     isActive:boolean;
+
 }
 
+
+
 /**
- * Role hierarchy mapping
+ * ============================================================================
+ * ROLE HIERARCHY
+ * ============================================================================
+ *
+ * Represents parent/child relationships between roles.
+ *
+ * ============================================================================
  */
 
 export interface RoleHierarchy {
+
     id:string;
+
     parentRoleId:string;
+
     childRoleId:string;
+
     organizationId?:string;
+
     createdAt:string;
+
 }

@@ -6,14 +6,39 @@ import {
     LocationsRepository,
 } from "@/repositories/admin/LocationsRepository";
 
+import {
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
+
+
 export class LocationsService {
+
 
     constructor(
 
-        private readonly repository =
-            new LocationsRepository(),
+        private readonly repository:
+            LocationsRepository,
 
     ) {}
+
+
+    static async create():
+        Promise<LocationsService> {
+
+        const supabase =
+            await createSupabaseServerClient();
+
+
+        return new LocationsService(
+
+            new LocationsRepository(
+                supabase,
+            ),
+
+        );
+
+    }
+
 
     async list():
 
@@ -23,6 +48,7 @@ export class LocationsService {
 
     }
 
+
     async findById(
 
         id: string,
@@ -31,44 +57,81 @@ export class LocationsService {
 
     Promise<Location | null> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+                id,
+            );
+
 
         return this.repository.findById(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
 
+
+    async findByCode(
+
+        code: string,
+
+    ):
+
+    Promise<Location | null> {
+
+        const normalizedCode =
+            this.validateCode(
+                code,
+            );
+
+
+        return this.repository.findByCode(
+
+            normalizedCode,
+
+        );
+
+    }
+
+
     async save(
 
-        location: Partial<Location>,
+        location:
+            Partial<Location>,
 
     ):
 
     Promise<Location> {
 
-        this.validateLocation(
-            location,
+        const normalizedLocation =
+            this.validateLocation(
+                location,
+            );
+
+
+        return this.repository.save(
+
+            {
+
+                ...location,
+
+                locationCode:
+                    normalizedLocation
+                        .locationCode
+                        .toUpperCase(),
+
+                locationName:
+                    normalizedLocation
+                        .locationName
+                        .trim(),
+
+            },
+
         );
 
-        return this.repository.save({
-
-            ...location,
-
-            locationCode:
-                location.locationCode!
-                    .trim()
-                    .toUpperCase(),
-
-            locationName:
-                location.locationName!
-                    .trim(),
-
-        });
-
     }
+
 
     async delete(
 
@@ -78,69 +141,147 @@ export class LocationsService {
 
     Promise<void> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
 
         await this.repository.delete(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
 
+
     private validateLocation(
 
-        location: Partial<Location>,
+        location:
+            Partial<Location>,
 
-    ): void {
+    ): {
+
+        locationCode: string;
+
+        locationName: string;
+
+    } {
 
         if (!location) {
 
             throw new Error(
+
                 "Location is required.",
+
             );
 
         }
 
-        if (
-            !location.locationCode?.trim()
-        ) {
+
+        const locationCode =
+            typeof location.locationCode ===
+            "string"
+                ? location.locationCode.trim()
+                : "";
+
+
+        const locationName =
+            typeof location.locationName ===
+            "string"
+                ? location.locationName.trim()
+                : "";
+
+
+        if (!locationCode) {
 
             throw new Error(
+
                 "Location code is required.",
+
             );
 
         }
 
-        if (
-            !location.locationName?.trim()
-        ) {
+
+        if (!locationName) {
 
             throw new Error(
+
                 "Location name is required.",
+
             );
 
         }
+
+
+        return {
+
+            locationCode,
+
+            locationName,
+
+        };
 
     }
+
+
+    private validateCode(
+
+        code: string,
+
+    ): string {
+
+        const normalizedCode =
+            typeof code === "string"
+                ? code.trim()
+                : "";
+
+
+        if (!normalizedCode) {
+
+            throw new Error(
+
+                "Location code is required.",
+
+            );
+
+        }
+
+
+        return normalizedCode;
+
+    }
+
 
     private validateId(
 
         id: string,
 
-    ): void {
+    ): string {
 
-        if (!id?.trim()) {
+        const normalizedId =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
 
             throw new Error(
+
                 "Location id is required.",
+
             );
 
         }
 
+
+        return normalizedId;
+
     }
 
 }
-
-export const locationsService =
-    new LocationsService();

@@ -3,21 +3,21 @@
 } from "./Events";
 
 
-type WorkflowActionType =
+export type WorkflowActionType =
     | "notification"
     | "task"
     | "email"
     | "webhook";
 
 
-type WorkflowTrigger =
+export type WorkflowTrigger =
     | "Manual"
     | "Automatic"
     | "Event"
     | "Schedule";
 
 
-type WorkflowStatus =
+export type WorkflowStatus =
     | "Active"
     | "Inactive"
     | "Draft";
@@ -25,50 +25,37 @@ type WorkflowStatus =
 
 export interface Workflow {
 
-
     id: string;
-
 
     organizationId: string;
 
-
     workflowCode: string;
 
-
     workflowName: string;
-
 
     description:
         string | null;
 
-
     triggerType:
         WorkflowTrigger;
-
 
     entityType:
         string | null;
 
-
     actionType:
         string | null;
-
 
     configuration:
         Record<string, unknown>;
 
-
     status:
         WorkflowStatus;
-
 
     isSystem:
         boolean;
 
-
     createdAt:
         string;
-
 
     updatedAt:
         string;
@@ -76,25 +63,19 @@ export interface Workflow {
 }
 
 
-
 export interface WorkflowContext {
-
 
     organizationId:
         string;
 
-
     entityType:
         string;
-
 
     entityId:
         string;
 
-
     initiatedBy?:
         string;
-
 
     payload?:
         Record<string, unknown>;
@@ -102,17 +83,13 @@ export interface WorkflowContext {
 }
 
 
-
-interface WorkflowAction {
-
+export interface WorkflowAction {
 
     id:
         string;
 
-
     type:
         WorkflowActionType;
-
 
     configuration:
         Record<string, unknown>;
@@ -120,28 +97,19 @@ interface WorkflowAction {
 }
 
 
-
 export interface WorkflowRule {
 
+    id: string;
 
-    id:
-        string;
-
-
-    name:
-        string;
-
+    name: string;
 
     event:
         WorkflowEventName;
 
-
     enabled:
         boolean;
-
 
     actions:
         WorkflowAction[];
 
 }
-

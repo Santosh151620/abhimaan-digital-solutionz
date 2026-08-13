@@ -1,34 +1,57 @@
-import {
-    TenantContextManager,
-} from "@/lib/tenant/tenantContext";
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
 
 import {
-    createSupabaseServerClient,
-} from "@/lib/supabase/server-client";
+    BaseRepository,
+} from "@/lib/db/base-repository";
 
 import type {
     Location,
 } from "@/types/admin/Location";
 
+
 type LocationRow = {
+
     id: string;
+
     organization_id: string;
+
     location_code: string;
+
     location_name: string;
+
     description: string | null;
+
     address_line1: string | null;
+
     address_line2: string | null;
+
     city: string | null;
+
     state: string | null;
+
     country: string | null;
+
     postal_code: string | null;
-    status: Location["status"] | null;
-    metadata: Record<string, unknown> | null;
+
+    status:
+        Location["status"] |
+        null;
+
+    metadata:
+        Record<string, unknown> |
+        null;
+
     created_at: string;
+
     updated_at: string;
+
 };
 
-interface ILocationsRepository {
+
+export interface ILocationsRepository {
+
     findAll(): Promise<Location[]>;
 
     findById(
@@ -46,35 +69,45 @@ interface ILocationsRepository {
     delete(
         id: string,
     ): Promise<void>;
+
 }
 
+
 export class LocationsRepository
+    extends BaseRepository<Location>
     implements ILocationsRepository
 {
-    private async client() {
-        return createSupabaseServerClient();
+
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        super(
+            supabase,
+            "locations",
+        );
+
     }
 
-    private get organizationId(): string {
-        return TenantContextManager
-            .require()
-            .organizationId;
-    }
 
-    async findAll(): Promise<Location[]> {
-        const supabase =
-            await this.client();
+    async findAll():
+
+    Promise<Location[]> {
 
         const {
             data,
             error,
-        } = await supabase
-            .from("locations")
+        } = await this
+
+            .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .order(
                 "location_name",
                 {
@@ -82,224 +115,451 @@ export class LocationsRepository
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return (data ?? []).map(
-            (row) =>
+            row =>
                 this.mapLocation(
                     row as LocationRow,
                 ),
         );
+
     }
 
+
     async findById(
+
         id: string,
-    ): Promise<Location | null> {
+
+    ):
+
+    Promise<Location | null> {
+
         const normalizedId =
-            id.trim();
-
-        if (!normalizedId) {
-            throw new Error(
-                "Location id is required.",
+            this.normalizeId(
+                id,
             );
-        }
 
-        const supabase =
-            await this.client();
 
         const {
             data,
             error,
-        } = await supabase
-            .from("locations")
+        } = await this
+
+            .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .eq(
                 "id",
                 normalizedId,
             )
+
             .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return data
+
             ? this.mapLocation(
                   data as LocationRow,
               )
+
             : null;
+
     }
 
+
     async findByCode(
+
         code: string,
-    ): Promise<Location | null> {
+
+    ):
+
+    Promise<Location | null> {
+
         const normalizedCode =
-            code.trim().toUpperCase();
-
-        if (!normalizedCode) {
-            throw new Error(
-                "Location code is required.",
+            this.normalizeCode(
+                code,
             );
-        }
 
-        const supabase =
-            await this.client();
 
         const {
             data,
             error,
-        } = await supabase
-            .from("locations")
+        } = await this
+
+            .tableRef()
+
             .select("*")
+
             .eq(
                 "organization_id",
                 this.organizationId,
             )
+
             .eq(
                 "location_code",
                 normalizedCode,
             )
+
             .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return data
+
             ? this.mapLocation(
                   data as LocationRow,
               )
+
             : null;
+
     }
 
+
     async save(
-        location: Partial<Location>,
-    ): Promise<Location> {
+
+        location:
+            Partial<Location>,
+
+    ):
+
+    Promise<Location> {
+
+        if (!location) {
+
+            throw new Error(
+                "Location is required.",
+            );
+
+        }
+
+
         const locationCode =
-            location.locationCode
-                ?.trim()
-                .toUpperCase();
+            this.normalizeCode(
+                location.locationCode,
+            );
+
 
         const locationName =
-            location.locationName?.trim();
-
-        if (!locationCode) {
-            throw new Error(
-                "Location code is required.",
+            this.normalizeName(
+                location.locationName,
             );
-        }
 
-        if (!locationName) {
-            throw new Error(
-                "Location name is required.",
-            );
-        }
-
-        const supabase =
-            await this.client();
 
         const now =
             new Date().toISOString();
 
-        const payload = {
-            id: location.id,
+
+        const payload: Record<
+            string,
+            unknown
+        > = {
+
             organization_id:
                 this.organizationId,
+
             location_code:
                 locationCode,
+
             location_name:
                 locationName,
+
             description:
-                location.description ?? null,
+                this.normalizeDescription(
+                    location.description,
+                ),
+
             address_line1:
-                location.addressLine1 ?? null,
+                this.normalizeNullableString(
+                    location.addressLine1,
+                ),
+
             address_line2:
-                location.addressLine2 ?? null,
+                this.normalizeNullableString(
+                    location.addressLine2,
+                ),
+
             city:
-                location.city ?? null,
+                this.normalizeNullableString(
+                    location.city,
+                ),
+
             state:
-                location.state ?? null,
+                this.normalizeNullableString(
+                    location.state,
+                ),
+
             country:
-                location.country ?? null,
+                this.normalizeNullableString(
+                    location.country,
+                ),
+
             postal_code:
-                location.postalCode ?? null,
+                this.normalizeNullableString(
+                    location.postalCode,
+                ),
+
             status:
-                location.status ?? "Active",
+                location.status ??
+                "Active",
+
             metadata:
-                location.metadata ?? {},
-            created_at:
-                location.createdAt ?? now,
+                location.metadata ??
+                {},
+
             updated_at:
                 now,
+
         };
+
+
+        if (location.id) {
+
+            payload.id =
+                this.normalizeId(
+                    location.id,
+                );
+
+
+            if (location.createdAt) {
+
+                payload.created_at =
+                    location.createdAt;
+
+            }
+
+        } else {
+
+            payload.created_at =
+                now;
+
+        }
+
 
         const {
             data,
             error,
-        } = await supabase
-            .from("locations")
+        } = await this
+
+            .tableRef()
+
             .upsert(
                 payload,
                 {
                     onConflict: "id",
                 },
             )
+
             .select("*")
+
             .single();
 
+
         if (error) {
+
             throw error;
+
         }
+
+
+        if (!data) {
+
+            throw new Error(
+                "Location save returned no data.",
+            );
+
+        }
+
 
         return this.mapLocation(
             data as LocationRow,
         );
+
     }
 
-    async delete(
-        id: string,
-    ): Promise<void> {
-        const normalizedId =
-            id.trim();
 
-        if (!normalizedId) {
+    async delete(
+
+        id: string,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedId =
+            this.normalizeId(
+                id,
+            );
+
+
+        await super.delete(
+            normalizedId,
+        );
+
+    }
+
+
+    private normalizeId(
+
+        id: string,
+
+    ): string {
+
+        const normalized =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalized) {
+
             throw new Error(
                 "Location id is required.",
             );
+
         }
 
-        const supabase =
-            await this.client();
 
-        const {
-            error,
-        } = await supabase
-            .from("locations")
-            .delete()
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "id",
-                normalizedId,
-            );
+        return normalized;
 
-        if (error) {
-            throw error;
-        }
     }
 
+
+    private normalizeCode(
+
+        code:
+            string |
+            undefined,
+
+    ): string {
+
+        const normalized =
+            typeof code === "string"
+                ? code
+                    .trim()
+                    .toUpperCase()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Location code is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeName(
+
+        name:
+            string |
+            undefined,
+
+    ): string {
+
+        const normalized =
+            typeof name === "string"
+                ? name.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Location name is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeNullableString(
+
+        value:
+            string |
+            null |
+            undefined,
+
+    ): string | null {
+
+        if (
+            typeof value !==
+            "string"
+        ) {
+
+            return null;
+
+        }
+
+
+        const normalized =
+            value.trim();
+
+
+        return normalized || null;
+
+    }
+
+
+    private normalizeDescription(
+
+        description:
+            string |
+            null |
+            undefined,
+
+    ): string | null {
+
+        return this.normalizeNullableString(
+            description,
+        );
+
+    }
+
+
     private mapLocation(
+
         row: LocationRow,
+
     ): Location {
+
         return {
+
             id:
                 row.id,
 
@@ -313,37 +573,49 @@ export class LocationsRepository
                 row.location_name,
 
             description:
-                row.description ?? null,
+                row.description ??
+                null,
 
             addressLine1:
-                row.address_line1 ?? null,
+                row.address_line1 ??
+                null,
 
             addressLine2:
-                row.address_line2 ?? null,
+                row.address_line2 ??
+                null,
 
             city:
-                row.city ?? null,
+                row.city ??
+                null,
 
             state:
-                row.state ?? null,
+                row.state ??
+                null,
 
             country:
-                row.country ?? null,
+                row.country ??
+                null,
 
             postalCode:
-                row.postal_code ?? null,
+                row.postal_code ??
+                null,
 
             status:
-                row.status ?? "Active",
+                row.status ??
+                "Active",
 
             metadata:
-                row.metadata ?? {},
+                row.metadata ??
+                {},
 
             createdAt:
                 row.created_at,
 
             updatedAt:
                 row.updated_at,
+
         };
+
     }
+
 }

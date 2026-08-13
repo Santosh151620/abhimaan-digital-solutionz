@@ -1,48 +1,14 @@
-/**
- * ============================================================================
- * Platform Modules Repository
- *
- * Admin Module Registry
- *
- * Architecture:
- *
- * ModuleService
- *        ↓
- * ModulesRepository
- *        ↓
- * BaseRepository
- *        ↓
- * module_registry
- *
- * Production rules:
- * - Server-side Supabase client only
- * - Tenant isolation through BaseRepository
- * - No caller-supplied organization_id
- * - Stable domain mapping
- * - Validated identifiers and module codes
- * - No silent loss of persisted module configuration
- * ============================================================================
- */
-
 import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
-
 
 import {
     BaseRepository,
 } from "@/lib/db/base-repository";
 
-
-import {
-    createSupabaseServerClient,
-} from "@/lib/supabase/server-client";
-
-
 import type {
     PlatformModule,
 } from "@/types/admin/Module";
-
 
 
 type ModuleRegistryRow = {
@@ -93,14 +59,15 @@ type ModuleRegistryRow = {
 
     is_system: boolean | null;
 
-    configuration: Record<string, unknown> | null;
+    configuration:
+        Record<string, unknown> |
+        null;
 
     created_at: string;
 
     updated_at: string;
 
 };
-
 
 
 export interface IModulesRepository {
@@ -126,11 +93,10 @@ export interface IModulesRepository {
 }
 
 
-
 export class ModulesRepository
     extends BaseRepository<PlatformModule>
-    implements IModulesRepository {
-
+    implements IModulesRepository
+{
 
     constructor(
         supabase: SupabaseClient,
@@ -144,37 +110,33 @@ export class ModulesRepository
     }
 
 
-    static async create(): Promise<ModulesRepository> {
+    async list():
 
-        const supabase =
-            await createSupabaseServerClient();
-
-        return new ModulesRepository(
-            supabase,
-        );
-
-    }
-
-
-    async list(): Promise<PlatformModule[]> {
+    Promise<PlatformModule[]> {
 
         const {
             data,
             error,
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .order(
-                    "display_order",
-                    {
-                        ascending: true,
-                    },
-                );
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .order(
+                "display_order",
+                {
+                    ascending: true,
+                },
+            );
+
 
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? []).map(
             row =>
@@ -187,203 +149,281 @@ export class ModulesRepository
 
 
     async findById(
+
         id: string,
-    ): Promise<PlatformModule | null> {
+
+    ):
+
+    Promise<PlatformModule | null> {
 
         const normalizedId =
-            this.requireId(id);
+            this.requireId(
+                id,
+            );
+
 
         const {
             data,
             error,
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "id",
-                    normalizedId,
-                )
-                .maybeSingle();
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .eq(
+                "id",
+                normalizedId,
+            )
+
+            .maybeSingle();
+
 
         if (error) {
+
             throw error;
+
         }
 
+
         return data
+
             ? this.mapToDomain(
-                data as ModuleRegistryRow,
-            )
+                  data as ModuleRegistryRow,
+              )
+
             : null;
 
     }
 
 
     async findByCode(
+
         code: string,
-    ): Promise<PlatformModule | null> {
+
+    ):
+
+    Promise<PlatformModule | null> {
 
         const normalizedCode =
-            this.requireCode(code);
+            this.requireCode(
+                code,
+            );
+
 
         const {
             data,
             error,
-        } =
-            await this
-                .tableRef()
-                .select("*")
-                .eq(
-                    "module_code",
-                    normalizedCode,
-                )
-                .maybeSingle();
+        } = await this
+
+            .tableRef()
+
+            .select("*")
+
+            .eq(
+                "module_code",
+                normalizedCode,
+            )
+
+            .maybeSingle();
+
 
         if (error) {
+
             throw error;
+
         }
 
+
         return data
+
             ? this.mapToDomain(
-                data as ModuleRegistryRow,
-            )
+                  data as ModuleRegistryRow,
+              )
+
             : null;
 
     }
 
 
     async save(
-        module: PlatformModule,
-    ): Promise<PlatformModule> {
+
+        module:
+            PlatformModule,
+
+    ):
+
+    Promise<PlatformModule> {
 
         if (!module) {
+
             throw new Error(
                 "Module is required.",
             );
+
         }
+
 
         const id =
-            this.requireId(module.id);
+            this.requireId(
+                module.id,
+            );
+
 
         const code =
-            this.requireCode(module.code);
+            this.requireCode(
+                module.code,
+            );
+
 
         const name =
-            module.name?.trim();
-
-        if (!name) {
-            throw new Error(
-                "Module name is required.",
+            this.requireName(
+                module.name,
             );
-        }
+
 
         const now =
             new Date().toISOString();
 
+
         const {
             data,
             error,
-        } =
-            await this
-                .tableRef()
-                .upsert(
-                    {
-                        id,
+        } = await this
 
-                        organization_id:
-                            this.organizationId,
+            .tableRef()
 
-                        module_code:
-                            code,
+            .upsert(
 
-                        module_name:
-                            name,
+                {
 
-                        module_type:
-                            module.category,
+                    id,
 
-                        description:
-                            module.description?.trim()
-                            ?? null,
+                    organization_id:
+                        this.organizationId,
 
-                        version:
-                            module.version,
+                    module_code:
+                        code,
 
-                        deployment_type:
-                            module.deploymentType,
+                    module_name:
+                        name,
 
-                        route:
-                            module.route?.trim()
-                            ?? null,
+                    module_type:
+                        module.category,
 
-                        icon:
-                            module.icon?.trim()
-                            ?? null,
+                    description:
+                        this.normalizeNullableString(
+                            module.description,
+                        ),
 
-                        enabled:
-                            module.status === "Active",
+                    version:
+                        module.version ??
+                        "1.0",
 
-                        display_order:
-                            module.displayOrder,
+                    deployment_type:
+                        module.deploymentType,
 
-                        dependencies:
-                            module.dependencies ?? [],
+                    route:
+                        this.normalizeNullableString(
+                            module.route,
+                        ),
 
-                        feature_flags:
-                            module.featureFlags ?? [],
+                    icon:
+                        this.normalizeNullableString(
+                            module.icon,
+                        ),
 
-                        enabled_by_default:
-                            module.enabledByDefault,
+                    enabled:
+                        module.status ===
+                        "Active",
 
-                        tenant_configurable:
-                            module.tenantConfigurable,
+                    display_order:
+                        module.displayOrder ??
+                        0,
 
-                        license_required:
-                            module.licenseRequired,
+                    dependencies:
+                        module.dependencies ??
+                        [],
 
-                        supports_crm:
-                            module.supportsCRM,
+                    feature_flags:
+                        module.featureFlags ??
+                        [],
 
-                        supports_erp:
-                            module.supportsERP,
+                    enabled_by_default:
+                        module.enabledByDefault ??
+                        true,
 
-                        supports_standalone:
-                            module.supportsStandalone,
+                    tenant_configurable:
+                        module.tenantConfigurable ??
+                        false,
 
-                        supports_enterprise:
-                            module.supportsEnterprise,
+                    license_required:
+                        module.licenseRequired ??
+                        false,
 
-                        status:
-                            module.status,
+                    supports_crm:
+                        module.supportsCRM ??
+                        false,
 
-                        is_system:
-                            module.isSystem,
+                    supports_erp:
+                        module.supportsERP ??
+                        false,
 
-                        configuration:
-                            module.metadata ?? {},
+                    supports_standalone:
+                        module.supportsStandalone ??
+                        true,
 
-                        created_at:
-                            module.createdAt ?? now,
+                    supports_enterprise:
+                        module.supportsEnterprise ??
+                        true,
 
-                        updated_at:
-                            now,
-                    },
-                    {
-                        onConflict: "id",
-                    },
-                )
-                .select("*")
-                .single();
+                    status:
+                        module.status,
+
+                    is_system:
+                        module.isSystem ??
+                        true,
+
+                    configuration:
+                        module.metadata ??
+                        {},
+
+                    created_at:
+                        module.createdAt ??
+                        now,
+
+                    updated_at:
+                        now,
+
+                },
+
+                {
+                    onConflict:
+                        "id",
+                },
+
+            )
+
+            .select("*")
+
+            .single();
+
 
         if (error) {
+
             throw error;
+
         }
 
+
         if (!data) {
+
             throw new Error(
                 "Module save returned no data.",
             );
+
         }
+
 
         return this.mapToDomain(
             data as ModuleRegistryRow,
@@ -393,54 +433,132 @@ export class ModulesRepository
 
 
     async delete(
+
         id: string,
-    ): Promise<void> {
+
+    ):
+
+    Promise<void> {
 
         await super.delete(
-            this.requireId(id),
+            this.requireId(
+                id,
+            ),
         );
 
     }
 
 
     private requireId(
+
         id: string,
+
     ): string {
 
-        const normalizedId =
-            id?.trim();
+        const normalized =
+            typeof id === "string"
+                ? id.trim()
+                : "";
 
-        if (!normalizedId) {
+
+        if (!normalized) {
+
             throw new Error(
                 "Module id is required.",
             );
+
         }
 
-        return normalizedId;
+
+        return normalized;
 
     }
 
 
     private requireCode(
+
         code: string,
+
     ): string {
 
-        const normalizedCode =
-            code?.trim().toUpperCase();
+        const normalized =
+            typeof code === "string"
+                ? code.trim().toUpperCase()
+                : "";
 
-        if (!normalizedCode) {
+
+        if (!normalized) {
+
             throw new Error(
                 "Module code is required.",
             );
+
         }
 
-        return normalizedCode;
+
+        return normalized;
+
+    }
+
+
+    private requireName(
+
+        name: string,
+
+    ): string {
+
+        const normalized =
+            typeof name === "string"
+                ? name.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Module name is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeNullableString(
+
+        value:
+            string |
+            null |
+            undefined,
+
+    ): string | null {
+
+        if (
+            typeof value !==
+            "string"
+        ) {
+
+            return null;
+
+        }
+
+
+        const normalized =
+            value.trim();
+
+
+        return normalized || null;
 
     }
 
 
     private mapToDomain(
+
         row: ModuleRegistryRow,
+
     ): PlatformModule {
 
         return {
@@ -458,8 +576,8 @@ export class ModulesRepository
                 row.module_name,
 
             description:
-                row.description
-                ?? undefined,
+                row.description ??
+                undefined,
 
             category:
                 this.resolveCategory(
@@ -467,8 +585,8 @@ export class ModulesRepository
                 ),
 
             version:
-                row.version
-                ?? "1.0",
+                row.version ??
+                "1.0",
 
             deploymentType:
                 this.resolveDeploymentType(
@@ -476,52 +594,52 @@ export class ModulesRepository
                 ),
 
             route:
-                row.route
-                ?? "",
+                row.route ??
+                "",
 
             icon:
-                row.icon
-                ?? undefined,
+                row.icon ??
+                undefined,
 
             displayOrder:
-                row.display_order
-                ?? 0,
+                row.display_order ??
+                0,
 
             dependencies:
-                row.dependencies
-                ?? [],
+                row.dependencies ??
+                [],
 
             featureFlags:
-                row.feature_flags
-                ?? [],
+                row.feature_flags ??
+                [],
 
             enabledByDefault:
-                row.enabled_by_default
-                ?? true,
+                row.enabled_by_default ??
+                true,
 
             tenantConfigurable:
-                row.tenant_configurable
-                ?? false,
+                row.tenant_configurable ??
+                false,
 
             licenseRequired:
-                row.license_required
-                ?? false,
+                row.license_required ??
+                false,
 
             supportsCRM:
-                row.supports_crm
-                ?? false,
+                row.supports_crm ??
+                false,
 
             supportsERP:
-                row.supports_erp
-                ?? false,
+                row.supports_erp ??
+                false,
 
             supportsStandalone:
-                row.supports_standalone
-                ?? true,
+                row.supports_standalone ??
+                true,
 
             supportsEnterprise:
-                row.supports_enterprise
-                ?? true,
+                row.supports_enterprise ??
+                true,
 
             status:
                 this.resolveStatus(
@@ -530,12 +648,12 @@ export class ModulesRepository
                 ),
 
             isSystem:
-                row.is_system
-                ?? true,
+                row.is_system ??
+                true,
 
             metadata:
-                row.configuration
-                ?? {},
+                row.configuration ??
+                {},
 
             createdAt:
                 row.created_at,
@@ -549,7 +667,9 @@ export class ModulesRepository
 
 
     private resolveCategory(
+
         value: string | null,
+
     ): PlatformModule["category"] {
 
         switch (
@@ -584,7 +704,9 @@ export class ModulesRepository
 
 
     private resolveDeploymentType(
+
         value: string | null,
+
     ): PlatformModule["deploymentType"] {
 
         switch (
@@ -607,8 +729,11 @@ export class ModulesRepository
 
 
     private resolveStatus(
+
         value: string | null,
+
         enabled: boolean | null,
+
     ): PlatformModule["status"] {
 
         switch (

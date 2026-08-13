@@ -9,7 +9,6 @@ import type {
 
 
 
-
 export class ModulesService {
 
 
@@ -20,10 +19,6 @@ export class ModulesService {
             IModulesRepository,
 
     ) {}
-
-
-
-
 
 
 
@@ -39,29 +34,24 @@ export class ModulesService {
 
 
 
-
-
-
-
     async findById(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<PlatformModule | null> {
 
 
-        this.validateId(
-
-            id,
-
-        );
+        const normalizedId =
+            this.validateId(
+                id,
+            );
 
 
         return this.repository.findById(
 
-            id,
+            normalizedId,
 
         );
 
@@ -70,13 +60,9 @@ export class ModulesService {
 
 
 
-
-
-
-
     async findByCode(
 
-        code:string,
+        code: string,
 
     ):
 
@@ -84,13 +70,9 @@ export class ModulesService {
 
 
         const normalizedCode =
-
             this.normalizeCode(
-
                 code,
-
             );
-
 
 
         return this.repository.findByCode(
@@ -104,13 +86,9 @@ export class ModulesService {
 
 
 
-
-
-
-
     async isEnabled(
 
-        code:string,
+        code: string,
 
     ):
 
@@ -118,7 +96,6 @@ export class ModulesService {
 
 
         const platformModule =
-
             await this.findByCode(
 
                 code,
@@ -126,10 +103,10 @@ export class ModulesService {
             );
 
 
-
         return (
 
-            platformModule?.status === "Active"
+            platformModule?.status ===
+            "Active"
 
         );
 
@@ -138,108 +115,120 @@ export class ModulesService {
 
 
 
-
-
-
-
     async dependenciesSatisfied(
 
-        platformModule:PlatformModule,
+        platformModule:
+            PlatformModule,
 
     ):
 
     Promise<boolean> {
 
 
+        if (!platformModule) {
 
-        if(
+            throw new Error(
 
-            !platformModule.dependencies.length
+                "Platform module is required.",
 
-        ) {
-
-
-            return true;
-
+            );
 
         }
 
 
+        const dependencies =
+            Array.isArray(
+                platformModule.dependencies,
+            )
+                ? platformModule.dependencies
+                : [];
 
+
+        if (!dependencies.length) {
+
+            return true;
+
+        }
 
 
         const modules =
-
             await this.repository.list();
 
 
+        return dependencies.every(
+
+            dependency => {
+
+                const normalizedDependency =
+                    typeof dependency ===
+                    "string"
+                        ? dependency
+                            .trim()
+                            .toUpperCase()
+                        : "";
 
 
+                if (!normalizedDependency) {
 
-        return platformModule.dependencies.every(
+                    return false;
 
-            dependency =>
+                }
 
-                modules.some(
+
+                return modules.some(
 
                     item =>
 
-                        item.code === dependency &&
+                        this.normalizeCode(
+                            item.code,
+                        ) ===
+                            normalizedDependency &&
 
-                        item.status === "Active",
+                        item.status ===
+                            "Active",
 
-                ),
+                );
+
+            },
 
         );
-
 
     }
 
 
 
-
-
-
-
     async save(
 
-        module:PlatformModule,
+        module:
+            PlatformModule,
 
     ):
 
     Promise<void> {
 
 
-        this.validateModule(
-
-            module,
-
-        );
-
+        const normalizedModule =
+            this.validateModule(
+                module,
+            );
 
 
         const existing =
-
             await this.repository.findByCode(
 
-                this.normalizeCode(
-
-                    module.code,
-
-                ),
+                normalizedModule.code,
 
             );
 
 
-
-        if(
+        if (
 
             existing &&
 
-            existing.id !== module.id
+            existing.id !==
+                module.id
 
         ) {
-
 
             throw new Error(
 
@@ -247,9 +236,7 @@ export class ModulesService {
 
             );
 
-
         }
-
 
 
         await this.repository.save(
@@ -258,122 +245,215 @@ export class ModulesService {
 
                 ...module,
 
-
                 code:
-
-                    this.normalizeCode(
-
-                        module.code,
-
-                    ),
-
+                    normalizedModule.code,
 
                 name:
-
-                    module.name.trim(),
-
-
+                    normalizedModule.name,
 
                 updatedAt:
-
                     new Date()
-
                         .toISOString(),
 
             },
 
         );
 
-
     }
-
-
-
-
 
 
 
     async delete(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<void> {
 
 
-        this.validateId(
+        const normalizedId =
+            this.validateId(
+                id,
+            );
 
-            id,
-
-        );
 
         const existingModule =
-    await this.repository.findById(
-        id,
-    );
+            await this.repository.findById(
 
-if(!existingModule) {
-    throw new Error(
-        "Module not found.",
-    );
-}
+                normalizedId,
 
-if(existingModule.isSystem) {
-    throw new Error(
-        "System modules cannot be deleted.",
-    );
-}
+            );
+
+
+        if (!existingModule) {
+
+            throw new Error(
+
+                "Module not found.",
+
+            );
+
+        }
+
+
+        if (existingModule.isSystem) {
+
+            throw new Error(
+
+                "System modules cannot be deleted.",
+
+            );
+
+        }
+
+
         await this.repository.delete(
-            id,
+
+            normalizedId,
 
         );
+
     }
+
+
 
     private validateModule(
-        module:PlatformModule,
 
-    ) {
+        module:
+            PlatformModule,
 
-        if(!module.code?.trim()) {
+    ): {
+
+        code: string;
+
+        name: string;
+
+    } {
+
+
+        if (!module) {
+
             throw new Error(
-                "Module code is required.",
+
+                "Platform module is required.",
+
             );
+
         }
-        if(!module.name?.trim()) {
+
+
+        const code =
+            this.normalizeCode(
+                module.code,
+            );
+
+
+        const name =
+            typeof module.name ===
+            "string"
+                ? module.name.trim()
+                : "";
+
+
+        if (!name) {
+
             throw new Error(
+
                 "Module name is required.",
+
             );
+
         }
 
-        if(!module.status) {
+
+        if (!module.status) {
+
             throw new Error(
+
                 "Module status is required.",
+
             );
+
         }
+
+
+        return {
+
+            code,
+
+            name,
+
+        };
+
     }
+
+
+
     private normalizeCode(
-        code:string,
+
+        code: string,
+
     ):
 
     string {
-        if(!code?.trim()) {
-            throw new Error(
-                "Module code is required.",
-            );
-        }
-        return code
-            .trim()
-            .toUpperCase();
-    }
-    private validateId(
-        id:string,
 
-    ) {
-        if(!id?.trim()) {
+
+        const normalizedCode =
+            typeof code ===
+            "string"
+                ? code
+                    .trim()
+                    .toUpperCase()
+                : "";
+
+
+        if (!normalizedCode) {
+
             throw new Error(
-                "Module id is required.",
+
+                "Module code is required.",
+
             );
+
         }
+
+
+        return normalizedCode;
+
     }
+
+
+
+    private validateId(
+
+        id: string,
+
+    ):
+
+    string {
+
+
+        const normalizedId =
+            typeof id ===
+            "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
+
+            throw new Error(
+
+                "Module id is required.",
+
+            );
+
+        }
+
+
+        return normalizedId;
+
+    }
+
 }

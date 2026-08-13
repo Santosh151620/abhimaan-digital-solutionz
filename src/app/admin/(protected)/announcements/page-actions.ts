@@ -2,55 +2,59 @@
 
 
 import type {
-
     Announcement,
-
 } from "@/types/admin/Announcement";
 
 
-
 import {
-
     AnnouncementsRepository,
-
 } from "@/repositories/admin/AnnouncementsRepository";
 
 
+import {
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
 
 
 
-const repository =
+async function getRepository():
 
-    new AnnouncementsRepository();
+Promise<AnnouncementsRepository> {
 
-
-
-
-
+    const supabase =
+        await createSupabaseServerClient();
 
 
-export async function getAnnouncements():Promise<Announcement[]> {
-
-
-
-    return await repository.findAll();
-
-
+    return new AnnouncementsRepository(
+        supabase,
+    );
 
 }
 
 
 
+export async function getAnnouncements():
+
+Promise<Announcement[]> {
+
+    const repository =
+        await getRepository();
+
+
+    return repository.findAll();
+
+}
 
 
 
+export async function getPublishedAnnouncements():
 
-async function getPublishedAnnouncements():Promise<Announcement[]> {
+Promise<Announcement[]> {
+
+    const repository =
+        await getRepository();
 
 
-
-    return await repository.findPublished();
-
-
+    return repository.findPublished();
 
 }

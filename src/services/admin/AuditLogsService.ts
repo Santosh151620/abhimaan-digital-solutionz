@@ -2,18 +2,23 @@ import type {
     AuditLog,
 } from "@/types/admin/AuditLog";
 
+
 import {
     AuditLogsRepository,
 } from "@/repositories/admin/AuditLogsRepository";
 
+
 export class AuditLogsService {
+
 
     constructor(
 
-        private readonly repository =
-            new AuditLogsRepository(),
+        private readonly repository:
+            AuditLogsRepository =
+                new AuditLogsRepository(),
 
     ) {}
+
 
     async list():
 
@@ -23,6 +28,7 @@ export class AuditLogsService {
 
     }
 
+
     async findById(
 
         id: string,
@@ -31,15 +37,22 @@ export class AuditLogsService {
 
     Promise<AuditLog | null> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+
+                id,
+
+            );
+
 
         return this.repository.findById(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
+
 
     async findByEntity(
 
@@ -51,57 +64,86 @@ export class AuditLogsService {
 
     Promise<AuditLog[]> {
 
-        this.validateEntityType(
-            entityType,
-        );
+        const normalizedEntityType =
+            this.validateEntityType(
 
-        this.validateId(
-            entityId,
-        );
+                entityType,
+
+            );
+
+
+        const normalizedEntityId =
+            this.validateId(
+
+                entityId,
+
+            );
+
 
         return this.repository.findByEntity(
 
-            entityType.trim(),
+            normalizedEntityType,
 
-            entityId.trim(),
+            normalizedEntityId,
 
         );
 
     }
+
 
     private validateEntityType(
 
         entityType: string,
 
-    ): void {
+    ): string {
 
-        if (!entityType?.trim()) {
+        const normalizedEntityType =
+            entityType?.trim();
+
+
+        if (!normalizedEntityType) {
 
             throw new Error(
+
                 "Entity type is required.",
+
             );
 
         }
 
+
+        return normalizedEntityType;
+
     }
+
 
     private validateId(
 
         id: string,
 
-    ): void {
+    ): string {
 
-        if (!id?.trim()) {
+        const normalizedId =
+            id?.trim();
+
+
+        if (!normalizedId) {
 
             throw new Error(
+
                 "Id is required.",
+
             );
 
         }
 
+
+        return normalizedId;
+
     }
 
 }
+
 
 export const auditLogsService =
     new AuditLogsService();

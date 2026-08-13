@@ -21,7 +21,30 @@ import type {
 } from "@/types/admin/Role";
 
 
-async function getService() {
+/**
+ * ============================================================================
+ * Roles Administration Actions
+ * ============================================================================
+ *
+ * Server-only application boundary for role administration.
+ *
+ * Responsibilities:
+ *
+ * - Validate incoming server-action input.
+ * - Normalize role names/codes.
+ * - Delegate role lifecycle operations to RolesService.
+ * - Protect system roles.
+ * - Manage role-permission assignments.
+ * - Revalidate affected Admin routes.
+ *
+ * Tenant / organization ownership remains inside the repository/service
+ * boundary. Callers never supply a persisted organizationId directly.
+ *
+ * ============================================================================
+ */
+
+
+async function getService(): Promise<RolesService> {
 
     const repository =
         new RolesRepository();
@@ -33,39 +56,144 @@ async function getService() {
 }
 
 
-function validateRoleInput(
-    data: Partial<Role>,
-) {
+/**
+ * ============================================================================
+ * Validation Helpers
+ * ============================================================================
+ */
 
-    if (!data.name?.trim()) {
+
+function requireText(
+    value: string | undefined,
+    message: string,
+): string {
+
+    const normalized =
+        value?.trim();
+
+    if (!normalized) {
 
         throw new Error(
-            "Role name is required.",
+            message,
         );
 
     }
 
-
-    if (!data.code?.trim()) {
-
-        throw new Error(
-            "Role code is required.",
-        );
-
-    }
+    return normalized;
 
 }
-
 
 
 function validateId(
-    id:string,
-) {
+    id: string,
+    message = "Role ID is required.",
+): string {
 
-    if (!id.trim()) {
+    return requireText(
+        id,
+        message,
+    );
+
+}
+
+
+function normalizeRoleCode(
+    code: string | undefined,
+): string {
+
+    const normalized =
+        requireText(
+            code,
+            "Role code is required.",
+        )
+            .toLowerCase();
+
+    if (
+        !/^[a-z0-9_-]+$/.test(
+            normalized,
+        )
+    ) {
 
         throw new Error(
-            "Role ID is required.",
+            "Role code may contain only lowercase letters, numbers, underscores, and hyphens.",
+        );
+
+    }
+
+    return normalized;
+
+}
+
+
+function normalizePermissionIds(
+    permissionIds:
+        | string[]
+        | undefined,
+): string[] {
+
+    return Array.from(
+        new Set(
+            (permissionIds ?? [])
+                .filter(
+                    (
+                        permissionId,
+                    ): permissionId is string =>
+                        typeof permissionId === "string" &&
+                        Boolean(
+                            permissionId.trim(),
+                        ),
+                )
+                .map(
+                    permissionId =>
+                        permissionId.trim(),
+                ),
+        ),
+    );
+
+}
+
+
+function validateRoleInput(
+    data: Partial<Role>,
+): void {
+
+    if (!data) {
+
+        throw new Error(
+            "Role is required.",
+        );
+
+    }
+
+    requireText(
+        data.name,
+        "Role name is required.",
+    );
+
+    normalizeRoleCode(
+        data.code,
+    );
+
+    if (!data.type) {
+
+        throw new Error(
+            "Role type is required.",
+        );
+
+    }
+
+    if (!data.level) {
+
+        throw new Error(
+            "Role level is required.",
+        );
+
+    }
+
+    if (!data.status) {
+
+        throw new Error(
+            "Role status is required.",
         );
 
     }
@@ -73,10 +201,15 @@ function validateId(
 }
 
 
-
+/**
+ * System roles are platform-controlled.
+ *
+ * They must never be changed through the normal organization role
+ * administration workflow.
+ */
 function protectSystemRole(
-    role:Role,
-) {
+    role: Role,
+): void {
 
     if (role.isSystem) {
 
@@ -89,367 +222,464 @@ function protectSystemRole(
 }
 
 
+/**
+ * ============================================================================
+ * Create Role
+ * ============================================================================
+ */
+
 
 export async function createRole(
-    data:Partial<Role>,
+    data: Partial<Role>,
 ) {
 
     validateRoleInput(
         data,
     );
 
-
     const service =
         await getService();
-
 
     const now =
         new Date()
             .toISOString();
 
-
-    const role:Role = {
+    const role: Role = {
 
         id:
             crypto.randomUUID(),
 
         organizationId:
-            data.organizationId,
-
+            undefined,
 
         name:
-            data.name!.trim(),
-
+            requireText(
+                data.name,
+                "Role name is required.",
+            ),
 
         code:
-            data.code!
-                .trim()
-                .toLowerCase(),
-
+            normalizeRoleCode(
+                data.code,
+            ),
 
         description:
-            data.description?.trim(),
-
+            data.description?.trim()
+            || undefined,
 
         type:
             data.type ?? "Custom",
 
-
         level:
             data.level ?? "Organization",
-
 
         status:
             data.status ?? "Active",
 
-
         permissionIds:
-            data.permissionIds ?? [],
-
+            normalizePermissionIds(
+                data.permissionIds,
+            ),
 
         isSystem:
             false,
 
-
         isDefault:
             data.isDefault ?? false,
 
-
         isActive:
             (data.status ?? "Active")
-                === "Active",
-
+            === "Active",
 
         metadata:
             data.metadata ?? {},
 
-
         createdAt:
             now,
-
 
         updatedAt:
             now,
 
     };
-
 
     await service.save(
         role,
     );
 
-
-    revalidatePath(
-        "/admin/roles",
-    );
-
+    revalidateRoleRoutes();
 
     return {
-
-        success:true,
-
-        id:role.id,
-
+        success: true,
+        id: role.id,
     };
 
 }
 
 
-
+/**
+ * ============================================================================
+ * Update Role
+ * ============================================================================
+ */
 
 
 export async function updateRole(
-    role:Role,
+    role: Role,
 ) {
 
+    if (!role) {
+
+        throw new Error(
+            "Role is required.",
+        );
+
+    }
 
     validateId(
         role.id,
     );
 
-
     protectSystemRole(
         role,
     );
 
+    validateRoleInput(
+        role,
+    );
 
     const service =
         await getService();
 
+    const now =
+        new Date()
+            .toISOString();
 
     await service.save({
 
         ...role,
 
+        organizationId:
+            undefined,
 
         name:
-            role.name.trim(),
-
+            requireText(
+                role.name,
+                "Role name is required.",
+            ),
 
         code:
-            role.code
-                .trim()
-                .toLowerCase(),
+            normalizeRoleCode(
+                role.code,
+            ),
 
+        description:
+            role.description?.trim()
+            || undefined,
+
+        permissionIds:
+            normalizePermissionIds(
+                role.permissionIds,
+            ),
+
+        isSystem:
+            false,
 
         isActive:
             role.status === "Active",
 
-
         updatedAt:
-            new Date()
-                .toISOString(),
+            now,
 
     });
 
-
-
-    revalidatePath(
-        "/admin/roles",
-    );
-
+    revalidateRoleRoutes();
 
     return {
-
-        success:true,
-
+        success: true,
     };
 
 }
 
 
-
+/**
+ * ============================================================================
+ * Delete Role
+ * ============================================================================
+ *
+ * System-role protection is enforced again at the service/repository boundary.
+ * The server action therefore does not rely solely on the client hiding the
+ * Delete button.
+ *
+ * ============================================================================
+ */
 
 
 export async function deleteRole(
-    id:string,
+    id: string,
 ) {
 
-
-    validateId(
-        id,
-    );
-
+    const normalizedId =
+        validateId(
+            id,
+        );
 
     const service =
         await getService();
 
+    const existing =
+        await service.findById(
+            normalizedId,
+        );
+
+    if (!existing) {
+
+        throw new Error(
+            "Role not found.",
+        );
+
+    }
+
+    protectSystemRole(
+        existing,
+    );
 
     await service.delete(
-        id,
+        normalizedId,
     );
 
-
-    revalidatePath(
-        "/admin/roles",
-    );
-
+    revalidateRoleRoutes();
 
     return {
-
-        success:true,
-
+        success: true,
     };
 
 }
 
 
-
+/**
+ * ============================================================================
+ * Role Permission Validation
+ * ============================================================================
+ */
 
 
 function validatePermissionMapping(
-    roleId:string,
-    permissionId:string,
-) {
+    roleId: string,
+    permissionId: string,
+): {
+    roleId: string;
+    permissionId: string;
+} {
 
+    return {
 
-    if (!roleId.trim()) {
+        roleId:
+            validateId(
+                roleId,
+                "Role ID is required.",
+            ),
 
-        throw new Error(
-            "Role ID is required.",
-        );
+        permissionId:
+            requireText(
+                permissionId,
+                "Permission ID is required.",
+            ),
 
-    }
-
-
-    if (!permissionId.trim()) {
-
-        throw new Error(
-            "Permission ID is required.",
-        );
-
-    }
+    };
 
 }
 
 
+/**
+ * ============================================================================
+ * Role Permission Protection
+ * ============================================================================
+ */
 
+
+async function requireMutableRole(
+    roleId: string,
+) {
+
+    const supabase =
+        await createClient();
+
+    const {
+        data: role,
+        error,
+    } =
+        await supabase
+            .from("roles")
+            .select(
+                "id,is_system",
+            )
+            .eq(
+                "id",
+                roleId,
+            )
+            .maybeSingle();
+
+    if (error) {
+
+        throw error;
+
+    }
+
+    if (!role) {
+
+        throw new Error(
+            "Role not found.",
+        );
+
+    }
+
+    if (role.is_system === true) {
+
+        throw new Error(
+            "System role permissions cannot be modified.",
+        );
+
+    }
+
+    return supabase;
+
+}
+
+
+/**
+ * ============================================================================
+ * Assign Role Permission
+ * ============================================================================
+ */
 
 
 export async function assignRolePermission(
-    roleId:string,
-    permissionId:string,
+    roleId: string,
+    permissionId: string,
 ) {
 
-
-    validatePermissionMapping(
-        roleId,
-        permissionId,
-    );
-
+    const normalized =
+        validatePermissionMapping(
+            roleId,
+            permissionId,
+        );
 
     const supabase =
-        await createClient();
-
-
+        await requireMutableRole(
+            normalized.roleId,
+        );
 
     const {
         error,
     } =
         await supabase
-            .from(
-                "role_permissions",
-            )
-            .upsert({
+            .from("role_permissions")
+            .upsert(
+                {
 
-                id:
-                    crypto.randomUUID(),
+                    id:
+                        crypto.randomUUID(),
 
+                    role_id:
+                        normalized.roleId,
 
-                role_id:
-                    roleId,
+                    permission_id:
+                        normalized.permissionId,
 
+                    created_at:
+                        new Date()
+                            .toISOString(),
 
-                permission_id:
-                    permissionId,
+                },
+                {
+                    onConflict:
+                        "role_id,permission_id",
+                },
+            );
 
-
-                created_at:
-                    new Date()
-                        .toISOString(),
-
-            });
-
-
-
-    if(error){
+    if (error) {
 
         throw error;
 
     }
 
-
-
-    revalidatePath(
-        "/admin/roles",
-    );
-
+    revalidateRoleRoutes();
 
     return {
-
-        success:true,
-
+        success: true,
     };
 
 }
 
 
-
+/**
+ * ============================================================================
+ * Revoke Role Permission
+ * ============================================================================
+ */
 
 
 export async function revokeRolePermission(
-    roleId:string,
-    permissionId:string,
+    roleId: string,
+    permissionId: string,
 ) {
 
-
-    validatePermissionMapping(
-        roleId,
-        permissionId,
-    );
-
+    const normalized =
+        validatePermissionMapping(
+            roleId,
+            permissionId,
+        );
 
     const supabase =
-        await createClient();
-
-
+        await requireMutableRole(
+            normalized.roleId,
+        );
 
     const {
         error,
     } =
         await supabase
-            .from(
-                "role_permissions",
-            )
+            .from("role_permissions")
             .delete()
             .eq(
                 "role_id",
-                roleId,
+                normalized.roleId,
             )
             .eq(
                 "permission_id",
-                permissionId,
+                normalized.permissionId,
             );
 
-
-
-    if(error){
+    if (error) {
 
         throw error;
 
     }
 
+    revalidateRoleRoutes();
 
+    return {
+        success: true,
+    };
+
+}
+
+
+/**
+ * ============================================================================
+ * Route Revalidation
+ * ============================================================================
+ */
+
+
+function revalidateRoleRoutes(): void {
 
     revalidatePath(
         "/admin/roles",
     );
 
-
-    return {
-
-        success:true,
-
-    };
+    revalidatePath(
+        "/admin/role-permissions",
+    );
 
 }

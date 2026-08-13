@@ -1,38 +1,10 @@
-/**
- * ============================================================================
- * Announcements Repository
- *
- * Admin Announcement Registry
- *
- * Architecture:
- *
- * Server Action / Service
- *        ↓
- * AnnouncementsRepository
- *        ↓
- * TenantContextManager
- *        ↓
- * Supabase Server Client
- *        ↓
- * announcements
- *
- * Production rules:
- * - Server-only Supabase client
- * - Tenant isolation on every operation
- * - No caller-supplied organization_id
- * - Organization ID always comes from TenantContextManager
- * - Strong input validation
- * - Stable domain mapping
- * ============================================================================
- */
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
 
 import {
-    TenantContextManager,
-} from "@/lib/tenant/tenantContext";
-
-import {
-    createSupabaseServerClient,
-} from "@/lib/supabase/server-client";
+    BaseRepository,
+} from "@/lib/db/base-repository";
 
 import type {
     Announcement,
@@ -40,6 +12,7 @@ import type {
 
 
 type AnnouncementRow = {
+
     id: string;
 
     organization_id: string;
@@ -48,9 +21,13 @@ type AnnouncementRow = {
 
     content: string;
 
-    status: Announcement["status"] | null;
+    status:
+        Announcement["status"] |
+        null;
 
-    priority: Announcement["priority"] | null;
+    priority:
+        Announcement["priority"] |
+        null;
 
     publish_date: string | null;
 
@@ -58,15 +35,18 @@ type AnnouncementRow = {
 
     created_by: string | null;
 
-    metadata: Record<string, unknown> | null;
+    metadata:
+        Record<string, unknown> |
+        null;
 
     created_at: string;
 
     updated_at: string;
+
 };
 
 
-interface IAnnouncementsRepository {
+export interface IAnnouncementsRepository {
 
     findAll(): Promise<Announcement[]>;
 
@@ -83,43 +63,40 @@ interface IAnnouncementsRepository {
     delete(
         id: string,
     ): Promise<void>;
+
 }
 
 
 export class AnnouncementsRepository
-    implements IAnnouncementsRepository {
+    extends BaseRepository<Announcement>
+    implements IAnnouncementsRepository
+{
 
-    private async client() {
-        return createSupabaseServerClient();
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        super(
+            supabase,
+            "announcements",
+        );
+
     }
 
 
-    private get organizationId(): string {
-        return TenantContextManager
-            .require()
-            .organizationId;
-    }
+    async findAll():
 
-
-    static async create(): Promise<AnnouncementsRepository> {
-        return new AnnouncementsRepository();
-    }
-
-
-    async findAll(): Promise<Announcement[]> {
-
-        const supabase = await this.client();
+    Promise<Announcement[]> {
 
         const {
             data,
             error,
-        } = await supabase
-            .from("announcements")
+        } = await this
+
+            .tableRef()
+
             .select("*")
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
+
             .order(
                 "created_at",
                 {
@@ -127,37 +104,42 @@ export class AnnouncementsRepository
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return (data ?? []).map(
-            (row) =>
+            row =>
                 this.mapAnnouncement(
                     row as AnnouncementRow,
                 ),
         );
+
     }
 
 
-    async findPublished(): Promise<Announcement[]> {
+    async findPublished():
 
-        const supabase = await this.client();
+    Promise<Announcement[]> {
 
         const {
             data,
             error,
-        } = await supabase
-            .from("announcements")
+        } = await this
+
+            .tableRef()
+
             .select("*")
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
+
             .eq(
                 "status",
                 "PUBLISHED",
             )
+
             .order(
                 "publish_date",
                 {
@@ -165,84 +147,111 @@ export class AnnouncementsRepository
                 },
             );
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return (data ?? []).map(
-            (row) =>
+            row =>
                 this.mapAnnouncement(
                     row as AnnouncementRow,
                 ),
         );
+
     }
 
 
     async findById(
+
         id: string,
-    ): Promise<Announcement | null> {
+
+    ):
+
+    Promise<Announcement | null> {
 
         const normalizedId =
-            this.requireId(id);
+            this.requireId(
+                id,
+            );
 
-        const supabase = await this.client();
 
         const {
             data,
             error,
-        } = await supabase
-            .from("announcements")
+        } = await this
+
+            .tableRef()
+
             .select("*")
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
+
             .eq(
                 "id",
                 normalizedId,
             )
+
             .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return data
+
             ? this.mapAnnouncement(
-                data as AnnouncementRow,
-            )
+                  data as AnnouncementRow,
+              )
+
             : null;
+
     }
 
 
     async save(
-        announcement: Partial<Announcement>,
-    ): Promise<Announcement> {
+
+        announcement:
+            Partial<Announcement>,
+
+    ):
+
+    Promise<Announcement> {
 
         if (!announcement) {
+
             throw new Error(
                 "Announcement is required.",
             );
+
         }
+
 
         const title =
-            announcement.title?.trim();
-
-        if (!title) {
-            throw new Error(
-                "Announcement title is required.",
+            this.requireTitle(
+                announcement.title,
             );
-        }
+
 
         const content =
-            announcement.content?.trim() ?? "";
+            this.normalizeString(
+                announcement.content,
+            );
+
 
         const now =
             new Date().toISOString();
 
-        const payload = {
-            id:
-                announcement.id,
+
+        const payload: Record<
+            string,
+            unknown
+        > = {
 
             organization_id:
                 this.organizationId,
@@ -252,115 +261,202 @@ export class AnnouncementsRepository
             content,
 
             status:
-                announcement.status ?? "DRAFT",
+                announcement.status ??
+                "DRAFT",
 
             priority:
-                announcement.priority ?? "NORMAL",
+                announcement.priority ??
+                "NORMAL",
 
             publish_date:
-                announcement.publishDate ?? null,
+                announcement.publishDate ??
+                null,
 
             expiry_date:
-                announcement.expiryDate ?? null,
+                announcement.expiryDate ??
+                null,
 
             created_by:
-                announcement.createdBy ?? null,
+                announcement.createdBy ??
+                null,
 
             metadata:
-                announcement.metadata ?? {},
-
-            created_at:
-                announcement.createdAt ?? now,
+                announcement.metadata ??
+                {},
 
             updated_at:
                 now,
+
         };
 
-        const supabase =
-            await this.client();
+
+        if (announcement.id) {
+
+            payload.id =
+                this.requireId(
+                    announcement.id,
+                );
+
+
+            if (announcement.createdAt) {
+
+                payload.created_at =
+                    announcement.createdAt;
+
+            }
+
+        } else {
+
+            payload.created_at =
+                now;
+
+        }
+
 
         const {
             data,
             error,
-        } = await supabase
-            .from("announcements")
+        } = await this
+
+            .tableRef()
+
             .upsert(
                 payload,
                 {
-                    onConflict: "id",
+                    onConflict:
+                        "id",
                 },
             )
+
             .select("*")
+
             .single();
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         if (!data) {
+
             throw new Error(
                 "Announcement save returned no data.",
             );
+
         }
+
 
         return this.mapAnnouncement(
             data as AnnouncementRow,
         );
+
     }
 
 
     async delete(
+
         id: string,
-    ): Promise<void> {
 
-        const normalizedId =
-            this.requireId(id);
+    ):
 
-        const supabase =
-            await this.client();
+    Promise<void> {
 
-        const {
-            error,
-        } = await supabase
-            .from("announcements")
-            .delete()
-            .eq(
-                "organization_id",
-                this.organizationId,
-            )
-            .eq(
-                "id",
-                normalizedId,
-            );
+        await super.delete(
+            this.requireId(
+                id,
+            ),
+        );
 
-        if (error) {
-            throw error;
-        }
     }
 
 
     private requireId(
+
         id: string,
+
     ): string {
 
-        const normalizedId =
-            id?.trim();
+        const normalized =
+            typeof id === "string"
+                ? id.trim()
+                : "";
 
-        if (!normalizedId) {
+
+        if (!normalized) {
+
             throw new Error(
                 "Announcement id is required.",
             );
+
         }
 
-        return normalizedId;
+
+        return normalized;
+
+    }
+
+
+    private requireTitle(
+
+        title: string | undefined,
+
+    ): string {
+
+        const normalized =
+            typeof title === "string"
+                ? title.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Announcement title is required.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+    private normalizeString(
+
+        value:
+            string |
+            null |
+            undefined,
+
+    ): string {
+
+        if (
+            typeof value !==
+            "string"
+        ) {
+
+            return "";
+
+        }
+
+
+        return value.trim();
+
     }
 
 
     private mapAnnouncement(
+
         row: AnnouncementRow,
+
     ): Announcement {
 
         return {
+
             id:
                 row.id,
 
@@ -374,28 +470,37 @@ export class AnnouncementsRepository
                 row.content,
 
             status:
-                row.status ?? "DRAFT",
+                row.status ??
+                "DRAFT",
 
             priority:
-                row.priority ?? "NORMAL",
+                row.priority ??
+                "NORMAL",
 
             publishDate:
-                row.publish_date ?? undefined,
+                row.publish_date ??
+                undefined,
 
             expiryDate:
-                row.expiry_date ?? undefined,
+                row.expiry_date ??
+                undefined,
 
             createdBy:
-                row.created_by ?? undefined,
+                row.created_by ??
+                undefined,
 
             metadata:
-                row.metadata ?? {},
+                row.metadata ??
+                {},
 
             createdAt:
                 row.created_at,
 
             updatedAt:
                 row.updated_at,
+
         };
+
     }
+
 }

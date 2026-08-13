@@ -2,18 +2,23 @@ import type {
     Branch,
 } from "@/types/admin/Branch";
 
+
 import {
     BranchesRepository,
 } from "@/repositories/admin/BranchesRepository";
 
+
 export class BranchesService {
+
 
     constructor(
 
-        private readonly repository =
-            new BranchesRepository(),
+        private readonly repository:
+            BranchesRepository =
+                new BranchesRepository(),
 
     ) {}
+
 
     async list():
 
@@ -23,6 +28,7 @@ export class BranchesService {
 
     }
 
+
     async findById(
 
         id: string,
@@ -31,44 +37,56 @@ export class BranchesService {
 
     Promise<Branch | null> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+                id,
+            );
+
 
         return this.repository.findById(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
 
+
     async save(
 
-        branch: Partial<Branch>,
+        branch:
+            Partial<Branch>,
 
     ):
 
     Promise<Branch> {
 
-        this.validateBranch(
-            branch,
+        const normalizedBranch =
+            this.validateBranch(
+                branch,
+            );
+
+
+        return this.repository.save(
+
+            {
+
+                ...branch,
+
+                branchCode:
+                    normalizedBranch.branchCode
+                        .toUpperCase(),
+
+                branchName:
+                    normalizedBranch.branchName
+                        .trim(),
+
+            },
+
         );
 
-        return this.repository.save({
-
-            ...branch,
-
-            branchCode:
-                branch.branchCode!
-                    .trim()
-                    .toUpperCase(),
-
-            branchName:
-                branch.branchName!
-                    .trim(),
-
-        });
-
     }
+
 
     async delete(
 
@@ -78,69 +96,121 @@ export class BranchesService {
 
     Promise<void> {
 
-        this.validateId(
-            id,
-        );
+        const normalizedId =
+            this.validateId(
+                id,
+            );
+
 
         await this.repository.delete(
-            id.trim(),
+
+            normalizedId,
+
         );
 
     }
 
+
     private validateBranch(
 
-        branch: Partial<Branch>,
+        branch:
+            Partial<Branch>,
 
-    ): void {
+    ): {
+
+        branchCode: string;
+
+        branchName: string;
+
+    } {
 
         if (!branch) {
 
             throw new Error(
+
                 "Branch is required.",
+
             );
 
         }
 
-        if (
-            !branch.branchCode?.trim()
-        ) {
+
+        const branchCode =
+            typeof branch.branchCode ===
+            "string"
+                ? branch.branchCode.trim()
+                : "";
+
+
+        const branchName =
+            typeof branch.branchName ===
+            "string"
+                ? branch.branchName.trim()
+                : "";
+
+
+        if (!branchCode) {
 
             throw new Error(
+
                 "Branch code is required.",
+
             );
 
         }
 
-        if (
-            !branch.branchName?.trim()
-        ) {
+
+        if (!branchName) {
 
             throw new Error(
+
                 "Branch name is required.",
+
             );
 
         }
+
+
+        return {
+
+            branchCode,
+
+            branchName,
+
+        };
 
     }
+
 
     private validateId(
 
         id: string,
 
-    ): void {
+    ): string {
 
-        if (!id?.trim()) {
+        const normalizedId =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalizedId) {
 
             throw new Error(
+
                 "Branch id is required.",
+
             );
 
         }
 
+
+        return normalizedId;
+
     }
 
 }
+
 
 export const branchesService =
     new BranchesService();

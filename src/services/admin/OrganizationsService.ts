@@ -11,6 +11,13 @@
  * - Tenant administration
  * - Organization lookup
  * - Organization management
+ *
+ * Production Rules
+ * - Preserve repository/service boundary
+ * - Normalize organization identifiers before repository calls
+ * - Normalize organization codes consistently
+ * - Prevent duplicate organization codes
+ * - Protect system organizations from deletion
  * ============================================================================
  */
 
@@ -27,7 +34,11 @@ import type {
 
 
 
+
 export class OrganizationsService {
+
+
+
 
 
     constructor(
@@ -36,6 +47,8 @@ export class OrganizationsService {
             IOrganizationsRepository,
 
     ) {}
+
+
 
 
 
@@ -59,6 +72,8 @@ export class OrganizationsService {
 
 
 
+
+
     async active():
 
     Promise<Organization[]> {
@@ -75,31 +90,36 @@ export class OrganizationsService {
 
 
 
+
+
     async findById(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<Organization | null> {
 
 
-        this.validateId(
+        const normalizedId =
+            this.validateId(
 
-            id,
+                id,
 
-        );
+            );
 
 
 
         return this.repository.findById(
 
-            id,
+            normalizedId,
 
         );
 
 
     }
+
+
 
 
 
@@ -109,34 +129,25 @@ export class OrganizationsService {
 
     async findByCode(
 
-        code:string,
+        code: string,
 
     ):
 
     Promise<Organization | null> {
 
 
-        if(!code?.trim()) {
+        const normalizedCode =
+            this.normalizeCode(
 
-
-            throw new Error(
-
-                "Organization code is required.",
+                code,
 
             );
-
-
-        }
 
 
 
         return this.repository.findByCode(
 
-            code
-
-                .trim()
-
-                .toUpperCase(),
+            normalizedCode,
 
         );
 
@@ -149,51 +160,36 @@ export class OrganizationsService {
 
 
 
+
+
     async save(
 
-        organization:Organization,
+        organization: Organization,
 
     ):
 
     Promise<void> {
 
 
+        const normalizedOrganization =
+            this.validateOrganization(
 
-        this.validateOrganization(
-
-            organization,
-
-        );
-
-
-
-
-
-        const normalizedCode =
-
-            organization.code
-
-                .trim()
-
-                .toUpperCase();
-
-
-
-
-
-        const existing =
-
-            await this.repository.findByCode(
-
-                normalizedCode,
+                organization,
 
             );
 
 
 
+        const existing =
+            await this.repository.findByCode(
+
+                normalizedOrganization.code,
+
+            );
 
 
-        if(
+
+        if (
 
             existing &&
 
@@ -213,8 +209,6 @@ export class OrganizationsService {
 
 
 
-
-
         await this.repository.save(
 
             {
@@ -223,16 +217,11 @@ export class OrganizationsService {
 
 
                 code:
-
-                    normalizedCode,
+                    normalizedOrganization.code,
 
 
                 name:
-
-                    organization.name
-
-                        .trim(),
-
+                    normalizedOrganization.name,
 
 
                 updatedAt:
@@ -254,28 +243,19 @@ export class OrganizationsService {
 
 
 
+
+
     async delete(
 
-        id:string,
+        id: string,
 
     ):
 
     Promise<void> {
 
 
-        this.validateId(
-
-            id,
-
-        );
-
-
-
-
-
-        const organization =
-
-            await this.repository.findById(
+        const normalizedId =
+            this.validateId(
 
                 id,
 
@@ -283,9 +263,16 @@ export class OrganizationsService {
 
 
 
+        const organization =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
 
 
-        if(!organization) {
+
+        if (!organization) {
 
 
             throw new Error(
@@ -299,9 +286,7 @@ export class OrganizationsService {
 
 
 
-
-
-        if(organization.isSystem) {
+        if (organization.isSystem) {
 
 
             throw new Error(
@@ -315,11 +300,9 @@ export class OrganizationsService {
 
 
 
-
-
         await this.repository.delete(
 
-            id,
+            normalizedId,
 
         );
 
@@ -336,13 +319,43 @@ export class OrganizationsService {
 
     private validateOrganization(
 
-        organization:Organization,
+        organization: Organization,
 
-    ) {
+    ): {
+
+        code: string;
+
+        name: string;
+
+    } {
+
+
+        if (!organization) {
+
+
+            throw new Error(
+
+                "Organization is required.",
+
+            );
+
+
+        }
 
 
 
-        if(!organization.name?.trim()) {
+        const name =
+
+            typeof organization.name ===
+            "string"
+
+                ? organization.name.trim()
+
+                : "";
+
+
+
+        if (!name) {
 
 
             throw new Error(
@@ -356,11 +369,69 @@ export class OrganizationsService {
 
 
 
+        const code =
+            this.normalizeCode(
+
+                organization.code,
+
+            );
+
+
+
+        if (!organization.status) {
+
+
+            throw new Error(
+
+                "Organization status is required.",
+
+            );
+
+
+        }
+
+
+
+        return {
+
+            code,
+
+            name,
+
+        };
+
+
+    }
 
 
 
 
-        if(!organization.code?.trim()) {
+
+
+
+
+
+    private normalizeCode(
+
+        code: string,
+
+    ): string {
+
+
+        const normalizedCode =
+
+            typeof code ===
+            "string"
+
+                ? code
+                    .trim()
+                    .toUpperCase()
+
+                : "";
+
+
+
+        if (!normalizedCode) {
 
 
             throw new Error(
@@ -374,21 +445,7 @@ export class OrganizationsService {
 
 
 
-
-
-
-
-        if(!organization.status) {
-
-
-            throw new Error(
-
-                "Organization status is required.",
-
-            );
-
-
-        }
+        return normalizedCode;
 
 
     }
@@ -403,12 +460,23 @@ export class OrganizationsService {
 
     private validateId(
 
-        id:string,
+        id: string,
 
-    ) {
+    ): string {
 
 
-        if(!id?.trim()) {
+        const normalizedId =
+
+            typeof id ===
+            "string"
+
+                ? id.trim()
+
+                : "";
+
+
+
+        if (!normalizedId) {
 
 
             throw new Error(
@@ -419,6 +487,10 @@ export class OrganizationsService {
 
 
         }
+
+
+
+        return normalizedId;
 
 
     }

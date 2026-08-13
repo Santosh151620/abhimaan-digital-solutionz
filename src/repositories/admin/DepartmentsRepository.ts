@@ -27,7 +27,9 @@ type DepartmentRow = {
 
     status: string;
 
-    metadata: Record<string, unknown> | null;
+    metadata:
+        Record<string, unknown> |
+        null;
 
     created_at: string;
 
@@ -107,6 +109,7 @@ export class DepartmentsRepository
                     row as DepartmentRow,
                 ),
         );
+
     }
 
 
@@ -143,6 +146,7 @@ export class DepartmentsRepository
                     row as DepartmentRow,
                 ),
         );
+
     }
 
 
@@ -181,6 +185,7 @@ export class DepartmentsRepository
                 data as DepartmentRow,
             )
             : null;
+
     }
 
 
@@ -219,6 +224,7 @@ export class DepartmentsRepository
                 data as DepartmentRow,
             )
             : null;
+
     }
 
 
@@ -247,48 +253,75 @@ export class DepartmentsRepository
         const now =
             new Date().toISOString();
 
+        const payload: Record<
+            string,
+            unknown
+        > = {
+
+            organization_id:
+                this.organizationId,
+
+            department_code:
+                departmentCode,
+
+            department_name:
+                departmentName,
+
+            parent_department_id:
+                this.normalizeOptionalId(
+                    department.parentDepartmentId,
+                ),
+
+            manager_id:
+                this.normalizeOptionalId(
+                    department.managerId,
+                ),
+
+            status:
+                department.status ??
+                "Active",
+
+            metadata:
+                department.metadata ??
+                {},
+
+            updated_at:
+                now,
+
+        };
+
+
+        if (department.id) {
+
+            payload.id =
+                this.requireValue(
+                    department.id,
+                    "Department id",
+                );
+
+        }
+
+
+        if (department.createdAt) {
+
+            payload.created_at =
+                department.createdAt;
+
+        } else {
+
+            payload.created_at =
+                now;
+
+        }
+
+
         const {
             data,
             error,
         } = await this
             .tableRef()
             .upsert(
-                {
-                    id:
-                        department.id,
-
-                    organization_id:
-                        this.organizationId,
-
-                    department_code:
-                        departmentCode,
-
-                    department_name:
-                        departmentName,
-
-                    parent_department_id:
-                        department.parentDepartmentId ??
-                        null,
-
-                    manager_id:
-                        department.managerId ??
-                        null,
-
-                    status:
-                        department.status ??
-                        "Active",
-
-                    metadata:
-                        department.metadata ??
-                        {},
-
-                    created_at:
-                        department.createdAt ??
-                        now,
-
-                    updated_at:
-                        now,
-                },
+                payload,
                 {
                     onConflict: "id",
                 },
@@ -309,6 +342,7 @@ export class DepartmentsRepository
         return this.mapDepartment(
             data as DepartmentRow,
         );
+
     }
 
 
@@ -325,12 +359,19 @@ export class DepartmentsRepository
         await super.delete(
             normalizedId,
         );
+
     }
 
 
     private requireValue(
-        value: string | null | undefined,
-        fieldName: string,
+        value:
+            string |
+            null |
+            undefined,
+
+        fieldName:
+            string,
+
     ): string {
 
         const normalized =
@@ -343,6 +384,32 @@ export class DepartmentsRepository
         }
 
         return normalized;
+
+    }
+
+
+    private normalizeOptionalId(
+        value:
+            string |
+            null |
+            undefined,
+
+    ): string | null {
+
+        if (
+            typeof value !==
+            "string"
+        ) {
+
+            return null;
+
+        }
+
+        const normalized =
+            value.trim();
+
+        return normalized || null;
+
     }
 
 
@@ -373,7 +440,8 @@ export class DepartmentsRepository
                 undefined,
 
             status:
-                row.status as Department["status"],
+                row.status as
+                Department["status"],
 
             metadata:
                 row.metadata ??
@@ -386,6 +454,7 @@ export class DepartmentsRepository
                 row.updated_at,
 
         };
+
     }
 
 }
