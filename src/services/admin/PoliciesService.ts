@@ -218,7 +218,7 @@ export class PoliciesService {
 
 
 
-    async delete(
+       async delete(
 
         id: string,
 
@@ -235,6 +235,24 @@ export class PoliciesService {
             );
 
 
+        const policy =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!policy) {
+
+            throw new Error(
+
+                "Policy not found.",
+
+            );
+
+        }
+
 
         await this.repository.delete(
 
@@ -242,16 +260,7 @@ export class PoliciesService {
 
         );
 
-
     }
-
-
-
-
-
-
-
-
 
     private validatePolicy(
 

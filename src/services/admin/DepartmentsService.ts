@@ -8,6 +8,7 @@ import type {
 } from "@/repositories/admin/DepartmentsRepository";
 
 
+
 export class DepartmentsService {
 
 
@@ -116,9 +117,7 @@ export class DepartmentsService {
         ) {
 
             throw new Error(
-
                 "Department code already exists.",
-
             );
 
         }
@@ -137,6 +136,10 @@ export class DepartmentsService {
                 departmentName:
                     normalizedDepartment
                         .departmentName,
+
+                organizationId:
+                    department.organizationId
+                        .trim(),
 
                 updatedAt:
                     new Date()
@@ -174,9 +177,7 @@ export class DepartmentsService {
         if (!department) {
 
             throw new Error(
-
                 "Department not found.",
-
             );
 
         }
@@ -206,60 +207,36 @@ export class DepartmentsService {
         if (!department) {
 
             throw new Error(
-
                 "Department is required.",
-
             );
 
         }
 
 
         const departmentCode =
-            typeof department.departmentCode ===
-            "string"
-                ? department.departmentCode
-                    .trim()
-                    .toUpperCase()
-                : "";
+            this.normalizeCode(
+                department.departmentCode,
+            );
 
 
         const departmentName =
-            typeof department.departmentName ===
-            "string"
-                ? department.departmentName.trim()
-                : "";
+            this.normalizeRequiredText(
 
-
-        if (!departmentCode) {
-
-            throw new Error(
-
-                "Department code is required.",
-
-            );
-
-        }
-
-
-        if (!departmentName) {
-
-            throw new Error(
+                department.departmentName,
 
                 "Department name is required.",
 
             );
 
-        }
-
 
         if (
-            !department.organizationId?.trim()
+            typeof department.organizationId !==
+                "string" ||
+            !department.organizationId.trim()
         ) {
 
             throw new Error(
-
                 "Organization is required.",
-
             );
 
         }
@@ -268,9 +245,7 @@ export class DepartmentsService {
         if (!department.status) {
 
             throw new Error(
-
                 "Department status is required.",
-
             );
 
         }
@@ -294,23 +269,57 @@ export class DepartmentsService {
     ): string {
 
         const normalizedCode =
-            typeof code === "string"
-                ? code.trim().toUpperCase()
+            typeof code ===
+                "string"
+
+                ? code
+                    .trim()
+                    .toUpperCase()
+
                 : "";
 
 
         if (!normalizedCode) {
 
             throw new Error(
-
                 "Department code is required.",
-
             );
 
         }
 
 
         return normalizedCode;
+
+    }
+
+
+    private normalizeRequiredText(
+
+        value: string,
+
+        message: string,
+
+    ): string {
+
+        const normalized =
+            typeof value ===
+                "string"
+
+                ? value.trim()
+
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                message,
+            );
+
+        }
+
+
+        return normalized;
 
     }
 
@@ -322,17 +331,18 @@ export class DepartmentsService {
     ): string {
 
         const normalizedId =
-            typeof id === "string"
+            typeof id ===
+                "string"
+
                 ? id.trim()
+
                 : "";
 
 
         if (!normalizedId) {
 
             throw new Error(
-
                 "Department id is required.",
-
             );
 
         }

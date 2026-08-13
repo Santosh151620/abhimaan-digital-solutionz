@@ -26,9 +26,7 @@ export class ModulesService {
 
     Promise<PlatformModule[]> {
 
-
         return this.repository.list();
-
 
     }
 
@@ -42,7 +40,6 @@ export class ModulesService {
 
     Promise<PlatformModule | null> {
 
-
         const normalizedId =
             this.validateId(
                 id,
@@ -54,7 +51,6 @@ export class ModulesService {
             normalizedId,
 
         );
-
 
     }
 
@@ -68,7 +64,6 @@ export class ModulesService {
 
     Promise<PlatformModule | null> {
 
-
         const normalizedCode =
             this.normalizeCode(
                 code,
@@ -81,7 +76,6 @@ export class ModulesService {
 
         );
 
-
     }
 
 
@@ -93,7 +87,6 @@ export class ModulesService {
     ):
 
     Promise<boolean> {
-
 
         const platformModule =
             await this.findByCode(
@@ -110,7 +103,6 @@ export class ModulesService {
 
         );
 
-
     }
 
 
@@ -123,7 +115,6 @@ export class ModulesService {
     ):
 
     Promise<boolean> {
-
 
         if (!platformModule) {
 
@@ -206,7 +197,6 @@ export class ModulesService {
 
     Promise<void> {
 
-
         const normalizedModule =
             this.validateModule(
                 module,
@@ -233,6 +223,25 @@ export class ModulesService {
             throw new Error(
 
                 "Module code already exists.",
+
+            );
+
+        }
+
+
+        const dependenciesSatisfied =
+            await this.dependenciesSatisfied(
+
+                module,
+
+            );
+
+
+        if (!dependenciesSatisfied) {
+
+            throw new Error(
+
+                "Module dependencies are not satisfied.",
 
             );
 
@@ -270,7 +279,6 @@ export class ModulesService {
     ):
 
     Promise<void> {
-
 
         const normalizedId =
             this.validateId(
@@ -330,7 +338,6 @@ export class ModulesService {
         name: string;
 
     } {
-
 
         if (!module) {
 
@@ -398,7 +405,6 @@ export class ModulesService {
 
     string {
 
-
         const normalizedCode =
             typeof code ===
             "string"
@@ -432,7 +438,6 @@ export class ModulesService {
     ):
 
     string {
-
 
         const normalizedId =
             typeof id ===

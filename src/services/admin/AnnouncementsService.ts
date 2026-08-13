@@ -19,6 +19,7 @@ export class AnnouncementsService {
     ) {}
 
 
+
     async list():
 
     Promise<Announcement[]> {
@@ -28,6 +29,7 @@ export class AnnouncementsService {
     }
 
 
+
     async listPublished():
 
     Promise<Announcement[]> {
@@ -35,6 +37,7 @@ export class AnnouncementsService {
         return this.repository.findPublished();
 
     }
+
 
 
     async findById(
@@ -60,6 +63,7 @@ export class AnnouncementsService {
     }
 
 
+
     async save(
 
         announcement:
@@ -76,8 +80,14 @@ export class AnnouncementsService {
         );
 
 
-        const title =
-            announcement.title!.trim();
+        const normalizedTitle =
+            this.normalizeRequiredText(
+
+                announcement.title,
+
+                "Announcement title is required.",
+
+            );
 
 
         return this.repository.save(
@@ -86,13 +96,15 @@ export class AnnouncementsService {
 
                 ...announcement,
 
-                title,
+                title:
+                    normalizedTitle,
 
             },
 
         );
 
     }
+
 
 
     async delete(
@@ -111,6 +123,25 @@ export class AnnouncementsService {
             );
 
 
+        const announcement =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!announcement) {
+
+            throw new Error(
+
+                "Announcement not found.",
+
+            );
+
+        }
+
+
         await this.repository.delete(
 
             normalizedId,
@@ -120,6 +151,7 @@ export class AnnouncementsService {
     }
 
 
+
     private validateAnnouncement(
 
         announcement:
@@ -127,7 +159,18 @@ export class AnnouncementsService {
 
     ): void {
 
-        if (!announcement) {
+        if (
+
+            !announcement ||
+
+            typeof announcement !==
+                "object" ||
+
+            Array.isArray(
+                announcement,
+            )
+
+        ) {
 
             throw new Error(
 
@@ -138,19 +181,50 @@ export class AnnouncementsService {
         }
 
 
-        if (
-            !announcement.title?.trim()
-        ) {
+        this.normalizeRequiredText(
+
+            announcement.title,
+
+            "Announcement title is required.",
+
+        );
+
+    }
+
+
+
+    private normalizeRequiredText(
+
+        value:
+            string |
+            null |
+            undefined,
+
+        message: string,
+
+    ): string {
+
+        const normalized =
+            typeof value === "string"
+                ? value.trim()
+                : "";
+
+
+        if (!normalized) {
 
             throw new Error(
 
-                "Announcement title is required.",
+                message,
 
             );
 
         }
 
+
+        return normalized;
+
     }
+
 
 
     private validateId(

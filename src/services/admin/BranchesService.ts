@@ -8,16 +8,22 @@ import {
 } from "@/repositories/admin/BranchesRepository";
 
 
+import {
+    createSupabaseServerClient,
+} from "@/lib/supabase/server-client";
+
+
+
 export class BranchesService {
 
 
     constructor(
 
         private readonly repository:
-            BranchesRepository =
-                new BranchesRepository(),
+            BranchesRepository,
 
     ) {}
+
 
 
     async list():
@@ -29,6 +35,8 @@ export class BranchesService {
     }
 
 
+
+
     async findById(
 
         id: string,
@@ -37,6 +45,7 @@ export class BranchesService {
 
     Promise<Branch | null> {
 
+
         const normalizedId =
             this.validateId(
                 id,
@@ -44,12 +53,36 @@ export class BranchesService {
 
 
         return this.repository.findById(
-
             normalizedId,
-
         );
 
     }
+
+
+
+
+    async findByCode(
+
+        code: string,
+
+    ):
+
+    Promise<Branch | null> {
+
+
+        const normalizedCode =
+            this.normalizeCode(
+                code,
+            );
+
+
+        return this.repository.findByCode(
+            normalizedCode,
+        );
+
+    }
+
+
 
 
     async save(
@@ -61,31 +94,28 @@ export class BranchesService {
 
     Promise<Branch> {
 
+
         const normalizedBranch =
             this.validateBranch(
                 branch,
             );
 
 
-        return this.repository.save(
+        return this.repository.save({
 
-            {
+            ...branch,
 
-                ...branch,
+            branchCode:
+                normalizedBranch.branchCode,
 
-                branchCode:
-                    normalizedBranch.branchCode
-                        .toUpperCase(),
+            branchName:
+                normalizedBranch.branchName,
 
-                branchName:
-                    normalizedBranch.branchName
-                        .trim(),
-
-            },
-
-        );
+        });
 
     }
+
+
 
 
     async delete(
@@ -96,19 +126,35 @@ export class BranchesService {
 
     Promise<void> {
 
+
         const normalizedId =
             this.validateId(
                 id,
             );
 
 
+        const existing =
+            await this.repository.findById(
+                normalizedId,
+            );
+
+
+        if (!existing) {
+
+            throw new Error(
+                "Branch not found.",
+            );
+
+        }
+
+
         await this.repository.delete(
-
             normalizedId,
-
         );
 
     }
+
+
 
 
     private validateBranch(
@@ -116,56 +162,13 @@ export class BranchesService {
         branch:
             Partial<Branch>,
 
-    ): {
+    ) {
 
-        branchCode: string;
-
-        branchName: string;
-
-    } {
 
         if (!branch) {
 
             throw new Error(
-
                 "Branch is required.",
-
-            );
-
-        }
-
-
-        const branchCode =
-            typeof branch.branchCode ===
-            "string"
-                ? branch.branchCode.trim()
-                : "";
-
-
-        const branchName =
-            typeof branch.branchName ===
-            "string"
-                ? branch.branchName.trim()
-                : "";
-
-
-        if (!branchCode) {
-
-            throw new Error(
-
-                "Branch code is required.",
-
-            );
-
-        }
-
-
-        if (!branchName) {
-
-            throw new Error(
-
-                "Branch name is required.",
-
             );
 
         }
@@ -173,44 +176,131 @@ export class BranchesService {
 
         return {
 
-            branchCode,
+            branchCode:
+                this.normalizeCode(
+                    branch.branchCode,
+                ),
 
-            branchName,
+
+            branchName:
+                this.normalizeText(
+                    branch.branchName,
+                    "Branch name is required.",
+                ),
 
         };
 
     }
 
 
-    private validateId(
 
-        id: string,
+
+    private normalizeCode(
+
+        value:
+            string |
+            undefined,
 
     ): string {
 
-        const normalizedId =
-            typeof id === "string"
-                ? id.trim()
-                : "";
+
+        const normalized =
+            value?.trim()
+                .toUpperCase()
+            ?? "";
 
 
-        if (!normalizedId) {
+        if (!normalized) {
 
             throw new Error(
-
-                "Branch id is required.",
-
+                "Branch code is required.",
             );
 
         }
 
 
-        return normalizedId;
+        return normalized;
+
+    }
+
+
+
+
+    private normalizeText(
+
+        value:
+            string |
+            undefined,
+
+        message:
+            string,
+
+    ): string {
+
+
+        const normalized =
+            value?.trim()
+            ?? "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                message,
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+
+
+    private validateId(
+
+        id:
+            string,
+
+    ): string {
+
+
+        const normalized =
+            id?.trim()
+            ?? "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Branch id is required.",
+            );
+
+        }
+
+
+        return normalized;
 
     }
 
 }
 
 
-export const branchesService =
-    new BranchesService();
+
+export async function getBranchesService() {
+
+    const supabase =
+        await createSupabaseServerClient();
+
+
+    return new BranchesService(
+
+        new BranchesRepository(
+            supabase,
+        ),
+
+    );
+
+}

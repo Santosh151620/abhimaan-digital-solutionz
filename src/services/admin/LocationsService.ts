@@ -2,13 +2,16 @@ import type {
     Location,
 } from "@/types/admin/Location";
 
+
 import {
     LocationsRepository,
 } from "@/repositories/admin/LocationsRepository";
 
+
 import {
     createSupabaseServerClient,
 } from "@/lib/supabase/server-client";
+
 
 
 export class LocationsService {
@@ -22,8 +25,10 @@ export class LocationsService {
     ) {}
 
 
+
     static async create():
-        Promise<LocationsService> {
+
+    Promise<LocationsService> {
 
         const supabase =
             await createSupabaseServerClient();
@@ -40,6 +45,7 @@ export class LocationsService {
     }
 
 
+
     async list():
 
     Promise<Location[]> {
@@ -47,6 +53,7 @@ export class LocationsService {
         return this.repository.findAll();
 
     }
+
 
 
     async findById(
@@ -72,6 +79,7 @@ export class LocationsService {
     }
 
 
+
     async findByCode(
 
         code: string,
@@ -93,6 +101,7 @@ export class LocationsService {
         );
 
     }
+
 
 
     async save(
@@ -118,19 +127,18 @@ export class LocationsService {
 
                 locationCode:
                     normalizedLocation
-                        .locationCode
-                        .toUpperCase(),
+                        .locationCode,
 
                 locationName:
                     normalizedLocation
-                        .locationName
-                        .trim(),
+                        .locationName,
 
             },
 
         );
 
     }
+
 
 
     async delete(
@@ -143,10 +151,27 @@ export class LocationsService {
 
         const normalizedId =
             this.validateId(
-
                 id,
+            );
+
+
+        const location =
+            await this.repository.findById(
+
+                normalizedId,
 
             );
+
+
+        if (!location) {
+
+            throw new Error(
+
+                "Location not found.",
+
+            );
+
+        }
 
 
         await this.repository.delete(
@@ -156,6 +181,7 @@ export class LocationsService {
         );
 
     }
+
 
 
     private validateLocation(
@@ -171,7 +197,18 @@ export class LocationsService {
 
     } {
 
-        if (!location) {
+        if (
+
+            !location ||
+
+            typeof location !==
+                "object" ||
+
+            Array.isArray(
+                location,
+            )
+
+        ) {
 
             throw new Error(
 
@@ -183,39 +220,23 @@ export class LocationsService {
 
 
         const locationCode =
-            typeof location.locationCode ===
-            "string"
-                ? location.locationCode.trim()
-                : "";
+            this.normalizeCode(
 
-
-        const locationName =
-            typeof location.locationName ===
-            "string"
-                ? location.locationName.trim()
-                : "";
-
-
-        if (!locationCode) {
-
-            throw new Error(
-
-                "Location code is required.",
+                location.locationCode ??
+                    "",
 
             );
 
-        }
 
+        const locationName =
+            this.normalizeRequiredText(
 
-        if (!locationName) {
-
-            throw new Error(
+                location.locationName ??
+                    "",
 
                 "Location name is required.",
 
             );
-
-        }
 
 
         return {
@@ -229,7 +250,22 @@ export class LocationsService {
     }
 
 
+
     private validateCode(
+
+        code: string,
+
+    ): string {
+
+        return this.normalizeCode(
+            code,
+        );
+
+    }
+
+
+
+    private normalizeCode(
 
         code: string,
 
@@ -237,7 +273,9 @@ export class LocationsService {
 
         const normalizedCode =
             typeof code === "string"
-                ? code.trim()
+                ? code
+                    .trim()
+                    .toUpperCase()
                 : "";
 
 
@@ -255,6 +293,38 @@ export class LocationsService {
         return normalizedCode;
 
     }
+
+
+
+    private normalizeRequiredText(
+
+        value: string,
+
+        message: string,
+
+    ): string {
+
+        const normalized =
+            typeof value === "string"
+                ? value.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+
+                message,
+
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
 
 
     private validateId(

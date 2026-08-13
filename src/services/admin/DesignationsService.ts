@@ -8,6 +8,7 @@ import type {
 } from "@/repositories/admin/DesignationsRepository";
 
 
+
 export class DesignationsService {
 
 
@@ -139,9 +140,7 @@ export class DesignationsService {
         ) {
 
             throw new Error(
-
                 "Designation code already exists.",
-
             );
 
         }
@@ -160,6 +159,10 @@ export class DesignationsService {
                 designationName:
                     normalizedDesignation
                         .designationName,
+
+                organizationId:
+                    designation.organizationId
+                        .trim(),
 
                 updatedAt:
                     new Date()
@@ -197,9 +200,7 @@ export class DesignationsService {
         if (!designation) {
 
             throw new Error(
-
                 "Designation not found.",
-
             );
 
         }
@@ -229,60 +230,36 @@ export class DesignationsService {
         if (!designation) {
 
             throw new Error(
-
                 "Designation is required.",
-
             );
 
         }
 
 
         const designationCode =
-            typeof designation.designationCode ===
-            "string"
-                ? designation.designationCode
-                    .trim()
-                    .toUpperCase()
-                : "";
+            this.normalizeCode(
+                designation.designationCode,
+            );
 
 
         const designationName =
-            typeof designation.designationName ===
-            "string"
-                ? designation.designationName.trim()
-                : "";
+            this.normalizeRequiredText(
 
-
-        if (!designationCode) {
-
-            throw new Error(
-
-                "Designation code is required.",
-
-            );
-
-        }
-
-
-        if (!designationName) {
-
-            throw new Error(
+                designation.designationName,
 
                 "Designation name is required.",
 
             );
 
-        }
-
 
         if (
-            !designation.organizationId?.trim()
+            typeof designation.organizationId !==
+                "string" ||
+            !designation.organizationId.trim()
         ) {
 
             throw new Error(
-
                 "Organization is required.",
-
             );
 
         }
@@ -306,19 +283,20 @@ export class DesignationsService {
     ): string {
 
         const normalizedCode =
-            typeof code === "string"
+            typeof code ===
+                "string"
+
                 ? code
                     .trim()
                     .toUpperCase()
+
                 : "";
 
 
         if (!normalizedCode) {
 
             throw new Error(
-
                 "Designation code is required.",
-
             );
 
         }
@@ -336,23 +314,55 @@ export class DesignationsService {
     ): string {
 
         const normalizedKeyword =
-            typeof keyword === "string"
+            typeof keyword ===
+                "string"
+
                 ? keyword.trim()
+
                 : "";
 
 
         if (!normalizedKeyword) {
 
             throw new Error(
-
                 "Designation search keyword is required.",
-
             );
 
         }
 
 
         return normalizedKeyword;
+
+    }
+
+
+    private normalizeRequiredText(
+
+        value: string,
+
+        message: string,
+
+    ): string {
+
+        const normalized =
+            typeof value ===
+                "string"
+
+                ? value.trim()
+
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                message,
+            );
+
+        }
+
+
+        return normalized;
 
     }
 
@@ -364,17 +374,18 @@ export class DesignationsService {
     ): string {
 
         const normalizedId =
-            typeof id === "string"
+            typeof id ===
+                "string"
+
                 ? id.trim()
+
                 : "";
 
 
         if (!normalizedId) {
 
             throw new Error(
-
                 "Designation id is required.",
-
             );
 
         }

@@ -124,14 +124,6 @@ export class TeamsService {
 
     }
 
-
-
-
-
-
-
-
-
     async delete(
 
         id: string,
@@ -149,6 +141,24 @@ export class TeamsService {
             );
 
 
+        const team =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!team) {
+
+            throw new Error(
+
+                "Team not found.",
+
+            );
+
+        }
+
 
         await this.repository.delete(
 
@@ -156,16 +166,7 @@ export class TeamsService {
 
         );
 
-
     }
-
-
-
-
-
-
-
-
 
     private validateTeam(
 
