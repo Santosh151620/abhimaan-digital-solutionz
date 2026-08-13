@@ -99,9 +99,7 @@ export class RolesService {
 
         role: Role,
 
-    ):
-
-    Promise<void> {
+    ): Promise<Role> {
 
         this.validateRole(
 
@@ -143,7 +141,7 @@ export class RolesService {
         }
 
 
-        await this.repository.save(
+        return this.repository.save(
 
             {
 
@@ -376,3 +374,4 @@ export class RolesService {
 
 
 }
+
