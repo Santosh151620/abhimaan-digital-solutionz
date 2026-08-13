@@ -25,48 +25,26 @@ import type {
 
 
 
-
-
-
 async function getService() {
 
 
-
     const supabase =
-
         await createClient();
 
 
 
-
-
-
-
     const repository =
-
         new UsersRepository(
-
             supabase,
-
         );
 
 
 
-
-
-
-
     return new UsersService(
-
         repository,
-
     );
 
-
-
 }
-
-
 
 
 
@@ -79,19 +57,40 @@ export async function getUsers():
 Promise<AdminUser[]> {
 
 
-
-    const service =
-
-        await getService();
+    try {
 
 
-
+        const service =
+            await getService();
 
 
 
+        const users =
+            await service.list();
 
-    return service.list();
 
+
+        return users ?? [];
+
+
+
+    }
+
+    catch (error) {
+
+
+        console.error(
+            "Failed to load admin users.",
+            error,
+        );
+
+
+        throw new Error(
+            "Unable to load users.",
+        );
+
+
+    }
 
 
 }

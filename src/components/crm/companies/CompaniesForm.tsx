@@ -8,10 +8,15 @@ import type {
     ReactNode,
 } from 'react';
 
-
 import type {
     Company,
+    CreateCompanyInput,
 } from '@/types/crm/Companies';
+
+
+import {
+    createCompany,
+} from '@/app/crm/companies/actions';
 
 
 
@@ -20,13 +25,6 @@ import type {
 interface CompaniesFormProps {
 
     initialValues?: Partial<Company>;
-
-    onSubmit?: (
-
-        values: Partial<Company>
-
-    ) => void | Promise<void>;
-
 
     onCancel?: () => void;
 
@@ -38,11 +36,10 @@ interface CompaniesFormProps {
 
 
 
+
 export function CompaniesForm({
 
     initialValues,
-
-    onSubmit,
 
     onCancel,
 
@@ -52,23 +49,15 @@ export function CompaniesForm({
 
 
     const [
-
         error,
-
         setError,
-
     ] = useState<string | null>(null);
 
 
 
-
-
     const [
-
         form,
-
         setForm,
-
     ] = useState<Partial<Company>>({
 
         status: 'ACTIVE',
@@ -89,7 +78,6 @@ export function CompaniesForm({
 
     ) {
 
-
         setForm(
 
             previous => ({
@@ -98,7 +86,7 @@ export function CompaniesForm({
 
                 [key]: value,
 
-            })
+            }),
 
         );
 
@@ -130,7 +118,7 @@ export function CompaniesForm({
         if (!form.name?.trim()) {
 
             setError(
-                'Company name is required.'
+                'Company name is required.',
             );
 
             return;
@@ -146,19 +134,101 @@ export function CompaniesForm({
 
 
 
-            await onSubmit?.({
+            const payload:CreateCompanyInput = {
 
-                ...form,
 
                 name:
-
                     form.name.trim(),
 
-            });
+
+
+                legalName:
+                    form.legalName,
 
 
 
-        } catch (error) {
+                industry:
+                    form.industry,
+
+
+
+                website:
+                    form.website,
+
+
+
+                phone:
+                    form.phone,
+
+
+
+                email:
+                    form.email,
+
+
+
+                status:
+                    form.status
+                    ??
+                    'ACTIVE',
+
+
+
+                address:
+                    form.address,
+
+
+
+                city:
+                    form.city,
+
+
+
+                state:
+                    form.state,
+
+
+
+                country:
+                    form.country,
+
+
+
+                postalCode:
+                    form.postalCode,
+
+
+
+                employees:
+                    form.employees,
+
+
+
+                annualRevenue:
+                    form.annualRevenue,
+
+
+
+                taxId:
+                    form.taxId,
+
+
+
+                description:
+                    form.description,
+
+            };
+
+
+
+            await createCompany(
+                payload,
+            );
+
+
+
+        }
+        catch(error) {
 
 
             setError(
@@ -167,7 +237,7 @@ export function CompaniesForm({
 
                     ? error.message
 
-                    : 'Unable to save company.'
+                    : 'Unable to save company.',
 
             );
 
@@ -176,6 +246,8 @@ export function CompaniesForm({
 
 
     }
+
+
 
 
 
@@ -200,8 +272,6 @@ export function CompaniesForm({
         disabled:cursor-not-allowed
         disabled:opacity-60
     `;
-
-
 
 
 
@@ -235,7 +305,6 @@ export function CompaniesForm({
 
         >
 
-
             <div>
 
                 <h2 className="
@@ -259,8 +328,8 @@ export function CompaniesForm({
 
                 </p>
 
-
             </div>
+
 
 
 
@@ -290,7 +359,6 @@ export function CompaniesForm({
 
 
 
-
             <div className="grid gap-5 md:grid-cols-2">
 
 
@@ -301,14 +369,13 @@ export function CompaniesForm({
                         value =>
                             update(
                                 'name',
-                                value
+                                value,
                             )
                     }
                     disabled={loading}
                     className={inputClass}
                     labelClass={labelClass}
                 />
-
 
 
                 <InputField
@@ -318,14 +385,13 @@ export function CompaniesForm({
                         value =>
                             update(
                                 'legalName',
-                                value
+                                value,
                             )
                     }
                     disabled={loading}
                     className={inputClass}
                     labelClass={labelClass}
                 />
-
 
 
                 <InputField
@@ -335,14 +401,13 @@ export function CompaniesForm({
                         value =>
                             update(
                                 'industry',
-                                value
+                                value,
                             )
                     }
                     disabled={loading}
                     className={inputClass}
                     labelClass={labelClass}
                 />
-
 
 
                 <InputField
@@ -352,14 +417,13 @@ export function CompaniesForm({
                         value =>
                             update(
                                 'website',
-                                value
+                                value,
                             )
                     }
                     disabled={loading}
                     className={inputClass}
                     labelClass={labelClass}
                 />
-
 
 
                 <InputField
@@ -369,14 +433,13 @@ export function CompaniesForm({
                         value =>
                             update(
                                 'email',
-                                value
+                                value,
                             )
                     }
                     disabled={loading}
                     className={inputClass}
                     labelClass={labelClass}
                 />
-
 
 
                 <InputField
@@ -386,7 +449,7 @@ export function CompaniesForm({
                         value =>
                             update(
                                 'phone',
-                                value
+                                value,
                             )
                     }
                     disabled={loading}
@@ -395,19 +458,16 @@ export function CompaniesForm({
                 />
 
 
-
                 <InputField
                     label="Employees"
-                    value={
-                        form.employees?.toString()
-                    }
+                    value={form.employees?.toString()}
                     onChange={
                         value =>
                             update(
                                 'employees',
                                 value
                                     ? Number(value)
-                                    : undefined
+                                    : undefined,
                             )
                     }
                     disabled={loading}
@@ -417,19 +477,16 @@ export function CompaniesForm({
                 />
 
 
-
                 <InputField
                     label="Annual Revenue"
-                    value={
-                        form.annualRevenue?.toString()
-                    }
+                    value={form.annualRevenue?.toString()}
                     onChange={
                         value =>
                             update(
                                 'annualRevenue',
                                 value
                                     ? Number(value)
-                                    : undefined
+                                    : undefined,
                             )
                     }
                     disabled={loading}
@@ -437,7 +494,6 @@ export function CompaniesForm({
                     labelClass={labelClass}
                     type="number"
                 />
-
 
 
                 <div className="md:col-span-2">
@@ -449,7 +505,7 @@ export function CompaniesForm({
                             value =>
                                 update(
                                     'address',
-                                    value
+                                    value,
                                 )
                         }
                         disabled={loading}
@@ -522,8 +578,8 @@ export function CompaniesForm({
 
                     {
                         loading
-                            ? 'Saving...'
-                            : 'Save Company'
+                        ? 'Saving...'
+                        : 'Save Company'
                     }
 
                 </button>
@@ -537,6 +593,8 @@ export function CompaniesForm({
     );
 
 }
+
+
 
 
 
@@ -600,7 +658,7 @@ function InputField({
                 onChange={
                     event =>
                         onChange(
-                            event.target.value
+                            event.target.value,
                         )
                 }
 
@@ -611,6 +669,7 @@ function InputField({
     );
 
 }
+
 
 
 

@@ -24,6 +24,20 @@ interface UserFormProps {
 }
 
 
+
+function validateEmail(
+    email: string,
+) {
+
+    return (
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+            .test(email)
+    );
+
+}
+
+
+
 export default function UserForm({
 
     initialData,
@@ -35,7 +49,10 @@ export default function UserForm({
 }: UserFormProps) {
 
 
-    const [form, setForm] = useState<Partial<AdminUser>>({
+    const [
+        form,
+        setForm,
+    ] = useState<Partial<AdminUser>>({
 
         fullName:
             initialData?.fullName ?? "",
@@ -60,8 +77,19 @@ export default function UserForm({
     });
 
 
-    const [loading, setLoading] =
-        useState(false);
+
+    const [
+        loading,
+        setLoading,
+    ] = useState(false);
+
+
+
+    const [
+        error,
+        setError,
+    ] = useState<string | null>(null);
+
 
 
     function update<K extends keyof AdminUser>(
@@ -72,112 +100,301 @@ export default function UserForm({
 
     ) {
 
-        setForm(previous => ({
+        setForm(
+            previous => ({
 
-            ...previous,
+                ...previous,
 
-            [key]: value,
+                [key]: value,
 
-        }));
+            }),
+        );
 
     }
 
 
+
     async function submit(
 
-        event: React.FormEvent
+        event: React.FormEvent<HTMLFormElement>,
 
     ) {
 
         event.preventDefault();
 
 
-        setLoading(true);
+        if (loading) {
+
+            return;
+
+        }
+
+
+        setError(null);
+
+
+
+        const fullName =
+            form.fullName
+                ?.trim();
+
+
+
+        const email =
+            form.email
+                ?.trim()
+                .toLowerCase();
+
+
+
+        if (!fullName) {
+
+            setError(
+                "Full name is required.",
+            );
+
+            return;
+
+        }
+
+
+
+        if (!email) {
+
+            setError(
+                "Email is required.",
+            );
+
+            return;
+
+        }
+
+
+
+        if (!validateEmail(email)) {
+
+            setError(
+                "Enter a valid email address.",
+            );
+
+            return;
+
+        }
+
 
 
         try {
 
-            await onSubmit(form);
 
-        }
+            setLoading(true);
 
-        finally {
+
+
+            await onSubmit({
+
+                ...form,
+
+                fullName,
+
+                email,
+
+            });
+
+
+        } catch (error) {
+
+
+            setError(
+
+                error instanceof Error
+
+                    ? error.message
+
+                    : "Unable to save user.",
+
+            );
+
+
+        } finally {
+
 
             setLoading(false);
+
 
         }
 
     }
 
 
+
     return (
 
         <form
+
             onSubmit={submit}
-            className="space-y-5 rounded-xl border bg-background p-6"
+
+            className="
+                space-y-5
+                rounded-xl
+                border
+                bg-background
+                p-6
+            "
+
         >
 
+
+            {
+                error && (
+
+                    <div
+
+                        className="
+                            rounded-md
+                            border
+                            border-destructive
+                            p-3
+                            text-destructive
+                        "
+
+                    >
+
+                        {error}
+
+                    </div>
+
+                )
+            }
+
+
+
             <div>
 
                 <label className="text-sm font-medium">
+
                     Full Name
+
                 </label>
 
+
                 <input
-                    value={form.fullName ?? ""}
+
+                    value={
+                        form.fullName ?? ""
+                    }
+
                     onChange={(event) =>
+
                         update(
+
                             "fullName",
+
                             event.target.value,
+
                         )
+
                     }
-                    className="mt-1 w-full rounded-md border p-2"
+
+                    className="
+                        mt-1
+                        w-full
+                        rounded-md
+                        border
+                        p-2
+                    "
+
                     required
+
                 />
 
             </div>
 
 
+
             <div>
 
                 <label className="text-sm font-medium">
+
                     Email
+
                 </label>
 
+
                 <input
+
                     type="email"
-                    value={form.email ?? ""}
-                    onChange={(event) =>
-                        update(
-                            "email",
-                            event.target.value,
-                        )
+
+                    value={
+                        form.email ?? ""
                     }
-                    className="mt-1 w-full rounded-md border p-2"
+
+                    onChange={(event) =>
+
+                        update(
+
+                            "email",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+                    className="
+                        mt-1
+                        w-full
+                        rounded-md
+                        border
+                        p-2
+                    "
+
                     required
+
                 />
 
             </div>
+
 
 
             <div>
 
                 <label className="text-sm font-medium">
+
                     Phone
+
                 </label>
 
+
                 <input
-                    value={form.phone ?? ""}
-                    onChange={(event) =>
-                        update(
-                            "phone",
-                            event.target.value,
-                        )
+
+                    value={
+                        form.phone ?? ""
                     }
-                    className="mt-1 w-full rounded-md border p-2"
+
+                    onChange={(event) =>
+
+                        update(
+
+                            "phone",
+
+                            event.target.value,
+
+                        )
+
+                    }
+
+                    className="
+                        mt-1
+                        w-full
+                        rounded-md
+                        border
+                        p-2
+                    "
+
                 />
 
             </div>
+
 
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -186,18 +403,38 @@ export default function UserForm({
                 <div>
 
                     <label className="text-sm font-medium">
+
                         User Type
+
                     </label>
 
+
                     <select
-                        value={form.userType}
-                        onChange={(event) =>
-                            update(
-                                "userType",
-                                event.target.value as UserType,
-                            )
+
+                        value={
+                            form.userType ?? "Internal"
                         }
-                        className="mt-1 w-full rounded-md border p-2"
+
+                        onChange={(event) =>
+
+                            update(
+
+                                "userType",
+
+                                event.target.value as UserType,
+
+                            )
+
+                        }
+
+                        className="
+                            mt-1
+                            w-full
+                            rounded-md
+                            border
+                            p-2
+                        "
+
                     >
 
                         <option value="Internal">
@@ -212,27 +449,56 @@ export default function UserForm({
                             System
                         </option>
 
+                        <option value="Service">
+                            Service
+                        </option>
+
                     </select>
 
                 </div>
 
 
+
                 <div>
 
                     <label className="text-sm font-medium">
+
                         Status
+
                     </label>
 
+
                     <select
-                        value={form.status}
-                        onChange={(event) =>
-                            update(
-                                "status",
-                                event.target.value as UserStatus,
-                            )
+
+                        value={
+                            form.status ?? "Pending"
                         }
-                        className="mt-1 w-full rounded-md border p-2"
+
+                        onChange={(event) =>
+
+                            update(
+
+                                "status",
+
+                                event.target.value as UserStatus,
+
+                            )
+
+                        }
+
+                        className="
+                            mt-1
+                            w-full
+                            rounded-md
+                            border
+                            p-2
+                        "
+
                     >
+
+                        <option value="Pending">
+                            Pending
+                        </option>
 
                         <option value="Active">
                             Active
@@ -246,8 +512,12 @@ export default function UserForm({
                             Suspended
                         </option>
 
-                        <option value="Pending">
-                            Pending
+                        <option value="Locked">
+                            Locked
+                        </option>
+
+                        <option value="Archived">
+                            Archived
                         </option>
 
                     </select>
@@ -258,26 +528,37 @@ export default function UserForm({
             </div>
 
 
+
             <div className="flex justify-end gap-3">
 
 
-                {onCancel && (
+                {
+                    onCancel && (
 
-                    <button
+                        <button
 
-                        type="button"
+                            type="button"
 
-                        onClick={onCancel}
+                            disabled={loading}
 
-                        className="rounded-md border px-4 py-2"
+                            onClick={onCancel}
 
-                    >
+                            className="
+                                rounded-md
+                                border
+                                px-4
+                                py-2
+                            "
 
-                        Cancel
+                        >
 
-                    </button>
+                            Cancel
 
-                )}
+                        </button>
+
+                    )
+                }
+
 
 
                 <button
@@ -286,13 +567,21 @@ export default function UserForm({
 
                     disabled={loading}
 
-                    className="rounded-md bg-primary px-4 py-2 text-primary-foreground"
+                    className="
+                        rounded-md
+                        bg-primary
+                        px-4
+                        py-2
+                        text-primary-foreground
+                    "
 
                 >
 
-                    {loading
-                        ? "Saving..."
-                        : "Save User"}
+                    {
+                        loading
+                            ? "Saving..."
+                            : "Save User"
+                    }
 
                 </button>
 

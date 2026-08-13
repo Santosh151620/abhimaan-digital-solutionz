@@ -1,7 +1,10 @@
 "use server";
+
+
 import {
     revalidatePath,
 } from "next/cache";
+
 
 import {
     createClient,
@@ -22,94 +25,330 @@ import type {
     AdminUser,
 } from "@/types/admin/User";
 
+
+
+
+
 async function getService() {
+
     const supabase =
-
         await createClient();
+
+
     const repository =
-
         new UsersRepository(
-
             supabase,
-
         );
+
+
     return new UsersService(
         repository,
     );
+
 }
+
+
+
+
+
+
+
 export async function createUser(
 
-    data:AdminUser,
+    data:Partial<AdminUser>,
 
 ) {
 
+
     const service =
         await getService();
+
 
     const now =
         new Date()
-        .toISOString();
+            .toISOString();
+
+
 
     const user:AdminUser = {
-        ...data,
+
+
         id:
-            data.id ??
-
+            data.id
+            ??
             crypto.randomUUID(),
-        createdAt:
-            data.createdAt ??
 
-            now,
-        updatedAt:
-            now,
+
+
+        organizationId:
+            "",
+
+
+
+        profileId:
+            data.profileId,
+
+
+
+        authUserId:
+            data.authUserId,
+
+
+
+        fullName:
+            data.fullName
+            ??
+            "",
+
+
+
+        firstName:
+            data.firstName,
+
+
+
+        lastName:
+            data.lastName,
+
+
+
+        displayName:
+            data.displayName,
+
+
+
+        email:
+            data.email
+            ??
+            "",
+
+
+
+        phone:
+            data.phone,
+
+
+
+        avatarUrl:
+            data.avatarUrl,
+
+
+
+        jobTitle:
+            data.jobTitle,
+
+
+
+        department:
+            data.department,
+
+
+
+        employeeCode:
+            data.employeeCode,
+
+
+
+        userType:
+            data.userType
+            ??
+            "Internal",
+
+
+
+        status:
+            data.status
+            ??
+            "Pending",
+
+
+
+        roleIds:
+            data.roleIds
+            ??
+            [],
+
+
+
+        primaryRoleId:
+            data.primaryRoleId,
+
+
+
         isActive:
             data.status === "Active",
+
+
+
+        emailVerified:
+            data.emailVerified
+            ??
+            false,
+
+
+
+        phoneVerified:
+            data.phoneVerified
+            ??
+            false,
+
+
+
+        locale:
+            data.locale,
+
+
+
+        timezone:
+            data.timezone,
+
+
+
+        metadata:
+            data.metadata
+            ??
+            {},
+
+
+
+        createdBy:
+            data.createdBy,
+
+
+
+        updatedBy:
+            data.updatedBy,
+
+
+
+        createdAt:
+            data.createdAt
+            ??
+            now,
+
+
+
+        updatedAt:
+            now,
+
+
     };
-    await service.save(
-        user,
+
+
+
+    const saved =
+        await service.save(
+            user,
+        );
+
+
+
+    revalidatePath(
+        "/admin/users",
     );
-    revalidatePath("/admin/users");
+
+
+
     return {
+
         success:true,
-        id:user.id,
+
+        id:saved.id,
+
     };
+
 }
 
+
+
+
+
+
+
+
+
 export async function updateUser(
-    user:AdminUser,
+
+    data:Partial<AdminUser>,
+
 ) {
+
+
+    if (!data.id) {
+
+        throw new Error(
+            "User id is required.",
+        );
+
+    }
+
+
+
     const service =
         await getService();
 
-    await service.save(
-        {
-            ...user,
-            updatedAt:
-                new Date()
-                .toISOString(),
-            isActive:
-                user.status === "Active",
-        },
+
+
+    await service.update(
+
+        data.id,
+
+        data,
+
     );
-revalidatePath("/admin/users");
+
+
+
+    revalidatePath(
+        "/admin/users",
+    );
+
+
+
     return {
+
         success:true,
+
     };
+
 }
 
+
+
+
+
+
+
+
+
 export async function deleteUser(
+
     id:string,
 
 ) {
 
+
     const service =
         await getService();
+
+
+
     await service.delete(
         id,
     );
 
-revalidatePath("/admin/users");
+
+
+    revalidatePath(
+        "/admin/users",
+    );
+
+
+
     return {
+
         success:true,
+
     };
+
 }

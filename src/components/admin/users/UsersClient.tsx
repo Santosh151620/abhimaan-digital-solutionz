@@ -32,17 +32,11 @@ import {
 
 
 
-
-
-
-
 interface UsersClientProps {
-
-
 
     initialUsers:AdminUser[];
 
-
+    organizationId:string;
 
 }
 
@@ -51,37 +45,24 @@ interface UsersClientProps {
 
 
 
-
-
-
 export default function UsersClient({
-
-
 
     initialUsers,
 
-
+    organizationId,
 
 }:UsersClientProps) {
 
 
 
     const router =
-
         useRouter();
 
 
 
-
-
-
-
     const [
-
         users,
-
         setUsers,
-
     ] = useState<AdminUser[]>(
 
         initialUsers,
@@ -90,62 +71,31 @@ export default function UsersClient({
 
 
 
-
-
-
-
     const [
-
         selectedUser,
-
         setSelectedUser,
-
     ] = useState<AdminUser | undefined>();
 
 
 
-
-
-
-
     const [
-
         dialogOpen,
-
         setDialogOpen,
-
     ] = useState(false);
 
 
 
-
-
-
-
     const [
-
         loading,
-
         setLoading,
-
     ] = useState(false);
 
 
 
-
-
-
-
     const [
-
         error,
-
         setError,
-
     ] = useState<string | null>(null);
-
-
-
 
 
 
@@ -155,34 +105,21 @@ export default function UsersClient({
     function openCreate() {
 
 
-
         setSelectedUser(
-
             undefined,
-
         );
-
 
 
         setDialogOpen(
-
             true,
-
         );
-
 
 
         setError(
-
             null,
-
         );
 
-
-
     }
-
-
 
 
 
@@ -197,34 +134,21 @@ export default function UsersClient({
     ) {
 
 
-
         setSelectedUser(
-
             user,
-
         );
-
 
 
         setDialogOpen(
-
             true,
-
         );
-
 
 
         setError(
-
             null,
-
         );
 
-
-
     }
-
-
 
 
 
@@ -235,25 +159,16 @@ export default function UsersClient({
     function closeDialog() {
 
 
-
         setDialogOpen(
-
             false,
-
         );
-
 
 
         setSelectedUser(
-
             undefined,
-
         );
 
-
-
     }
-
 
 
 
@@ -273,52 +188,29 @@ export default function UsersClient({
         if(
 
             !window.confirm(
-
-                "Delete this user?"
-
+                "Delete this user?",
             )
 
         ) {
 
-
-
             return;
 
-
-
         }
-
-
-
-
 
 
 
         try {
 
 
-
             setLoading(true);
-
-
 
             setError(null);
 
 
 
-
-
-
-
             await deleteUser(
-
                 id,
-
             );
-
-
-
-
 
 
 
@@ -338,48 +230,32 @@ export default function UsersClient({
 
 
 
-
-
-
-
             router.refresh();
 
 
 
         }
-
         catch(error) {
 
 
-
             setError(
-
-
 
                 error instanceof Error
 
                 ? error.message
 
-                : "Unable to delete user."
-
-
+                : "Unable to delete user.",
 
             );
 
 
-
         }
-
         finally {
-
 
 
             setLoading(false);
 
-
-
         }
-
 
 
     }
@@ -391,59 +267,37 @@ export default function UsersClient({
 
 
 
-
     return (
 
-
-
-        <div
-
-            className="space-y-6"
-
-        >
+        <div className="space-y-6">
 
 
 
             <div
 
                 className="
-
                     flex
-
                     items-center
-
                     justify-between
-
                 "
 
             >
 
-
-
                 <div>
-
 
 
                     <h2
 
                         className="
-
                             text-xl
-
                             font-semibold
-
                         "
 
                     >
 
-
-
                         User Registry
 
-
-
                     </h2>
-
 
 
                 </div>
@@ -451,47 +305,25 @@ export default function UsersClient({
 
 
 
-
-
-
                 <button
-
-
 
                     type="button"
 
-
-
                     onClick={openCreate}
 
-
-
                     className="
-
                         rounded-md
-
                         bg-primary
-
                         px-4
-
                         py-2
-
                         text-primary-foreground
-
                     "
-
-
 
                 >
 
-
-
                     Add User
 
-
-
                 </button>
-
 
 
             </div>
@@ -501,48 +333,27 @@ export default function UsersClient({
 
 
 
-
-
-
             {
-
                 error && (
-
-
 
                     <div
 
                         className="
-
                             rounded-md
-
                             border
-
                             border-destructive
-
                             p-3
-
                             text-destructive
-
                         "
 
                     >
 
-
-
                         {error}
-
-
 
                     </div>
 
-
-
                 )
-
             }
-
-
 
 
 
@@ -552,19 +363,11 @@ export default function UsersClient({
 
             <UsersTable
 
-
-
                 users={users}
-
-
 
                 onEdit={openEdit}
 
-
-
                 onDelete={handleDelete}
-
-
 
             />
 
@@ -574,44 +377,33 @@ export default function UsersClient({
 
 
 
-
-
             {
-
                 dialogOpen && (
 
-
-
                     <UserDialog
-
 
 
                         user={selectedUser}
 
 
+                        organizationId={organizationId}
+
 
                         onClose={() => {
-
 
 
                             closeDialog();
 
 
-
                             router.refresh();
-
 
 
                         }}
 
 
-
                     />
 
-
-
                 )
-
             }
 
 
@@ -620,62 +412,36 @@ export default function UsersClient({
 
 
 
-
-
             {
-
                 loading && (
-
-
 
                     <div
 
                         className="
-
                             fixed
-
                             bottom-6
-
                             right-6
-
                             rounded-md
-
                             border
-
                             bg-background
-
                             px-4
-
                             py-2
-
                             shadow
-
                         "
 
                     >
 
-
-
                         Processing...
-
-
 
                     </div>
 
-
-
                 )
-
             }
 
 
 
         </div>
 
-
-
     );
-
-
 
 }

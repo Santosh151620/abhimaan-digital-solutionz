@@ -25,39 +25,46 @@ import {
 
 
 
-
-
-
 interface UserDialogProps {
 
     user?: AdminUser;
 
-    onClose:()=>void;
+    organizationId: string;
+
+    onClose: () => void;
 
 }
 
 
 
+const defaultForm: Partial<AdminUser> = {
 
+    fullName: "",
 
+    email: "",
 
-const defaultForm:Partial<AdminUser> = {
+    userType: "Internal",
 
-    fullName:"",
+    status: "Pending",
 
-    email:"",
+    roleIds: [],
 
-    userType:"Internal",
-
-    status:"Pending",
-
-    roleIds:[],
-
-    isActive:false,
+    isActive: false,
 
 };
 
 
+
+
+
+function validateEmail(
+    email: string,
+): boolean {
+
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(email);
+
+}
 
 
 
@@ -67,70 +74,42 @@ export default function UserDialog({
 
     user,
 
+    organizationId,
+
     onClose,
 
-}:UserDialogProps) {
-
+}: UserDialogProps) {
 
 
     const router =
-
         useRouter();
 
 
 
-
-
-
-
     const [
-
         form,
-
         setForm,
+    ] = useState<Partial<AdminUser>>({
 
-    ] = useState<Partial<AdminUser>>(
+        ...defaultForm,
 
-        {
+        ...user,
 
-            ...defaultForm,
-
-            ...user,
-
-        }
-
-    );
-
-
-
-
+    });
 
 
 
     const [
-
         loading,
-
         setLoading,
-
     ] = useState(false);
 
 
 
-
-
-
-
     const [
-
         error,
-
         setError,
-
     ] = useState<string | null>(null);
-
-
-
 
 
 
@@ -138,13 +117,11 @@ export default function UserDialog({
 
     function updateField<K extends keyof AdminUser>(
 
-        key:K,
+        key: K,
 
-        value:AdminUser[K],
+        value: AdminUser[K],
 
     ) {
-
-
 
         setForm(
 
@@ -152,9 +129,9 @@ export default function UserDialog({
 
                 ...previous,
 
-                [key]:value,
+                [key]: value,
 
-            })
+            }),
 
         );
 
@@ -164,30 +141,37 @@ export default function UserDialog({
 
 
 
-
-
-
-
     async function submit() {
 
+
+        if (loading) {
+
+            return;
+
+        }
 
 
         setError(null);
 
 
 
+        const fullName =
+            form.fullName
+                ?.trim();
 
 
 
+        const email =
+            form.email
+                ?.trim()
+                .toLowerCase();
 
-        if(!form.fullName?.trim()) {
 
 
+        if (!fullName) {
 
             setError(
-
-                "Full name is required."
-
+                "Full name is required.",
             );
 
             return;
@@ -196,18 +180,10 @@ export default function UserDialog({
 
 
 
-
-
-
-
-        if(!form.email?.trim()) {
-
-
+        if (!email) {
 
             setError(
-
-                "Email is required."
-
+                "Email is required.",
             );
 
             return;
@@ -215,6 +191,16 @@ export default function UserDialog({
         }
 
 
+
+        if (!validateEmail(email)) {
+
+            setError(
+                "Enter a valid email address.",
+            );
+
+            return;
+
+        }
 
 
 
@@ -223,243 +209,215 @@ export default function UserDialog({
         try {
 
 
-
             setLoading(true);
 
 
 
-
-
-
-
             const now =
-
                 new Date()
+                    .toISOString();
 
-                .toISOString();
-
-
-
-
-
-
-
-            const payload:AdminUser = {
-
-
+            const payload: AdminUser = {
 
                 id:
-
-                    user?.id ??
-
+                    user?.id
+                    ??
                     crypto.randomUUID(),
 
 
-
                 organizationId:
-
-                    user?.organizationId ??
-
-                    "",
-
+                    user?.organizationId
+                    ??
+                    organizationId,
 
 
                 profileId:
-
                     form.profileId,
 
 
-
                 authUserId:
-
                     form.authUserId,
 
 
-
-                fullName:
-
-                    form.fullName.trim(),
-
+                fullName,
 
 
                 firstName:
-
                     form.firstName,
 
 
-
                 lastName:
-
                     form.lastName,
 
 
-
                 displayName:
-
                     form.displayName,
 
 
-
-                email:
-
-                    form.email.trim().toLowerCase(),
-
+                email,
 
 
                 phone:
-
                     form.phone,
 
 
-
                 avatarUrl:
-
                     form.avatarUrl,
 
 
-
                 jobTitle:
-
                     form.jobTitle,
 
 
-
                 department:
-
                     form.department,
 
 
-
                 employeeCode:
-
                     form.employeeCode,
 
 
-
                 userType:
-
-                    form.userType as UserType,
-
+                    form.userType
+                    ??
+                    "Internal",
 
 
                 status:
-
-                    form.status as UserStatus,
-
+                    form.status
+                    ??
+                    "Pending",
 
 
                 roleIds:
-
-                    form.roleIds ?? [],
-
+                    form.roleIds
+                    ??
+                    [],
 
 
                 primaryRoleId:
-
                     form.primaryRoleId,
 
 
-
                 isActive:
-
-                    form.status === "Active",
-
+                    (form.status ?? "Pending")
+                    ===
+                    "Active",
 
 
                 emailVerified:
-
-                    form.emailVerified ?? false,
-
+                    form.emailVerified
+                    ??
+                    false,
 
 
                 phoneVerified:
-
-                    form.phoneVerified ?? false,
-
+                    form.phoneVerified
+                    ??
+                    false,
 
 
                 lastLoginAt:
-
                     form.lastLoginAt,
 
 
-
                 lastActivityAt:
-
                     form.lastActivityAt,
 
 
-
                 passwordChangedAt:
-
                     form.passwordChangedAt,
 
 
-
                 failedLoginAttempts:
-
-                    form.failedLoginAttempts ?? 0,
-
+                    form.failedLoginAttempts
+                    ??
+                    0,
 
 
                 lockedUntil:
-
                     form.lockedUntil,
 
 
-
                 locale:
-
                     form.locale,
 
 
-
                 timezone:
-
                     form.timezone,
 
 
+                themePreference:
+                    form.themePreference,
+
+
+                accessibility:
+                    form.accessibility,
+
+
+                notificationPreferences:
+                    form.notificationPreferences,
+
 
                 metadata:
-
-                    form.metadata ?? {},
-
+                    form.metadata
+                    ??
+                    {},
 
 
                 createdBy:
-
                     user?.createdBy,
 
 
-
                 updatedBy:
-
                     user?.updatedBy,
 
 
-
                 createdAt:
-
-                    user?.createdAt ??
-
+                    user?.createdAt
+                    ??
                     now,
 
 
-
                 updatedAt:
-
                     now,
 
             };
 
 
 
+            if (
+                !payload.organizationId
+            ) {
+
+                throw new Error(
+                    "Organization context missing.",
+                );
+
+            }
 
 
 
+            if (user) {
 
-            if(user) {
 
+                await updateUser(
+                    payload,
+                );
+
+
+            }
+            else {
+
+
+                await createUser(
+                    payload,
+                );
+
+            }
+
+
+            if (user) {
 
 
                 await updateUser(
@@ -468,10 +426,9 @@ export default function UserDialog({
 
                 );
 
+
             }
-
             else {
-
 
 
                 await createUser(
@@ -480,9 +437,8 @@ export default function UserDialog({
 
                 );
 
+
             }
-
-
 
 
 
@@ -495,36 +451,31 @@ export default function UserDialog({
 
 
         }
-
-        catch(error) {
-
+        catch (error) {
 
 
             setError(
 
                 error instanceof Error
 
-                ? error.message
+                    ? error.message
 
-                : "Unable to save user."
+                    : "Unable to save user.",
 
             );
 
+
         }
-
         finally {
-
 
 
             setLoading(false);
 
+
         }
 
+
     }
-
-
-
-
 
 
 
@@ -534,63 +485,40 @@ export default function UserDialog({
 
         <div
 
+            role="dialog"
+
+            aria-modal="true"
+
             className="
-
                 fixed
-
                 inset-0
-
                 z-50
-
                 flex
-
                 items-center
-
                 justify-center
-
                 bg-black/40
-
                 p-4
-
             "
 
         >
 
+
             <div
 
                 className="
-
                     w-full
-
                     max-w-xl
-
-                    rounded-xl
-
-                    bg-background
-
-                    p-6
-
                     space-y-5
-
+                    rounded-xl
+                    bg-background
+                    p-6
                     shadow-xl
-
                 "
 
             >
 
 
-
-                <h2
-
-                    className="
-
-                        text-xl
-
-                        font-semibold
-
-                    "
-
-                >
+                <h2 className="text-xl font-semibold">
 
                     {user ? "Edit User" : "Create User"}
 
@@ -598,28 +526,17 @@ export default function UserDialog({
 
 
 
-
-
-
-
                 {
-
                     error && (
 
                         <div
 
                             className="
-
                                 rounded-md
-
                                 border
-
                                 border-destructive
-
                                 p-3
-
                                 text-destructive
-
                             "
 
                         >
@@ -629,261 +546,176 @@ export default function UserDialog({
                         </div>
 
                     )
-
                 }
-
-
-
-
 
 
 
                 <input
 
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
 
                     placeholder="Full Name"
 
-                    value={form.fullName ?? ""}
+                    value={
+                        form.fullName ?? ""
+                    }
 
-                    onChange={event =>
-
-                        updateField(
-
-                            "fullName",
-
-                            event.target.value,
-
-                        )
-
+                    onChange={
+                        event =>
+                            updateField(
+                                "fullName",
+                                event.target.value,
+                            )
                     }
 
                 />
 
 
 
-
-
-
-
                 <input
 
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
 
                     placeholder="Email"
 
                     type="email"
 
-                    value={form.email ?? ""}
+                    value={
+                        form.email ?? ""
+                    }
 
-                    onChange={event =>
-
-                        updateField(
-
-                            "email",
-
-                            event.target.value,
-
-                        )
-
+                    onChange={
+                        event =>
+                            updateField(
+                                "email",
+                                event.target.value,
+                            )
                     }
 
                 />
 
 
 
-
-
-
-
                 <select
 
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
 
-                    value={form.userType ?? "Internal"}
+                    value={
+                        form.userType ?? "Internal"
+                    }
 
-                    onChange={event =>
-
-                        updateField(
-
-                            "userType",
-
-                            event.target.value as UserType,
-
-                        )
-
+                    onChange={
+                        event =>
+                            updateField(
+                                "userType",
+                                event.target.value as UserType,
+                            )
                     }
 
                 >
 
                     <option value="Internal">
-
                         Internal
-
                     </option>
 
                     <option value="External">
-
                         External
-
                     </option>
 
                     <option value="System">
-
                         System
-
                     </option>
 
                     <option value="Service">
-
                         Service
-
                     </option>
 
                 </select>
-
-
-
-
 
 
 
                 <select
 
                     className="
-
                         w-full
-
                         rounded-md
-
                         border
-
                         p-2
-
                     "
 
-                    value={form.status ?? "Pending"}
+                    value={
+                        form.status ?? "Pending"
+                    }
 
-                    onChange={event =>
-
-                        updateField(
-
-                            "status",
-
-                            event.target.value as UserStatus,
-
-                        )
-
+                    onChange={
+                        event =>
+                            updateField(
+                                "status",
+                                event.target.value as UserStatus,
+                            )
                     }
 
                 >
 
                     <option value="Pending">
-
                         Pending
-
                     </option>
 
                     <option value="Active">
-
                         Active
-
                     </option>
 
                     <option value="Inactive">
-
                         Inactive
-
                     </option>
 
                     <option value="Suspended">
-
                         Suspended
-
                     </option>
 
                     <option value="Locked">
-
                         Locked
-
                     </option>
 
                     <option value="Archived">
-
                         Archived
-
                     </option>
 
                 </select>
 
 
 
+                <div className="flex justify-end gap-3">
 
-
-
-
-                <div
-
-                    className="
-
-                        flex
-
-                        justify-end
-
-                        gap-3
-
-                    "
-
-                >
 
                     <button
 
                         type="button"
 
-                        onClick={onClose}
-
                         disabled={loading}
 
+                        onClick={onClose}
+
                         className="
-
                             rounded-md
-
                             border
-
                             px-4
-
                             py-2
-
                         "
 
                     >
@@ -894,43 +726,38 @@ export default function UserDialog({
 
 
 
-
-
-
-
                     <button
 
                         type="button"
 
-                        onClick={submit}
-
                         disabled={loading}
 
+                        onClick={submit}
+
                         className="
-
                             rounded-md
-
                             bg-primary
-
                             px-4
-
                             py-2
-
                             text-primary-foreground
-
                         "
 
                     >
 
-                        {loading ? "Saving..." : "Save"}
+                        {
+                            loading
+                                ? "Saving..."
+                                : "Save"
+                        }
 
                     </button>
+
 
                 </div>
 
 
-
             </div>
+
 
         </div>
 

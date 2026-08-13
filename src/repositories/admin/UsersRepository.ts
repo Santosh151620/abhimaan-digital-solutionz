@@ -457,8 +457,9 @@ export class UsersRepository
 
                     {
 
-                        id:
-                            user.id,
+                    id:
+    user.id ??
+    crypto.randomUUID(),
 
                         organization_id:
                             this.organizationId,

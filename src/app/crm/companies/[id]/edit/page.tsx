@@ -165,11 +165,7 @@ export default async function EditCompanyPage(
 
     return (
 
-        <CompaniesForm
-
-            onSubmit={submit}
-
-        />
+        <CompaniesForm/>
 
     );
 

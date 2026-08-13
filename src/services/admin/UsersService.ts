@@ -6,6 +6,10 @@ import type {
 import type {
     IUsersRepository,
 } from "@/repositories/admin/UsersRepository";
+
+
+
+
 export class UsersService {
 
 
@@ -16,6 +20,10 @@ export class UsersService {
 
     ) {}
 
+
+
+
+
     async list():
 
     Promise<AdminUser[]> {
@@ -23,6 +31,10 @@ export class UsersService {
         return this.repository.list();
 
     }
+
+
+
+
 
     async active():
 
@@ -32,6 +44,10 @@ export class UsersService {
 
     }
 
+
+
+
+
     async findById(
 
         id:string,
@@ -40,18 +56,19 @@ export class UsersService {
 
     Promise<AdminUser | null> {
 
-        const normalizedId =
+
+        return this.repository.findById(
+
             this.validateId(
                 id,
                 "User",
-            );
+            ),
 
-
-        return this.repository.findById(
-            normalizedId,
         );
 
     }
+
+
 
 
 
@@ -63,17 +80,20 @@ export class UsersService {
 
     Promise<AdminUser | null> {
 
-        const normalizedEmail =
-            this.normalizeEmail(
-                email,
-            );
-
 
         return this.repository.findByEmail(
-            normalizedEmail,
+
+            this.normalizeEmail(
+                email,
+            ),
+
         );
 
     }
+
+
+
+
 
     async save(
 
@@ -82,6 +102,7 @@ export class UsersService {
     ):
 
     Promise<AdminUser> {
+
 
         this.validateUser(
             user,
@@ -94,10 +115,12 @@ export class UsersService {
             );
 
 
+
         const existing =
             await this.repository.findByEmail(
                 email,
             );
+
 
 
         if (
@@ -115,6 +138,7 @@ export class UsersService {
         }
 
 
+
         return this.repository.save(
 
             {
@@ -125,7 +149,7 @@ export class UsersService {
 
                 updatedAt:
                     new Date()
-                        .toISOString(),
+                    .toISOString(),
 
             },
 
@@ -133,37 +157,23 @@ export class UsersService {
 
     }
 
-    async updatePreferences(
-
-        userId:string,
-
-        _preferences:
-            Record<string,unknown>,
-
-    ):
-
-    Promise<void> {
-
-        this.validateId(
-            userId,
-            "User",
-        );
 
 
-        throw new Error(
 
-            "User preference management is handled by UserPreferenceService.",
 
-        );
 
-    }
-    async delete(
+
+
+    async update(
 
         id:string,
 
+        user:Partial<AdminUser>,
+
     ):
 
-    Promise<void> {
+    Promise<AdminUser> {
+
 
         const normalizedId =
             this.validateId(
@@ -172,10 +182,122 @@ export class UsersService {
             );
 
 
+
+        if (!user) {
+
+            throw new Error(
+                "User update payload is required.",
+            );
+
+        }
+
+
+
+        let payload:
+            Partial<AdminUser> = {
+
+            ...user,
+
+        };
+
+
+
+        if (
+
+            payload.email
+
+        ) {
+
+
+            const email =
+                this.normalizeEmail(
+                    payload.email,
+                );
+
+
+
+            const existing =
+                await this.repository.findByEmail(
+                    email,
+                );
+
+
+
+            if (
+
+                existing &&
+
+                existing.id !== normalizedId
+
+            ) {
+
+                throw new Error(
+                    "Email already exists.",
+                );
+
+            }
+
+
+
+            payload = {
+
+                ...payload,
+
+                email,
+
+            };
+
+        }
+
+
+
+        return this.repository.update(
+
+            normalizedId,
+
+            {
+
+                ...payload,
+
+                updatedAt:
+                    new Date()
+                    .toISOString(),
+
+            },
+
+        );
+
+    }
+
+
+
+
+
+
+
+
+    async delete(
+
+        id:string,
+
+    ):
+
+    Promise<void> {
+
+
+        const normalizedId =
+            this.validateId(
+                id,
+                "User",
+            );
+
+
+
         const user =
             await this.repository.findById(
                 normalizedId,
             );
+
 
 
         if (!user) {
@@ -185,6 +307,7 @@ export class UsersService {
             );
 
         }
+
 
 
         if (
@@ -200,16 +323,59 @@ export class UsersService {
         }
 
 
+
         await this.repository.delete(
+
             normalizedId,
+
         );
 
     }
+
+
+
+
+
+
+
+
+    async updatePreferences(
+
+        userId:string,
+
+        _preferences:
+            Record<string,unknown>,
+
+    ):
+
+    Promise<void> {
+
+
+        this.validateId(
+            userId,
+            "User",
+        );
+
+
+        throw new Error(
+            "User preference management is handled by UserPreferenceService.",
+        );
+
+    }
+
+
+
+
+
+
+
+
     private validateUser(
 
         user:AdminUser,
 
     ):void {
+
 
         if (!user) {
 
@@ -220,8 +386,11 @@ export class UsersService {
         }
 
 
+
         if (
+
             !user.fullName?.trim()
+
         ) {
 
             throw new Error(
@@ -231,14 +400,14 @@ export class UsersService {
         }
 
 
+
         this.normalizeEmail(
             user.email,
         );
 
 
-        if (
-            !user.userType
-        ) {
+
+        if (!user.userType) {
 
             throw new Error(
                 "User type is required.",
@@ -247,9 +416,8 @@ export class UsersService {
         }
 
 
-        if (
-            !user.status
-        ) {
+
+        if (!user.status) {
 
             throw new Error(
                 "User status is required.",
@@ -259,15 +427,28 @@ export class UsersService {
 
     }
 
+
+
+
+
+
+
+
     private normalizeEmail(
 
         email:string,
 
     ):string {
 
-        if (
-            !email?.trim()
-        ) {
+
+        const normalized =
+            email
+            ?.trim()
+            .toLowerCase();
+
+
+
+        if (!normalized) {
 
             throw new Error(
                 "Email is required.",
@@ -276,20 +457,18 @@ export class UsersService {
         }
 
 
-        const normalized =
-            email
-                .trim()
-                .toLowerCase();
-
 
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 
+
         if (
+
             !emailRegex.test(
                 normalized,
             )
+
         ) {
 
             throw new Error(
@@ -299,15 +478,18 @@ export class UsersService {
         }
 
 
+
         return normalized;
 
     }
 
 
 
-    /**
-     * Validate and normalize an entity identifier.
-     */
+
+
+
+
+
     private validateId(
 
         id:string,
@@ -316,8 +498,10 @@ export class UsersService {
 
     ):string {
 
+
         const normalized =
             id?.trim();
+
 
 
         if (!normalized) {
@@ -327,6 +511,7 @@ export class UsersService {
             );
 
         }
+
 
 
         return normalized;
