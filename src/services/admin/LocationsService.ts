@@ -8,11 +8,6 @@ import {
 } from "@/repositories/admin/LocationsRepository";
 
 
-import {
-    createSupabaseServerClient,
-} from "@/lib/supabase/server-client";
-
-
 
 export class LocationsService {
 
@@ -23,26 +18,6 @@ export class LocationsService {
             LocationsRepository,
 
     ) {}
-
-
-
-    static async create():
-
-    Promise<LocationsService> {
-
-        const supabase =
-            await createSupabaseServerClient();
-
-
-        return new LocationsService(
-
-            new LocationsRepository(
-                supabase,
-            ),
-
-        );
-
-    }
 
 
 
@@ -63,6 +38,7 @@ export class LocationsService {
     ):
 
     Promise<Location | null> {
+
 
         const normalizedId =
             this.validateId(
@@ -88,8 +64,9 @@ export class LocationsService {
 
     Promise<Location | null> {
 
+
         const normalizedCode =
-            this.validateCode(
+            this.normalizeCode(
                 code,
             );
 
@@ -113,6 +90,7 @@ export class LocationsService {
 
     Promise<Location> {
 
+
         const normalizedLocation =
             this.validateLocation(
                 location,
@@ -126,12 +104,10 @@ export class LocationsService {
                 ...location,
 
                 locationCode:
-                    normalizedLocation
-                        .locationCode,
+                    normalizedLocation.locationCode,
 
                 locationName:
-                    normalizedLocation
-                        .locationName,
+                    normalizedLocation.locationName,
 
             },
 
@@ -149,13 +125,14 @@ export class LocationsService {
 
     Promise<void> {
 
+
         const normalizedId =
             this.validateId(
                 id,
             );
 
 
-        const location =
+        const existing =
             await this.repository.findById(
 
                 normalizedId,
@@ -163,12 +140,10 @@ export class LocationsService {
             );
 
 
-        if (!location) {
+        if (!existing) {
 
             throw new Error(
-
                 "Location not found.",
-
             );
 
         }
@@ -197,53 +172,40 @@ export class LocationsService {
 
     } {
 
+
         if (
 
             !location ||
 
-            typeof location !==
-                "object" ||
+            typeof location !== "object" ||
 
-            Array.isArray(
-                location,
-            )
+            Array.isArray(location)
 
         ) {
 
             throw new Error(
-
                 "Location is required.",
-
             );
 
         }
 
 
-        const locationCode =
-            this.normalizeCode(
-
-                location.locationCode ??
-                    "",
-
-            );
-
-
-        const locationName =
-            this.normalizeRequiredText(
-
-                location.locationName ??
-                    "",
-
-                "Location name is required.",
-
-            );
-
-
         return {
 
-            locationCode,
+            locationCode:
+                this.normalizeCode(
+                    location.locationCode,
+                ),
 
-            locationName,
+
+            locationName:
+                this.normalizeRequiredText(
+
+                    location.locationName,
+
+                    "Location name is required.",
+
+                ),
 
         };
 
@@ -251,46 +213,35 @@ export class LocationsService {
 
 
 
-    private validateCode(
-
-        code: string,
-
-    ): string {
-
-        return this.normalizeCode(
-            code,
-        );
-
-    }
-
-
-
     private normalizeCode(
 
-        code: string,
+        code:
+            string |
+            undefined,
 
     ): string {
 
-        const normalizedCode =
+
+        const normalized =
             typeof code === "string"
+
                 ? code
                     .trim()
                     .toUpperCase()
+
                 : "";
 
 
-        if (!normalizedCode) {
+        if (!normalized) {
 
             throw new Error(
-
                 "Location code is required.",
-
             );
 
         }
 
 
-        return normalizedCode;
+        return normalized;
 
     }
 
@@ -298,24 +249,28 @@ export class LocationsService {
 
     private normalizeRequiredText(
 
-        value: string,
+        value:
+            string |
+            undefined,
 
-        message: string,
+        message:
+            string,
 
     ): string {
 
+
         const normalized =
             typeof value === "string"
+
                 ? value.trim()
+
                 : "";
 
 
         if (!normalized) {
 
             throw new Error(
-
                 message,
-
             );
 
         }
@@ -329,28 +284,30 @@ export class LocationsService {
 
     private validateId(
 
-        id: string,
+        id:
+            string,
 
     ): string {
 
-        const normalizedId =
+
+        const normalized =
             typeof id === "string"
+
                 ? id.trim()
+
                 : "";
 
 
-        if (!normalizedId) {
+        if (!normalized) {
 
             throw new Error(
-
                 "Location id is required.",
-
             );
 
         }
 
 
-        return normalizedId;
+        return normalized;
 
     }
 

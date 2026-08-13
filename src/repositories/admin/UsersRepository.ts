@@ -972,19 +972,7 @@ export class UsersRepository
 
     }
 
-
-
-    /**
-     * =========================================================================
-     * Database -> Domain Mapping
-     * =========================================================================
-     *
-     * Raw Supabase rows never escape this repository.
-     *
-     * =========================================================================
-     */
     private mapUser(
-
         row:UserRow,
 
     ):
@@ -992,135 +980,106 @@ export class UsersRepository
     AdminUser {
 
         return {
-
             id:
                 row.id,
-
             organizationId:
                 row.organization_id,
-
             profileId:
                 row.profile_id
                 ??
                 undefined,
-
             authUserId:
                 row.auth_user_id
                 ??
                 undefined,
-
             fullName:
                 row.full_name,
-
             firstName:
                 row.first_name
                 ??
                 undefined,
-
             lastName:
                 row.last_name
                 ??
                 undefined,
-
             displayName:
                 row.display_name
                 ??
                 undefined,
-
             email:
                 row.email,
-
             phone:
                 row.phone
                 ??
                 undefined,
-
             avatarUrl:
                 row.avatar_url
                 ??
                 undefined,
-
             jobTitle:
                 row.job_title
                 ??
                 undefined,
-
             department:
                 row.department
                 ??
                 undefined,
-
             employeeCode:
                 row.employee_code
                 ??
                 undefined,
-
             userType:
                 row.user_type as AdminUser["userType"],
-
             status:
                 row.status as AdminUser["status"],
-
             roleIds:
                 row.role_ids
                 ??
                 [],
-
             primaryRoleId:
                 row.primary_role_id
                 ??
                 undefined,
-
             isActive:
                 row.is_active
                 ??
                 false,
-
             emailVerified:
                 row.email_verified
                 ??
                 false,
-
             phoneVerified:
                 row.phone_verified
                 ??
                 false,
-
             lastLoginAt:
                 row.last_login_at
                 ??
                 undefined,
-
             lastActivityAt:
                 row.last_activity_at
                 ??
                 undefined,
-
             passwordChangedAt:
                 row.password_changed_at
                 ??
                 undefined,
-
             failedLoginAttempts:
                 row.failed_login_attempts
                 ??
                 0,
-
             lockedUntil:
                 row.locked_until
                 ??
                 undefined,
-
             locale:
                 row.locale
                 ??
                 undefined,
-
             timezone:
                 row.timezone
                 ??
                 undefined,
-
             metadata:
                 row.metadata
                 ??
@@ -1130,38 +1089,23 @@ export class UsersRepository
                 row.created_by
                 ??
                 undefined,
-
             updatedBy:
                 row.updated_by
                 ??
                 undefined,
-
             createdAt:
-                row.created_at,
-
+               row.created_at,
             updatedAt:
                 row.updated_at,
-
         };
-
     }
 
-
-
-    /**
-     * =========================================================================
-     * Identifier Validation
-     * =========================================================================
-     */
     private requireId(
-
         id:string,
 
     ):string {
-
         const normalized =
             id?.trim();
-
 
         if (!normalized) {
             throw new Error(
@@ -1169,55 +1113,35 @@ export class UsersRepository
             );
         }
 
-
         return normalized;
-
     }
 
-
-
-    /**
-     * =========================================================================
-     * Email Normalization
-     * =========================================================================
-     */
     private normalizeEmail(
-
         email:string,
 
     ):string {
-
         const normalized =
             email
                 ?.trim()
                 .toLowerCase();
-
-
         if (!normalized) {
             throw new Error(
                 "Email is required.",
             );
         }
 
-
         const emailRegex =
             /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-
         if (
-            !emailRegex.test(
-                normalized,
-            )
-        ) {
-            throw new Error(
-                "Invalid email address.",
-            );
-        }
-
-
+    !emailRegex.test(
+        normalized,
+    )
+) {
+    throw new Error(
+        "Invalid email address.",
+    );
+}
         return normalized;
-
     }
-
-
 }
