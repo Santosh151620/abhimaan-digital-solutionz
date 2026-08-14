@@ -1,8 +1,8 @@
-/**
+﻿/**
  * ============================================================================
  * ADS ENTERPRISE PLATFORM
  *
- * Theme Domain Contract
+ * Theme Domain Contracts
  *
  * Shared by:
  *
@@ -15,30 +15,40 @@
  *
  * src/components/providers/ThemeProvider.tsx
  *
- * This file contains only contracts.
+ * This file contains contracts only.
  *
  * ============================================================================
  */
 
 
 /**
- * Supported ADS application themes.
+ * ============================================================================
+ * ADS OFFICIAL APPLICATION THEMES
+ * ============================================================================
  *
- * Keep synchronized with ADS_THEMES in ThemeProvider.
+ * These values are the canonical persisted theme identifiers.
+ *
+ * IMPORTANT:
+ *
+ * Keep these identifiers stable.
+ *
+ * They may be persisted in:
+ *
+ * - localStorage
+ * - user preferences
+ * - organization policies
+ * - future database configuration
+ *
+ * ============================================================================
  */
+
 export type ADSTheme =
 
-    | "default"
+    | "ads-midnight"
 
-    | "ocean"
+    | "ads-azure"
 
-    | "emerald"
-
-    | "royal";
-
-
-
-
+    | "ads-platinum";
 
 
 /**
@@ -46,74 +56,114 @@ export type ADSTheme =
  * Theme Color Contract
  * ============================================================================
  *
- * CSS variable compatible color tokens.
+ * Semantic presentation tokens consumed by the ADS theme system.
  *
- * ThemeProvider converts these values into:
+ * These map to CSS custom properties in:
  *
- * --background
- * --foreground
- * --primary
- * --primary-soft
- * --surface
- * --surface-muted
- * --border
- * --muted
+ * src/app/globals.css
+ *
+ * Theme changes are presentation-only.
  *
  * ============================================================================
  */
 
 export interface ThemeColors {
 
-
     background:string;
-
 
     foreground:string;
 
-
     primary:string;
-
 
     primarySoft:string;
 
+    secondary:string;
+
+    accent:string;
+
+    accentSoft:string;
+
+    backgroundDeep:string;
+
+    backgroundElevated:string;
 
     surface:string;
 
-
     surfaceMuted:string;
 
+    surfaceGlass:string;
+
+    surfaceGlassStrong:string;
+
+    surfaceHover:string;
 
     border:string;
 
+    borderSubtle:string;
+
+    borderStrong:string;
+
+    textPrimary:string;
+
+    textSecondary:string;
+
+    textMuted:string;
+
+    primaryHover:string;
+
+    primaryActive:string;
+
+    info:string;
+
+    cyan:string;
+
+    blue:string;
+
+    success:string;
+
+    warning:string;
+
+    danger:string;
 
     muted:string;
 
+    shadowCard:string;
+
+    shadowGlow:string;
+
+    glassBlur:string;
 
 }
 
 
-
-
-
-
 /**
  * ============================================================================
- * ADS Theme Configuration
+ * ADS THEME CONFIGURATION
  * ============================================================================
  *
- * Describes one complete application theme.
+ * Describes one official ADS application theme.
  *
  * ============================================================================
  */
 
 export interface ThemeConfig {
 
+    /**
+     * Stable theme identifier.
+     */
+    id:ADSTheme;
+
 
     /**
-     * Display name.
+     * Human-readable display name.
      */
     name:string;
 
+
+    /**
+     * Optional description for theme selectors/help UI.
+     */
+    description?:string;
 
 
     /**
@@ -122,55 +172,143 @@ export interface ThemeConfig {
     colors:ThemeColors;
 
 
+    /**
+     * Whether the theme is an official ADS-provided preset.
+     */
+    official:boolean;
+
+
+    /**
+     * Whether the theme may be selected by end users.
+     */
+    selectable:boolean;
+
 }
-
-
-
-
 
 
 /**
  * ============================================================================
- * User Theme Policy
+ * Theme Policy
  * ============================================================================
  *
- * Used later by organization administration.
+ * Organization-level governance contract.
  *
- * Examples:
+ * The policy controls whether employees can choose their own theme.
  *
- * - Allow user selection
- * - Force organization theme
- * - Restrict available themes
+ * It does NOT itself perform authorization.
+ *
+ * Authorization remains inside the appropriate application/service layer.
  *
  * ============================================================================
  */
 
 export interface ThemePolicy {
 
-
     organizationId:string;
 
 
-
     /**
-     * Theme forced by organization.
+     * Theme forced by the organization.
+     *
+     * When defined and allowUserOverride is false,
+     * the organization theme takes precedence.
      */
     enforcedTheme?:ADSTheme;
 
 
-
     /**
-     * Themes available to users.
+     * Themes available to users within the organization.
      */
     allowedThemes:ADSTheme[];
 
 
-
     /**
-     * Whether users may override organization choice.
+     * Whether users may override the organization choice.
      */
     allowUserOverride:boolean;
 
+}
 
+
+/**
+ * ============================================================================
+ * Theme Preference
+ * ============================================================================
+ *
+ * Represents a user's selected presentation theme.
+ *
+ * ============================================================================
+ */
+
+export interface ThemePreference {
+
+    theme:ADSTheme;
 
 }
+
+
+/**
+ * ============================================================================
+ * Theme Resolution
+ * ============================================================================
+ *
+ * Describes the final theme selected by the runtime after considering:
+ *
+ * 1. organization policy
+ * 2. user preference
+ * 3. system/default fallback
+ *
+ * ============================================================================
+ */
+
+export interface ResolvedTheme {
+
+    theme:ADSTheme;
+
+    source:
+        | "organization"
+        | "user"
+        | "default";
+
+    userOverrideAllowed:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme System Constants
+ * ============================================================================
+ *
+ * Shared semantic constants.
+ *
+ * Runtime implementations may derive their actual configuration from these
+ * contracts, but should keep identifiers synchronized with ADSTheme.
+ *
+ * ============================================================================
+ */
+
+export const ADS_THEME_IDS = [
+
+    "ads-midnight",
+
+    "ads-azure",
+
+    "ads-platinum",
+
+] as const satisfies readonly ADSTheme[];
+
+
+/**
+ * ============================================================================
+ * Type Safety Assertion
+ * ============================================================================
+ *
+ * Ensures the canonical theme list remains compatible with ADSTheme.
+ * ============================================================================
+ */
+
+export type ADSThemeId =
+    typeof ADS_THEME_IDS[number];
+
+

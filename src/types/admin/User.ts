@@ -2,6 +2,10 @@
     BaseEntity,
 } from "@/types/platform/BaseEntity";
 
+import type {
+    ADSTheme,
+} from "@/types/theme/Theme";
+
 
 
 
@@ -42,13 +46,7 @@ export type UserStatus =
 
 export type UserThemePreference =
 
-    | "default"
-
-    | "ocean"
-
-    | "emerald"
-
-    | "royal"
+    | ADSTheme
 
     | null;
 
