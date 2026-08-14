@@ -1,5 +1,9 @@
-﻿import type {
+import type {
     ADSTheme,
+} from "@/types/theme/Theme";
+
+import {
+    ADS_THEME_IDS,
 } from "@/types/theme/Theme";
 
 import type {
@@ -46,16 +50,7 @@ const DEFAULT_LANGUAGE: UserLanguage =
     "en";
 
 
-const SUPPORTED_THEMES:
-    readonly ADSTheme[] = [
 
-    "ads-midnight",
-
-    "ads-azure",
-
-    "ads-platinum",
-
-];
 
 
 const SUPPORTED_LANGUAGES:
@@ -914,7 +909,7 @@ export class UserPreferenceService {
 
 
         if (
-            !SUPPORTED_THEMES.includes(
+            !ADS_THEME_IDS.includes(
                 theme,
             )
         ) {
