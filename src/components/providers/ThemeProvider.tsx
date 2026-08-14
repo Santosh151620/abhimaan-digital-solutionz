@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
     createContext,
@@ -150,19 +150,41 @@ Record<ADSTheme, ThemeConfig>
 };
 
 interface ThemeContextValue {
-    theme: ADSTheme;
-    setTheme: (theme: ADSTheme) => void;
-    themes: typeof ADS_THEMES;
+
+    theme:
+        ADSTheme;
+
+    setTheme:
+        (theme: ADSTheme) => Promise<void>;
+
+    themes:
+        typeof ADS_THEMES;
+
+    loading:
+        boolean;
+
+    error:
+        string | null;
+
 }
+
 
 const ThemeContext =
 createContext<
     ThemeContextValue | undefined
 >(undefined);
 
+
 function applyTheme(
     theme: ADSTheme,
 ): void {
+
+    if (
+        typeof document ===
+        "undefined"
+    ) {
+        return;
+    }
 
     const root =
         document.documentElement;
@@ -172,7 +194,139 @@ function applyTheme(
 
     root.dataset.adsTheme =
         theme;
+
 }
+
+
+function isADSTheme(
+    value: unknown,
+): value is ADSTheme {
+
+    return (
+        typeof value ===
+        "string" &&
+        Object.prototype.hasOwnProperty.call(
+            ADS_THEMES,
+            value,
+        )
+    );
+
+}
+
+
+interface UserPreferenceResponse {
+
+    preference?: {
+
+        theme?:
+            ADSTheme;
+
+    };
+
+    data?: {
+
+        theme?:
+            ADSTheme;
+
+    };
+
+}
+
+
+async function fetchUserTheme(): Promise<ADSTheme | null> {
+
+    const response =
+        await fetch(
+            "/api/admin/user-preferences",
+            {
+                method: "GET",
+                credentials: "include",
+                cache: "no-store",
+            },
+        );
+
+    if (
+        !response.ok
+    ) {
+
+        throw new Error(
+            `Failed to load user preferences (${response.status}).`,
+        );
+
+    }
+
+    const payload =
+        await response.json() as
+            UserPreferenceResponse;
+
+    const theme =
+        payload.preference?.theme ??
+        payload.data?.theme;
+
+    return isADSTheme(
+        theme,
+    )
+        ? theme
+        : null;
+
+}
+
+
+async function persistUserTheme(
+    theme: ADSTheme,
+): Promise<void> {
+
+    const response =
+        await fetch(
+            "/api/admin/user-preferences",
+            {
+                method: "PATCH",
+                credentials: "include",
+                headers: {
+                    "Content-Type":
+                        "application/json",
+                },
+                body:
+                    JSON.stringify({
+                        theme,
+                    }),
+            },
+        );
+
+    if (
+        !response.ok
+    ) {
+
+        let message =
+            `Failed to save theme (${response.status}).`;
+
+        try {
+
+            const payload =
+                await response.json() as {
+                    error?: string;
+                    message?: string;
+                };
+
+            message =
+                payload.error ??
+                payload.message ??
+                message;
+
+        } catch {
+
+            // Preserve the original HTTP error.
+
+        }
+
+        throw new Error(
+            message,
+        );
+
+    }
+
+}
+
 
 export default function ThemeProvider({
     children,
@@ -188,85 +342,307 @@ export default function ThemeProvider({
         "ads-midnight",
     );
 
+    const [
+        loading,
+        setLoading,
+    ] =
+    useState<boolean>(
+        true,
+    );
+
+    const [
+        error,
+        setError,
+    ] =
+    useState<string | null>(
+        null,
+    );
+
+
     useEffect(() => {
 
-        const stored =
-            window.localStorage.getItem(
-                "ads-theme",
-            );
+        let cancelled =
+            false;
 
-        const activeTheme =
-            stored &&
-            Object.prototype.hasOwnProperty.call(
-                ADS_THEMES,
-                stored,
-            )
-                ? stored as ADSTheme
-                : "ads-midnight";
 
-        setThemeState(
-            activeTheme,
-        );
+        async function loadTheme() {
 
-        applyTheme(
-            activeTheme,
-        );
+            try {
+
+                setLoading(
+                    true,
+                );
+
+                setError(
+                    null,
+                );
+
+
+                const stored =
+                    window.localStorage.getItem(
+                        "ads-theme",
+                    );
+
+
+                const cachedTheme =
+                    isADSTheme(
+                        stored,
+                    )
+                        ? stored
+                        : null;
+
+
+                if (
+                    cachedTheme
+                ) {
+
+                    setThemeState(
+                        cachedTheme,
+                    );
+
+                    applyTheme(
+                        cachedTheme,
+                    );
+
+                }
+
+
+                const serverTheme =
+                    await fetchUserTheme();
+
+
+                if (
+                    cancelled
+                ) {
+                    return;
+                }
+
+
+                const activeTheme =
+                    serverTheme ??
+                    cachedTheme ??
+                    "ads-midnight";
+
+
+                setThemeState(
+                    activeTheme,
+                );
+
+                applyTheme(
+                    activeTheme,
+                );
+
+
+                window.localStorage.setItem(
+                    "ads-theme",
+                    activeTheme,
+                );
+
+
+            } catch (
+                cause
+            ) {
+
+                if (
+                    cancelled
+                ) {
+                    return;
+                }
+
+
+                const message =
+                    cause instanceof Error
+                        ? cause.message
+                        : "Failed to load user theme.";
+
+
+                setError(
+                    message,
+                );
+
+
+                const stored =
+                    window.localStorage.getItem(
+                        "ads-theme",
+                    );
+
+
+                const fallback =
+                    isADSTheme(
+                        stored,
+                    )
+                        ? stored
+                        : "ads-midnight";
+
+
+                setThemeState(
+                    fallback,
+                );
+
+                applyTheme(
+                    fallback,
+                );
+
+
+            } finally {
+
+                if (
+                    !cancelled
+                ) {
+
+                    setLoading(
+                        false,
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        void loadTheme();
+
+
+        return () => {
+
+            cancelled =
+                true;
+
+        };
 
     }, []);
 
+
     const setTheme =
-    useCallback(
-        (
-            value: ADSTheme,
-        ): void => {
+        useCallback(
+            async (
+                value: ADSTheme,
+            ): Promise<void> => {
 
-            if (
-                !Object.prototype.hasOwnProperty.call(
-                    ADS_THEMES,
+                if (
+                    !isADSTheme(
+                        value,
+                    )
+                ) {
+
+                    return;
+
+                }
+
+
+                const previousTheme =
+                    theme;
+
+
+                setError(
+                    null,
+                );
+
+
+                /*
+                 * Apply immediately.
+                 *
+                 * The UI does not wait for the database.
+                 */
+
+                setThemeState(
                     value,
-                )
-            ) {
-                return;
-            }
+                );
 
-            setThemeState(
-                value,
-            );
+                applyTheme(
+                    value,
+                );
 
-            applyTheme(
-                value,
-            );
+                window.localStorage.setItem(
+                    "ads-theme",
+                    value,
+                );
 
-            window.localStorage.setItem(
-                "ads-theme",
-                value,
-            );
 
-        },
-        [],
-    );
+                try {
+
+                    await persistUserTheme(
+                        value,
+                    );
+
+                } catch (
+                    cause
+                ) {
+
+                    /*
+                     * Roll back if persistence failed.
+                     * This prevents the UI and DB from silently
+                     * diverging.
+                     */
+
+                    setThemeState(
+                        previousTheme,
+                    );
+
+                    applyTheme(
+                        previousTheme,
+                    );
+
+                    window.localStorage.setItem(
+                        "ads-theme",
+                        previousTheme,
+                    );
+
+
+                    const message =
+                        cause instanceof Error
+                            ? cause.message
+                            : "Failed to save user theme.";
+
+
+                    setError(
+                        message,
+                    );
+
+
+                    throw cause;
+
+                }
+
+            },
+            [
+                theme,
+            ],
+        );
+
 
     const contextValue =
-    useMemo(
-        () => ({
-            theme,
-            setTheme,
-            themes: ADS_THEMES,
-        }),
-        [
-            theme,
-            setTheme,
-        ],
-    );
+        useMemo(
+            () => ({
+                theme,
+                setTheme,
+                themes:
+                    ADS_THEMES,
+                loading,
+                error,
+            }),
+            [
+                theme,
+                setTheme,
+                loading,
+                error,
+            ],
+        );
+
 
     return (
         <ThemeContext.Provider
-            value={contextValue}
+            value={
+                contextValue
+            }
         >
             {children}
         </ThemeContext.Provider>
     );
+
 }
+
 
 export function useADSTheme() {
 
@@ -275,11 +651,18 @@ export function useADSTheme() {
             ThemeContext,
         );
 
-    if (!context) {
+
+    if (
+        !context
+    ) {
+
         throw new Error(
             "useADSTheme must be used inside ThemeProvider",
         );
+
     }
 
+
     return context;
+
 }

@@ -1,0 +1,5368 @@
+
+================================================================
+A. THEME CONTRACT REFERENCES
+================================================================
+
+Path                                                                                LineNumber Line                                       
+----                                                                                ---------- ----                                       
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                    6     ADSTheme,                              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   47 export type UserThemePreference =          
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   49     | ADSTheme                             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                  190     themePreference?:UserThemePreference;  
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts          4 export type ThemePreference =              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         34     theme:ThemePreference;                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                  45 export type ADSTheme =                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 149 export interface ThemeConfig {             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 154     id:ADSTheme;                           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 205 export interface ThemePolicy {             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 216     enforcedTheme?:ADSTheme;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 222     allowedThemes:ADSTheme[];              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 243 export interface ThemePreference {         
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 245     theme:ADSTheme;                        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 266     theme:ADSTheme;                        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 286  * contracts, but should keep identifier...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 291 export const ADS_THEME_IDS = [             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 299 ] as const satisfies readonly ADSTheme[];  
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 307  * Ensures the canonical theme list rema...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 311 export type ADSThemeId =                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 312     typeof ADS_THEME_IDS[number];          
+
+
+
+================================================================
+B. USER PREFERENCE REFERENCES
+================================================================
+
+Path                                                                                LineNumber Line                                     
+----                                                                                ---------- ----                                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   47 export type UserThemePreference =        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   61     reducedMotion?: boolean;             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   64     highContrast?: boolean;              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   67     compactMode?: boolean;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                  190     themePreference?:UserThemePreference;
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts          4 export type ThemePreference =            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         23 export type UserPreferenceMetadata =     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         28 export interface UserPreference          
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         34     theme:ThemePreference;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         38     compactMode:boolean;                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         40     reducedMotion:boolean;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         42     highContrast:boolean;                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         44     emailNotifications:boolean;          
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         46     pushNotifications:boolean;           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         47     systemNotifications:boolean;         
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         50     metadata?:UserPreferenceMetadata;    
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 243 export interface ThemePreference {       
+
+
+
+================================================================
+C. THEME PROVIDER REFERENCES
+================================================================
+
+Path                                                                                         LineNumber Line                              
+----                                                                                         ---------- ----                              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx         17     ADSTheme,                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx         22 Record<ADSTheme, ThemeConfig>     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        153     theme: ADSTheme;              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        154     setTheme: (theme: ADSTheme)...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        164     theme: ADSTheme,              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        173     root.dataset.adsTheme =       
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        177 export default function ThemePr...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        185         setThemeState,            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        187     useState<ADSTheme>(           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        194             window.localStorage...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        195                 "ads-theme",      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        204                 ? stored as ADS...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        207         setThemeState(            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        217     const setTheme =              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        220             value: ADSTheme,      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        232             setThemeState(        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        240             window.localStorage...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        241                 "ads-theme",      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        253             setTheme,             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        258             setTheme,             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        271 export function useADSTheme() {   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        280             "useADSTheme must b...
+
+
+
+================================================================
+D. SERVICES
+================================================================
+
+Path                                                                                    LineNumber Line                                   
+----                                                                                    ---------- ----                                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\index.ts                   77     SettingsService,                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\index.ts                   78 } from "./SettingsService";            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts         15 export class SettingsService {         
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts           371     async updatePreferences(           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts           390             "User preference managem...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\index.ts                     22 export * from './SettingsService';     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts           14 class SettingsService {                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts          149 export const SettingsServiceInstance = 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts          150     new SettingsService();             
+
+
+
+================================================================
+E. REPOSITORIES
+================================================================
+
+Path                                                                                           LineNumber Line                            
+----                                                                                           ---------- ----                            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\index.ts                      47 export * from "./SettingsRepo...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts          8  * organization_settings        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         52 export interface ISettingsRep...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         79 export class SettingsRepository 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         81     implements ISettingsRepos...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         88             "organization_set...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts            44  * - User preferences           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\index.ts                        21 export * from './SettingsRepo...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts           61 export class SettingsRepository 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts           71             'organization_set...
+
+
+
+================================================================
+F. API ROUTES
+================================================================
+
+FullName                                                                                
+--------                                                                                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\[id]\route.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\route.ts     
+
+
+
+================================================================
+G. PAGES / ROUTES
+================================================================
+
+FullName                                                                                            
+--------                                                                                            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\change-theme\page.tsx   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\error.tsx      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\loading.tsx    
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\page-actions.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\page.tsx       
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\[id]\route.ts            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\route.ts                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\new\page.tsx                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\[id]\edit\page.tsx           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\[id]\page.tsx                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\actions.ts                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\page.tsx                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\organization\p...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\settings\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\theme-policy\p...
+
+
+
+================================================================
+H. DATABASE TABLE DEFINITIONS
+================================================================
+
+Path                                                                                                        LineNumber Line               
+----                                                                                                        ---------- ----               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql                             375 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\005_admin.sql                                124 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                  422 ALTER TABLE admi...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql        489 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql       7359 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql               338 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql              6781 CREATE TABLE IF ...
+
+
+
+================================================================
+I. DATABASE SECURITY / RLS REFERENCES
+================================================================
+
+Path                                                                                                           LineNumber Line            
+----                                                                                                           ---------- ----            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql                                375 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql                                811 BEFORE UPDATE...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\005_admin.sql                                   124 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\007_indexes.sql                                 175 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\008_functions.sql                               691 FROM admin_or...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_triggers.sql                                 61 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_triggers.sql                                 66 BEFORE UPDATE...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                     422 ALTER TABLE a...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                     837 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                     841 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\012_seed_data.sql                              1054 INSERT INTO a...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql           489 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql          7359 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql                  338 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql                 6781 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql         60         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql        193         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql        304         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql           39         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql           80         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql          191         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\037_ads_close_remaining_tenant_rls.sql           89             '...
+
+
+
+================================================================
+J. DUPLICATE THEME CONTRACTS
+================================================================
+
+Path                                                                                                     LineNumber Line                  
+----                                                                                                     ---------- ----                  
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\theme-policy\page.tsx         43 interface ThemePoli...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                                        47 export type UserThe...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                                       190     themePreference...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts                               4 export type ThemePr...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                       45 export type ADSTheme =
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      149 export interface Th...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      205 export interface Th...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      243 export interface Th...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      311 export type ADSThem...
+
+
+
+================================================================
+K. MIGRATION LIST
+================================================================
+
+Name                                                    FullName                                                                          
+----                                                    --------                                                                          
+001_platform.sql                                        C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platf...
+002_website.sql                                         C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\002_websi...
+003_crm.sql                                             C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\003_crm.sql 
+004_erp.sql                                             C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\004_erp.sql 
+005_admin.sql                                           C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\005_admin...
+006_lookup.sql                                          C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\006_looku...
+007_indexes.sql                                         C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\007_index...
+008_functions.sql                                       C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\008_funct...
+009_triggers.sql                                        C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_trigg...
+010_rls.sql                                             C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql 
+011_policies.sql                                        C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\011_polic...
+012_seed_data.sql                                       C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\012_seed_...
+013_legacy_retirement.sql                               C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\013_legac...
+014_validation.sql                                      C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\014_valid...
+015_ads_v1_reconciliation.sql                           C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\015_ads_v...
+016_ads_tenant_isolation.sql                            C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\016_ads_t...
+017_ads_foundation_reconciliation.sql                   C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_f...
+018_ads_missing_foundation.sql                          C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_m...
+019_ads_required_core_tables.sql                        C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\019_ads_r...
+020_rls_child_security.sql                              C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\020_rls_c...
+021_ads_lead_client_tenant_boundary.sql                 C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\021_ads_l...
+022_ads_shared_crm_engines_tenant_boundary.sql          C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\022_ads_s...
+023_ads_core_crm_tenant_boundary.sql                    C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\023_ads_c...
+027_ads_core_crm_relational_fk_hardening.sql            C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\027_ads_c...
+029_ads_pipeline_stages_tenant_policy_hardening.sql     C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\029_ads_p...
+031_ads_crm_soft_delete_policy_hardening.sql            C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\031_ads_c...
+032_ads_crm_tenant_security_hardening.sql               C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\032_ads_c...
+033_ads_crm_relationship_tenant_integrity_hardening.sql C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\033_ads_c...
+034_ads_global_tenant_security_audit.sql                C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\034_ads_g...
+035_ads_crm_platform_tenant_security.sql                C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_c...
+036_ads_shared_org_tenant_security.sql                  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_s...
+037_ads_close_remaining_tenant_rls.sql                  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\037_ads_c...
+
+
+
+================================================================
+L. AUTHORITATIVE SOURCE FILE CONTENTS
+================================================================
+
+################################################################
+src\types\theme\Theme.ts
+################################################################
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Theme Domain Contracts
+ *
+ * Shared by:
+ *
+ * - Website
+ * - CRM
+ * - ERP
+ * - Administrative applications
+ *
+ * Runtime implementation remains inside:
+ *
+ * src/components/providers/ThemeProvider.tsx
+ *
+ * This file contains contracts only.
+ *
+ * ============================================================================
+ */
+
+
+/**
+ * ============================================================================
+ * ADS OFFICIAL APPLICATION THEMES
+ * ============================================================================
+ *
+ * These values are the canonical persisted theme identifiers.
+ *
+ * IMPORTANT:
+ *
+ * Keep these identifiers stable.
+ *
+ * They may be persisted in:
+ *
+ * - localStorage
+ * - user preferences
+ * - organization policies
+ * - future database configuration
+ *
+ * ============================================================================
+ */
+
+export type ADSTheme =
+
+    | "ads-midnight"
+
+    | "ads-azure"
+
+    | "ads-platinum";
+
+
+/**
+ * ============================================================================
+ * Theme Color Contract
+ * ============================================================================
+ *
+ * Semantic presentation tokens consumed by the ADS theme system.
+ *
+ * These map to CSS custom properties in:
+ *
+ * src/app/globals.css
+ *
+ * Theme changes are presentation-only.
+ *
+ * ============================================================================
+ */
+
+export interface ThemeColors {
+
+    background:string;
+
+    foreground:string;
+
+    primary:string;
+
+    primarySoft:string;
+
+    secondary:string;
+
+    accent:string;
+
+    accentSoft:string;
+
+    backgroundDeep:string;
+
+    backgroundElevated:string;
+
+    surface:string;
+
+    surfaceMuted:string;
+
+    surfaceGlass:string;
+
+    surfaceGlassStrong:string;
+
+    surfaceHover:string;
+
+    border:string;
+
+    borderSubtle:string;
+
+    borderStrong:string;
+
+    textPrimary:string;
+
+    textSecondary:string;
+
+    textMuted:string;
+
+    primaryHover:string;
+
+    primaryActive:string;
+
+    info:string;
+
+    cyan:string;
+
+    blue:string;
+
+    success:string;
+
+    warning:string;
+
+    danger:string;
+
+    muted:string;
+
+    shadowCard:string;
+
+    shadowGlow:string;
+
+    glassBlur:string;
+
+}
+
+
+/**
+ * ============================================================================
+ * ADS THEME CONFIGURATION
+ * ============================================================================
+ *
+ * Describes one official ADS application theme.
+ *
+ * ============================================================================
+ */
+
+export interface ThemeConfig {
+
+    /**
+     * Stable theme identifier.
+     */
+    id:ADSTheme;
+
+
+    /**
+     * Human-readable display name.
+     */
+    name:string;
+
+
+    /**
+     * Optional description for theme selectors/help UI.
+     */
+    description?:string;
+
+
+    /**
+     * Visual tokens.
+     */
+    colors:ThemeColors;
+
+
+    /**
+     * Whether the theme is an official ADS-provided preset.
+     */
+    official:boolean;
+
+
+    /**
+     * Whether the theme may be selected by end users.
+     */
+    selectable:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme Policy
+ * ============================================================================
+ *
+ * Organization-level governance contract.
+ *
+ * The policy controls whether employees can choose their own theme.
+ *
+ * It does NOT itself perform authorization.
+ *
+ * Authorization remains inside the appropriate application/service layer.
+ *
+ * ============================================================================
+ */
+
+export interface ThemePolicy {
+
+    organizationId:string;
+
+
+    /**
+     * Theme forced by the organization.
+     *
+     * When defined and allowUserOverride is false,
+     * the organization theme takes precedence.
+     */
+    enforcedTheme?:ADSTheme;
+
+
+    /**
+     * Themes available to users within the organization.
+     */
+    allowedThemes:ADSTheme[];
+
+
+    /**
+     * Whether users may override the organization choice.
+     */
+    allowUserOverride:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme Preference
+ * ============================================================================
+ *
+ * Represents a user's selected presentation theme.
+ *
+ * ============================================================================
+ */
+
+export interface ThemePreference {
+
+    theme:ADSTheme;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme Resolution
+ * ============================================================================
+ *
+ * Describes the final theme selected by the runtime after considering:
+ *
+ * 1. organization policy
+ * 2. user preference
+ * 3. system/default fallback
+ *
+ * ============================================================================
+ */
+
+export interface ResolvedTheme {
+
+    theme:ADSTheme;
+
+    source:
+        | "organization"
+        | "user"
+        | "default";
+
+    userOverrideAllowed:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme System Constants
+ * ============================================================================
+ *
+ * Shared semantic constants.
+ *
+ * Runtime implementations may derive their actual configuration from these
+ * contracts, but should keep identifiers synchronized with ADSTheme.
+ *
+ * ============================================================================
+ */
+
+export const ADS_THEME_IDS = [
+
+    "ads-midnight",
+
+    "ads-azure",
+
+    "ads-platinum",
+
+] as const satisfies readonly ADSTheme[];
+
+
+/**
+ * ============================================================================
+ * Type Safety Assertion
+ * ============================================================================
+ *
+ * Ensures the canonical theme list remains compatible with ADSTheme.
+ * ============================================================================
+ */
+
+export type ADSThemeId =
+    typeof ADS_THEME_IDS[number];
+
+
+
+################################################################
+src\types\admin\User.ts
+################################################################
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
+
+import type {
+    ADSTheme,
+} from "@/types/theme/Theme";
+
+
+
+
+
+export type UserType =
+
+    | "Internal"
+
+    | "External"
+
+    | "System"
+
+    | "Service";
+
+
+
+
+
+
+export type UserStatus =
+
+    | "Pending"
+
+    | "Active"
+
+    | "Inactive"
+
+    | "Suspended"
+
+    | "Locked"
+
+    | "Archived";
+
+
+
+
+
+
+export type UserThemePreference =
+
+    | ADSTheme
+
+    | null;
+
+
+
+
+
+
+export interface UserAccessibilityPreferences {
+
+
+    reducedMotion?: boolean;
+
+
+    highContrast?: boolean;
+
+
+    compactMode?: boolean;
+
+
+}
+
+
+
+
+
+
+export interface UserNotificationPreferences {
+
+
+    email?: boolean;
+
+
+    inApp?: boolean;
+
+
+    push?: boolean;
+
+
+}
+
+
+
+
+
+
+
+
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Administrative User Contract
+ *
+ * Identity + Access Management
+ *
+ * Shared across:
+ * Website
+ * CRM
+ * ERP
+ * Admin
+ *
+ * ============================================================================
+ */
+
+
+export interface AdminUser
+
+    extends BaseEntity {
+
+
+
+    /**
+     * Tenant
+     */
+    organizationId:string;
+
+
+
+
+
+    /**
+     * Authentication mapping
+     */
+    profileId?:string;
+
+
+    authUserId?:string;
+
+
+
+
+
+    /**
+     * Identity
+     */
+    fullName:string;
+
+
+    firstName?:string;
+
+
+    lastName?:string;
+
+
+    displayName?:string;
+
+
+    email:string;
+
+
+    phone?:string;
+
+
+    avatarUrl?:string;
+
+
+
+
+
+    /**
+     * Organization information
+     */
+    jobTitle?:string;
+    department?:string;
+    employeeCode?:string;
+    userType:UserType;
+    status:UserStatus;
+    isActive:boolean;
+    roleIds:string[];
+    primaryRoleId?:string;
+    emailVerified?:boolean;
+    phoneVerified?:boolean;
+    lastLoginAt?:string;
+    lastActivityAt?:string;
+    passwordChangedAt?:string;
+    failedLoginAttempts?:number;
+    lockedUntil?:string;
+    locale?:string;
+    timezone?:string;
+    themePreference?:UserThemePreference;
+    accessibility?:UserAccessibilityPreferences;
+    notificationPreferences?:UserNotificationPreferences;
+    createdBy?:string;
+    updatedBy?:string;
+    metadata?:Record<string, unknown>;
+}
+
+export interface UserSession {
+    id:string;
+    userId:string;
+    organizationId:string;
+    email:string;
+    roles:string[];
+    permissions:string[];
+    expiresAt?:string;
+}
+
+export interface UserRoleAssignment {
+    id:string;
+    userId:string;
+    roleId:string;
+    organizationId?:string;
+    assignedBy?:string;
+    assignedAt:string;
+    expiresAt?:string;
+    isActive:boolean;
+}
+
+################################################################
+src\types\admin\UserPreference.ts
+################################################################
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
+export type ThemePreference =
+    string;
+export type UserLanguage =
+
+    | "en"
+
+    | "hi"
+
+    | "mr"
+
+    | "ta"
+
+    | "te";
+
+export type DashboardLayout =
+    Record<
+        string,
+        unknown
+    >;
+export type UserPreferenceMetadata =
+    Record<
+        string,
+        unknown
+    >;
+export interface UserPreference
+    extends BaseEntity {
+
+    userId:string;
+
+    organizationId:string;
+    theme:ThemePreference;
+
+    language:UserLanguage;
+    timezone?:string;
+    compactMode:boolean;
+
+    reducedMotion:boolean;
+
+    highContrast:boolean;
+
+    emailNotifications:boolean;
+
+    pushNotifications:boolean;
+    systemNotifications:boolean;
+    defaultLandingPage?:string;
+    dashboardLayout?:DashboardLayout;
+    metadata?:UserPreferenceMetadata;
+}
+
+################################################################
+src\types\admin\Settings.ts
+################################################################
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ * Platform Settings Contract
+ *
+ * Enterprise Configuration
+ * Multi-Tenant
+ * SaaS / On-Prem
+ * ============================================================================
+ */
+
+
+import type {
+
+    BaseEntity,
+
+} from "@/types/platform/BaseEntity";
+
+
+
+
+
+export type SettingScope =
+
+    | "Platform"
+
+    | "Organization"
+
+    | "Module"
+
+    | "User";
+
+
+
+
+
+export type SettingCategory =
+
+    | "General"
+
+    | "Security"
+
+    | "Authentication"
+
+    | "Branding"
+
+    | "Localization"
+
+    | "Notification"
+
+    | "Email"
+
+    | "Storage"
+
+    | "AI"
+
+    | "Integration"
+
+    | "Workflow"
+
+    | "CRM"
+
+    | "Reporting"
+
+    | "Billing"
+
+    | "System";
+
+
+
+
+
+export type SettingValueType =
+
+    | "String"
+
+    | "Number"
+
+    | "Boolean"
+
+    | "Json"
+
+    | "Array";
+
+
+
+
+
+
+
+export interface PlatformSetting
+
+    extends BaseEntity {
+
+
+
+    organizationId?: string;
+
+
+
+    scope: SettingScope;
+
+
+
+    category: SettingCategory;
+
+
+
+    key: string;
+
+
+
+    name: string;
+
+
+
+    description?: string;
+
+
+
+    value:
+
+        | string
+
+        | number
+
+        | boolean
+
+        | Record<string, unknown>
+
+        | unknown[];
+
+
+
+    valueType: SettingValueType;
+
+
+
+    isSystem: boolean;
+
+
+
+    isReadonly: boolean;
+
+
+
+    isEncrypted: boolean;
+
+
+
+    isVisible: boolean;
+
+
+
+    defaultValue?:
+
+        | string
+
+        | number
+
+        | boolean
+
+        | Record<string, unknown>
+
+        | unknown[];
+
+
+
+    allowedValues?: unknown[];
+
+
+
+    validationExpression?: string;
+
+
+
+    isActive: boolean;
+
+
+
+    createdBy?: string;
+
+
+
+    updatedBy?: string;
+
+
+
+    metadata?: Record<string, unknown>;
+
+
+
+}
+
+
+
+
+
+
+
+export interface SettingGroup {
+
+
+
+    category: SettingCategory;
+
+
+
+    settings: PlatformSetting[];
+
+
+
+}
+
+
+
+
+
+
+
+export interface OrganizationSettings {
+
+
+
+    organizationId: string;
+
+
+
+    settings: PlatformSetting[];
+
+
+
+}
+
+
+
+################################################################
+src\types\admin\SystemSetting.ts
+################################################################
+/**
+ * ============================================================================
+ * System Settings
+ * Enterprise Configuration Management
+ * CRM + ERP Compatible
+ * Production Contract
+ * ============================================================================
+ */
+
+import type { BaseEntity } from "@/types/platform/BaseEntity";
+
+
+export type SettingDataType =
+    | "string"
+    | "number"
+    | "boolean"
+    | "json";
+
+
+export type SettingScope =
+    | "System"
+    | "Environment";
+
+
+export interface SystemSetting extends BaseEntity {
+
+    scope: SettingScope;
+
+
+    category: string;
+
+
+    key: string;
+
+
+    name: string;
+
+
+    description?: string;
+
+
+    value: string;
+
+
+    defaultValue?: string;
+
+
+    dataType: SettingDataType;
+
+
+    editable: boolean;
+
+
+    encrypted: boolean;
+
+
+    requiresRestart: boolean;
+
+
+    metadata?: Record<string, unknown>;
+
+
+    createdBy?: string;
+
+
+    updatedBy?: string;
+
+}
+
+################################################################
+src\types\crm\Settings.ts
+################################################################
+export type SettingCategory =
+    | 'General'
+    | 'Company'
+    | 'CRM'
+    | 'Notifications'
+    | 'Security'
+    | 'Billing'
+    | 'Email'
+    | 'Integrations'
+    | 'Appearance'
+    | 'Other';
+
+export type SettingStatus =
+    | 'Active'
+    | 'Inactive';
+
+export interface Setting {
+
+    id: string;
+
+    settingNumber: string;
+
+    companyId?: string;
+
+    category: SettingCategory;
+
+    key: string;
+
+    name: string;
+
+    description?: string;
+
+    value: string;
+
+    defaultValue?: string;
+
+    status: SettingStatus;
+
+    editable: boolean;
+
+    encrypted: boolean;
+
+    archived: boolean;
+
+    createdAt: string;
+
+    updatedAt: string;
+
+}
+
+export interface SettingsSummary {
+
+    total: number;
+
+    active: number;
+
+    inactive: number;
+
+    editable: number;
+
+    encrypted: number;
+
+}
+
+
+################################################################
+src\components\providers\ThemeProvider.tsx
+################################################################
+"use client";
+
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+
+import type {
+    ReactNode,
+} from "react";
+
+import type {
+    ADSTheme,
+    ThemeConfig,
+} from "@/types/theme/Theme";
+
+export const ADS_THEMES:
+Record<ADSTheme, ThemeConfig>
+=
+{
+    "ads-midnight": {
+        id: "ads-midnight",
+        name: "ADS Midnight",
+        description: "Premium dark ADS enterprise theme.",
+        official: true,
+        selectable: true,
+        colors: {
+            background: "#050914",
+            foreground: "#f4f8ff",
+            primary: "#168cff",
+            primarySoft: "#0b5fc2",
+            secondary: "#0b6fff",
+            accent: "#20c8ff",
+            accentSoft: "#0d7fc4",
+            backgroundDeep: "#030711",
+            backgroundElevated: "#07101e",
+            surface: "#0b1220",
+            surfaceMuted: "#111b2d",
+            surfaceGlass: "rgba(9,18,34,.78)",
+            surfaceGlassStrong: "rgba(8,17,31,.92)",
+            surfaceHover: "#101d31",
+            border: "#26354d",
+            borderSubtle: "rgba(96,165,250,.16)",
+            borderStrong: "rgba(37,140,255,.34)",
+            textPrimary: "#f4f8ff",
+            textSecondary: "#b5c4d8",
+            textMuted: "#71839d",
+            primaryHover: "#319bff",
+            primaryActive: "#0876e8",
+            info: "#38bdf8",
+            cyan: "#22d3ee",
+            blue: "#168cff",
+            success: "#10b981",
+            warning: "#f59e0b",
+            danger: "#ef4444",
+            muted: "#71839d",
+            shadowCard: "0 12px 36px rgba(0,0,0,.28)",
+            shadowGlow: "0 0 28px rgba(22,140,255,.16)",
+            glassBlur: "18px",
+        },
+    },
+
+    "ads-azure": {
+        id: "ads-azure",
+        name: "ADS Azure",
+        description: "Modern blue enterprise theme.",
+        official: true,
+        selectable: true,
+        colors: {
+            background: "#07111f",
+            foreground: "#f5f9ff",
+            primary: "#248cff",
+            primarySoft: "#1268c7",
+            secondary: "#1677e8",
+            accent: "#27c9ff",
+            accentSoft: "#1599d5",
+            backgroundDeep: "#04101d",
+            backgroundElevated: "#0a192b",
+            surface: "#0d1a2b",
+            surfaceMuted: "#14253b",
+            surfaceGlass: "rgba(13,29,48,.80)",
+            surfaceGlassStrong: "rgba(10,23,39,.94)",
+            surfaceHover: "#172c46",
+            border: "#294563",
+            borderSubtle: "rgba(86,170,255,.18)",
+            borderStrong: "rgba(48,148,255,.38)",
+            textPrimary: "#f5f9ff",
+            textSecondary: "#b9c9dc",
+            textMuted: "#788da7",
+            primaryHover: "#42a0ff",
+            primaryActive: "#0879e8",
+            info: "#4bc8ff",
+            cyan: "#2dd4ff",
+            blue: "#248cff",
+            success: "#10b981",
+            warning: "#f59e0b",
+            danger: "#ef4444",
+            muted: "#788da7",
+            shadowCard: "0 12px 36px rgba(0,0,0,.24)",
+            shadowGlow: "0 0 30px rgba(36,140,255,.18)",
+            glassBlur: "18px",
+        },
+    },
+
+    "ads-platinum": {
+        id: "ads-platinum",
+        name: "ADS Platinum",
+        description: "Premium light enterprise theme.",
+        official: true,
+        selectable: true,
+        colors: {
+            background: "#f3f6fa",
+            foreground: "#142033",
+            primary: "#126fe8",
+            primarySoft: "#0b59b8",
+            secondary: "#1769d5",
+            accent: "#08a9dc",
+            accentSoft: "#087da8",
+            backgroundDeep: "#e8edf4",
+            backgroundElevated: "#ffffff",
+            surface: "#ffffff",
+            surfaceMuted: "#eef3f8",
+            surfaceGlass: "rgba(255,255,255,.82)",
+            surfaceGlassStrong: "rgba(255,255,255,.94)",
+            surfaceHover: "#e9f1fa",
+            border: "#d5deea",
+            borderSubtle: "rgba(37,76,120,.14)",
+            borderStrong: "rgba(18,111,232,.28)",
+            textPrimary: "#142033",
+            textSecondary: "#42536b",
+            textMuted: "#718096",
+            primaryHover: "#2d84ee",
+            primaryActive: "#095fc9",
+            info: "#078fca",
+            cyan: "#079fc8",
+            blue: "#126fe8",
+            success: "#10b981",
+            warning: "#f59e0b",
+            danger: "#ef4444",
+            muted: "#718096",
+            shadowCard: "0 12px 30px rgba(24,45,72,.10)",
+            shadowGlow: "0 0 24px rgba(18,111,232,.12)",
+            glassBlur: "18px",
+        },
+    },
+};
+
+interface ThemeContextValue {
+    theme: ADSTheme;
+    setTheme: (theme: ADSTheme) => void;
+    themes: typeof ADS_THEMES;
+}
+
+const ThemeContext =
+createContext<
+    ThemeContextValue | undefined
+>(undefined);
+
+function applyTheme(
+    theme: ADSTheme,
+): void {
+
+    const root =
+        document.documentElement;
+
+    root.dataset.theme =
+        theme;
+
+    root.dataset.adsTheme =
+        theme;
+}
+
+export default function ThemeProvider({
+    children,
+}: {
+    children: ReactNode;
+}) {
+
+    const [
+        theme,
+        setThemeState,
+    ] =
+    useState<ADSTheme>(
+        "ads-midnight",
+    );
+
+    useEffect(() => {
+
+        const stored =
+            window.localStorage.getItem(
+                "ads-theme",
+            );
+
+        const activeTheme =
+            stored &&
+            Object.prototype.hasOwnProperty.call(
+                ADS_THEMES,
+                stored,
+            )
+                ? stored as ADSTheme
+                : "ads-midnight";
+
+        setThemeState(
+            activeTheme,
+        );
+
+        applyTheme(
+            activeTheme,
+        );
+
+    }, []);
+
+    const setTheme =
+    useCallback(
+        (
+            value: ADSTheme,
+        ): void => {
+
+            if (
+                !Object.prototype.hasOwnProperty.call(
+                    ADS_THEMES,
+                    value,
+                )
+            ) {
+                return;
+            }
+
+            setThemeState(
+                value,
+            );
+
+            applyTheme(
+                value,
+            );
+
+            window.localStorage.setItem(
+                "ads-theme",
+                value,
+            );
+
+        },
+        [],
+    );
+
+    const contextValue =
+    useMemo(
+        () => ({
+            theme,
+            setTheme,
+            themes: ADS_THEMES,
+        }),
+        [
+            theme,
+            setTheme,
+        ],
+    );
+
+    return (
+        <ThemeContext.Provider
+            value={contextValue}
+        >
+            {children}
+        </ThemeContext.Provider>
+    );
+}
+
+export function useADSTheme() {
+
+    const context =
+        useContext(
+            ThemeContext,
+        );
+
+    if (!context) {
+        throw new Error(
+            "useADSTheme must be used inside ThemeProvider",
+        );
+    }
+
+    return context;
+}
+
+################################################################
+src\services\admin\UsersService.ts
+################################################################
+import type {
+    AdminUser,
+} from "@/types/admin/User";
+
+
+import type {
+    IUsersRepository,
+} from "@/repositories/admin/UsersRepository";
+
+
+
+
+export class UsersService {
+
+
+    constructor(
+
+        private readonly repository:
+            IUsersRepository,
+
+    ) {}
+
+
+
+
+
+    async list():
+
+    Promise<AdminUser[]> {
+
+        return this.repository.list();
+
+    }
+
+
+
+
+
+    async active():
+
+    Promise<AdminUser[]> {
+
+        return this.repository.active();
+
+    }
+
+
+
+
+
+    async findById(
+
+        id: string,
+
+    ):
+
+    Promise<AdminUser | null> {
+
+        const normalizedId =
+            this.validateId(
+                id,
+                "User",
+            );
+
+
+        return this.repository.findById(
+
+            normalizedId,
+
+        );
+
+    }
+
+
+
+
+
+    async findByEmail(
+
+        email: string,
+
+    ):
+
+    Promise<AdminUser | null> {
+
+        const normalizedEmail =
+            this.normalizeEmail(
+                email,
+            );
+
+
+        return this.repository.findByEmail(
+
+            normalizedEmail,
+
+        );
+
+    }
+
+
+
+
+
+    async save(
+
+        user: AdminUser,
+
+    ):
+
+    Promise<AdminUser> {
+
+
+        this.validateUser(
+            user,
+        );
+
+
+        const normalizedEmail =
+            this.normalizeEmail(
+                user.email,
+            );
+
+
+        const existing =
+            await this.repository.findByEmail(
+
+                normalizedEmail,
+
+            );
+
+
+        if (
+
+            existing &&
+
+            existing.id !== user.id
+
+        ) {
+
+            throw new Error(
+                "Email already exists.",
+            );
+
+        }
+
+
+        return this.repository.save(
+
+            {
+
+                ...user,
+
+                email:
+                    normalizedEmail,
+
+                fullName:
+                    user.fullName.trim(),
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+
+        );
+
+    }
+
+
+
+
+
+    async update(
+
+        id: string,
+
+        user: Partial<AdminUser>,
+
+    ):
+
+    Promise<AdminUser> {
+
+
+        const normalizedId =
+            this.validateId(
+                id,
+                "User",
+            );
+
+
+        if (!user) {
+
+            throw new Error(
+                "User update payload is required.",
+            );
+
+        }
+
+
+        const payload:
+            Partial<AdminUser> = {
+                ...user,
+            };
+
+
+        if (payload.email !== undefined) {
+
+            const normalizedEmail =
+                this.normalizeEmail(
+                    payload.email,
+                );
+
+
+            const existing =
+                await this.repository.findByEmail(
+
+                    normalizedEmail,
+
+                );
+
+
+            if (
+
+                existing &&
+
+                existing.id !== normalizedId
+
+            ) {
+
+                throw new Error(
+                    "Email already exists.",
+                );
+
+            }
+
+
+            payload.email =
+                normalizedEmail;
+
+        }
+
+
+        if (payload.fullName !== undefined) {
+
+            const normalizedFullName =
+                typeof payload.fullName ===
+                "string"
+                    ? payload.fullName.trim()
+                    : "";
+
+
+            if (!normalizedFullName) {
+
+                throw new Error(
+                    "Full name is required.",
+                );
+
+            }
+
+
+            payload.fullName =
+                normalizedFullName;
+
+        }
+
+
+        if (
+            payload.userType !== undefined &&
+            !payload.userType
+        ) {
+
+            throw new Error(
+                "User type is required.",
+            );
+
+        }
+
+
+        if (
+            payload.status !== undefined &&
+            !payload.status
+        ) {
+
+            throw new Error(
+                "User status is required.",
+            );
+
+        }
+
+
+        return this.repository.update(
+
+            normalizedId,
+
+            {
+
+                ...payload,
+
+                updatedAt:
+                    new Date()
+                        .toISOString(),
+
+            },
+
+        );
+
+    }
+
+
+
+
+
+    async delete(
+
+        id: string,
+
+    ):
+
+    Promise<void> {
+
+
+        const normalizedId =
+            this.validateId(
+                id,
+                "User",
+            );
+
+
+        const user =
+            await this.repository.findById(
+
+                normalizedId,
+
+            );
+
+
+        if (!user) {
+
+            throw new Error(
+                "User not found.",
+            );
+
+        }
+
+
+        if (
+
+            user.userType === "System"
+
+        ) {
+
+            throw new Error(
+                "System users cannot be deleted.",
+            );
+
+        }
+
+
+        await this.repository.delete(
+
+            normalizedId,
+
+        );
+
+    }
+
+
+
+
+
+    async updatePreferences(
+
+        userId: string,
+
+        _preferences:
+            Record<string, unknown>,
+
+    ):
+
+    Promise<void> {
+
+
+        this.validateId(
+            userId,
+            "User",
+        );
+
+
+        throw new Error(
+            "User preference management is handled by UserPreferenceService.",
+        );
+
+    }
+
+
+
+
+
+    private validateUser(
+
+        user: AdminUser,
+
+    ): void {
+
+
+        if (!user) {
+
+            throw new Error(
+                "User is required.",
+            );
+
+        }
+
+
+        if (!user.fullName?.trim()) {
+
+            throw new Error(
+                "Full name is required.",
+            );
+
+        }
+
+
+        this.normalizeEmail(
+            user.email,
+        );
+
+
+        if (!user.userType) {
+
+            throw new Error(
+                "User type is required.",
+            );
+
+        }
+
+
+        if (!user.status) {
+
+            throw new Error(
+                "User status is required.",
+            );
+
+        }
+
+    }
+
+
+
+
+
+    private normalizeEmail(
+
+        email: string,
+
+    ): string {
+
+
+        const normalized =
+            typeof email === "string"
+                ? email.trim().toLowerCase()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Email is required.",
+            );
+
+        }
+
+
+        const emailRegex =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+        if (
+            !emailRegex.test(
+                normalized,
+            )
+        ) {
+
+            throw new Error(
+                "Invalid email address.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+
+
+
+    private validateId(
+
+        id: string,
+
+        entity: string,
+
+    ): string {
+
+
+        const normalized =
+            typeof id === "string"
+                ? id.trim()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                `${entity} id is required.`,
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+}
+
+################################################################
+src\repositories\admin\UsersRepository.ts
+################################################################
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
+
+
+import {
+    BaseRepository,
+} from "@/lib/db/base-repository";
+
+
+import type {
+    AdminUser,
+} from "@/types/admin/User";
+
+
+
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Users Repository
+ *
+ * Persistence layer for organization-scoped administrative users.
+ *
+ * Responsibilities:
+ *
+ * - Organization-scoped user reads
+ * - User creation/upsert
+ * - User updates
+ * - User deletion
+ * - Database/domain mapping
+ *
+ * Security boundary:
+ *
+ * - organization_id is always obtained from BaseRepository.
+ * - Callers cannot supply or change organization_id.
+ * - All direct reads and updates are explicitly organization-scoped.
+ * - Raw database rows never escape the repository.
+ *
+ * This repository does NOT manage:
+ *
+ * - Authentication credentials
+ * - Passwords
+ * - User preferences
+ * - Theme state
+ * - Organization membership policy
+ *
+ * ============================================================================
+ */
+
+
+
+/**
+ * ============================================================================
+ * Database Row Contract
+ * ============================================================================
+ */
+type UserRoleRow = {
+
+    user_id:string;
+
+    organization_id:string;
+
+    role_id:string;
+
+    is_primary:boolean | null;
+
+};
+
+
+type UserRow = {
+
+    id:string;
+
+    organization_id:string;
+
+    profile_id:string | null;
+
+    auth_user_id:string | null;
+
+    full_name:string;
+
+    first_name:string | null;
+
+    last_name:string | null;
+
+    display_name:string | null;
+
+    email:string;
+
+    phone:string | null;
+
+    avatar_url:string | null;
+
+    job_title:string | null;
+
+    department:string | null;
+
+    employee_code:string | null;
+
+    user_type:string;
+
+    status:string;
+
+    is_active:boolean | null;
+
+    email_verified:boolean | null;
+
+    phone_verified:boolean | null;
+
+    last_login_at:string | null;
+
+    last_activity_at:string | null;
+
+    password_changed_at:string | null;
+
+    failed_login_attempts:number | null;
+
+    locked_until:string | null;
+
+    locale:string | null;
+
+    timezone:string | null;
+
+    metadata:Record<string,unknown> | null;
+
+    created_by:string | null;
+
+    updated_by:string | null;
+
+    created_at:string;
+
+    updated_at:string;
+
+};
+
+
+
+/**
+ * ============================================================================
+ * Repository Contract
+ * ============================================================================
+ */
+export interface IUsersRepository {
+
+
+    list():
+        Promise<AdminUser[]>;
+
+
+    active():
+        Promise<AdminUser[]>;
+
+
+    findById(
+        id:string,
+    ):
+        Promise<AdminUser | null>;
+
+
+    findByEmail(
+        email:string,
+    ):
+        Promise<AdminUser | null>;
+
+
+    save(
+        user:Partial<AdminUser>,
+    ):
+        Promise<AdminUser>;
+
+
+    update(
+        id:string,
+        user:Partial<AdminUser>,
+    ):
+        Promise<AdminUser>;
+
+
+    delete(
+        id:string,
+    ):
+        Promise<void>;
+
+}
+
+
+
+/**
+ * ============================================================================
+ * Users Repository
+ * ============================================================================
+ */
+export class UsersRepository
+
+    extends BaseRepository<AdminUser>
+
+    implements IUsersRepository {
+
+
+    constructor(
+        supabase:SupabaseClient,
+    ) {
+
+        super(
+            supabase,
+            "users",
+        );
+
+    }
+
+
+
+    /**
+     * =========================================================================
+     * List Users
+     * =========================================================================
+     */
+    async list():
+
+    Promise<AdminUser[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false,
+                    },
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        const users =
+            (data ?? [])
+                .map(
+                    row =>
+                        this.mapUser(
+                            row as UserRow,
+                        ),
+                );
+
+        return this.hydrateUsers(
+            users,
+        );
+    }
+
+
+
+    /**
+     * =========================================================================
+     * Active Users
+     * =========================================================================
+     */
+    async active():
+
+    Promise<AdminUser[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "is_active",
+                    true,
+                )
+                .order(
+                    "full_name",
+                    {
+                        ascending:true,
+                    },
+                );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        const users =
+            (data ?? [])
+                .map(
+                    row =>
+                        this.mapUser(
+                            row as UserRow,
+                        ),
+                );
+
+        return this.hydrateUsers(
+            users,
+        );
+
+    }
+
+    /**
+     * =========================================================================
+     * Find By ID
+     * =========================================================================
+     */
+    async findById(
+
+        id:string,
+
+    ):
+
+    Promise<AdminUser | null> {
+
+        const normalizedId =
+            this.requireId(
+                id,
+            );
+
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "id",
+                    normalizedId,
+                )
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data) {
+            return null;
+        }
+
+
+        const users =
+            await this.hydrateUsers(
+                [
+                    this.mapUser(
+                        data as UserRow,
+                    ),
+                ],
+            );
+
+        return users[0] ?? null;
+
+    }
+
+    /**
+     * =========================================================================
+     * Find By Email
+     * =========================================================================
+     */
+    async findByEmail(
+
+        email:string,
+
+    ):
+
+    Promise<AdminUser | null> {
+
+        const normalizedEmail =
+            this.normalizeEmail(
+                email,
+            );
+
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "email",
+                    normalizedEmail,
+                )
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data) {
+            return null;
+        }
+
+
+        const users =
+            await this.hydrateUsers(
+                [
+                    this.mapUser(
+                        data as UserRow,
+                    ),
+                ],
+            );
+
+        return users[0] ?? null;
+
+    }
+
+    /**
+     * =========================================================================
+     * Save / Upsert
+     * =========================================================================
+     *
+     * Used for create/upsert operations.
+     *
+     * organization_id is always taken from the repository tenant context.
+     * A caller-provided organizationId is never persisted.
+     *
+     * =========================================================================
+     */
+    async save(
+
+        user:Partial<AdminUser>,
+
+    ):
+
+    Promise<AdminUser> {
+
+        if (!user) {
+            throw new Error(
+                "User is required.",
+            );
+        }
+
+
+        const now =
+            new Date()
+                .toISOString();
+
+
+        const email =
+            user.email !== undefined
+                ? this.normalizeEmail(
+                    user.email,
+                )
+                : undefined;
+
+
+        if (!email) {
+            throw new Error(
+                "Email is required.",
+            );
+        }
+
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .upsert(
+
+                    {
+
+                    id:
+    user.id ??
+    crypto.randomUUID(),
+
+                        organization_id:
+                            this.organizationId,
+
+                        profile_id:
+                            user.profileId ?? null,
+
+                        auth_user_id:
+                            user.authUserId ?? null,
+
+                        full_name:
+                            user.fullName
+                                ?.trim()
+                            ??
+                            "",
+
+                        first_name:
+                            user.firstName ?? null,
+
+                        last_name:
+                            user.lastName ?? null,
+
+                        display_name:
+                            user.displayName ?? null,
+
+                        email,
+
+                        phone:
+                            user.phone ?? null,
+
+                        avatar_url:
+                            user.avatarUrl ?? null,
+
+                        job_title:
+                            user.jobTitle ?? null,
+
+                        department:
+                            user.department ?? null,
+
+                        employee_code:
+                            user.employeeCode ?? null,
+
+                        user_type:
+                            user.userType ?? "User",
+
+                        status:
+                            user.status ?? "Active",
+
+                        is_active:
+                            user.isActive ?? true,
+
+                        email_verified:
+                            user.emailVerified ?? false,
+
+                        phone_verified:
+                            user.phoneVerified ?? false,
+
+                        last_login_at:
+                            user.lastLoginAt ?? null,
+
+                        last_activity_at:
+                            user.lastActivityAt ?? null,
+
+                        password_changed_at:
+                            user.passwordChangedAt ?? null,
+
+                        failed_login_attempts:
+                            user.failedLoginAttempts ?? 0,
+
+                        locked_until:
+                            user.lockedUntil ?? null,
+
+                        locale:
+                            user.locale ?? null,
+
+                        timezone:
+                            user.timezone ?? null,
+
+                        metadata:
+                            user.metadata ?? {},
+
+                        created_by:
+                            user.createdBy ?? null,
+
+                        updated_by:
+                            user.updatedBy ?? null,
+
+                        created_at:
+                            user.createdAt ?? now,
+
+                        updated_at:
+                            now,
+
+                    },
+
+                    {
+                        onConflict:"id",
+                    },
+
+                )
+                .select("*")
+                .single();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        const savedUser =
+            this.mapUser(
+                data as UserRow,
+            );
+
+        await this.syncUserRoles(
+            savedUser,
+            user.roleIds,
+            user.primaryRoleId,
+            user.createdBy
+            ??
+            user.updatedBy,
+        );
+
+        const hydratedUsers =
+            await this.hydrateUsers(
+                [savedUser],
+            );
+
+        return hydratedUsers[0];
+
+    }
+
+
+
+    /**
+     * =========================================================================
+     * Update
+     * =========================================================================
+     *
+     * Updates mutable administrative profile fields only.
+     *
+     * Deliberately excluded:
+     *
+     * - organization_id
+     * - id
+     * - auth_user_id
+     * - profile_id
+     * - created_at
+     * - created_by
+     * - password_changed_at
+     * - failed_login_attempts
+     * - locked_until
+     * - last_login_at
+     *
+     * Authentication/security lifecycle fields must be changed by their
+     * dedicated application services.
+     *
+     * =========================================================================
+     */
+    async update(
+
+        id:string,
+
+        user:Partial<AdminUser>,
+
+    ):
+
+    Promise<AdminUser> {
+
+        const normalizedId =
+            this.requireId(
+                id,
+            );
+
+
+        if (!user) {
+            throw new Error(
+                "User update payload is required.",
+            );
+        }
+
+
+        const updatePayload =
+            this.mapUpdateUser(
+                user,
+            );
+
+
+        if (
+            Object.keys(
+                updatePayload,
+            ).length === 0
+        ) {
+            throw new Error(
+                "No mutable user fields were provided for update.",
+            );
+        }
+
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .update(
+
+                    {
+
+                        ...updatePayload,
+
+                        updated_at:
+                            new Date()
+                                .toISOString(),
+
+                    },
+
+                )
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "id",
+                    normalizedId,
+                )
+                .select("*")
+                .maybeSingle();
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (!data) {
+            throw new Error(
+                "User not found.",
+            );
+        }
+
+
+        const updatedUser =
+            this.mapUser(
+                data as UserRow,
+            );
+
+        await this.syncUserRoles(
+            updatedUser,
+            user.roleIds,
+            user.primaryRoleId,
+            user.updatedBy,
+        );
+
+        const hydratedUsers =
+            await this.hydrateUsers(
+                [updatedUser],
+            );
+
+        return hydratedUsers[0];
+
+    }
+
+
+
+    /**
+     * =========================================================================
+     * Delete
+     * =========================================================================
+     *
+     * BaseRepository owns the standard tenant-scoped delete behavior.
+     * Application-level protection for system users remains in UsersService.
+     *
+     * =========================================================================
+     */
+    async delete(
+
+        id:string,
+
+    ):
+
+    Promise<void> {
+
+        const normalizedId =
+            this.requireId(
+                id,
+            );
+
+
+        await super.delete(
+            normalizedId,
+        );
+
+    }
+
+
+
+    /**
+     * =========================================================================
+     * Update Mapping
+     * =========================================================================
+     *
+     * Converts only supported mutable AdminUser fields into database columns.
+     *
+     * Undefined values are omitted so partial updates do not accidentally
+     * erase existing values.
+     *
+     * =========================================================================
+     */
+    private mapUpdateUser(
+
+        user:Partial<AdminUser>,
+
+    ):
+
+    Record<string,unknown> {
+
+        const payload:
+            Record<string,unknown> =
+            {};
+
+
+        if (
+            user.fullName !== undefined
+        ) {
+
+            payload.full_name =
+                user.fullName.trim();
+
+        }
+
+
+        if (
+            user.firstName !== undefined
+        ) {
+
+            payload.first_name =
+                user.firstName;
+
+        }
+
+
+        if (
+            user.lastName !== undefined
+        ) {
+
+            payload.last_name =
+                user.lastName;
+
+        }
+
+
+        if (
+            user.displayName !== undefined
+        ) {
+
+            payload.display_name =
+                user.displayName;
+
+        }
+
+
+        if (
+            user.email !== undefined
+        ) {
+
+            payload.email =
+                this.normalizeEmail(
+                    user.email,
+                );
+
+        }
+
+
+        if (
+            user.phone !== undefined
+        ) {
+
+            payload.phone =
+                user.phone;
+
+        }
+
+
+        if (
+            user.avatarUrl !== undefined
+        ) {
+
+            payload.avatar_url =
+                user.avatarUrl;
+
+        }
+
+
+        if (
+            user.jobTitle !== undefined
+        ) {
+
+            payload.job_title =
+                user.jobTitle;
+
+        }
+
+
+        if (
+            user.department !== undefined
+        ) {
+
+            payload.department =
+                user.department;
+
+        }
+
+
+        if (
+            user.employeeCode !== undefined
+        ) {
+
+            payload.employee_code =
+                user.employeeCode;
+
+        }
+
+
+        if (
+            user.userType !== undefined
+        ) {
+
+            payload.user_type =
+                user.userType;
+
+        }
+
+
+        if (
+            user.status !== undefined
+        ) {
+
+            payload.status =
+                user.status;
+
+        }
+if (
+            user.isActive !== undefined
+        ) {
+
+            payload.is_active =
+                user.isActive;
+
+        }
+
+
+        if (
+            user.emailVerified !== undefined
+        ) {
+
+            payload.email_verified =
+                user.emailVerified;
+
+        }
+
+
+        if (
+            user.phoneVerified !== undefined
+        ) {
+
+            payload.phone_verified =
+                user.phoneVerified;
+
+        }
+
+
+        if (
+            user.locale !== undefined
+        ) {
+
+            payload.locale =
+                user.locale;
+
+        }
+
+
+        if (
+            user.timezone !== undefined
+        ) {
+
+            payload.timezone =
+                user.timezone;
+
+        }
+
+
+        if (
+            user.metadata !== undefined
+        ) {
+
+            payload.metadata =
+                user.metadata;
+
+        }
+
+
+        if (
+            user.updatedBy !== undefined
+        ) {
+
+            payload.updated_by =
+                user.updatedBy;
+
+        }
+
+
+        return payload;
+
+    }
+
+    private async syncUserRoles(
+        user:AdminUser,
+        roleIds?:string[],
+        primaryRoleId?:string,
+        actorId?:string,
+    ):
+        Promise<void> {
+
+        if (
+            roleIds === undefined
+            &&
+            primaryRoleId === undefined
+        ) {
+            return;
+        }
+
+        const normalizedRoleIds =
+            Array.from(
+                new Set(
+                    (roleIds ?? [])
+                        .filter(
+                            (
+                                roleId,
+                            ): roleId is string =>
+                                Boolean(
+                                    roleId,
+                                ),
+                        ),
+                ),
+            );
+
+        if (
+            primaryRoleId
+            &&
+            !normalizedRoleIds.includes(
+                primaryRoleId,
+            )
+        ) {
+            normalizedRoleIds.push(
+                primaryRoleId,
+            );
+        }
+
+        const {
+            error:deleteError,
+        } =
+            await this
+                .supabase
+                .from("admin_user_roles")
+                .delete()
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "user_id",
+                    user.profileId,
+                );
+
+        if (deleteError) {
+            throw deleteError;
+        }
+
+        if (
+            normalizedRoleIds.length === 0
+        ) {
+            return;
+        }
+
+        const rows =
+            normalizedRoleIds.map(
+                roleId => ({
+                    organization_id:
+                        this.organizationId,
+
+                    user_id:
+                        user.profileId,
+
+                    role_id:
+                        roleId,
+
+                    is_primary:
+                        roleId ===
+                        primaryRoleId,
+
+                    created_by:
+                        actorId ?? null,
+
+                    updated_by:
+                        actorId ?? null,
+                }),
+            );
+
+        const {
+            error,
+        } =
+            await this
+                .supabase
+                .from("admin_user_roles")
+                .insert(rows);
+
+        if (error) {
+            throw error;
+        }
+
+    }
+
+    private async hydrateUsers(
+        users:AdminUser[],
+    ):
+        Promise<AdminUser[]> {
+
+        if (
+            users.length === 0
+        ) {
+            return users;
+        }
+
+        const profileIds =
+            users
+                .map(
+                    user =>
+                        user.profileId,
+                )
+                .filter(
+                    (
+                        id,
+                    ): id is string =>
+                        Boolean(id),
+                );
+
+        if (
+            profileIds.length === 0
+        ) {
+            return users;
+        }
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .supabase
+                .from("admin_user_roles")
+                .select(
+                    "user_id, organization_id, role_id, is_primary",
+                )
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .in(
+                    "user_id",
+                    profileIds,
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        const assignments =
+            (data ?? []) as UserRoleRow[];
+
+        const rolesByUser =
+            new Map<
+                string,
+                {
+                    roleIds:string[];
+                    primaryRoleId:string | undefined;
+                }
+            >();
+
+        for (
+            const assignment
+            of assignments
+        ) {
+
+            const existing =
+                rolesByUser.get(
+                    assignment.user_id,
+                )
+                ??
+                {
+                    roleIds:[],
+                    primaryRoleId:
+                        undefined,
+                };
+
+            existing.roleIds.push(
+                assignment.role_id,
+            );
+
+            if (
+                assignment.is_primary
+            ) {
+                existing.primaryRoleId =
+                    assignment.role_id;
+            }
+
+            rolesByUser.set(
+                assignment.user_id,
+                existing,
+            );
+        }
+
+        return users.map(
+            user => {
+
+                const profileId =
+                    user.profileId;
+
+                if (!profileId) {
+                    return user;
+                }
+
+                const roles =
+                    rolesByUser.get(
+                        profileId,
+                    );
+
+                return {
+                    ...user,
+                    roleIds:
+                        roles?.roleIds
+                        ??
+                        [],
+                    primaryRoleId:
+                        roles?.primaryRoleId,
+                };
+            },
+        );
+
+    }
+
+    private mapUser(
+        row:UserRow,
+
+    ):
+
+    AdminUser {
+
+        return {
+            id:
+                row.id,
+            organizationId:
+                row.organization_id,
+            profileId:
+                row.profile_id
+                ??
+                undefined,
+            authUserId:
+                row.auth_user_id
+                ??
+                undefined,
+            fullName:
+                row.full_name,
+            firstName:
+                row.first_name
+                ??
+                undefined,
+            lastName:
+                row.last_name
+                ??
+                undefined,
+            displayName:
+                row.display_name
+                ??
+                undefined,
+            email:
+                row.email,
+            phone:
+                row.phone
+                ??
+                undefined,
+            avatarUrl:
+                row.avatar_url
+                ??
+                undefined,
+            jobTitle:
+                row.job_title
+                ??
+                undefined,
+            department:
+                row.department
+                ??
+                undefined,
+            employeeCode:
+                row.employee_code
+                ??
+                undefined,
+            userType:
+                row.user_type as AdminUser["userType"],
+            status:
+                row.status as AdminUser["status"],            roleIds:
+                [],
+            primaryRoleId:
+                undefined,
+            isActive:
+                row.is_active
+                ??
+                false,
+            emailVerified:
+                row.email_verified
+                ??
+                false,
+            phoneVerified:
+                row.phone_verified
+                ??
+                false,
+            lastLoginAt:
+                row.last_login_at
+                ??
+                undefined,
+            lastActivityAt:
+                row.last_activity_at
+                ??
+                undefined,
+            passwordChangedAt:
+                row.password_changed_at
+                ??
+                undefined,
+            failedLoginAttempts:
+                row.failed_login_attempts
+                ??
+                0,
+            lockedUntil:
+                row.locked_until
+                ??
+                undefined,
+            locale:
+                row.locale
+                ??
+                undefined,
+            timezone:
+                row.timezone
+                ??
+                undefined,
+            metadata:
+                row.metadata
+                ??
+                {},
+
+            createdBy:
+                row.created_by
+                ??
+                undefined,
+            updatedBy:
+                row.updated_by
+                ??
+                undefined,
+            createdAt:
+               row.created_at,
+            updatedAt:
+                row.updated_at,
+        };
+    }
+
+    private requireId(
+        id:string,
+
+    ):string {
+        const normalized =
+            id?.trim();
+
+        if (!normalized) {
+            throw new Error(
+                "User id is required.",
+            );
+        }
+
+        return normalized;
+    }
+
+    private normalizeEmail(
+        email:string,
+
+    ):string {
+        const normalized =
+            email
+                ?.trim()
+                .toLowerCase();
+        if (!normalized) {
+            throw new Error(
+                "Email is required.",
+            );
+        }
+
+        const emailRegex =
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (
+    !emailRegex.test(
+        normalized,
+    )
+) {
+    throw new Error(
+        "Invalid email address.",
+    );
+}
+        return normalized;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+################################################################
+src\repositories\admin\SettingsRepository.ts
+################################################################
+/**
+ * ============================================================================
+ * ADS Settings Repository
+ *
+ * Organization-scoped platform settings.
+ *
+ * Storage:
+ * organization_settings
+ *
+ * Production guarantees:
+ * - Tenant scope comes from BaseRepository / TenantContextManager.
+ * - Caller cannot provide organization_id.
+ * - All reads are tenant-scoped.
+ * - All writes are tenant-scoped.
+ * - Setting keys are validated.
+ * - Domain mapping is centralized.
+ * - Raw database rows are never returned as domain objects.
+ * ============================================================================
+ */
+
+import type {
+    SupabaseClient,
+} from "@supabase/supabase-js";
+
+import {
+    BaseRepository,
+} from "@/lib/db/base-repository";
+
+import type {
+    PlatformSetting,
+    SettingCategory,
+} from "@/types/admin/Settings";
+
+
+type OrganizationSettingRow = {
+
+    id: string;
+
+    organization_id: string;
+
+    setting_category: SettingCategory;
+
+    settings: Record<string, unknown> | null;
+
+    created_at: string | null;
+
+    updated_at: string | null;
+
+};
+
+
+export interface ISettingsRepository {
+
+    list(): Promise<PlatformSetting[]>;
+
+    find(
+        category: SettingCategory,
+        key: string,
+    ): Promise<PlatformSetting | null>;
+
+    save(
+        setting: PlatformSetting,
+    ): Promise<void>;
+
+    findByCategory(
+        category: SettingCategory,
+    ): Promise<{
+        category: SettingCategory;
+        settings: PlatformSetting[];
+    }>;
+
+    findByKey(
+        key: string,
+    ): Promise<PlatformSetting | null>;
+
+}
+
+
+export class SettingsRepository
+    extends BaseRepository<PlatformSetting>
+    implements ISettingsRepository {
+
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+        super(
+            supabase,
+            "organization_settings",
+        );
+    }
+
+
+    async list(): Promise<PlatformSetting[]> {
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .order(
+                    "setting_category",
+                    {
+                        ascending: true,
+                    },
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        const rows =
+            (data ?? []) as unknown as OrganizationSettingRow[];
+
+        return rows.flatMap(
+            row =>
+                this.mapRow(row),
+        );
+    }
+
+
+    async find(
+        category: SettingCategory,
+        key: string,
+    ): Promise<PlatformSetting | null> {
+
+        const normalizedCategory =
+            this.requireCategory(category);
+
+        const normalizedKey =
+            this.requireKey(key);
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "setting_category",
+                    normalizedCategory,
+                )
+                .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            return null;
+        }
+
+        const row =
+            data as unknown as OrganizationSettingRow;
+
+        if (
+            !Object.prototype.hasOwnProperty.call(
+                row.settings ?? {},
+                normalizedKey,
+            )
+        ) {
+            return null;
+        }
+
+        return this.mapSetting(
+            row,
+            normalizedKey,
+        );
+    }
+
+
+    async save(
+        setting: PlatformSetting,
+    ): Promise<void> {
+
+        if (!setting) {
+            throw new Error(
+                "Setting is required.",
+            );
+        }
+
+        const category =
+            this.requireCategory(
+                setting.category,
+            );
+
+        const key =
+            this.requireKey(
+                setting.key,
+            );
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select(
+                    "id, settings",
+                )
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "setting_category",
+                    category,
+                )
+                .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        const existing =
+            data as unknown as {
+                id: string;
+                settings:
+                    Record<string, unknown> | null;
+            } | null;
+
+        const settings:
+            Record<string, unknown> =
+            {
+                ...(existing?.settings ?? {}),
+                [key]:
+                    setting.value,
+            };
+
+        const now =
+            new Date().toISOString();
+
+        if (existing) {
+
+            const {
+                error: updateError,
+            } =
+                await this
+                    .tableRef()
+                    .update({
+                        settings,
+                        updated_at: now,
+                    })
+                    .eq(
+                        "organization_id",
+                        this.organizationId,
+                    )
+                    .eq(
+                        "id",
+                        existing.id,
+                    );
+
+            if (updateError) {
+                throw updateError;
+            }
+
+            return;
+        }
+
+        const {
+            error: insertError,
+        } =
+            await this
+                .tableRef()
+                .insert({
+                    organization_id:
+                        this.organizationId,
+
+                    setting_category:
+                        category,
+
+                    settings,
+
+                    created_at:
+                        now,
+
+                    updated_at:
+                        now,
+                });
+
+        if (insertError) {
+            throw insertError;
+        }
+    }
+
+
+    async findByCategory(
+        category: SettingCategory,
+    ): Promise<{
+        category: SettingCategory;
+        settings: PlatformSetting[];
+    }> {
+
+        const normalizedCategory =
+            this.requireCategory(category);
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "setting_category",
+                    normalizedCategory,
+                )
+                .maybeSingle();
+
+        if (error) {
+            throw error;
+        }
+
+        if (!data) {
+            return {
+                category:
+                    normalizedCategory,
+
+                settings: [],
+            };
+        }
+
+        const row =
+            data as unknown as OrganizationSettingRow;
+
+        return {
+            category:
+                normalizedCategory,
+
+            settings:
+                this.mapRow(row),
+        };
+    }
+
+
+    async findByKey(
+        key: string,
+    ): Promise<PlatformSetting | null> {
+
+        const normalizedKey =
+            this.requireKey(key);
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select("*")
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        const rows =
+            (data ?? []) as unknown as OrganizationSettingRow[];
+
+        for (const row of rows) {
+
+            if (
+                Object.prototype.hasOwnProperty.call(
+                    row.settings ?? {},
+                    normalizedKey,
+                )
+            ) {
+                return this.mapSetting(
+                    row,
+                    normalizedKey,
+                );
+            }
+        }
+
+        return null;
+    }
+
+
+    private mapRow(
+        row: OrganizationSettingRow,
+    ): PlatformSetting[] {
+
+        const settings =
+            row.settings ?? {};
+
+        return Object.keys(
+            settings,
+        ).map(
+            key =>
+                this.mapSetting(
+                    row,
+                    key,
+                ),
+        );
+    }
+
+
+    private mapSetting(
+        row: OrganizationSettingRow,
+        key: string,
+    ): PlatformSetting {
+
+        const value =
+            row.settings?.[key];
+
+        const setting: PlatformSetting = {
+            id:
+                row.id,
+
+            organizationId:
+                row.organization_id,
+
+            entityType:
+                "PlatformSetting",
+
+            scope:
+                "Organization",
+
+            category:
+                row.setting_category,
+
+            key,
+
+            name:
+                key,
+
+            description:
+                undefined,
+
+            value:
+                value as PlatformSetting["value"],
+
+            valueType:
+                "Json",
+
+            isSystem:
+                false,
+
+            isReadonly:
+                false,
+
+            isEncrypted:
+                false,
+
+            isVisible:
+                true,
+
+            isActive:
+                true,
+
+            metadata:
+                {},
+
+            createdAt:
+                row.created_at ?? "",
+
+            updatedAt:
+                row.updated_at ?? "",
+        };
+
+        return setting;
+    }
+
+
+    private requireCategory(
+        category: SettingCategory,
+    ): SettingCategory {
+
+        if (!category) {
+            throw new Error(
+                "Setting category is required.",
+            );
+        }
+
+        return category;
+    }
+
+
+    private requireKey(
+        key: string,
+    ): string {
+
+        const normalizedKey =
+            key?.trim();
+
+        if (!normalizedKey) {
+            throw new Error(
+                "Setting key is required.",
+            );
+        }
+
+        return normalizedKey;
+    }
+
+}
+
+
+
+
+################################################################
+src\services\admin\SettingsService.ts
+################################################################
+import type {
+    PlatformSetting,
+    SettingCategory,
+} from "@/types/admin/Settings";
+
+
+import type {
+    ISettingsRepository,
+} from "@/repositories/admin/SettingsRepository";
+
+
+
+
+
+export class SettingsService {
+
+
+
+
+
+    constructor(
+
+        private readonly repository:
+            ISettingsRepository,
+
+    ) {}
+
+
+
+
+
+
+
+
+
+    async list():
+
+    Promise<PlatformSetting[]> {
+
+
+        return this.repository.list();
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async find(
+
+        category: SettingCategory,
+
+        key: string,
+
+    ):
+
+    Promise<PlatformSetting | null> {
+
+
+        const normalizedCategory =
+            this.validateCategory(
+
+                category,
+
+            );
+
+
+
+        const normalizedKey =
+            this.validateKey(
+
+                key,
+
+            );
+
+
+
+        return this.repository.find(
+
+            normalizedCategory,
+
+            normalizedKey,
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async findByCategory(
+
+        category: SettingCategory,
+
+    ): Promise<{
+
+        category: SettingCategory;
+
+        settings: PlatformSetting[];
+
+    }> {
+
+
+        const normalizedCategory =
+            this.validateCategory(
+
+                category,
+
+            );
+
+
+
+        return this.repository.findByCategory(
+
+            normalizedCategory,
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async findByKey(
+
+        key: string,
+
+    ):
+
+    Promise<PlatformSetting | null> {
+
+
+        const normalizedKey =
+            this.validateKey(
+
+                key,
+
+            );
+
+
+
+        return this.repository.findByKey(
+
+            normalizedKey,
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    async save(
+
+        setting: PlatformSetting,
+
+    ):
+
+    Promise<void> {
+
+
+        const normalizedSetting =
+            this.validateSetting(
+
+                setting,
+
+            );
+
+
+
+        await this.repository.save(
+
+            {
+
+                ...setting,
+
+
+                category:
+                    normalizedSetting.category,
+
+
+                key:
+                    normalizedSetting.key,
+
+
+                updatedAt:
+
+                    new Date()
+
+                        .toISOString(),
+
+            },
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private validateSetting(
+
+        setting: PlatformSetting,
+
+    ): {
+
+        category: SettingCategory;
+
+        key: string;
+
+    } {
+
+
+        if (!setting) {
+
+
+            throw new Error(
+
+                "Setting is required.",
+
+            );
+
+
+        }
+
+
+
+        const category =
+            this.validateCategory(
+
+                setting.category,
+
+            );
+
+
+
+        const key =
+            this.validateKey(
+
+                setting.key,
+
+            );
+
+
+
+        return {
+
+            category,
+
+            key,
+
+        };
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private validateCategory(
+
+        category: SettingCategory,
+
+    ): SettingCategory {
+
+
+        if (
+
+            !category ||
+
+            !String(category).trim()
+
+        ) {
+
+
+            throw new Error(
+
+                "Setting category is required.",
+
+            );
+
+
+        }
+
+
+
+        return category;
+
+
+    }
+
+
+
+
+
+
+
+
+
+    private validateKey(
+
+        key: string,
+
+    ): string {
+
+
+        const normalizedKey =
+
+            typeof key ===
+            "string"
+
+                ? key.trim()
+
+                : "";
+
+
+
+        if (!normalizedKey) {
+
+
+            throw new Error(
+
+                "Setting key is required.",
+
+            );
+
+
+        }
+
+
+
+        return normalizedKey;
+
+
+    }
+
+}
+
+################################################################
+src\repositories\crm\SettingsRepository.ts
+################################################################
+import type {
+    SupabaseClient,
+} from '@supabase/supabase-js';
+
+import {
+    BaseRepository,
+} from '@/lib/db/base-repository';
+
+import type {
+    Setting,
+    SettingCategory,
+    SettingStatus,
+} from '@/types/crm/Settings';
+
+
+interface OrganizationSettingRow {
+
+    id: string;
+
+    organization_id: string;
+
+    setting_key: string;
+
+    setting_value: unknown;
+
+    category: string | null;
+
+    description: string | null;
+
+    created_at: string;
+
+    updated_at: string;
+
+    metadata: Record<string, unknown> | null;
+
+}
+
+
+interface SettingMetadata {
+
+    settingNumber?: string;
+
+    companyId?: string;
+
+    name?: string;
+
+    defaultValue?: string;
+
+    status?: SettingStatus;
+
+    editable?: boolean;
+
+    encrypted?: boolean;
+
+    archived?: boolean;
+
+}
+
+
+
+export class SettingsRepository
+    extends BaseRepository<Setting> {
+
+
+    constructor(
+        supabase: SupabaseClient,
+    ) {
+
+        super(
+            supabase,
+            'organization_settings',
+        );
+
+    }
+
+
+
+    private normalizeKey(
+        key?: string,
+    ) {
+
+        return (
+            key
+                ?.trim()
+                .toLowerCase() ?? ''
+        );
+
+    }
+
+
+
+    private normalizeValue(
+        value: unknown,
+    ): string {
+
+        if (
+            typeof value === 'string'
+        ) {
+
+            return value;
+
+        }
+
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return '';
+
+        }
+
+
+        return JSON.stringify(value);
+
+    }
+
+
+
+    private mapRow(
+        row: OrganizationSettingRow,
+    ): Setting {
+
+
+        const metadata =
+            (row.metadata ?? {}) as SettingMetadata;
+
+
+
+        return {
+
+            id:
+                row.id,
+
+
+            settingNumber:
+                metadata.settingNumber ??
+                `SET-${row.id.slice(0, 8)}`,
+
+
+            companyId:
+                metadata.companyId,
+
+
+            category:
+                (
+                    row.category ??
+                    'General'
+                ) as SettingCategory,
+
+
+            key:
+                row.setting_key,
+
+
+            name:
+                metadata.name ??
+                row.setting_key,
+
+
+            description:
+                row.description ??
+                undefined,
+
+
+            value:
+                this.normalizeValue(
+                    row.setting_value,
+                ),
+
+
+            defaultValue:
+                metadata.defaultValue,
+
+
+            status:
+                metadata.status ??
+                'Active',
+
+
+            editable:
+                metadata.editable ??
+                true,
+
+
+            encrypted:
+                metadata.encrypted ??
+                false,
+
+
+            archived:
+                metadata.archived ??
+                false,
+
+
+            createdAt:
+                row.created_at,
+
+
+            updatedAt:
+                row.updated_at,
+
+        };
+
+    }
+
+
+
+    private async ensureUniqueKey(
+        key:string,
+        ignoreId?:string,
+    ) {
+
+
+        let query =
+            this.tableRef()
+                .select('id')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'setting_key',
+                    key,
+                );
+
+
+        if (ignoreId) {
+
+            query =
+                query.neq(
+                    'id',
+                    ignoreId,
+                );
+
+        }
+
+
+        const {
+            data,
+            error,
+        } =
+            await query.maybeSingle();
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        if (data) {
+
+            throw new Error(
+                'A setting with this key already exists.',
+            );
+
+        }
+
+    }
+
+
+
+    async list(): Promise<Setting[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .order(
+                    'created_at',
+                    {
+                        ascending:false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            (data ?? []) as OrganizationSettingRow[]
+        )
+            .map(
+                row =>
+                    this.mapRow(row),
+            )
+            .filter(
+                setting =>
+                    !setting.archived,
+            );
+
+    }
+
+
+
+    async listArchived(): Promise<Setting[]> {
+
+
+        const {
+            data,
+            error,
+        } =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .order(
+                    'updated_at',
+                    {
+                        ascending:false,
+                    },
+                );
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        return (
+            (data ?? []) as OrganizationSettingRow[]
+        )
+            .map(
+                row =>
+                    this.mapRow(row),
+            )
+            .filter(
+                setting =>
+                    setting.archived,
+            );
+
+    }
+
+
+
+    async details(
+        id:string,
+    ):Promise<Setting | null> {
+
+
+        const {
+            data,
+            error,
+        }
+        =
+            await this.tableRef()
+                .select('*')
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                )
+                .maybeSingle();
+
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+
+        if (!data) {
+
+            return null;
+
+        }
+
+
+
+        return this.mapRow(
+            data as OrganizationSettingRow,
+        );
+
+    }
+        async create(
+        data:Partial<Setting>,
+    ):Promise<Setting> {
+
+
+        const key =
+            this.normalizeKey(
+                data.key,
+            );
+
+
+        await this.ensureUniqueKey(
+            key,
+        );
+
+
+
+        const metadata:SettingMetadata = {
+
+
+            settingNumber:
+                data.settingNumber ??
+                `SET-${Date.now()}`,
+
+
+            companyId:
+                data.companyId,
+
+
+            name:
+                data.name ??
+                key,
+
+
+            defaultValue:
+                data.defaultValue,
+
+
+            status:
+                data.status ??
+                'Active',
+
+
+            editable:
+                data.editable ??
+                true,
+
+
+            encrypted:
+                data.encrypted ??
+                false,
+
+
+            archived:
+                false,
+
+        };
+
+
+
+        const payload = {
+
+
+            setting_key:
+                key,
+
+
+            setting_value:
+                data.value ??
+                '',
+
+
+            category:
+                data.category ??
+                'General',
+
+
+            description:
+                data.description ??
+                null,
+
+
+            metadata,
+
+        };
+
+
+
+        const {
+            data: row,
+            error,
+        } =
+            await this.tableRef()
+                .insert(
+                    this.withCreateTenant(
+                        payload,
+                    ),
+                )
+                .select('*')
+                .single();
+
+
+
+        if (error) {
+
+            if (
+                error.code === '23505'
+            ) {
+
+                throw new Error(
+                    'A setting with this key already exists.',
+                );
+
+            }
+
+
+            throw error;
+
+        }
+
+
+
+        return this.mapRow(
+            row as OrganizationSettingRow,
+        );
+
+    }
+
+
+
+
+
+    async update(
+        id:string,
+        data:Partial<Setting>,
+    ):Promise<Setting> {
+
+
+        const existing =
+            await this.details(id);
+
+
+
+        if (!existing) {
+
+            throw new Error(
+                `Setting not found: ${id}`,
+            );
+
+        }
+
+
+
+        const key =
+            data.key !== undefined
+                ? this.normalizeKey(data.key)
+                : existing.key;
+
+
+
+        if (
+            key !== existing.key
+        ) {
+
+            await this.ensureUniqueKey(
+                key,
+                id,
+            );
+
+        }
+
+
+
+        const metadata:SettingMetadata = {
+
+
+            settingNumber:
+                data.settingNumber ??
+                existing.settingNumber,
+
+
+            companyId:
+                data.companyId ??
+                existing.companyId,
+
+
+            name:
+                data.name ??
+                existing.name,
+
+
+            defaultValue:
+                data.defaultValue ??
+                existing.defaultValue,
+
+
+            status:
+                data.status ??
+                existing.status,
+
+
+            editable:
+                data.editable ??
+                existing.editable,
+
+
+            encrypted:
+                data.encrypted ??
+                existing.encrypted,
+
+
+            archived:
+                data.archived ??
+                existing.archived,
+
+        };
+
+
+
+        const payload = {
+
+
+            setting_key:
+                key,
+
+
+            setting_value:
+                data.value ??
+                existing.value,
+
+
+            category:
+                data.category ??
+                existing.category,
+
+
+            description:
+                data.description !== undefined
+                    ? data.description
+                    : existing.description ?? null,
+
+
+            metadata,
+
+        };
+
+
+
+        const {
+            data: row,
+            error,
+        }
+        =
+            await this.tableRef()
+                .update(
+                    payload,
+                )
+                .eq(
+                    'organization_id',
+                    this.organizationId,
+                )
+                .eq(
+                    'id',
+                    id,
+                )
+                .select('*')
+                .single();
+
+
+
+        if (error) {
+
+            if (
+                error.code === '23505'
+            ) {
+
+                throw new Error(
+                    'A setting with this key already exists.',
+                );
+
+            }
+
+
+            throw error;
+
+        }
+
+
+
+        return this.mapRow(
+            row as OrganizationSettingRow,
+        );
+
+    }
+
+
+
+
+
+    async updateStatus(
+        id:string,
+        status:SettingStatus,
+    ):Promise<Setting> {
+
+
+        return this.update(
+            id,
+            {
+                status,
+            },
+        );
+
+    }
+
+
+
+
+
+    async delete(
+        id:string,
+    ):Promise<void> {
+
+
+        await this.update(
+            id,
+            {
+                archived:true,
+            },
+        );
+
+    }
+
+
+
+
+
+    async restore(
+        id:string,
+    ):Promise<boolean> {
+
+
+        const existing =
+            await this.details(id);
+
+
+
+        if (!existing) {
+
+            return false;
+
+        }
+
+
+
+        await this.update(
+            id,
+            {
+                archived:false,
+            },
+        );
+
+
+
+        return true;
+
+    }
+
+
+
+
+
+    async summary() {
+
+
+        const settings =
+            await this.list();
+
+
+
+        return {
+
+
+            total:
+                settings.length,
+
+
+            active:
+                settings.filter(
+                    setting =>
+                        setting.status === 'Active',
+                ).length,
+
+
+            inactive:
+                settings.filter(
+                    setting =>
+                        setting.status === 'Inactive',
+                ).length,
+
+
+            editable:
+                settings.filter(
+                    setting =>
+                        setting.editable,
+                ).length,
+
+
+            encrypted:
+                settings.filter(
+                    setting =>
+                        setting.encrypted,
+                ).length,
+
+        };
+
+    }
+
+
+}
+
+################################################################
+src\services\crm\SettingsService.ts
+################################################################
+import {
+    createSupabaseServerClient,
+} from '@/lib/supabase/server-client';
+
+import {
+    SettingsRepository,
+} from '@/repositories/crm/SettingsRepository';
+
+import type {
+    Setting,
+    SettingStatus,
+} from '@/types/crm/Settings';
+
+class SettingsService {
+
+    private async repository(): Promise<SettingsRepository> {
+
+        const supabase =
+            await createSupabaseServerClient();
+
+        return new SettingsRepository(
+            supabase,
+        );
+    }
+
+    async list(): Promise<Setting[]> {
+
+        const repository =
+            await this.repository();
+
+        return repository.list();
+
+    }
+
+    async listArchived(): Promise<Setting[]> {
+
+        const repository =
+            await this.repository();
+
+        return repository.listArchived();
+
+    }
+
+    async details(
+        id: string,
+    ): Promise<Setting | null> {
+
+        const repository =
+            await this.repository();
+
+        return repository.details(
+            id,
+        );
+
+    }
+
+    async create(
+        data: Partial<Setting>,
+    ): Promise<Setting> {
+
+        const repository =
+            await this.repository();
+
+        return repository.create(
+            data,
+        );
+
+    }
+
+    async update(
+        id: string,
+        data: Partial<Setting>,
+    ): Promise<Setting> {
+
+        const repository =
+            await this.repository();
+
+        return repository.update(
+            id,
+            data,
+        );
+
+    }
+
+    async updateStatus(
+        id: string,
+        status: SettingStatus,
+    ): Promise<Setting> {
+
+        const repository =
+            await this.repository();
+
+        return repository.updateStatus(
+            id,
+            status,
+        );
+
+    }
+
+    async delete(
+        id: string,
+    ): Promise<void> {
+
+        const repository =
+            await this.repository();
+
+        return repository.delete(
+            id,
+        );
+
+    }
+
+    async restore(
+        id: string,
+    ): Promise<boolean> {
+
+        const repository =
+            await this.repository();
+
+        return repository.restore(
+            id,
+        );
+
+    }
+
+    async summary(): Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        editable: number;
+        encrypted: number;
+    }> {
+
+        const repository =
+            await this.repository();
+
+        return repository.summary();
+
+    }
+}
+
+/**
+ * Request-safe service facade.
+ *
+ * A fresh authenticated Supabase server client is created
+ * for every operation. Do not convert this into a global
+ * Supabase client singleton.
+ */
+export const SettingsServiceInstance =
+    new SettingsService();

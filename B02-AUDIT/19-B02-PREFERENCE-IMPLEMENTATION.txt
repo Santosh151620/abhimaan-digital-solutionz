@@ -1,0 +1,413 @@
+
+============================================================
+src\types\theme\Theme.ts
+============================================================
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * Theme Domain Contracts
+ *
+ * Shared by:
+ *
+ * - Website
+ * - CRM
+ * - ERP
+ * - Administrative applications
+ *
+ * Runtime implementation remains inside:
+ *
+ * src/components/providers/ThemeProvider.tsx
+ *
+ * This file contains contracts only.
+ *
+ * ============================================================================
+ */
+
+
+/**
+ * ============================================================================
+ * ADS OFFICIAL APPLICATION THEMES
+ * ============================================================================
+ *
+ * These values are the canonical persisted theme identifiers.
+ *
+ * IMPORTANT:
+ *
+ * Keep these identifiers stable.
+ *
+ * They may be persisted in:
+ *
+ * - localStorage
+ * - user preferences
+ * - organization policies
+ * - future database configuration
+ *
+ * ============================================================================
+ */
+
+export type ADSTheme =
+
+    | "ads-midnight"
+
+    | "ads-azure"
+
+    | "ads-platinum";
+
+
+/**
+ * ============================================================================
+ * Theme Color Contract
+ * ============================================================================
+ *
+ * Semantic presentation tokens consumed by the ADS theme system.
+ *
+ * These map to CSS custom properties in:
+ *
+ * src/app/globals.css
+ *
+ * Theme changes are presentation-only.
+ *
+ * ============================================================================
+ */
+
+export interface ThemeColors {
+
+    background:string;
+
+    foreground:string;
+
+    primary:string;
+
+    primarySoft:string;
+
+    secondary:string;
+
+    accent:string;
+
+    accentSoft:string;
+
+    backgroundDeep:string;
+
+    backgroundElevated:string;
+
+    surface:string;
+
+    surfaceMuted:string;
+
+    surfaceGlass:string;
+
+    surfaceGlassStrong:string;
+
+    surfaceHover:string;
+
+    border:string;
+
+    borderSubtle:string;
+
+    borderStrong:string;
+
+    textPrimary:string;
+
+    textSecondary:string;
+
+    textMuted:string;
+
+    primaryHover:string;
+
+    primaryActive:string;
+
+    info:string;
+
+    cyan:string;
+
+    blue:string;
+
+    success:string;
+
+    warning:string;
+
+    danger:string;
+
+    muted:string;
+
+    shadowCard:string;
+
+    shadowGlow:string;
+
+    glassBlur:string;
+
+}
+
+
+/**
+ * ============================================================================
+ * ADS THEME CONFIGURATION
+ * ============================================================================
+ *
+ * Describes one official ADS application theme.
+ *
+ * ============================================================================
+ */
+
+export interface ThemeConfig {
+
+    /**
+     * Stable theme identifier.
+     */
+    id:ADSTheme;
+
+
+    /**
+     * Human-readable display name.
+     */
+    name:string;
+
+
+    /**
+     * Optional description for theme selectors/help UI.
+     */
+    description?:string;
+
+
+    /**
+     * Visual tokens.
+     */
+    colors:ThemeColors;
+
+
+    /**
+     * Whether the theme is an official ADS-provided preset.
+     */
+    official:boolean;
+
+
+    /**
+     * Whether the theme may be selected by end users.
+     */
+    selectable:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme Policy
+ * ============================================================================
+ *
+ * Organization-level governance contract.
+ *
+ * The policy controls whether employees can choose their own theme.
+ *
+ * It does NOT itself perform authorization.
+ *
+ * Authorization remains inside the appropriate application/service layer.
+ *
+ * ============================================================================
+ */
+
+export interface ThemePolicy {
+
+    organizationId:string;
+
+
+    /**
+     * Theme forced by the organization.
+     *
+     * When defined and allowUserOverride is false,
+     * the organization theme takes precedence.
+     */
+    enforcedTheme?:ADSTheme;
+
+
+    /**
+     * Themes available to users within the organization.
+     */
+    allowedThemes:ADSTheme[];
+
+
+    /**
+     * Whether users may override the organization choice.
+     */
+    allowUserOverride:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme Preference
+ * ============================================================================
+ *
+ * Represents a user's selected presentation theme.
+ *
+ * ============================================================================
+ */
+
+export interface ThemePreference {
+
+    theme:ADSTheme;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme Resolution
+ * ============================================================================
+ *
+ * Describes the final theme selected by the runtime after considering:
+ *
+ * 1. organization policy
+ * 2. user preference
+ * 3. system/default fallback
+ *
+ * ============================================================================
+ */
+
+export interface ResolvedTheme {
+
+    theme:ADSTheme;
+
+    source:
+        | "organization"
+        | "user"
+        | "default";
+
+    userOverrideAllowed:boolean;
+
+}
+
+
+/**
+ * ============================================================================
+ * Theme System Constants
+ * ============================================================================
+ *
+ * Shared semantic constants.
+ *
+ * Runtime implementations may derive their actual configuration from these
+ * contracts, but should keep identifiers synchronized with ADSTheme.
+ *
+ * ============================================================================
+ */
+
+export const ADS_THEME_IDS = [
+
+    "ads-midnight",
+
+    "ads-azure",
+
+    "ads-platinum",
+
+] as const satisfies readonly ADSTheme[];
+
+
+/**
+ * ============================================================================
+ * Type Safety Assertion
+ * ============================================================================
+ *
+ * Ensures the canonical theme list remains compatible with ADSTheme.
+ * ============================================================================
+ */
+
+export type ADSThemeId =
+    typeof ADS_THEME_IDS[number];
+
+
+
+============================================================
+src\types\admin\UserPreference.ts
+============================================================
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
+export type ThemePreference =
+    string;
+export type UserLanguage =
+
+    | "en"
+
+    | "hi"
+
+    | "mr"
+
+    | "ta"
+
+    | "te";
+
+export type DashboardLayout =
+    Record<
+        string,
+        unknown
+    >;
+export type UserPreferenceMetadata =
+    Record<
+        string,
+        unknown
+    >;
+export interface UserPreference
+    extends BaseEntity {
+
+    userId:string;
+
+    organizationId:string;
+    theme:ThemePreference;
+
+    language:UserLanguage;
+    timezone?:string;
+    compactMode:boolean;
+
+    reducedMotion:boolean;
+
+    highContrast:boolean;
+
+    emailNotifications:boolean;
+
+    pushNotifications:boolean;
+    systemNotifications:boolean;
+    defaultLandingPage?:string;
+    dashboardLayout?:DashboardLayout;
+    metadata?:UserPreferenceMetadata;
+}
+
+============================================================
+src\services\admin\UserPreferenceService.ts
+============================================================
+[NOT FOUND]
+
+============================================================
+src\repositories\admin\UserPreferenceRepository.ts
+============================================================
+[NOT FOUND]
+
+============================================================
+src\repositories\admin\UserPreferencesRepository.ts
+============================================================
+[NOT FOUND]
+
+============================================================
+src\app\api\admin\preferences\route.ts
+============================================================
+[NOT FOUND]
+
+============================================================
+src\app\api\admin\user-preferences\route.ts
+============================================================
+[NOT FOUND]
+
+============================================================
+src\app\api\users\preferences\route.ts
+============================================================
+[NOT FOUND]
+
+============================================================
+USER PREFERENCE REFERENCES
+============================================================
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:371:    async updatePreferences(
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:390:            "User preference management is handled by UserPreferenceService.",
+
+============================================================
+END B02 PREFERENCE IMPLEMENTATION
+============================================================

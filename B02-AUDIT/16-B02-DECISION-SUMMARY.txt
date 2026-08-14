@@ -1,0 +1,345 @@
+
+============================================================
+1. AUTHORITATIVE THEME CONTRACTS
+============================================================
+
+PATTERN: ADSTheme
+50: export type ADSTheme =
+159:     id:ADSTheme;
+221:     enforcedTheme?:ADSTheme;
+227:     allowedThemes:ADSTheme[];
+250:     theme:ADSTheme;
+271:     theme:ADSTheme;
+291:  * contracts, but should keep identifiers synchronized with ADSTheme.
+304: ] as const satisfies readonly ADSTheme[];
+312:  * Ensures the canonical theme list remains compatible with ADSTheme.
+316: export type ADSThemeId =
+330:     ADSTheme,
+373:     | ADSTheme
+1001:     ADSTheme,
+1006: Record<ADSTheme, ThemeConfig>
+1137:     theme: ADSTheme;
+1138:     setTheme: (theme: ADSTheme) => void;
+1148:     theme: ADSTheme,
+1157:     root.dataset.adsTheme =
+1171:     useState<ADSTheme>(
+1188:                 ? stored as ADSTheme
+1204:             value: ADSTheme,
+1255: export function useADSTheme() {
+1264:             "useADSTheme must be used inside ThemeProvider",
+
+PATTERN: ADS_THEME_IDS
+296: export const ADS_THEME_IDS = [
+317:     typeof ADS_THEME_IDS[number];
+
+PATTERN: ThemeConfig
+154: export interface ThemeConfig {
+1002:     ThemeConfig,
+1006: Record<ADSTheme, ThemeConfig>
+
+PATTERN: ThemePolicy
+210: export interface ThemePolicy {
+
+PATTERN: ThemePreference
+248: export interface ThemePreference {
+371: export type UserThemePreference =
+514:     themePreference?:UserThemePreference;
+550: export type ThemePreference =
+580:     theme:ThemePreference;
+
+PATTERN: UserThemePreference
+371: export type UserThemePreference =
+514:     themePreference?:UserThemePreference;
+
+============================================================
+2. USER PREFERENCE CONTRACTS
+============================================================
+
+PATTERN: UserPreference
+545: FILE: src\types\admin\UserPreference.ts
+569: export type UserPreferenceMetadata =
+574: export interface UserPreference
+596:     metadata?:UserPreferenceMetadata;
+1664:             "User preference management is handled by UserPreferenceService.",
+
+PATTERN: themePreference
+248: export interface ThemePreference {
+371: export type UserThemePreference =
+514:     themePreference?:UserThemePreference;
+550: export type ThemePreference =
+580:     theme:ThemePreference;
+
+PATTERN: compactMode
+391:     compactMode?: boolean;
+584:     compactMode:boolean;
+
+PATTERN: reducedMotion
+385:     reducedMotion?: boolean;
+586:     reducedMotion:boolean;
+
+PATTERN: highContrast
+388:     highContrast?: boolean;
+588:     highContrast:boolean;
+
+============================================================
+3. SETTINGS CONTRACTS
+============================================================
+
+PATTERN: PlatformSetting
+693: export interface PlatformSetting
+811:     settings: PlatformSetting[];
+831:     settings: PlatformSetting[];
+3269:     PlatformSetting,
+3293:     list(): Promise<PlatformSetting[]>;
+3298:     ): Promise<PlatformSetting | null>;
+3301:         setting: PlatformSetting,
+3308:         settings: PlatformSetting[];
+3313:     ): Promise<PlatformSetting | null>;
+3319:     extends BaseRepository<PlatformSetting>
+3332:     async list(): Promise<PlatformSetting[]> {
+3369:     ): Promise<PlatformSetting | null> {
+3422:         setting: PlatformSetting,
+3540:         settings: PlatformSetting[];
+3591:     ): Promise<PlatformSetting | null> {
+3636:     ): PlatformSetting[] {
+3656:     ): PlatformSetting {
+3661:         const setting: PlatformSetting = {
+3669:                 "PlatformSetting",
+3686:                 value as PlatformSetting["value"],
+3760:     PlatformSetting,
+3796:     Promise<PlatformSetting[]> {
+3820:     Promise<PlatformSetting | null> {
+3868:         settings: PlatformSetting[];
+3905:     Promise<PlatformSetting | null> {
+
+PATTERN: OrganizationSetting
+823: export interface OrganizationSettings {
+3274: type OrganizationSettingRow = {
+3357:             (data ?? []) as unknown as OrganizationSettingRow[];
+3403:             data as unknown as OrganizationSettingRow;
+3577:             data as unknown as OrganizationSettingRow;
+3613:             (data ?? []) as unknown as OrganizationSettingRow[];
+3635:         row: OrganizationSettingRow,
+3654:         row: OrganizationSettingRow,
+4150: interface OrganizationSettingRow {
+4256:         row: OrganizationSettingRow,
+4433:             (data ?? []) as OrganizationSettingRow[]
+4479:             (data ?? []) as OrganizationSettingRow[]
+4535:             data as OrganizationSettingRow,
+4662:             row as OrganizationSettingRow,
+4829:             row as OrganizationSettingRow,
+
+PATTERN: SystemSetting
+841: FILE: src\types\admin\SystemSetting.ts
+867: export interface SystemSetting extends BaseEntity {
+
+PATTERN: SettingStatus
+928: export type SettingStatus =
+952:     status: SettingStatus;
+4146:     SettingStatus,
+4183:     status?: SettingStatus;
+4840:         status:SettingStatus,
+4973:     SettingStatus,
+5049:         status: SettingStatus,
+
+============================================================
+4. TARGET DATABASE TABLES
+============================================================
+
+PATTERN: CREATE TABLE.*organization_settings
+5123: CREATE TABLE IF NOT EXISTS organization_settings
+5163: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5247: CREATE TABLE IF NOT EXISTS organization_settings
+5287: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5317: CREATE TABLE IF NOT EXISTS organization_settings
+5357: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+
+PATTERN: CREATE TABLE.*admin_organization_settings
+5163: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5287: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5357: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+
+PATTERN: CREATE TABLE.*user_preferences
+
+PATTERN: CREATE TABLE.*user_preference
+
+============================================================
+5. THEME POLICY DATABASE COLUMNS
+============================================================
+
+PATTERN: theme_preference
+
+PATTERN: theme_id
+296: export const ADS_THEME_IDS = [
+317:     typeof ADS_THEME_IDS[number];
+
+PATTERN: theme_key
+
+PATTERN: allow_user_override
+
+PATTERN: allowed_themes
+
+PATTERN: enforced_theme
+
+============================================================
+6. TARGET TABLE SECURITY
+============================================================
+
+PATTERN: organization_settings.*POLICY
+
+PATTERN: admin_organization_settings.*POLICY
+
+PATTERN: user_preferences.*POLICY
+
+PATTERN: user_preference.*POLICY
+
+PATTERN: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY
+5193: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5402: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5419: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5436: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5453: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5470: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5487: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5504: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5521: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+
+============================================================
+7. THEME PROVIDER IMPLEMENTATION
+============================================================
+
+PATTERN: ThemeProvider
+21:  * src/components/providers/ThemeProvider.tsx
+983: FILE: src\components\providers\ThemeProvider.tsx
+1161: export default function ThemeProvider({
+1264:             "useADSTheme must be used inside ThemeProvider",
+
+PATTERN: ads-theme
+1179:                 "ads-theme",
+1225:                 "ads-theme",
+
+PATTERN: localStorage
+42:  * - localStorage
+1178:             window.localStorage.getItem(
+1224:             window.localStorage.setItem(
+
+PATTERN: setTheme
+1138:     setTheme: (theme: ADSTheme) => void;
+1169:         setThemeState,
+1191:         setThemeState(
+1201:     const setTheme =
+1216:             setThemeState(
+1237:             setTheme,
+1242:             setTheme,
+
+============================================================
+8. SETTINGS API
+============================================================
+
+PATTERN: api/crm/settings
+
+PATTERN: SettingsServiceInstance
+5111: export const SettingsServiceInstance =
+
+PATTERN: updatePreferences
+1645:     async updatePreferences(
+
+============================================================
+9. GOVERNANCE / PERMISSION
+============================================================
+
+PATTERN: allow_user_override
+
+PATTERN: enforced_theme
+
+PATTERN: allowed_themes
+
+PATTERN: theme-policy
+5593: C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\theme-policy\page.tsx
+
+PATTERN: change-theme
+5579: C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\change-theme\page.tsx
+
+============================================================
+10. MIGRATION TARGET REFERENCES
+============================================================
+
+PATTERN: organization_settings
+3247:  * organization_settings
+3327:             "organization_settings",
+4205:             'organization_settings',
+5121: TARGET: organization_settings
+5123: CREATE TABLE IF NOT EXISTS organization_settings
+5161: TARGET: admin_organization_settings
+5163: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5191: TARGET: admin_organization_settings
+5193: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5245: TARGET: organization_settings
+5247: CREATE TABLE IF NOT EXISTS organization_settings
+5285: TARGET: admin_organization_settings
+5287: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5315: TARGET: organization_settings
+5317: CREATE TABLE IF NOT EXISTS organization_settings
+5355: TARGET: admin_organization_settings
+5357: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5402: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5419: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5436: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5453: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5470: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5487: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5504: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5521: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+
+PATTERN: admin_organization_settings
+5161: TARGET: admin_organization_settings
+5163: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5191: TARGET: admin_organization_settings
+5193: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5285: TARGET: admin_organization_settings
+5287: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5355: TARGET: admin_organization_settings
+5357: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+5402: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5419: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5436: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5453: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5470: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5487: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5504: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5521: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+5541: ON admin_organization_settings;
+5545: ON admin_organization_settings
+5561: ON admin_organization_settings
+
+PATTERN: user_preferences
+
+============================================================
+11. DUPLICATE CONTRACT CHECK
+============================================================
+
+PATTERN: type ADSTheme
+50: export type ADSTheme =
+316: export type ADSThemeId =
+
+PATTERN: interface ADSTheme
+
+PATTERN: type ThemePreference
+550: export type ThemePreference =
+
+PATTERN: interface ThemePreference
+248: export interface ThemePreference {
+
+PATTERN: interface ThemePolicy
+210: export interface ThemePolicy {
+
+PATTERN: interface ThemeConfig
+154: export interface ThemeConfig {
+
+PATTERN: UserThemePreference
+371: export type UserThemePreference =
+514:     themePreference?:UserThemePreference;
+
+============================================================
+END B02 DECISION SUMMARY
+============================================================

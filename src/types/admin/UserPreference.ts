@@ -1,8 +1,12 @@
-import type {
+﻿import type {
     BaseEntity,
 } from "@/types/platform/BaseEntity";
+
+import type {
+    ADSTheme,
+} from "@/types/theme/Theme";
 export type ThemePreference =
-    string;
+    ADSTheme;
 export type UserLanguage =
 
     | "en"
@@ -49,3 +53,4 @@ export interface UserPreference
     dashboardLayout?:DashboardLayout;
     metadata?:UserPreferenceMetadata;
 }
+

@@ -1,0 +1,565 @@
+
+============================================================
+1. THEME TYPE FACTS
+============================================================
+
+PATTERN: export
+45: export type ADSTheme =
+70: export interface ThemeColors {
+149: export interface ThemeConfig {
+205: export interface ThemePolicy {
+243: export interface ThemePreference {
+264: export interface ResolvedTheme {
+291: export const ADS_THEME_IDS = [
+311: export type ADSThemeId =
+
+PATTERN: type 
+45: export type ADSTheme =
+304: * Type Safety Assertion
+311: export type ADSThemeId =
+
+PATTERN: interface 
+70: export interface ThemeColors {
+149: export interface ThemeConfig {
+205: export interface ThemePolicy {
+243: export interface ThemePreference {
+264: export interface ResolvedTheme {
+
+PATTERN: THEME
+5: * Theme Domain Contracts
+16: * src/components/providers/ThemeProvider.tsx
+26: * ADS OFFICIAL APPLICATION THEMES
+29: * These values are the canonical persisted theme identifiers.
+45: export type ADSTheme =
+56: * Theme Color Contract
+59: * Semantic presentation tokens consumed by the ADS theme system.
+65: * Theme changes are presentation-only.
+70: export interface ThemeColors {
+141: * ADS THEME CONFIGURATION
+
+PATTERN: theme
+5: * Theme Domain Contracts
+16: * src/components/providers/ThemeProvider.tsx
+26: * ADS OFFICIAL APPLICATION THEMES
+29: * These values are the canonical persisted theme identifiers.
+45: export type ADSTheme =
+56: * Theme Color Contract
+59: * Semantic presentation tokens consumed by the ADS theme system.
+65: * Theme changes are presentation-only.
+70: export interface ThemeColors {
+141: * ADS THEME CONFIGURATION
+
+============================================================
+2. USER PREFERENCE FACTS
+============================================================
+
+PATTERN: export
+4: export type ThemePreference =
+6: export type UserLanguage =
+18: export type DashboardLayout =
+23: export type UserPreferenceMetadata =
+28: export interface UserPreference
+
+PATTERN: interface
+28: export interface UserPreference
+
+PATTERN: type
+1: import type {
+3: } from "@/types/platform/BaseEntity";
+4: export type ThemePreference =
+6: export type UserLanguage =
+18: export type DashboardLayout =
+23: export type UserPreferenceMetadata =
+
+PATTERN: theme
+4: export type ThemePreference =
+34: theme:ThemePreference;
+
+PATTERN: preference
+4: export type ThemePreference =
+23: export type UserPreferenceMetadata =
+28: export interface UserPreference
+34: theme:ThemePreference;
+50: metadata?:UserPreferenceMetadata;
+
+PATTERN: language
+6: export type UserLanguage =
+36: language:UserLanguage;
+
+PATTERN: timezone
+37: timezone?:string;
+
+PATTERN: compact
+38: compactMode:boolean;
+
+PATTERN: motion
+40: reducedMotion:boolean;
+
+PATTERN: contrast
+42: highContrast:boolean;
+
+============================================================
+3. ADMIN SETTINGS FACTS
+============================================================
+
+PATTERN: export
+23: export type SettingScope =
+37: export type SettingCategory =
+73: export type SettingValueType =
+91: export interface PlatformSetting
+201: export interface SettingGroup {
+221: export interface OrganizationSettings {
+
+PATTERN: interface
+91: export interface PlatformSetting
+201: export interface SettingGroup {
+221: export interface OrganizationSettings {
+
+PATTERN: type
+13: import type {
+17: } from "@/types/platform/BaseEntity";
+23: export type SettingScope =
+37: export type SettingCategory =
+73: export type SettingValueType =
+135: valueType: SettingValueType;
+
+PATTERN: organization
+27: | "Organization"
+97: organizationId?: string;
+221: export interface OrganizationSettings {
+225: organizationId: string;
+
+PATTERN: setting
+4: * Platform Settings Contract
+23: export type SettingScope =
+37: export type SettingCategory =
+73: export type SettingValueType =
+91: export interface PlatformSetting
+101: scope: SettingScope;
+105: category: SettingCategory;
+135: valueType: SettingValueType;
+201: export interface SettingGroup {
+205: category: SettingCategory;
+
+============================================================
+4. SYSTEM SETTINGS FACTS
+============================================================
+
+PATTERN: export
+13: export type SettingDataType =
+20: export type SettingScope =
+25: export interface SystemSetting extends BaseEntity {
+
+PATTERN: interface
+25: export interface SystemSetting extends BaseEntity {
+
+PATTERN: type
+10: import type { BaseEntity } from "@/types/platform/BaseEntity";
+13: export type SettingDataType =
+20: export type SettingScope =
+48: dataType: SettingDataType;
+
+PATTERN: setting
+3: * System Settings
+13: export type SettingDataType =
+20: export type SettingScope =
+25: export interface SystemSetting extends BaseEntity {
+27: scope: SettingScope;
+48: dataType: SettingDataType;
+
+============================================================
+5. CRM SETTINGS FACTS
+============================================================
+
+PATTERN: export
+1: export type SettingCategory =
+13: export type SettingStatus =
+17: export interface Setting {
+51: export interface SettingsSummary {
+
+PATTERN: interface
+17: export interface Setting {
+51: export interface SettingsSummary {
+
+PATTERN: type
+1: export type SettingCategory =
+13: export type SettingStatus =
+
+PATTERN: setting
+1: export type SettingCategory =
+13: export type SettingStatus =
+17: export interface Setting {
+21: settingNumber: string;
+25: category: SettingCategory;
+37: status: SettingStatus;
+51: export interface SettingsSummary {
+
+============================================================
+6. THEME PROVIDER FACTS
+============================================================
+
+PATTERN: ThemeProvider
+177: export default function ThemeProvider({
+280: "useADSTheme must be used inside ThemeProvider",
+
+PATTERN: ThemeContext
+152: interface ThemeContextValue {
+158: const ThemeContext =
+160: ThemeContextValue | undefined
+263: <ThemeContext.Provider
+267: </ThemeContext.Provider>
+275: ThemeContext,
+
+PATTERN: theme
+17: ADSTheme,
+18: ThemeConfig,
+19: } from "@/types/theme/Theme";
+21: export const ADS_THEMES:
+22: Record<ADSTheme, ThemeConfig>
+28: description: "Premium dark ADS enterprise theme.",
+70: description: "Modern blue enterprise theme.",
+112: description: "Premium light enterprise theme.",
+152: interface ThemeContextValue {
+153: theme: ADSTheme;
+
+PATTERN: setTheme
+154: setTheme: (theme: ADSTheme) => void;
+185: setThemeState,
+207: setThemeState(
+217: const setTheme =
+232: setThemeState(
+253: setTheme,
+258: setTheme,
+
+PATTERN: localStorage
+194: window.localStorage.getItem(
+240: window.localStorage.setItem(
+
+PATTERN: ads-theme
+195: "ads-theme",
+241: "ads-theme",
+
+PATTERN: document
+168: document.documentElement;
+
+============================================================
+7. ADMIN SETTINGS SERVICE
+============================================================
+
+PATTERN: class 
+15: export class SettingsService {
+
+PATTERN: async 
+36: async list():
+54: async find(
+102: async findByCategory(
+141: async findByKey(
+176: async save(
+
+PATTERN: update
+209: updatedAt:
+
+PATTERN: list
+36: async list():
+41: return this.repository.list();
+
+PATTERN: find
+54: async find(
+83: return this.repository.find(
+102: async findByCategory(
+124: return this.repository.findByCategory(
+141: async findByKey(
+159: return this.repository.findByKey(
+
+PATTERN: repository
+8: ISettingsRepository,
+9: } from "@/repositories/admin/SettingsRepository";
+23: private readonly repository:
+24: ISettingsRepository,
+41: return this.repository.list();
+83: return this.repository.find(
+124: return this.repository.findByCategory(
+159: return this.repository.findByKey(
+194: await this.repository.save(
+
+PATTERN: setting
+2: PlatformSetting,
+3: SettingCategory,
+4: } from "@/types/admin/Settings";
+8: ISettingsRepository,
+9: } from "@/repositories/admin/SettingsRepository";
+15: export class SettingsService {
+24: ISettingsRepository,
+38: Promise<PlatformSetting[]> {
+56: category: SettingCategory,
+62: Promise<PlatformSetting | null> {
+
+============================================================
+8. CRM SETTINGS SERVICE
+============================================================
+
+PATTERN: class 
+14: class SettingsService {
+
+PATTERN: async 
+16: private async repository(): Promise<SettingsRepository> {
+26: async list(): Promise<Setting[]> {
+35: async listArchived(): Promise<Setting[]> {
+44: async details(
+57: async create(
+70: async update(
+85: async updateStatus(
+100: async delete(
+113: async restore(
+126: async summary(): Promise<{
+
+PATTERN: create
+2: createSupabaseServerClient,
+19: await createSupabaseServerClient();
+57: async create(
+64: return repository.create(
+145: * A fresh authenticated Supabase server client is created
+
+PATTERN: update
+70: async update(
+78: return repository.update(
+85: async updateStatus(
+93: return repository.updateStatus(
+
+PATTERN: delete
+100: async delete(
+107: return repository.delete(
+
+PATTERN: list
+26: async list(): Promise<Setting[]> {
+31: return repository.list();
+35: async listArchived(): Promise<Setting[]> {
+40: return repository.listArchived();
+
+PATTERN: repository
+6: SettingsRepository,
+7: } from '@/repositories/crm/SettingsRepository';
+16: private async repository(): Promise<SettingsRepository> {
+21: return new SettingsRepository(
+28: const repository =
+29: await this.repository();
+31: return repository.list();
+37: const repository =
+38: await this.repository();
+40: return repository.listArchived();
+
+PATTERN: setting
+6: SettingsRepository,
+7: } from '@/repositories/crm/SettingsRepository';
+10: Setting,
+11: SettingStatus,
+12: } from '@/types/crm/Settings';
+14: class SettingsService {
+16: private async repository(): Promise<SettingsRepository> {
+21: return new SettingsRepository(
+26: async list(): Promise<Setting[]> {
+35: async listArchived(): Promise<Setting[]> {
+
+============================================================
+9. ADMIN SETTINGS REPOSITORY
+============================================================
+
+PATTERN: class 
+79: export class SettingsRepository
+
+PATTERN: async 
+93: async list(): Promise<PlatformSetting[]> {
+127: async find(
+182: async save(
+297: async findByCategory(
+350: async findByKey(
+
+PATTERN: create
+45: created_at: string | null;
+284: created_at:
+470: createdAt:
+471: row.created_at ?? "",
+
+PATTERN: update
+47: updated_at: string | null;
+246: error: updateError,
+250: .update({
+252: updated_at: now,
+263: if (updateError) {
+264: throw updateError;
+287: updated_at:
+473: updatedAt:
+474: row.updated_at ?? "",
+
+PATTERN: list
+54: list(): Promise<PlatformSetting[]>;
+93: async list(): Promise<PlatformSetting[]> {
+
+PATTERN: find
+56: find(
+65: findByCategory(
+72: findByKey(
+127: async find(
+297: async findByCategory(
+350: async findByKey(
+
+PATTERN: from
+11: * - Tenant scope comes from BaseRepository / TenantContextManager.
+23: } from "@supabase/supabase-js";
+27: } from "@/lib/db/base-repository";
+32: } from "@/types/admin/Settings";
+
+PATTERN: organization
+5: * Organization-scoped platform settings.
+8: * organization_settings
+12: * - Caller cannot provide organization_id.
+35: type OrganizationSettingRow = {
+39: organization_id: string;
+88: "organization_settings",
+103: "organization_id",
+104: this.organizationId,
+118: (data ?? []) as unknown as OrganizationSettingRow[];
+146: "organization_id",
+
+PATTERN: setting
+3: * ADS Settings Repository
+5: * Organization-scoped platform settings.
+8: * organization_settings
+15: * - Setting keys are validated.
+30: PlatformSetting,
+31: SettingCategory,
+32: } from "@/types/admin/Settings";
+35: type OrganizationSettingRow = {
+41: setting_category: SettingCategory;
+43: settings: Record<string, unknown> | null;
+
+============================================================
+10. CRM SETTINGS REPOSITORY
+============================================================
+
+PATTERN: class 
+61: export class SettingsRepository
+
+PATTERN: async 
+210: private async ensureUniqueKey(
+268: async list(): Promise<Setting[]> {
+314: async listArchived(): Promise<Setting[]> {
+360: async details(
+405: async create(
+537: async update(
+704: async updateStatus(
+723: async delete(
+741: async restore(
+776: async summary() {
+
+PATTERN: create
+30: created_at: string;
+197: createdAt:
+198: row.created_at,
+282: 'created_at',
+405: async create(
+499: this.withCreateTenant(
+
+PATTERN: update
+32: updated_at: string;
+201: updatedAt:
+202: row.updated_at,
+328: 'updated_at',
+537: async update(
+659: .update(
+704: async updateStatus(
+710: return this.update(
+728: await this.update(
+759: await this.update(
+
+PATTERN: delete
+723: async delete(
+
+PATTERN: list
+268: async list(): Promise<Setting[]> {
+314: async listArchived(): Promise<Setting[]> {
+780: await this.list();
+
+PATTERN: from
+3: } from '@supabase/supabase-js';
+7: } from '@/lib/db/base-repository';
+13: } from '@/types/crm/Settings';
+
+PATTERN: organization
+16: interface OrganizationSettingRow {
+20: organization_id: string;
+71: 'organization_settings',
+122: row: OrganizationSettingRow,
+220: 'organization_id',
+221: this.organizationId,
+278: 'organization_id',
+279: this.organizationId,
+299: (data ?? []) as OrganizationSettingRow[]
+324: 'organization_id',
+
+PATTERN: setting
+10: Setting,
+11: SettingCategory,
+12: SettingStatus,
+13: } from '@/types/crm/Settings';
+16: interface OrganizationSettingRow {
+22: setting_key: string;
+24: setting_value: unknown;
+39: interface SettingMetadata {
+41: settingNumber?: string;
+49: status?: SettingStatus;
+
+============================================================
+11. DATABASE TARGET FACTS
+============================================================
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql:375: CREATE TABLE IF NOT EXISTS organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql:811: BEFORE UPDATE ON organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\005_admin.sql:124: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\007_indexes.sql:175: ON admin_organization_settings(
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\008_functions.sql:691: FROM admin_organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_triggers.sql:61: ON admin_organization_settings;
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_triggers.sql:66: BEFORE UPDATE ON admin_organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql:422: ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql:837: ON admin_organization_settings;
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql:841: ON admin_organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\012_seed_data.sql:1054: INSERT INTO admin_organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql:489: CREATE TABLE IF NOT EXISTS organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql:7359: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql:338: CREATE TABLE IF NOT EXISTS organization_settings
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql:6781: CREATE TABLE IF NOT EXISTS admin_organization_settings (
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql:60: 'organization_settings',
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql:193: 'organization_settings',
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql:304: 'organization_settings',
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql:39: 'organization_settings',
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql:80: 'organization_settings',
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql:191: 'organization_settings',
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\037_ads_close_remaining_tenant_rls.sql:89: 'admin_organization_settings',
+
+============================================================
+12. SETTINGS API ROUTES
+============================================================
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\[id]\route.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\route.ts
+
+============================================================
+13. GOVERNANCE ROUTES
+============================================================
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\change-theme\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\error.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\loading.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\page-actions.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\[id]\route.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\route.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\new\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\[id]\edit\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\[id]\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\actions.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\organization\preferences\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\settings\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\theme-policy\page.tsx
+
+============================================================
+END B02 FINAL FACTS
+============================================================

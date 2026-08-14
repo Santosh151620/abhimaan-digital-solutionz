@@ -109,8 +109,3 @@ export abstract class BaseRepository<TEntity extends object> {
     if (error) throw error;
   }
 }
-
-
-
-
-

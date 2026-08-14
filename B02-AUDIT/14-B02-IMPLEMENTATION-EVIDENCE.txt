@@ -1,0 +1,1186 @@
+
+============================================================
+1. THEME CONTRACTS
+============================================================
+
+Path                                                                                LineNumber Line                                       
+----                                                                                ---------- ----                                       
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                    6     ADSTheme,                              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   47 export type UserThemePreference =          
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   49     | ADSTheme                             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                  190     themePreference?:UserThemePreference;  
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts          4 export type ThemePreference =              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         34     theme:ThemePreference;                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                  45 export type ADSTheme =                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 149 export interface ThemeConfig {             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 154     id:ADSTheme;                           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 205 export interface ThemePolicy {             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 216     enforcedTheme?:ADSTheme;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 222     allowedThemes:ADSTheme[];              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 243 export interface ThemePreference {         
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 245     theme:ADSTheme;                        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 266     theme:ADSTheme;                        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 286  * contracts, but should keep identifier...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 291 export const ADS_THEME_IDS = [             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 299 ] as const satisfies readonly ADSTheme[];  
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 307  * Ensures the canonical theme list rema...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 311 export type ADSThemeId =                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 312     typeof ADS_THEME_IDS[number];          
+
+
+
+============================================================
+2. USER PREFERENCES
+============================================================
+
+Path                                                                                LineNumber Line                                     
+----                                                                                ---------- ----                                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   47 export type UserThemePreference =        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   61     reducedMotion?: boolean;             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   64     highContrast?: boolean;              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                   67     compactMode?: boolean;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                  190     themePreference?:UserThemePreference;
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts          4 export type ThemePreference =            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         23 export type UserPreferenceMetadata =     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         28 export interface UserPreference          
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         34     theme:ThemePreference;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         38     compactMode:boolean;                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         40     reducedMotion:boolean;               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         42     highContrast:boolean;                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         44     emailNotifications:boolean;          
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         46     pushNotifications:boolean;           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         47     systemNotifications:boolean;         
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts         50     metadata?:UserPreferenceMetadata;    
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                 243 export interface ThemePreference {       
+
+
+
+============================================================
+3. THEME PROVIDER
+============================================================
+
+Path                                                                                         LineNumber Line                              
+----                                                                                         ---------- ----                              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx         17     ADSTheme,                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx         22 Record<ADSTheme, ThemeConfig>     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        153     theme: ADSTheme;              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        154     setTheme: (theme: ADSTheme)...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        164     theme: ADSTheme,              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        173     root.dataset.adsTheme =       
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        177 export default function ThemePr...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        185         setThemeState,            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        187     useState<ADSTheme>(           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        194             window.localStorage...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        195                 "ads-theme",      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        204                 ? stored as ADS...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        207         setThemeState(            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        217     const setTheme =              
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        220             value: ADSTheme,      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        232             setThemeState(        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        240             window.localStorage...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        241                 "ads-theme",      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        253             setTheme,             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        258             setTheme,             
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        271 export function useADSTheme() {   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx        280             "useADSTheme must b...
+
+
+
+============================================================
+4. SERVICES
+============================================================
+
+Path                                                                                    LineNumber Line                                   
+----                                                                                    ---------- ----                                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\index.ts                   77     SettingsService,                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\index.ts                   78 } from "./SettingsService";            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts         15 export class SettingsService {         
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts           371     async updatePreferences(           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts           390             "User preference managem...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\index.ts                     22 export * from './SettingsService';     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts           14 class SettingsService {                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts          149 export const SettingsServiceInstance = 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts          150     new SettingsService();             
+
+
+
+============================================================
+5. REPOSITORIES
+============================================================
+
+Path                                                                                           LineNumber Line                            
+----                                                                                           ---------- ----                            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\index.ts                      47 export * from "./SettingsRepo...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts          8  * organization_settings        
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         52 export interface ISettingsRep...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         79 export class SettingsRepository 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         81     implements ISettingsRepos...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts         88             "organization_set...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts            44  * - User preferences           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\index.ts                        21 export * from './SettingsRepo...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts           61 export class SettingsRepository 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts           71             'organization_set...
+
+
+
+============================================================
+6. API ROUTES
+============================================================
+
+FullName                                                                                
+--------                                                                                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\[id]\route.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\route.ts     
+
+
+
+============================================================
+7. PAGES
+============================================================
+
+FullName                                                                                            
+--------                                                                                            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\change-theme\page.tsx   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\error.tsx      
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\loading.tsx    
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\page-actions.ts
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\admin\(protected)\settings\page.tsx       
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\[id]\route.ts            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\api\crm\settings\route.ts                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\new\page.tsx                 
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\[id]\edit\page.tsx           
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\[id]\page.tsx                
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\actions.ts                   
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\crm\settings\page.tsx                     
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\organization\p...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\settings\page.tsx
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\theme-policy\p...
+
+
+
+============================================================
+8. DB TABLES
+============================================================
+
+Path                                                                                                        LineNumber Line               
+----                                                                                                        ---------- ----               
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql                             375 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\005_admin.sql                                124 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                  422 ALTER TABLE admi...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql        489 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql       7359 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql               338 CREATE TABLE IF ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql              6781 CREATE TABLE IF ...
+
+
+
+============================================================
+9. DB SECURITY
+============================================================
+
+Path                                                                                                           LineNumber Line            
+----                                                                                                           ---------- ----            
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql                                375 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\001_platform.sql                                811 BEFORE UPDATE...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\005_admin.sql                                   124 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\007_indexes.sql                                 175 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\008_functions.sql                               691 FROM admin_or...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_triggers.sql                                 61 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\009_triggers.sql                                 66 BEFORE UPDATE...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                     422 ALTER TABLE a...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                     837 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\010_rls.sql                                     841 ON admin_orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\012_seed_data.sql                              1054 INSERT INTO a...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql           489 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\017_ads_foundation_reconciliation.sql          7359 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql                  338 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\018_ads_missing_foundation.sql                 6781 CREATE TABLE ...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql         60         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql        193         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\035_ads_crm_platform_tenant_security.sql        304         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql           39         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql           80         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\036_ads_shared_org_tenant_security.sql          191         'orga...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\supabase\migrations\037_ads_close_remaining_tenant_rls.sql           89             '...
+
+
+
+============================================================
+10. DUPLICATES
+============================================================
+
+Path                                                                                                     LineNumber Line                  
+----                                                                                                     ---------- ----                  
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\app\[locale]\dashboard\admin\theme-policy\page.tsx         43 interface ThemePoli...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                                        47 export type UserThe...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts                                       190     themePreference...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts                               4 export type ThemePr...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                       45 export type ADSTheme =
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      149 export interface Th...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      205 export interface Th...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      243 export interface Th...
+C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts                                      311 export type ADSThem...
+
+
+
+============================================================
+11. EXACT RELEVANT SOURCE LINES
+============================================================
+
+------------------------------------------------------------
+src\types\theme\Theme.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:2: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:3: * ADS ENTERPRISE PLATFORM
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:4: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:5: * Theme Domain Contracts
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:6: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:7: * Shared by:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:8: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:9: * - Website
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:10: * - CRM
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:13: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:14: * Runtime implementation remains inside:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:15: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:16: * src/components/providers/ThemeProvider.tsx
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:17: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:18: * This file contains contracts only.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:19: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:20: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:21: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:23:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:24:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:25: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:26: * ADS OFFICIAL APPLICATION THEMES
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:27: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:28: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:29: * These values are the canonical persisted theme identifiers.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:30: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:31: * IMPORTANT:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:32: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:33: * Keep these identifiers stable.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:34: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:35: * They may be persisted in:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:36: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:37: * - localStorage
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:38: * - user preferences
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:39: * - organization policies
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:40: * - future database configuration
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:41: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:42: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:43: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:44:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:45:export type ADSTheme =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:46:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:47:    | "ads-midnight"
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:48:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:49:    | "ads-azure"
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:50:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:53:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:54:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:55: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:56: * Theme Color Contract
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:57: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:58: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:59: * Semantic presentation tokens consumed by the ADS theme system.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:60: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:61: * These map to CSS custom properties in:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:62: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:63: * src/app/globals.css
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:64: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:65: * Theme changes are presentation-only.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:66: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:67: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:68: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:69:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:70:export interface ThemeColors {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:71:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:72:    background:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:73:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:74:    foreground:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:75:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:138:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:139:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:140: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:141: * ADS THEME CONFIGURATION
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:142: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:143: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:144: * Describes one official ADS application theme.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:145: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:146: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:147: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:148:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:149:export interface ThemeConfig {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:150:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:151:    /**
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:152:     * Stable theme identifier.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:153:     */
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:154:    id:ADSTheme;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:155:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:156:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:157:    /**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:158:     * Human-readable display name.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:159:     */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:161:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:162:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:163:    /**
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:164:     * Optional description for theme selectors/help UI.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:165:     */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:166:    description?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:167:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:168:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:169:    /**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:170:     * Visual tokens.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:171:     */
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:172:    colors:ThemeColors;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:173:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:174:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:175:    /**
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:176:     * Whether the theme is an official ADS-provided preset.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:177:     */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:178:    official:boolean;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:179:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:180:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:181:    /**
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:182:     * Whether the theme may be selected by end users.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:183:     */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:184:    selectable:boolean;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:185:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:186:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:187:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:188:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:189:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:190: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:191: * Theme Policy
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:192: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:193: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:194: * Organization-level governance contract.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:195: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:196: * The policy controls whether employees can choose their own theme.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:197: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:198: * It does NOT itself perform authorization.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:199: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:200: * Authorization remains inside the appropriate application/service layer.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:201: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:202: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:203: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:204:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:205:export interface ThemePolicy {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:206:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:207:    organizationId:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:208:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:209:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:210:    /**
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:211:     * Theme forced by the organization.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:212:     *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:213:     * When defined and allowUserOverride is false,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:214:     * the organization theme takes precedence.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:215:     */
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:216:    enforcedTheme?:ADSTheme;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:217:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:218:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:219:    /**
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:220:     * Themes available to users within the organization.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:221:     */
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:222:    allowedThemes:ADSTheme[];
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:223:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:224:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:225:    /**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:226:     * Whether users may override the organization choice.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:227:     */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:232:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:233:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:234: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:235: * Theme Preference
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:236: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:237: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:238: * Represents a user's selected presentation theme.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:239: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:240: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:241: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:242:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:243:export interface ThemePreference {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:244:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:245:    theme:ADSTheme;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:246:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:247:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:248:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:249:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:250:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:251: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:252: * Theme Resolution
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:253: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:254: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:255: * Describes the final theme selected by the runtime after considering:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:256: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:257: * 1. organization policy
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:258: * 2. user preference
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:259: * 3. system/default fallback
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:260: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:261: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:262: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:263:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:264:export interface ResolvedTheme {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:265:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:266:    theme:ADSTheme;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:267:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:268:    source:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:269:        | "organization"
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:270:        | "user"
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:271:        | "default";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:277:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:278:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:279: * ============================================================================
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:280: * Theme System Constants
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:281: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:282: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:283: * Shared semantic constants.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:284: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:285: * Runtime implementations may derive their actual configuration from these
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:286: * contracts, but should keep identifiers synchronized with ADSTheme.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:287: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:288: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:289: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:290:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:291:export const ADS_THEME_IDS = [
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:292:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:293:    "ads-midnight",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:294:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:295:    "ads-azure",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:296:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:297:    "ads-platinum",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:298:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:299:] as const satisfies readonly ADSTheme[];
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:300:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:301:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:302:/**
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:303: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:304: * Type Safety Assertion
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:305: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:306: *
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:307: * Ensures the canonical theme list remains compatible with ADSTheme.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:308: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:309: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:310:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:311:export type ADSThemeId =
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:312:    typeof ADS_THEME_IDS[number];
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:313:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\theme\Theme.ts:314:
+
+------------------------------------------------------------
+src\types\admin\User.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:3:} from "@/types/platform/BaseEntity";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:4:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:5:import type {
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:6:    ADSTheme,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:7:} from "@/types/theme/Theme";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:8:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:9:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:10:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:11:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:12:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:44:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:45:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:46:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:47:export type UserThemePreference =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:48:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:49:    | ADSTheme
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:50:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:51:    | null;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:52:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:53:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:54:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:55:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:56:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:57:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:58:export interface UserAccessibilityPreferences {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:59:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:60:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:61:    reducedMotion?: boolean;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:62:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:63:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:74:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:75:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:76:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:77:export interface UserNotificationPreferences {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:78:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:79:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:80:    email?: boolean;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:81:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:82:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:187:    lockedUntil?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:188:    locale?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:189:    timezone?:string;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:190:    themePreference?:UserThemePreference;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:191:    accessibility?:UserAccessibilityPreferences;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:192:    notificationPreferences?:UserNotificationPreferences;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:193:    createdBy?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:194:    updatedBy?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:195:    metadata?:Record<string, unknown>;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:196:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\User.ts:197:
+
+------------------------------------------------------------
+src\types\admin\UserPreference.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:1:import type {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:2:    BaseEntity,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:3:} from "@/types/platform/BaseEntity";
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:4:export type ThemePreference =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:5:    string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:6:export type UserLanguage =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:7:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:8:    | "en"
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:9:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:20:        string,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:21:        unknown
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:22:    >;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:23:export type UserPreferenceMetadata =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:24:    Record<
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:25:        string,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:26:        unknown
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:27:    >;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:28:export interface UserPreference
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:29:    extends BaseEntity {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:30:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:31:    userId:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:32:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:33:    organizationId:string;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:34:    theme:ThemePreference;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:35:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:36:    language:UserLanguage;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:37:    timezone?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:38:    compactMode:boolean;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:39:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:47:    systemNotifications:boolean;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:48:    defaultLandingPage?:string;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:49:    dashboardLayout?:DashboardLayout;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:50:    metadata?:UserPreferenceMetadata;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\types\admin\UserPreference.ts:51:}
+
+------------------------------------------------------------
+src\types\admin\Settings.ts
+------------------------------------------------------------
+[NO RELEVANT MATCHES]
+
+------------------------------------------------------------
+src\types\admin\SystemSetting.ts
+------------------------------------------------------------
+[NO RELEVANT MATCHES]
+
+------------------------------------------------------------
+src\types\crm\Settings.ts
+------------------------------------------------------------
+[NO RELEVANT MATCHES]
+
+------------------------------------------------------------
+src\components\providers\ThemeProvider.tsx
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:14:} from "react";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:15:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:16:import type {
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:17:    ADSTheme,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:18:    ThemeConfig,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:19:} from "@/types/theme/Theme";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:20:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:21:export const ADS_THEMES:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:22:Record<ADSTheme, ThemeConfig>
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:23:=
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:24:{
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:25:    "ads-midnight": {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:26:        id: "ads-midnight",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:27:        name: "ADS Midnight",
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:28:        description: "Premium dark ADS enterprise theme.",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:29:        official: true,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:30:        selectable: true,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:31:        colors: {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:32:            background: "#050914",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:33:            foreground: "#f4f8ff",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:67:    "ads-azure": {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:68:        id: "ads-azure",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:69:        name: "ADS Azure",
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:70:        description: "Modern blue enterprise theme.",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:71:        official: true,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:72:        selectable: true,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:73:        colors: {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:74:            background: "#07111f",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:75:            foreground: "#f5f9ff",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:109:    "ads-platinum": {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:110:        id: "ads-platinum",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:111:        name: "ADS Platinum",
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:112:        description: "Premium light enterprise theme.",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:113:        official: true,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:114:        selectable: true,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:115:        colors: {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:116:            background: "#f3f6fa",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:117:            foreground: "#142033",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:149:    },
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:150:};
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:151:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:152:interface ThemeContextValue {
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:153:    theme: ADSTheme;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:154:    setTheme: (theme: ADSTheme) => void;
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:155:    themes: typeof ADS_THEMES;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:156:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:157:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:158:const ThemeContext =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:159:createContext<
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:160:    ThemeContextValue | undefined
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:161:>(undefined);
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:162:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:163:function applyTheme(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:164:    theme: ADSTheme,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:165:): void {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:166:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:167:    const root =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:168:        document.documentElement;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:169:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:170:    root.dataset.theme =
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:171:        theme;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:172:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:173:    root.dataset.adsTheme =
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:174:        theme;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:175:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:176:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:177:export default function ThemeProvider({
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:178:    children,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:179:}: {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:180:    children: ReactNode;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:181:}) {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:182:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:183:    const [
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:184:        theme,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:185:        setThemeState,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:186:    ] =
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:187:    useState<ADSTheme>(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:188:        "ads-midnight",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:189:    );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:190:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:191:    useEffect(() => {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:192:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:193:        const stored =
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:194:            window.localStorage.getItem(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:195:                "ads-theme",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:196:            );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:197:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:198:        const activeTheme =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:199:            stored &&
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:200:            Object.prototype.hasOwnProperty.call(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:201:                ADS_THEMES,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:202:                stored,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:203:            )
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:204:                ? stored as ADSTheme
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:205:                : "ads-midnight";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:206:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:207:        setThemeState(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:208:            activeTheme,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:209:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:210:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:211:        applyTheme(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:212:            activeTheme,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:213:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:214:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:215:    }, []);
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:216:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:217:    const setTheme =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:218:    useCallback(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:219:        (
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:220:            value: ADSTheme,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:221:        ): void => {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:222:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:223:            if (
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:224:                !Object.prototype.hasOwnProperty.call(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:225:                    ADS_THEMES,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:226:                    value,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:227:                )
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:228:            ) {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:229:                return;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:230:            }
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:231:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:232:            setThemeState(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:233:                value,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:234:            );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:235:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:236:            applyTheme(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:237:                value,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:238:            );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:239:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:240:            window.localStorage.setItem(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:241:                "ads-theme",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:242:                value,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:243:            );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:244:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:245:        },
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:246:        [],
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:249:    const contextValue =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:250:    useMemo(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:251:        () => ({
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:252:            theme,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:253:            setTheme,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:254:            themes: ADS_THEMES,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:255:        }),
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:256:        [
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:257:            theme,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:258:            setTheme,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:259:        ],
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:260:    );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:261:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:262:    return (
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:263:        <ThemeContext.Provider
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:264:            value={contextValue}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:265:        >
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:266:            {children}
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:267:        </ThemeContext.Provider>
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:268:    );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:269:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:270:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:271:export function useADSTheme() {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:272:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:273:    const context =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:274:        useContext(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:275:            ThemeContext,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:276:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:277:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:278:    if (!context) {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:279:        throw new Error(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:280:            "useADSTheme must be used inside ThemeProvider",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:281:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:282:    }
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:283:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:284:    return context;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\components\providers\ThemeProvider.tsx:285:}
+
+------------------------------------------------------------
+src\services\admin\UsersService.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:368:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:369:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:370:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:371:    async updatePreferences(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:372:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:373:        userId: string,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:374:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:375:        _preferences:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:376:            Record<string, unknown>,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:377:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:378:    ):
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:379:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:380:    Promise<void> {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:387:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:388:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:389:        throw new Error(
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:390:            "User preference management is handled by UserPreferenceService.",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:391:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:392:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:393:    }
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:394:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\UsersService.ts:395:
+
+------------------------------------------------------------
+src\repositories\admin\UsersRepository.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:41: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:42: * - Authentication credentials
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:43: * - Passwords
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:44: * - User preferences
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:45: * - Theme state
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:46: * - Organization membership policy
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:47: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:48: * ============================================================================
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:49: */
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\UsersRepository.ts:50:
+
+------------------------------------------------------------
+src\repositories\admin\SettingsRepository.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:5: * Organization-scoped platform settings.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:6: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:7: * Storage:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:8: * organization_settings
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:9: *
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:10: * Production guarantees:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:11: * - Tenant scope comes from BaseRepository / TenantContextManager.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:12: * - Caller cannot provide organization_id.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:13: * - All reads are tenant-scoped.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:49:};
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:50:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:51:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:52:export interface ISettingsRepository {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:53:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:54:    list(): Promise<PlatformSetting[]>;
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:55:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:56:    find(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:57:        category: SettingCategory,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:76:}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:77:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:78:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:79:export class SettingsRepository
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:80:    extends BaseRepository<PlatformSetting>
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:81:    implements ISettingsRepository {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:82:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:83:    constructor(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:84:        supabase: SupabaseClient,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:85:    ) {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:86:        super(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:87:            supabase,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:88:            "organization_settings",
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:89:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:90:    }
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:91:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:92:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\admin\SettingsRepository.ts:93:    async list(): Promise<PlatformSetting[]> {
+
+------------------------------------------------------------
+src\services\admin\SettingsService.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:5:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:6:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:7:import type {
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:8:    ISettingsRepository,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:9:} from "@/repositories/admin/SettingsRepository";
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:10:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:11:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:12:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:13:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:14:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:15:export class SettingsService {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:16:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:17:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:18:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:19:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:20:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:21:    constructor(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:22:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:23:        private readonly repository:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:24:            ISettingsRepository,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:25:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:26:    ) {}
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:27:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:28:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\admin\SettingsService.ts:29:
+
+------------------------------------------------------------
+src\repositories\crm\SettingsRepository.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:58:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:59:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:60:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:61:export class SettingsRepository
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:62:    extends BaseRepository<Setting> {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:63:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:64:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:65:    constructor(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:66:        supabase: SupabaseClient,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:68:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:69:        super(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:70:            supabase,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:71:            'organization_settings',
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:72:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:73:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:74:    }
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:75:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\repositories\crm\SettingsRepository.ts:76:
+
+------------------------------------------------------------
+src\services\crm\SettingsService.ts
+------------------------------------------------------------
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:3:} from '@/lib/supabase/server-client';
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:4:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:5:import {
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:6:    SettingsRepository,
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:7:} from '@/repositories/crm/SettingsRepository';
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:8:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:9:import type {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:10:    Setting,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:11:    SettingStatus,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:12:} from '@/types/crm/Settings';
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:13:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:14:class SettingsService {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:15:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:16:    private async repository(): Promise<SettingsRepository> {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:17:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:18:        const supabase =
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:19:            await createSupabaseServerClient();
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:20:
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:21:        return new SettingsRepository(
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:22:            supabase,
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:23:        );
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:24:    }
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:25:
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:26:    async list(): Promise<Setting[]> {
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:146: * for every operation. Do not convert this into a global
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:147: * Supabase client singleton.
+  C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:148: */
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:149:export const SettingsServiceInstance =
+> C:\Projects\MDSWEBSITE\abhimaan-digital-solutionz\src\services\crm\SettingsService.ts:150:    new SettingsService();
+
+============================================================
+12. TARGET DATABASE DEFINITIONS
+============================================================
+
+FILE: 001_platform.sql
+LINE: 375
+-- ORGANIZATION SETTINGS
+-------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS organization_settings
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+organization_id uuid NOT NULL,
+
+setting_key varchar(255) NOT NULL,
+
+setting_value jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+category varchar(100),
+
+
+FILE: 001_platform.sql
+LINE: 811
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_org_settings_updated
+BEFORE UPDATE ON organization_settings
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trg_feature_updated
+BEFORE UPDATE ON feature_flags
+FOR EACH ROW
+EXECUTE FUNCTION update_updated_at_column();
+
+-------------------------------------------------------------
+-- PLATFORM VALIDATION
+-------------------------------------------------------------
+
+
+FILE: 005_admin.sql
+LINE: 124
+-- ORGANIZATION SETTINGS
+-- ============================================================
+
+CREATE TABLE IF NOT EXISTS admin_organization_settings (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    organization_id UUID NOT NULL
+        REFERENCES organizations(id)
+        ON DELETE CASCADE,
+
+    setting_key TEXT NOT NULL,
+
+    setting_value JSONB DEFAULT '{}'::jsonb,
+
+    is_active BOOLEAN DEFAULT TRUE,
+
+FILE: 007_indexes.sql
+LINE: 175
+
+
+CREATE INDEX IF NOT EXISTS idx_org_settings_lookup
+ON admin_organization_settings(
+    organization_id,
+    setting_key
+);
+
+
+
+CREATE INDEX IF NOT EXISTS idx_configuration_registry_scope
+ON admin_configuration_registry(scope);
+
+
+
+-- ============================================================
+
+FILE: 008_functions.sql
+LINE: 691
+INTO result
+
+
+FROM admin_organization_settings
+
+
+WHERE organization_id = target_org
+
+AND setting_key = config_key
+
+
+
+LIMIT 1;
+
+
+
+
+FILE: 009_triggers.sql
+LINE: 61
+
+
+DROP TRIGGER IF EXISTS trg_admin_org_settings_updated
+ON admin_organization_settings;
+
+
+CREATE TRIGGER trg_admin_org_settings_updated
+
+BEFORE UPDATE ON admin_organization_settings
+
+FOR EACH ROW
+
+EXECUTE FUNCTION update_updated_at_column();
+
+
+
+
+FILE: 009_triggers.sql
+LINE: 66
+
+CREATE TRIGGER trg_admin_org_settings_updated
+
+BEFORE UPDATE ON admin_organization_settings
+
+FOR EACH ROW
+
+EXECUTE FUNCTION update_updated_at_column();
+
+
+
+-- ============================================================
+-- SOFT DELETE TRIGGERS
+-- ============================================================
+
+DROP TRIGGER IF EXISTS trg_admin_roles_soft_delete
+
+FILE: 010_rls.sql
+LINE: 422
+
+ALTER TABLE admin_platform_settings ENABLE ROW LEVEL SECURITY;
+
+ALTER TABLE admin_organization_settings ENABLE ROW LEVEL SECURITY;
+
+-- ============================================================
+-- ORGANIZATION ADMINISTRATION
+-- ============================================================
+
+DROP POLICY IF EXISTS admin_org_access
+ON admin_organizations;
+
+CREATE POLICY admin_org_access
+
+ON admin_organizations
+
+
+FILE: 010_rls.sql
+LINE: 837
+-- ============================================================
+
+DROP POLICY IF EXISTS admin_org_settings_access
+ON admin_organization_settings;
+
+CREATE POLICY admin_org_settings_access
+
+ON admin_organization_settings
+
+FOR ALL
+
+TO authenticated
+
+USING
+
+(
+
+FILE: 010_rls.sql
+LINE: 841
+
+CREATE POLICY admin_org_settings_access
+
+ON admin_organization_settings
+
+FOR ALL
+
+TO authenticated
+
+USING
+
+(
+
+    user_has_organization_access(
+
+        organization_id
+
+FILE: 017_ads_foundation_reconciliation.sql
+LINE: 489
+
+);
+
+CREATE TABLE IF NOT EXISTS organization_settings
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+organization_id uuid NOT NULL,
+
+setting_key varchar(255) NOT NULL,
+
+setting_value jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+category varchar(100),
+
+
+FILE: 017_ads_foundation_reconciliation.sql
+LINE: 7359
+
+);
+
+CREATE TABLE IF NOT EXISTS admin_organization_settings (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    organization_id UUID NOT NULL
+        REFERENCES organizations(id)
+        ON DELETE CASCADE,
+
+    setting_key TEXT NOT NULL,
+
+    setting_value JSONB DEFAULT '{}'::jsonb,
+
+    is_active BOOLEAN DEFAULT TRUE,
+
+FILE: 018_ads_missing_foundation.sql
+LINE: 338
+
+);
+
+CREATE TABLE IF NOT EXISTS organization_settings
+(
+
+id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+
+organization_id uuid NOT NULL,
+
+setting_key varchar(255) NOT NULL,
+
+setting_value jsonb NOT NULL DEFAULT '{}'::jsonb,
+
+category varchar(100),
+
+
+FILE: 018_ads_missing_foundation.sql
+LINE: 6781
+
+);
+
+CREATE TABLE IF NOT EXISTS admin_organization_settings (
+
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    organization_id UUID NOT NULL
+        REFERENCES organizations(id)
+        ON DELETE CASCADE,
+
+    setting_key TEXT NOT NULL,
+
+    setting_value JSONB DEFAULT '{}'::jsonb,
+
+    is_active BOOLEAN DEFAULT TRUE,
