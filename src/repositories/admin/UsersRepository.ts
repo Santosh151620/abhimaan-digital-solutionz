@@ -1,4 +1,4 @@
-import type {
+﻿import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
 
@@ -55,6 +55,19 @@ import type {
  * Database Row Contract
  * ============================================================================
  */
+type UserRoleRow = {
+
+    user_id:string;
+
+    organization_id:string;
+
+    role_id:string;
+
+    is_primary:boolean | null;
+
+};
+
+
 type UserRow = {
 
     id:string;
@@ -88,10 +101,6 @@ type UserRow = {
     user_type:string;
 
     status:string;
-
-    role_ids:string[] | null;
-
-    primary_role_id:string | null;
 
     is_active:boolean | null;
 
@@ -235,14 +244,18 @@ export class UsersRepository
         }
 
 
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapUser(
-                        row as UserRow,
-                    ),
-            );
+        const users =
+            (data ?? [])
+                .map(
+                    row =>
+                        this.mapUser(
+                            row as UserRow,
+                        ),
+                );
 
+        return this.hydrateUsers(
+            users,
+        );
     }
 
 
@@ -284,17 +297,20 @@ export class UsersRepository
         }
 
 
-        return (data ?? [])
-            .map(
-                row =>
-                    this.mapUser(
-                        row as UserRow,
-                    ),
-            );
+        const users =
+            (data ?? [])
+                .map(
+                    row =>
+                        this.mapUser(
+                            row as UserRow,
+                        ),
+                );
+
+        return this.hydrateUsers(
+            users,
+        );
 
     }
-
-
 
     /**
      * =========================================================================
@@ -338,15 +354,23 @@ export class UsersRepository
         }
 
 
-        return data
-            ? this.mapUser(
-                data as UserRow,
-            )
-            : null;
+        if (!data) {
+            return null;
+        }
+
+
+        const users =
+            await this.hydrateUsers(
+                [
+                    this.mapUser(
+                        data as UserRow,
+                    ),
+                ],
+            );
+
+        return users[0] ?? null;
 
     }
-
-
 
     /**
      * =========================================================================
@@ -390,15 +414,23 @@ export class UsersRepository
         }
 
 
-        return data
-            ? this.mapUser(
-                data as UserRow,
-            )
-            : null;
+        if (!data) {
+            return null;
+        }
+
+
+        const users =
+            await this.hydrateUsers(
+                [
+                    this.mapUser(
+                        data as UserRow,
+                    ),
+                ],
+            );
+
+        return users[0] ?? null;
 
     }
-
-
 
     /**
      * =========================================================================
@@ -508,12 +540,6 @@ export class UsersRepository
                         status:
                             user.status ?? "Active",
 
-                        role_ids:
-                            user.roleIds ?? [],
-
-                        primary_role_id:
-                            user.primaryRoleId ?? null,
-
                         is_active:
                             user.isActive ?? true,
 
@@ -575,9 +601,26 @@ export class UsersRepository
         }
 
 
-        return this.mapUser(
-            data as UserRow,
+        const savedUser =
+            this.mapUser(
+                data as UserRow,
+            );
+
+        await this.syncUserRoles(
+            savedUser,
+            user.roleIds,
+            user.primaryRoleId,
+            user.createdBy
+            ??
+            user.updatedBy,
         );
+
+        const hydratedUsers =
+            await this.hydrateUsers(
+                [savedUser],
+            );
+
+        return hydratedUsers[0];
 
     }
 
@@ -691,9 +734,24 @@ export class UsersRepository
         }
 
 
-        return this.mapUser(
-            data as UserRow,
+        const updatedUser =
+            this.mapUser(
+                data as UserRow,
+            );
+
+        await this.syncUserRoles(
+            updatedUser,
+            user.roleIds,
+            user.primaryRoleId,
+            user.updatedBy,
         );
+
+        const hydratedUsers =
+            await this.hydrateUsers(
+                [updatedUser],
+            );
+
+        return hydratedUsers[0];
 
     }
 
@@ -876,29 +934,7 @@ export class UsersRepository
                 user.status;
 
         }
-
-
-        if (
-            user.roleIds !== undefined
-        ) {
-
-            payload.role_ids =
-                user.roleIds;
-
-        }
-
-
-        if (
-            user.primaryRoleId !== undefined
-        ) {
-
-            payload.primary_role_id =
-                user.primaryRoleId;
-
-        }
-
-
-        if (
+if (
             user.isActive !== undefined
         ) {
 
@@ -972,6 +1008,240 @@ export class UsersRepository
 
     }
 
+    private async syncUserRoles(
+        user:AdminUser,
+        roleIds?:string[],
+        primaryRoleId?:string,
+        actorId?:string,
+    ):
+        Promise<void> {
+
+        if (
+            roleIds === undefined
+            &&
+            primaryRoleId === undefined
+        ) {
+            return;
+        }
+
+        const normalizedRoleIds =
+            Array.from(
+                new Set(
+                    (roleIds ?? [])
+                        .filter(
+                            (
+                                roleId,
+                            ): roleId is string =>
+                                Boolean(
+                                    roleId,
+                                ),
+                        ),
+                ),
+            );
+
+        if (
+            primaryRoleId
+            &&
+            !normalizedRoleIds.includes(
+                primaryRoleId,
+            )
+        ) {
+            normalizedRoleIds.push(
+                primaryRoleId,
+            );
+        }
+
+        const {
+            error:deleteError,
+        } =
+            await this
+                .supabase
+                .from("admin_user_roles")
+                .delete()
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "user_id",
+                    user.profileId,
+                );
+
+        if (deleteError) {
+            throw deleteError;
+        }
+
+        if (
+            normalizedRoleIds.length === 0
+        ) {
+            return;
+        }
+
+        const rows =
+            normalizedRoleIds.map(
+                roleId => ({
+                    organization_id:
+                        this.organizationId,
+
+                    user_id:
+                        user.profileId,
+
+                    role_id:
+                        roleId,
+
+                    is_primary:
+                        roleId ===
+                        primaryRoleId,
+
+                    created_by:
+                        actorId ?? null,
+
+                    updated_by:
+                        actorId ?? null,
+                }),
+            );
+
+        const {
+            error,
+        } =
+            await this
+                .supabase
+                .from("admin_user_roles")
+                .insert(rows);
+
+        if (error) {
+            throw error;
+        }
+
+    }
+
+    private async hydrateUsers(
+        users:AdminUser[],
+    ):
+        Promise<AdminUser[]> {
+
+        if (
+            users.length === 0
+        ) {
+            return users;
+        }
+
+        const profileIds =
+            users
+                .map(
+                    user =>
+                        user.profileId,
+                )
+                .filter(
+                    (
+                        id,
+                    ): id is string =>
+                        Boolean(id),
+                );
+
+        if (
+            profileIds.length === 0
+        ) {
+            return users;
+        }
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .supabase
+                .from("admin_user_roles")
+                .select(
+                    "user_id, organization_id, role_id, is_primary",
+                )
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .in(
+                    "user_id",
+                    profileIds,
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        const assignments =
+            (data ?? []) as UserRoleRow[];
+
+        const rolesByUser =
+            new Map<
+                string,
+                {
+                    roleIds:string[];
+                    primaryRoleId:string | undefined;
+                }
+            >();
+
+        for (
+            const assignment
+            of assignments
+        ) {
+
+            const existing =
+                rolesByUser.get(
+                    assignment.user_id,
+                )
+                ??
+                {
+                    roleIds:[],
+                    primaryRoleId:
+                        undefined,
+                };
+
+            existing.roleIds.push(
+                assignment.role_id,
+            );
+
+            if (
+                assignment.is_primary
+            ) {
+                existing.primaryRoleId =
+                    assignment.role_id;
+            }
+
+            rolesByUser.set(
+                assignment.user_id,
+                existing,
+            );
+        }
+
+        return users.map(
+            user => {
+
+                const profileId =
+                    user.profileId;
+
+                if (!profileId) {
+                    return user;
+                }
+
+                const roles =
+                    rolesByUser.get(
+                        profileId,
+                    );
+
+                return {
+                    ...user,
+                    roleIds:
+                        roles?.roleIds
+                        ??
+                        [],
+                    primaryRoleId:
+                        roles?.primaryRoleId,
+                };
+            },
+        );
+
+    }
+
     private mapUser(
         row:UserRow,
 
@@ -1031,14 +1301,9 @@ export class UsersRepository
             userType:
                 row.user_type as AdminUser["userType"],
             status:
-                row.status as AdminUser["status"],
-            roleIds:
-                row.role_ids
-                ??
+                row.status as AdminUser["status"],            roleIds:
                 [],
             primaryRoleId:
-                row.primary_role_id
-                ??
                 undefined,
             isActive:
                 row.is_active
@@ -1145,3 +1410,19 @@ export class UsersRepository
         return normalized;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
