@@ -1,4 +1,4 @@
-import type {
+﻿import type {
     SupabaseClient,
 } from '@supabase/supabase-js';
 
@@ -578,9 +578,6 @@ const searchValue =
 
 
 
-/**
- * Factory
- */
 export function createQuotationsRepository(
     supabase: SupabaseClient,
 ) {
@@ -592,8 +589,3 @@ export function createQuotationsRepository(
 }
 
 
-/**
- * Standard export
- */
-const QuotationsRepositoryInstance =
-    createQuotationsRepository;
