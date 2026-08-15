@@ -9,35 +9,45 @@ import {
 
 
 import type {
+    OrganizationSettingRow,
     Setting,
     SettingCategory,
     SettingStatus,
+    SettingSummary,
     SettingValue,
 } from '@/types/crm/Settings';
 
 
 
+/**
+ * ============================================================================
+ * ADS CRM — SETTINGS REPOSITORY
+ * ============================================================================
+ *
+ * Persistence boundary for the existing organization_settings table.
+ *
+ * IMPORTANT:
+ *
+ * - Do not add domain-only Setting fields to the database payload.
+ * - Do not rename organization_settings columns.
+ * - Tenant isolation is enforced through organization_id and BaseRepository.
+ * - RLS remains the database-level security boundary.
+ * - Legacy service methods are retained for compatibility.
+ * ============================================================================
+ */
 
-interface OrganizationSettingRow {
 
-    id: string;
-
-    organization_id: string;
-
-    setting_key: string;
-
-    setting_value: unknown;
-
-    category: string | null;
-
-    description: string | null;
-
-    created_at: string | null;
-
-    updated_at: string | null;
-
-}
-
+const SETTING_COLUMNS = [
+    'id',
+    'organization_id',
+    'setting_key',
+    'setting_value',
+    'category',
+    'description',
+    'metadata',
+    'created_at',
+    'updated_at',
+].join(',');
 
 
 
@@ -47,36 +57,49 @@ const SETTING_CATEGORIES:
 
         'General',
 
+        'System',
+
+        'Company',
+
+        'User',
+
+        'Notification',
+
+        'Notifications',
+
+        'Integration',
+
+        'Integrations',
+
         'Security',
+
+        'Appearance',
+
+        'Other',
+
+        'CRM',
+
+        'Sales',
+
+        'Workflow',
+
+        'Email',
+
+        'Localization',
 
         'Authentication',
 
         'Branding',
 
-        'Localization',
-
-        'Notification',
-
-        'Email',
-
         'Storage',
 
         'AI',
-
-        'Integration',
-
-        'Workflow',
-
-        'CRM',
 
         'Reporting',
 
         'Billing',
 
-        'System',
-
     ];
-
 
 
 
@@ -97,7 +120,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Normalize and validate a setting key.
+     */
     private normalizeKey(
         key?: string,
     ): string {
@@ -149,7 +174,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Normalize and validate a setting category.
+     */
     private normalizeCategory(
         category?: SettingCategory | string,
     ): SettingCategory {
@@ -186,7 +213,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Normalize database values into the domain SettingValue contract.
+     */
     private normalizeValue(
         value: unknown,
     ): SettingValue {
@@ -238,7 +267,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Resolve the domain value type from the persisted value.
+     */
     private resolveValueType(
         value: unknown,
     ): Setting['valueType'] {
@@ -286,7 +317,12 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Convert a database row into the canonical Setting domain model.
+     *
+     * Domain-only properties are represented using safe defaults because the
+     * current organization_settings schema does not persist them.
+     */
     private mapRow(
         row: OrganizationSettingRow,
     ): Setting {
@@ -297,81 +333,68 @@ export class SettingsRepository
             );
 
 
+        const category =
+            this.normalizeCategory(
+                row.category ??
+                'General',
+            );
+
+
         return {
 
             id:
                 row.id,
 
-
             organizationId:
                 row.organization_id,
-
 
             entityType:
                 'PlatformSetting',
 
-
             scope:
                 'Organization',
 
-
-            category:
-                this.normalizeCategory(
-                    row.category ??
-                    'General',
-                ),
-
+            category,
 
             key:
                 row.setting_key,
 
-
             name:
                 row.setting_key,
-
 
             description:
                 row.description ??
                 undefined,
 
-
             value,
-
 
             valueType:
                 this.resolveValueType(
                     value,
                 ),
 
-
             isSystem:
                 false,
-
 
             isReadonly:
                 false,
 
-
             isEncrypted:
                 false,
-
 
             isVisible:
                 true,
 
-
             isActive:
                 true,
 
-
             metadata:
+                row.metadata ??
                 {},
-
 
             createdAt:
                 row.created_at ??
                 '',
-
 
             updatedAt:
                 row.updated_at ??
@@ -383,7 +406,11 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Ensure the setting key is unique inside the current organization.
+     *
+     * The database unique constraint remains the final concurrency safeguard.
+     */
     private async ensureUniqueKey(
         key: string,
         ignoreId?: string,
@@ -445,7 +472,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * List settings belonging to the current organization.
+     */
     async list():
         Promise<Setting[]> {
 
@@ -456,16 +485,7 @@ export class SettingsRepository
             await this
                 .tableRef()
                 .select(
-                    [
-                        'id',
-                        'organization_id',
-                        'setting_key',
-                        'setting_value',
-                        'category',
-                        'description',
-                        'created_at',
-                        'updated_at',
-                    ].join(','),
+                    SETTING_COLUMNS,
                 )
                 .eq(
                     'organization_id',
@@ -501,32 +521,32 @@ export class SettingsRepository
 
         return rows.map(
             row =>
-                this.mapRow(row),
+                this.mapRow(
+                    row,
+                ),
         );
 
     }
 
 
 
-
+    /**
+     * The current organization_settings schema has no archived state.
+     *
+     * Retained for compatibility with existing CRM callers.
+     */
     async listArchived():
         Promise<Setting[]> {
 
-        /*
-         * The current organization_settings schema does not
-         * expose an archived column.
-         *
-         * Keep this method for compatibility with existing
-         * CRM callers, but there are no separately archived
-         * records in this storage contract.
-         */
         return [];
 
     }
 
 
 
-
+    /**
+     * Get one setting belonging to the current organization.
+     */
     async details(
         id: string,
     ):
@@ -552,16 +572,7 @@ export class SettingsRepository
             await this
                 .tableRef()
                 .select(
-                    [
-                        'id',
-                        'organization_id',
-                        'setting_key',
-                        'setting_value',
-                        'category',
-                        'description',
-                        'created_at',
-                        'updated_at',
-                    ].join(','),
+                    SETTING_COLUMNS,
                 )
                 .eq(
                     'organization_id',
@@ -601,7 +612,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Create a setting.
+     */
     async create(
         data: Partial<Setting>,
     ):
@@ -679,6 +692,13 @@ export class SettingsRepository
                 data.description?.trim() ??
                 null,
 
+            ...(data.metadata !== undefined
+                ? {
+                    metadata:
+                        data.metadata,
+                }
+                : {}),
+
         };
 
 
@@ -692,16 +712,7 @@ export class SettingsRepository
                     payload,
                 )
                 .select(
-                    [
-                        'id',
-                        'organization_id',
-                        'setting_key',
-                        'setting_value',
-                        'category',
-                        'description',
-                        'created_at',
-                        'updated_at',
-                    ].join(','),
+                    SETTING_COLUMNS,
                 )
                 .single();
 
@@ -735,7 +746,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Update a setting.
+     */
     async update(
         id: string,
         data: Partial<Setting>,
@@ -819,6 +832,13 @@ export class SettingsRepository
                     : existing.description ??
                         null,
 
+            ...(data.metadata !== undefined
+                ? {
+                    metadata:
+                        data.metadata,
+                }
+                : {}),
+
         };
 
 
@@ -840,16 +860,7 @@ export class SettingsRepository
                     normalizedId,
                 )
                 .select(
-                    [
-                        'id',
-                        'organization_id',
-                        'setting_key',
-                        'setting_value',
-                        'category',
-                        'description',
-                        'created_at',
-                        'updated_at',
-                    ].join(','),
+                    SETTING_COLUMNS,
                 )
                 .single();
 
@@ -883,21 +894,17 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Preserve the status API without inventing unsupported persistence.
+     *
+     * The current organization_settings table has no status column.
+     */
     async updateStatus(
         id: string,
         status: SettingStatus,
     ):
         Promise<Setting> {
 
-        /*
-         * The current database contract has no status
-         * column. Active/inactive is therefore represented
-         * by the existence of the organization setting.
-         *
-         * Preserve the service API without inventing a
-         * database field.
-         */
         if (
             status !== 'Active'
         ) {
@@ -932,7 +939,9 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Delete a setting from the current organization.
+     */
     async delete(
         id: string,
     ):
@@ -993,16 +1002,16 @@ export class SettingsRepository
 
 
 
-
+    /**
+     * Restore compatibility method.
+     *
+     * No archived state exists in the current persistence contract.
+     */
     async restore(
         id: string,
     ):
         Promise<boolean> {
 
-        /*
-         * No archived state exists in the current
-         * organization_settings contract.
-         */
         const existing =
             await this.details(
                 id,
@@ -1017,17 +1026,35 @@ export class SettingsRepository
 
 
 
-
-    async summary(): Promise<{
-        total: number;
-        active: number;
-        inactive: number;
-        editable: number;
-        encrypted: number;
-    }> {
+    /**
+     * Return the canonical SettingsSummary.
+     *
+     * Some domain fields cannot currently be persisted because the existing
+     * organization_settings schema does not contain corresponding columns.
+     *
+     * Therefore:
+     *
+     * - active = all current rows
+     * - inactive = 0
+     * - editable = all current rows
+     * - system = 0
+     * - encrypted = 0
+     * - categories = distinct normalized categories
+     */
+    async summary():
+        Promise<SettingSummary> {
 
         const settings =
             await this.list();
+
+
+        const categories =
+            new Set(
+                settings.map(
+                    setting =>
+                        setting.category,
+                ),
+            );
 
 
         return {
@@ -1053,11 +1080,20 @@ export class SettingsRepository
                         !setting.isReadonly,
                 ).length,
 
+            system:
+                settings.filter(
+                    setting =>
+                        setting.isSystem,
+                ).length,
+
             encrypted:
                 settings.filter(
                     setting =>
                         setting.isEncrypted,
                 ).length,
+
+            categories:
+                categories.size,
 
         };
 

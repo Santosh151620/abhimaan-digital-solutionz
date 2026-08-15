@@ -1,50 +1,49 @@
-'use server';
+"use server";
 
 import {
     createSupabaseServerClient,
-} from '@/lib/supabase/server-client';
+} from "@/lib/supabase/server-client";
 
 import {
     SettingsRepository,
-} from '@/repositories/crm/SettingsRepository';
+} from "@/repositories/crm/SettingsRepository";
 
 import {
     PermissionServiceInstance,
-} from '@/services/crm/PermissionService';
+} from "@/services/crm/PermissionService";
 
 import {
     CRM_ADMIN_ROLE,
-} from '@/services/crm/crmPermissions';
+} from "@/services/crm/crmPermissions";
 
 import type {
     Setting,
     SettingStatus,
-} from '@/types/crm/Settings';
+} from "@/types/crm/Settings";
+
 
 
 type SettingAction =
-    | 'create'
-    | 'update'
-    | 'delete';
+    | "create"
+    | "update"
+    | "delete";
+
 
 
 const SETTING_KEY_PATTERN =
     /^[a-zA-Z0-9._:-]+$/;
 
-
 const SETTING_KEY_MAX_LENGTH =
     255;
-
 
 const SETTING_NAME_MAX_LENGTH =
     150;
 
-
 const VALID_STATUSES:
     readonly SettingStatus[] =
     [
-        'Active',
-        'Inactive',
+        "Active",
+        "Inactive",
     ];
 
 
@@ -68,11 +67,11 @@ function validateId(
 ): string {
 
     if (
-        typeof id !== 'string'
+        typeof id !== "string"
     ) {
 
         throw new Error(
-            'Invalid setting id.',
+            "Invalid setting id.",
         );
 
     }
@@ -85,7 +84,7 @@ function validateId(
     if (!normalized) {
 
         throw new Error(
-            'Invalid setting id.',
+            "Invalid setting id.",
         );
 
     }
@@ -102,24 +101,27 @@ function validateData(
     isCreate = false,
 ): void {
 
-    if (!data) {
+    if (
+        !data ||
+        typeof data !== "object"
+    ) {
 
         throw new Error(
-            'Setting data is required.',
+            "Setting data is required.",
         );
 
     }
 
 
-    const name =
-        typeof data.name === 'string'
-            ? data.name.trim()
+    const key =
+        typeof data.key === "string"
+            ? data.key.trim().toLowerCase()
             : undefined;
 
 
-    const key =
-        typeof data.key === 'string'
-            ? data.key.trim().toLowerCase()
+    const name =
+        typeof data.name === "string"
+            ? data.name.trim()
             : undefined;
 
 
@@ -130,20 +132,7 @@ function validateData(
     ) {
 
         throw new Error(
-            'Setting key is required.',
-        );
-
-    }
-
-
-
-    if (
-        data.name !== undefined &&
-        !name
-    ) {
-
-        throw new Error(
-            'Setting name is required.',
+            "Setting key is required.",
         );
 
     }
@@ -156,7 +145,20 @@ function validateData(
     ) {
 
         throw new Error(
-            'Setting key is required.',
+            "Setting key is required.",
+        );
+
+    }
+
+
+
+    if (
+        data.name !== undefined &&
+        !name
+    ) {
+
+        throw new Error(
+            "Setting name is required.",
         );
 
     }
@@ -171,7 +173,7 @@ function validateData(
     ) {
 
         throw new Error(
-            'Setting key may contain only letters, numbers, dots, underscores, colons, and hyphens.',
+            "Setting key may contain only letters, numbers, dots, underscores, colons, and hyphens.",
         );
 
     }
@@ -214,7 +216,7 @@ function validateData(
     ) {
 
         throw new Error(
-            'Invalid setting status.',
+            "Invalid setting status.",
         );
 
     }
@@ -228,41 +230,46 @@ function normalizeData(
 ):
     Partial<Setting> {
 
-    return {
-
+    const normalized:
+        Partial<Setting> = {
         ...data,
-
-        ...(data.name !== undefined
-            ? {
-                name:
-                    data.name.trim(),
-            }
-            : {}),
-
-        ...(data.key !== undefined
-            ? {
-                key:
-                    data.key
-                        .trim()
-                        .toLowerCase(),
-            }
-            : {}),
-
     };
 
-}
+
+    if (
+        typeof data.key === "string"
+    ) {
+
+        normalized.key =
+            data.key
+                .trim()
+                .toLowerCase();
+
+    }
 
 
+    if (
+        typeof data.name === "string"
+    ) {
 
-function can(
-    action: SettingAction,
-): boolean {
+        normalized.name =
+            data.name.trim();
 
-    return PermissionServiceInstance.hasPermission(
-        CRM_ADMIN_ROLE,
-        'Settings',
-        action,
-    );
+    }
+
+
+    if (
+        typeof data.description ===
+        "string"
+    ) {
+
+        normalized.description =
+            data.description.trim();
+
+    }
+
+
+    return normalized;
 
 }
 
@@ -272,12 +279,18 @@ function requirePermission(
     action: SettingAction,
 ): void {
 
-    if (
-        !can(action)
-    ) {
+    const allowed =
+        PermissionServiceInstance.hasPermission(
+            CRM_ADMIN_ROLE,
+            "Settings",
+            action,
+        );
+
+
+    if (!allowed) {
 
         throw new Error(
-            'Permission denied.',
+            "Permission denied.",
         );
 
     }
@@ -297,28 +310,27 @@ function translateError(
         const message =
             error.message;
 
-
         const normalized =
             message.toLowerCase();
 
 
         if (
             normalized.includes(
-                'duplicate',
+                "duplicate",
             ) ||
             normalized.includes(
-                'unique',
+                "unique",
             ) ||
             normalized.includes(
-                'already exists',
+                "already exists",
             ) ||
             normalized.includes(
-                '23505',
+                "23505",
             )
         ) {
 
             return new Error(
-                'A setting with this key already exists.',
+                "A setting with this key already exists.",
             );
 
         }
@@ -330,12 +342,23 @@ function translateError(
 
 
     return new Error(
-        'Unable to process setting request.',
+        "Unable to process setting request.",
     );
 
 }
 
 
+
+/**
+ * --------------------------------------------------------------------------
+ * READ OPERATIONS
+ * --------------------------------------------------------------------------
+ *
+ * These operations intentionally use the authenticated server repository.
+ * Tenant isolation remains owned by BaseRepository / organization context
+ * and Supabase RLS.
+ * --------------------------------------------------------------------------
+ */
 
 export async function getSettings():
     Promise<Setting[]> {
@@ -383,13 +406,37 @@ export async function getSetting(
 
 
 
+export async function getSettingsSummary():
+    Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        editable: number;
+        encrypted: number;
+    }> {
+
+    const repo =
+        await repository();
+
+    return repo.summary();
+
+}
+
+
+
+/**
+ * --------------------------------------------------------------------------
+ * CREATE
+ * --------------------------------------------------------------------------
+ */
+
 export async function createSetting(
     data: Partial<Setting>,
 ):
     Promise<Setting> {
 
     requirePermission(
-        'create',
+        "create",
     );
 
 
@@ -423,6 +470,12 @@ export async function createSetting(
 
 
 
+/**
+ * --------------------------------------------------------------------------
+ * UPDATE
+ * --------------------------------------------------------------------------
+ */
+
 export async function updateSetting(
     id: string,
     data: Partial<Setting>,
@@ -430,7 +483,7 @@ export async function updateSetting(
     Promise<Setting> {
 
     requirePermission(
-        'update',
+        "update",
     );
 
 
@@ -470,13 +523,19 @@ export async function updateSetting(
 
 
 
+/**
+ * --------------------------------------------------------------------------
+ * DELETE
+ * --------------------------------------------------------------------------
+ */
+
 export async function deleteSetting(
     id: string,
 ):
     Promise<void> {
 
     requirePermission(
-        'delete',
+        "delete",
     );
 
 
@@ -508,13 +567,24 @@ export async function deleteSetting(
 
 
 
+/**
+ * --------------------------------------------------------------------------
+ * RESTORE
+ * --------------------------------------------------------------------------
+ *
+ * The current organization_settings schema has no archived column/state.
+ * The repository therefore preserves this API for compatibility without
+ * manufacturing an archive field.
+ * --------------------------------------------------------------------------
+ */
+
 export async function restoreSetting(
     id: string,
 ):
     Promise<boolean> {
 
     requirePermission(
-        'update',
+        "update",
     );
 
 
@@ -546,6 +616,12 @@ export async function restoreSetting(
 
 
 
+/**
+ * --------------------------------------------------------------------------
+ * STATUS
+ * --------------------------------------------------------------------------
+ */
+
 export async function updateSettingStatus(
     id: string,
     status: SettingStatus,
@@ -553,7 +629,7 @@ export async function updateSettingStatus(
     Promise<Setting> {
 
     requirePermission(
-        'update',
+        "update",
     );
 
 
@@ -572,7 +648,7 @@ export async function updateSettingStatus(
         ) {
 
             throw new Error(
-                'Invalid setting status.',
+                "Invalid setting status.",
             );
 
         }
@@ -594,23 +670,5 @@ export async function updateSettingStatus(
         );
 
     }
-
-}
-
-
-
-export async function getSettingsSummary():
-    Promise<{
-        total: number;
-        active: number;
-        inactive: number;
-        editable: number;
-        encrypted: number;
-    }> {
-
-    const repo =
-        await repository();
-
-    return repo.summary();
 
 }

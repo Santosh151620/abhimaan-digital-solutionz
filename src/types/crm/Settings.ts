@@ -3,16 +3,22 @@
  * ADS CRM — SETTINGS DOMAIN CONTRACT
  * ============================================================================
  *
- * Canonical CRM settings contract.
+ * Canonical CRM settings domain contract.
  *
  * IMPORTANT:
- * This is a domain/UI compatibility contract.
- * It does NOT mean every property is a database column.
- *
- * Persistence remains owned by SettingsRepository and the existing
- * organization_settings table.
+ * - This file defines application/domain contracts.
+ * - It does NOT imply that every Setting property is a database column.
+ * - Persistence is owned by SettingsRepository and the existing
+ *   organization_settings table.
+ * - Database-specific fields remain isolated in OrganizationSettingRow.
+ * - PlatformSetting remains structurally compatible with Setting.
  * ============================================================================
  */
+
+
+/* ============================================================================
+ * SETTING ENUMS / VALUE CONTRACTS
+ * ========================================================================== */
 
 export type SettingCategory =
     | "General"
@@ -63,15 +69,20 @@ export type SettingStatus =
     | "Draft";
 
 
+/* ============================================================================
+ * SETTING DOMAIN MODEL
+ * ========================================================================== */
+
 export interface Setting {
 
-    id: string;
+    id:
+        string;
 
-    organizationId: string;
+    organizationId:
+        string;
 
     /**
-     * Kept broad because existing CRM repository/domain models use both
-     * Setting and PlatformSetting terminology.
+     * Kept compatible with both CRM and Admin settings terminology.
      */
     entityType:
         | "Setting"
@@ -125,73 +136,127 @@ export interface Setting {
         string;
 
 
-    /**
-     * ------------------------------------------------------------------------
-     * Legacy CRM Settings UI compatibility
-     * ------------------------------------------------------------------------
-     */
+    /* ------------------------------------------------------------------------
+     * Legacy CRM compatibility fields
+     * ---------------------------------------------------------------------- */
 
+    /**
+     * Legacy UI identifier.
+     */
     settingNumber?:
         string;
 
+    /**
+     * Indicates whether the setting can be edited.
+     *
+     * New code should generally derive editability from isReadonly.
+     */
     editable?:
         boolean;
 
+    /**
+     * Legacy status representation.
+     */
     status?:
         SettingStatus;
 
     /**
-     * Legacy alias retained for existing CRM screens.
+     * Legacy alias for isEncrypted.
      *
      * New code should prefer isEncrypted.
      */
     encrypted?:
         boolean;
+
 }
 
 
+/* ============================================================================
+ * ADMIN / PLATFORM COMPATIBILITY
+ * ========================================================================== */
+
 /**
- * PlatformSetting is the name used by the newer admin/settings service
- * boundary. It intentionally remains structurally compatible with Setting.
+ * PlatformSetting is intentionally structurally identical to Setting.
+ *
+ * This allows the Admin settings UI and CRM settings UI to share the same
+ * domain contract without introducing duplicate models.
  */
 export type PlatformSetting =
     Setting;
 
 
+/* ============================================================================
+ * CRM SETTINGS SUMMARY
+ * ========================================================================== */
+
 /**
- * Summary model consumed by the CRM settings list/summary UI.
+ * Canonical aggregate consumed by the CRM settings page and summary UI.
  *
- * Keep this lightweight and derived from settings; it does not represent
- * another database table.
+ * This is a derived application model.
+ * It does NOT represent a database table.
  */
 export interface SettingsSummary {
 
-    total: number;
+    /**
+     * Total number of settings.
+     */
+    total:
+        number;
 
-    active: number;
+    /**
+     * Number of active settings.
+     */
+    active:
+        number;
 
-    inactive: number;
+    /**
+     * Number of inactive settings.
+     */
+    inactive:
+        number;
 
-    system: number;
+    /**
+     * Number of settings that are not readonly.
+     */
+    editable:
+        number;
 
-    encrypted: number;
+    /**
+     * Number of system settings.
+     */
+    system:
+        number;
 
-    categories: number;
+    /**
+     * Number of encrypted settings.
+     */
+    encrypted:
+        number;
+
+    /**
+     * Number of distinct setting categories represented.
+     */
+    categories:
+        number;
 
 }
 
+
 /**
- * Compatibility alias used by callers that describe the summary as a
- * collection rather than a single aggregate.
+ * Compatibility alias retained for existing callers.
  */
 export type SettingSummary =
     SettingsSummary;
 
 
+/* ============================================================================
+ * DATABASE PERSISTENCE MODEL
+ * ========================================================================== */
+
 /**
- * Persistence row for organization_settings.
+ * Persistence contract for the existing organization_settings table.
  *
- * This is deliberately separate from Setting.
+ * Keep database naming isolated from the application/domain model.
  */
 export interface OrganizationSettingRow {
 
@@ -221,11 +286,20 @@ export interface OrganizationSettingRow {
 
     updated_at:
         string | null;
+
 }
 
 
+/* ============================================================================
+ * INPUT CONTRACT
+ * ========================================================================== */
+
 /**
- * Generic create/update payload.
+ * Generic create/update input.
+ *
+ * Repository/service validation remains responsible for determining which
+ * fields are actually persisted and which are domain-only compatibility
+ * fields.
  */
 export type SettingInput =
     Partial<Setting>;
