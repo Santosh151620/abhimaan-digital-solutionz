@@ -1,18 +1,19 @@
-'use server';
+﻿'use server';
 
 import {
-    TicketImportExportServiceInstance,
+    ticketImportExportService,
 } from '@/services/crm/TicketImportExportService';
 
 export async function exportTicketsCSV() {
-    return TicketImportExportServiceInstance.exportCSV();
+    return ticketImportExportService.exportCSV();
 }
 
 async function importTicketsCSV(
     csv: string,
 ) {
-    return TicketImportExportServiceInstance.importCSV(
+    return ticketImportExportService.importCSV(
         csv,
     );
 }
+
 

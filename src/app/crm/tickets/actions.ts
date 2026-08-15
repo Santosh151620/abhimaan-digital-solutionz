@@ -1,6 +1,6 @@
-'use server';
+﻿'use server';
 
-import { TicketsServiceInstance } from '@/services/crm/TicketsService';
+import { ticketsService } from '@/services/crm/TicketsService';
 
 import type {
     Ticket,
@@ -8,7 +8,7 @@ import type {
 } from '@/types/crm/Tickets';
 
 export async function getTickets() {
-    return TicketsServiceInstance.list();
+    return ticketsService.list();
 }
 
 async function searchTickets(
@@ -18,30 +18,30 @@ async function searchTickets(
         search?: string;
     }
 ) {
-    return TicketsServiceInstance.search(filters);
+    return ticketsService.search(filters);
 }
 
 export async function getArchivedTickets() {
-    return TicketsServiceInstance.listArchived();
+    return ticketsService.listArchived();
 }
 
 export async function getTicket(
     id: string
 ) {
-    return TicketsServiceInstance.findById(id);
+    return ticketsService.findById(id);
 }
 
 export async function createTicket(
     data: Partial<Ticket>
 ) {
-    return TicketsServiceInstance.create(data);
+    return ticketsService.create(data);
 }
 
 export async function updateTicket(
     id: string,
     data: Partial<Ticket>
 ) {
-    return TicketsServiceInstance.update(
+    return ticketsService.update(
         id,
         data
     );
@@ -50,26 +50,27 @@ export async function updateTicket(
 async function deleteTicket(
     id: string
 ) {
-    return TicketsServiceInstance.delete(id);
+    return ticketsService.delete(id);
 }
 
 async function restoreTicket(
     id: string
 ) {
-    return TicketsServiceInstance.restore(id);
+    return ticketsService.restore(id);
 }
 
 async function updateTicketStatus(
     id: string,
     status: TicketStatus
 ) {
-    return TicketsServiceInstance.updateStatus(
+    return ticketsService.updateStatus(
         id,
         status
     );
 }
 
 export async function getTicketsSummary() {
-    return TicketsServiceInstance.summary();
+    return ticketsService.summary();
 }
+
 

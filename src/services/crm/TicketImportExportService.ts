@@ -1,17 +1,33 @@
-import {
+﻿import {
     TicketsServiceInstance,
+} from '@/services/crm/TicketsService';
+
+import type {
+    TicketsService,
 } from '@/services/crm/TicketsService';
 
 import type {
     Ticket,
 } from '@/types/crm/Tickets';
 
-class TicketImportExportService {
 
-    exportCSV() {
+
+export class TicketImportExportService {
+
+
+    constructor(
+        private readonly ticketsService: TicketsService,
+    ) {}
+
+
+
+    async exportCSV(): Promise<string> {
+
 
         const tickets =
-            TicketsServiceInstance.list();
+            await this.ticketsService.list();
+
+
 
         const headers = [
 
@@ -29,9 +45,11 @@ class TicketImportExportService {
 
         ];
 
+
+
         const rows =
             tickets.map(
-                ticket => [
+                (ticket: Ticket) => [
 
                     ticket.ticketNumber,
 
@@ -48,34 +66,47 @@ class TicketImportExportService {
                 ],
             );
 
+
+
         return [
 
             headers.join(','),
 
             ...rows.map(
-                row => row.join(','),
+                (row: string[]) =>
+                    row.join(','),
             ),
 
         ].join('\n');
 
     }
 
-    importCSV(
+
+
+
+    async importCSV(
         csv: string,
-    ) {
+    ): Promise<Ticket[]> {
+
 
         const lines =
             csv
                 .split('\n')
                 .filter(
-                    line => line.trim(),
+                    line =>
+                        line.trim(),
                 );
 
+
+
         const created: Ticket[] = [];
+
+
 
         for (
             const line of lines.slice(1)
         ) {
+
 
             const [
 
@@ -91,10 +122,13 @@ class TicketImportExportService {
 
                 assignedTo,
 
-            ] = line.split(',');
+            ] =
+                line.split(',');
+
+
 
             const ticket =
-                TicketsServiceInstance.create({
+                await this.ticketsService.create({
 
                     ticketNumber,
 
@@ -112,19 +146,35 @@ class TicketImportExportService {
 
                 });
 
+
+
             created.push(
                 ticket,
             );
 
         }
 
+
+
         return created;
 
     }
 
+
 }
 
-export const
-    TicketImportExportServiceInstance =
-        new TicketImportExportService();
+export const TicketImportExportServiceInstance =
+    new TicketImportExportService(
+        TicketsServiceInstance,
+    );
+
+
+
+
+
+/**
+ * Legacy compatibility export.
+ */
+export const ticketImportExportService =
+    TicketImportExportServiceInstance;
 

@@ -151,7 +151,7 @@ export async function DELETE(
                 id,
             );
 
-        if (!deleted) {
+        if (deleted === undefined) {
 
             return NextResponse.json(
                 {
@@ -194,3 +194,4 @@ export async function DELETE(
     }
 
 }
+

@@ -1,10 +1,10 @@
-import {
+﻿import {
     NextRequest,
     NextResponse,
 } from 'next/server';
 
 import {
-    TicketsServiceInstance,
+    ticketsService,
 } from '@/services/crm/TicketsService';
 
 export async function GET() {
@@ -12,7 +12,7 @@ export async function GET() {
     try {
 
         const tickets =
-            await TicketsServiceInstance.list();
+            await ticketsService.list();
 
         return NextResponse.json(
             tickets,
@@ -52,7 +52,7 @@ export async function POST(
             await request.json();
 
         const ticket =
-            await TicketsServiceInstance.create(
+            await ticketsService.create(
                 body,
             );
 

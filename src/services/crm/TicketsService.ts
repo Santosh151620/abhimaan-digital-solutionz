@@ -1,6 +1,12 @@
+﻿import {
+    createClient,
+} from '@/lib/supabase/server';
+
+
 import {
-    TicketsRepositoryInstance,
+    TicketsRepository,
 } from '@/repositories/crm/TicketsRepository';
+
 
 import type {
     Ticket,
@@ -8,32 +14,67 @@ import type {
     TicketStatus,
 } from '@/types/crm/Tickets';
 
-class TicketsService {
 
-    list() {
 
-        return TicketsRepositoryInstance.list();
+export class TicketsService {
+
+
+    private async repository() {
+
+        const supabase =
+            await createClient();
+
+
+        return new TicketsRepository(
+            supabase,
+        );
 
     }
 
-    listArchived() {
 
-        return TicketsRepositoryInstance.listArchived();
+
+    async list(): Promise<Ticket[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.list();
 
     }
 
-    findById(
-        id: string,
-    ) {
 
-        return TicketsRepositoryInstance.findById(
+
+    async listArchived(): Promise<Ticket[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.listArchived();
+
+    }
+
+
+
+    async findById(
+        id:string,
+    ):Promise<Ticket | null> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.findById(
             id,
         );
 
     }
 
-    details(
-        id: string,
+
+
+    async details(
+        id:string,
     ) {
 
         return this.findById(
@@ -42,89 +83,137 @@ class TicketsService {
 
     }
 
-    search(
-        filters?: TicketSearchFilters,
-    ) {
 
-        return TicketsRepositoryInstance.search(
+
+    async search(
+        filters?:TicketSearchFilters,
+    ):Promise<Ticket[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.search(
             filters,
         );
 
     }
 
-    create(
-        data: Partial<Ticket>,
-    ) {
 
-        return TicketsRepositoryInstance.create(
+
+    async create(
+        data:Partial<Ticket>,
+    ):Promise<Ticket> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.create(
             data,
         );
 
     }
 
-    update(
-        id: string,
-        data: Partial<Ticket>,
-    ) {
 
-        return TicketsRepositoryInstance.update(
+
+    async update(
+        id:string,
+        data:Partial<Ticket>,
+    ):Promise<Ticket> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.update(
             id,
             data,
         );
 
     }
 
-    updateStatus(
-        id: string,
-        status: TicketStatus,
+
+
+    async updateStatus(
+        id:string,
+        status:TicketStatus,
     ) {
 
-        return TicketsRepositoryInstance.updateStatus(
+        const repository =
+            await this.repository();
+
+
+        return repository.updateStatus(
             id,
             status,
         );
 
     }
 
-    delete(
-        id: string,
+
+
+    async delete(
+        id:string,
     ) {
 
-        return TicketsRepositoryInstance.delete(
+        const repository =
+            await this.repository();
+
+
+        return repository.delete(
             id,
         );
 
     }
 
-    restore(
-        id: string,
+
+
+    async restore(
+        id:string,
     ) {
 
-        return TicketsRepositoryInstance.restore(
+        const repository =
+            await this.repository();
+
+
+        return repository.restore(
             id,
         );
 
     }
 
-    summary() {
 
-        return TicketsRepositoryInstance.summary();
+
+    async summary() {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.summary();
 
     }
 
-}
-
-async function createTicketsService() {
-
-    return new TicketsService();
 
 }
 
-export const
-    TicketsServiceInstance =
-        new TicketsService();
 
-const
-    TicketServiceInstance =
-        TicketsServiceInstance;
+
+/**
+ * Backward compatible export.
+ * Existing API/actions depend on this.
+ */
+export const TicketsServiceInstance =
+    new TicketsService();
+
+
+
+
+
+/**
+ * Legacy compatibility export.
+ */
+export const ticketsService =
+    TicketsServiceInstance;
 
