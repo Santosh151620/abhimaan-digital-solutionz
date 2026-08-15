@@ -1,40 +1,4 @@
-﻿/**
- * ============================================================================
- * ADS Settings Repository
- *
- * Organization-scoped platform settings repository.
- *
- * Storage:
- * organization_settings
- *
- * Existing database contract:
- * - id
- * - organization_id
- * - setting_key
- * - setting_value
- * - category
- * - description
- * - created_at
- * - updated_at
- *
- * Repository responsibilities:
- * - Enforce organization scoping through BaseRepository.
- * - Read and write only columns that actually exist in organization_settings.
- * - Normalize and validate setting keys.
- * - Validate supported setting categories.
- * - Map database rows into the PlatformSetting domain contract.
- * - Keep database implementation details out of callers.
- *
- * Important:
- * - organization_id is always derived from BaseRepository / tenant context.
- * - organizationId supplied by a PlatformSetting is never used for persistence.
- * - created_at / updated_at remain database controlled.
- * - Domain-only fields are reconstructed during database-to-domain mapping.
- * - No theme-specific table or settings table is introduced.
- * ============================================================================
- */
-
-import type {
+﻿import type {
     SupabaseClient,
 } from "@supabase/supabase-js";
 
@@ -47,36 +11,86 @@ import {
 import type {
     PlatformSetting,
     SettingCategory,
+    SettingGroup,
     SettingValueType,
 } from "@/types/admin/Settings";
 
 
 
+/**
+ * ============================================================================
+ * ADS ADMIN — SETTINGS REPOSITORY
+ * ============================================================================
+ *
+ * Persistence boundary for the existing organization_settings table.
+ *
+ * IMPORTANT:
+ * - This repository is ADMIN/PLATFORM scoped.
+ * - It is intentionally separate from the CRM SettingsRepository.
+ * - Tenant isolation is provided by BaseRepository.organizationId and is
+ *   reinforced explicitly on every organization_settings query/mutation.
+ * - organization_id is NEVER accepted from a client as an authoritative
+ *   tenant identifier.
+ * - Only columns that actually exist in organization_settings are persisted.
+ * - PlatformSetting remains the application/domain contract.
+ * - Database-specific fields remain isolated in OrganizationSettingRow.
+ *
+ * Current persistence contract:
+ *
+ * organization_settings
+ * ├── id
+ * ├── organization_id
+ * ├── setting_key
+ * ├── setting_value
+ * ├── category
+ * ├── description
+ * ├── created_at
+ * └── updated_at
+ *
+ * Domain-only PlatformSetting properties such as isSystem, isReadonly,
+ * isEncrypted, isVisible, isActive, metadata, etc. are deliberately not
+ * fabricated into the database.
+ * ============================================================================
+ */
 
 
-type OrganizationSettingRow = {
+/* ============================================================================
+ * DATABASE ROW CONTRACT
+ * ========================================================================== */
 
-    id: string;
+interface OrganizationSettingRow {
 
-    organization_id: string;
+    id:
+        string;
 
-    setting_key: string;
+    organization_id:
+        string;
 
-    setting_value: unknown;
+    setting_key:
+        string;
 
-    category: string | null;
+    setting_value:
+        unknown;
 
-    description: string | null;
+    category:
+        string | null;
 
-    created_at: string | null;
+    description:
+        string | null;
 
-    updated_at: string | null;
+    created_at:
+        string | null;
 
-};
+    updated_at:
+        string | null;
+
+}
 
 
 
-
+/* ============================================================================
+ * REPOSITORY CONTRACT
+ * ========================================================================== */
 
 export interface ISettingsRepository {
 
@@ -100,10 +114,7 @@ export interface ISettingsRepository {
     findByCategory(
         category: SettingCategory,
     ):
-        Promise<{
-            category: SettingCategory;
-            settings: PlatformSetting[];
-        }>;
+        Promise<SettingGroup>;
 
 
     findByKey(
@@ -115,7 +126,9 @@ export interface ISettingsRepository {
 
 
 
-
+/* ============================================================================
+ * REPOSITORY IMPLEMENTATION
+ * ========================================================================== */
 
 export class SettingsRepository
     extends BaseRepository<PlatformSetting>
@@ -160,13 +173,37 @@ export class SettingsRepository
 
 
     private static readonly keyPattern =
-        /^[a-zA-Z0-9._:-]+$/;
+        /^[a-z0-9._:-]+$/;
 
 
     private static readonly maxKeyLength =
         255;
 
 
+    private static readonly maxNameLength =
+        255;
+
+
+    private static readonly selectedColumns =
+        [
+
+            "id",
+
+            "organization_id",
+
+            "setting_key",
+
+            "setting_value",
+
+            "category",
+
+            "description",
+
+            "created_at",
+
+            "updated_at",
+
+        ].join(",");
 
 
 
@@ -183,16 +220,16 @@ export class SettingsRepository
 
 
 
+    /* ========================================================================
+     * PUBLIC READ OPERATIONS
+     * ====================================================================== */
 
 
     /**
      * Return every setting belonging to the current organization.
-     *
-     * Tenant isolation is enforced by the repository's organizationId.
      */
     async list():
         Promise<PlatformSetting[]> {
-
 
         const {
             data,
@@ -201,16 +238,7 @@ export class SettingsRepository
             await this
                 .tableRef()
                 .select(
-                    [
-                        "id",
-                        "organization_id",
-                        "setting_key",
-                        "setting_value",
-                        "category",
-                        "description",
-                        "created_at",
-                        "updated_at",
-                    ].join(","),
+                    SettingsRepository.selectedColumns,
                 )
                 .eq(
                     "organization_id",
@@ -230,41 +258,42 @@ export class SettingsRepository
                 );
 
 
-        if (error) {
+        if (
+            error
+        ) {
 
             throw error;
 
         }
 
 
-        const rows =
-            this.toRows(
+        return this
+            .toRows(
                 data,
+            )
+            .map(
+                row =>
+                    this.mapRow(
+                        row,
+                    ),
             );
-
-
-        return rows.map(
-            row =>
-                this.mapRow(
-                    row,
-                ),
-        );
 
     }
 
 
 
-
-
     /**
      * Find one setting by category and key.
+     *
+     * The current persistence contract treats setting_key as the
+     * organization-scoped identity. Category is additionally checked here
+     * because this method explicitly promises category + key lookup.
      */
     async find(
         category: SettingCategory,
         key: string,
     ):
         Promise<PlatformSetting | null> {
-
 
         const normalizedCategory =
             this.requireCategory(
@@ -285,16 +314,7 @@ export class SettingsRepository
             await this
                 .tableRef()
                 .select(
-                    [
-                        "id",
-                        "organization_id",
-                        "setting_key",
-                        "setting_value",
-                        "category",
-                        "description",
-                        "created_at",
-                        "updated_at",
-                    ].join(","),
+                    SettingsRepository.selectedColumns,
                 )
                 .eq(
                     "organization_id",
@@ -319,24 +339,25 @@ export class SettingsRepository
                 );
 
 
-        if (error) {
+        if (
+            error
+        ) {
 
             throw error;
 
         }
 
 
-        const rows =
-            this.toRows(
-                data,
-            );
-
-
         const row =
-            rows[0];
+            this
+                .toRows(
+                    data,
+                )[0];
 
 
-        if (!row) {
+        if (
+            !row
+        ) {
 
             return null;
 
@@ -351,112 +372,201 @@ export class SettingsRepository
 
 
 
+    /**
+     * Find one setting by organization-scoped key.
+     */
+    async findByKey(
+        key: string,
+    ):
+        Promise<PlatformSetting | null> {
+
+        const normalizedKey =
+            this.requireKey(
+                key,
+            );
+
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select(
+                    SettingsRepository.selectedColumns,
+                )
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "setting_key",
+                    normalizedKey,
+                )
+                .order(
+                    "updated_at",
+                    {
+                        ascending: false,
+                    },
+                )
+                .limit(
+                    1,
+                );
+
+
+        if (
+            error
+        ) {
+
+            throw error;
+
+        }
+
+
+        const row =
+            this
+                .toRows(
+                    data,
+                )[0];
+
+
+        if (
+            !row
+        ) {
+
+            return null;
+
+        }
+
+
+        return this.mapRow(
+            row,
+        );
+
+    }
+
 
 
     /**
-     * Create or update a setting inside the current organization.
+     * Return all settings belonging to one supported category.
+     */
+    async findByCategory(
+        category: SettingCategory,
+    ):
+        Promise<SettingGroup> {
+
+        const normalizedCategory =
+            this.requireCategory(
+                category,
+            );
+
+
+        const {
+            data,
+            error,
+        } =
+            await this
+                .tableRef()
+                .select(
+                    SettingsRepository.selectedColumns,
+                )
+                .eq(
+                    "organization_id",
+                    this.organizationId,
+                )
+                .eq(
+                    "category",
+                    normalizedCategory,
+                )
+                .order(
+                    "setting_key",
+                    {
+                        ascending: true,
+                    },
+                );
+
+
+        if (
+            error
+        ) {
+
+            throw error;
+
+        }
+
+
+        return {
+
+            category:
+                normalizedCategory,
+
+            settings:
+                this
+                    .toRows(
+                        data,
+                    )
+                    .map(
+                        row =>
+                            this.mapRow(
+                                row,
+                            ),
+                    ),
+
+        };
+
+    }
+
+
+
+    /* ========================================================================
+     * PUBLIC WRITE OPERATIONS
+     * ====================================================================== */
+
+
+    /**
+     * Create or update an organization-scoped setting.
      *
      * The incoming organizationId is deliberately ignored.
      *
-     * Persistence is restricted to the actual organization_settings
-     * columns. Domain-only fields such as isSystem, isReadonly,
-     * isEncrypted, metadata, etc. are not fabricated into the database.
+     * Only actual organization_settings columns are persisted.
+     *
+     * The operation is implemented as an explicit read-then-update/insert
+     * rather than a fabricated upsert because the existing repository contract
+     * must not assume a particular composite unique constraint beyond the
+     * existing schema.
      */
     async save(
         setting: PlatformSetting,
     ):
         Promise<void> {
 
-
-        if (!setting) {
-
-            throw new Error(
-                "Setting is required.",
-            );
-
-        }
-
-
-        const category =
-            this.requireCategory(
-                setting.category,
+        const validated =
+            this.validateSetting(
+                setting,
             );
 
 
-        const key =
-            this.requireKey(
-                setting.key,
-            );
-
-
-        const name =
-            typeof setting.name === "string"
-                ? setting.name.trim()
-                : "";
-
-
-        if (!name) {
-
-            throw new Error(
-                "Setting name is required.",
-            );
-
-        }
-
-
-        if (
-            !setting.scope
-        ) {
-
-            throw new Error(
-                "Setting scope is required.",
-            );
-
-        }
-
-
-        if (
-            !setting.valueType
-        ) {
-
-            throw new Error(
-                "Setting value type is required.",
-            );
-
-        }
-
-
-        /*
-         * organization_settings does not contain the PlatformSetting
-         * presentation/domain fields. Persist only the existing schema.
-         */
         const payload = {
 
             organization_id:
                 this.organizationId,
 
             setting_key:
-                key,
+                validated.key,
 
             setting_value:
-                setting.value,
+                validated.value,
 
             category:
-                category,
+                validated.category,
 
             description:
-                setting.description?.trim() ||
+                validated.description?.trim() ||
                 null,
 
         };
 
 
-        /*
-         * Look up the current organization-scoped record first.
-         *
-         * This deliberately scopes both the lookup and subsequent
-         * mutation to the current organization.
-         */
         const {
             data: existingData,
             error: existingError,
@@ -472,7 +582,7 @@ export class SettingsRepository
                 )
                 .eq(
                     "setting_key",
-                    key,
+                    validated.key,
                 )
                 .order(
                     "updated_at",
@@ -485,28 +595,28 @@ export class SettingsRepository
                 );
 
 
-        if (existingError) {
+        if (
+            existingError
+        ) {
 
             throw existingError;
 
         }
 
 
-        const existingRows =
-            (existingData ?? []) as Array<{
-                id: string;
-            }>;
-
-
         const existing =
-            existingRows[0];
+            this
+                .toIdRows(
+                    existingData,
+                )[0];
 
 
-        if (existing) {
+        if (
+            existing
+        ) {
 
             const {
-                error:
-                    updateError,
+                error,
             } =
                 await this
                     .tableRef()
@@ -535,9 +645,13 @@ export class SettingsRepository
                     );
 
 
-            if (updateError) {
+            if (
+                error
+            ) {
 
-                throw updateError;
+                throw this.translatePersistenceError(
+                    error,
+                );
 
             }
 
@@ -548,8 +662,7 @@ export class SettingsRepository
 
 
         const {
-            error:
-                insertError,
+            error,
         } =
             await this
                 .tableRef()
@@ -558,9 +671,13 @@ export class SettingsRepository
                 );
 
 
-        if (insertError) {
+        if (
+            error
+        ) {
 
-            throw insertError;
+            throw this.translatePersistenceError(
+                error,
+            );
 
         }
 
@@ -568,85 +685,130 @@ export class SettingsRepository
 
 
 
+    /* ========================================================================
+     * VALIDATION
+     * ====================================================================== */
 
 
     /**
-     * Return all settings for one supported category.
+     * Validate the complete application-level setting contract before any
+     * persistence operation.
+     *
+     * organizationId is intentionally not validated here as a tenant source.
+     * BaseRepository.organizationId remains authoritative.
      */
-    async findByCategory(
-        category: SettingCategory,
+    private validateSetting(
+        setting: PlatformSetting,
     ):
-        Promise<{
-            category: SettingCategory;
-            settings: PlatformSetting[];
-        }> {
+        PlatformSetting {
 
+        if (
+            !setting
+        ) {
 
-        const normalizedCategory =
-            this.requireCategory(
-                category,
+            throw new Error(
+                "Setting is required.",
             );
-
-
-        const {
-            data,
-            error,
-        } =
-            await this
-                .tableRef()
-                .select(
-                    [
-                        "id",
-                        "organization_id",
-                        "setting_key",
-                        "setting_value",
-                        "category",
-                        "description",
-                        "created_at",
-                        "updated_at",
-                    ].join(","),
-                )
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "category",
-                    normalizedCategory,
-                )
-                .order(
-                    "setting_key",
-                    {
-                        ascending: true,
-                    },
-                );
-
-
-        if (error) {
-
-            throw error;
 
         }
 
 
-        const rows =
-            this.toRows(
-                data,
+        const category =
+            this.requireCategory(
+                setting.category,
             );
+
+
+        const key =
+            this.requireKey(
+                setting.key,
+            );
+
+
+        const name =
+            typeof setting.name === "string"
+                ? setting.name.trim()
+                : "";
+
+
+        if (
+            !name
+        ) {
+
+            throw new Error(
+                "Setting name is required.",
+            );
+
+        }
+
+
+        if (
+            name.length >
+            SettingsRepository.maxNameLength
+        ) {
+
+            throw new Error(
+                "Setting name must not exceed 255 characters.",
+            );
+
+        }
+
+
+        /*
+         * organization_settings is organization-scoped storage.
+         *
+         * Platform/module/user settings require a different persistence
+         * contract and must not silently be written into this table as
+         * organization settings.
+         */
+        if (
+            setting.scope !==
+            "Organization"
+        ) {
+
+            throw new Error(
+                "Only Organization-scoped settings can be persisted by the admin settings repository.",
+            );
+
+        }
+
+
+        if (
+            !setting.valueType
+        ) {
+
+            throw new Error(
+                "Setting value type is required.",
+            );
+
+        }
+
+
+        if (
+            !this.isSupportedValueType(
+                setting.valueType,
+            )
+        ) {
+
+            throw new Error(
+                "Invalid setting value type.",
+            );
+
+        }
 
 
         return {
 
-            category:
-                normalizedCategory,
+            ...setting,
 
-            settings:
-                rows.map(
-                    row =>
-                        this.mapRow(
-                            row,
-                        ),
-                ),
+            category,
+
+            key,
+
+            name,
+
+            scope:
+                "Organization",
 
         };
 
@@ -654,129 +816,151 @@ export class SettingsRepository
 
 
 
-
-
-    /**
-     * Find one setting by key inside the current organization.
-     */
-    async findByKey(
-        key: string,
+    private isSupportedValueType(
+        valueType: SettingValueType,
     ):
-        Promise<PlatformSetting | null> {
+        boolean {
 
+        return (
 
-        const normalizedKey =
-            this.requireKey(
-                key,
-            );
+            valueType ===
+                "String" ||
 
+            valueType ===
+                "Number" ||
 
-        const {
-            data,
-            error,
-        } =
-            await this
-                .tableRef()
-                .select(
-                    [
-                        "id",
-                        "organization_id",
-                        "setting_key",
-                        "setting_value",
-                        "category",
-                        "description",
-                        "created_at",
-                        "updated_at",
-                    ].join(","),
-                )
-                .eq(
-                    "organization_id",
-                    this.organizationId,
-                )
-                .eq(
-                    "setting_key",
-                    normalizedKey,
-                )
-                .order(
-                    "updated_at",
-                    {
-                        ascending: false,
-                    },
-                )
-                .limit(
-                    1,
-                );
+            valueType ===
+                "Boolean" ||
 
+            valueType ===
+                "Json" ||
 
-        if (error) {
+            valueType ===
+                "Array"
 
-            throw error;
-
-        }
-
-
-        const rows =
-            this.toRows(
-                data,
-            );
-
-
-        const row =
-            rows[0];
-
-
-        if (!row) {
-
-            return null;
-
-        }
-
-
-        return this.mapRow(
-            row,
         );
 
     }
 
 
 
-
-
-    /**
-     * Convert an unknown Supabase response into the repository row contract.
-     */
-    private toRows(
-        data: unknown,
+    private requireCategory(
+        category: SettingCategory,
     ):
-        OrganizationSettingRow[] {
+        SettingCategory {
 
+        if (
+            !category ||
+            !String(category).trim()
+        ) {
 
-        if (!Array.isArray(data)) {
-
-            return [];
+            throw new Error(
+                "Setting category is required.",
+            );
 
         }
 
 
-        return data as OrganizationSettingRow[];
+        const normalized =
+            String(category).trim();
+
+
+        if (
+            !SettingsRepository.categories.includes(
+                normalized as SettingCategory,
+            )
+        ) {
+
+            throw new Error(
+                `Unsupported setting category: ${normalized}`,
+            );
+
+        }
+
+
+        return normalized as SettingCategory;
 
     }
 
 
 
+    private requireKey(
+        key: string,
+    ):
+        string {
+
+        const normalized =
+            this.normalizeKey(
+                key,
+            );
 
 
-    /**
-     * Map an organization_settings row into the PlatformSetting domain model.
-     *
-     * organization_settings is intentionally smaller than PlatformSetting.
-     * Domain-only properties therefore receive safe deterministic defaults.
-     */
+        if (
+            !normalized
+        ) {
+
+            throw new Error(
+                "Setting key is required.",
+            );
+
+        }
+
+
+        if (
+            normalized.length >
+            SettingsRepository.maxKeyLength
+        ) {
+
+            throw new Error(
+                "Setting key must not exceed 255 characters.",
+            );
+
+        }
+
+
+        if (
+            !SettingsRepository.keyPattern.test(
+                normalized,
+            )
+        ) {
+
+            throw new Error(
+                "Setting key may contain only letters, numbers, dots, underscores, colons, and hyphens.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+
+    private normalizeKey(
+        key: string,
+    ):
+        string {
+
+        return typeof key === "string"
+            ? key
+                .trim()
+                .toLowerCase()
+            : "";
+
+    }
+
+
+
+    /* ========================================================================
+     * DATABASE → DOMAIN MAPPING
+     * ====================================================================== */
+
+
     private mapRow(
         row: OrganizationSettingRow,
     ):
         PlatformSetting {
-
 
         const category =
             this.mapCategory(
@@ -785,7 +969,9 @@ export class SettingsRepository
 
 
         const value =
-            row.setting_value;
+            this.normalizeValue(
+                row.setting_value,
+            );
 
 
         return {
@@ -816,8 +1002,7 @@ export class SettingsRepository
                 row.description ??
                 undefined,
 
-            value:
-                value as PlatformSetting["value"],
+            value,
 
             valueType:
                 this.resolveValueType(
@@ -856,22 +1041,18 @@ export class SettingsRepository
 
 
 
-
-
     /**
-     * Convert an existing database category into a safe domain category.
-     *
-     * organization_settings.category is currently free-form in the
-     * persistence contract, so unknown legacy values are contained at
-     * the domain boundary rather than being exposed as invalid types.
+     * organization_settings.category is currently represented as a string
+     * persistence value. Unknown legacy values are contained at this boundary.
      */
     private mapCategory(
         category: string | null,
     ):
         SettingCategory {
 
-
-        if (!category) {
+        if (
+            !category
+        ) {
 
             return "General";
 
@@ -899,16 +1080,65 @@ export class SettingsRepository
 
 
 
-
-
     /**
-     * Resolve the UI/domain value type from the persisted JSON value.
+     * Normalize the persisted value into the application's supported value
+     * contract without fabricating unsupported database semantics.
      */
+    private normalizeValue(
+        value: unknown,
+    ):
+        PlatformSetting["value"] {
+
+        if (
+            typeof value === "string" ||
+            typeof value === "number" ||
+            typeof value === "boolean"
+        ) {
+
+            return value;
+
+        }
+
+
+        if (
+            Array.isArray(value)
+        ) {
+
+            return value;
+
+        }
+
+
+        if (
+            value !== null &&
+            typeof value === "object"
+        ) {
+
+            return value as Record<
+                string,
+                unknown
+            >;
+
+        }
+
+
+        /*
+         * The current PlatformSetting contract does not include null.
+         *
+         * A null database value is therefore represented as an empty object
+         * rather than leaking an incompatible runtime value through the
+         * Admin domain contract.
+         */
+        return {};
+
+    }
+
+
+
     private resolveValueType(
         value: unknown,
     ):
         SettingValueType {
-
 
         if (
             typeof value === "string"
@@ -953,129 +1183,177 @@ export class SettingsRepository
 
 
 
+    /* ========================================================================
+     * PERSISTENCE ERROR NORMALIZATION
+     * ====================================================================== */
 
 
-    /**
-     * Validate and normalize a setting category before persistence/query.
-     */
-    private requireCategory(
-        category: SettingCategory,
+    private translatePersistenceError(
+        error: {
+            code?: string;
+            message?: string;
+        },
     ):
-        SettingCategory {
-
+        Error {
 
         if (
-            !category ||
-            !String(category).trim()
+            error.code ===
+            "23505"
         ) {
 
-            throw new Error(
-                "Setting category is required.",
+            return new Error(
+                "A setting with this key already exists.",
             );
 
         }
 
 
-        const normalized =
-            String(category).trim();
-
-
-        if (
-            !SettingsRepository.categories.includes(
-                normalized as SettingCategory,
-            )
-        ) {
-
-            throw new Error(
-                `Unsupported setting category: ${normalized}`,
-            );
-
-        }
-
-
-        return normalized as SettingCategory;
+        return new Error(
+            error.message ||
+            "Unable to persist setting.",
+        );
 
     }
 
 
 
+    /* ========================================================================
+     * RESPONSE NORMALIZATION
+     * ====================================================================== */
 
 
-    /**
-     * Validate and normalize a setting key.
-     *
-     * Keys are intentionally normalized to lowercase so callers cannot
-     * accidentally create logically duplicated keys such as:
-     *
-     *     Theme.Policy
-     *     theme.policy
-     */
-    private requireKey(
-        key: string,
+    private toRows(
+        data: unknown,
     ):
-        string {
-
-
-        const normalizedKey =
-            this.normalizeKey(
-                key,
-            );
-
-
-        if (!normalizedKey) {
-
-            throw new Error(
-                "Setting key is required.",
-            );
-
-        }
-
+        OrganizationSettingRow[] {
 
         if (
-            normalizedKey.length >
-            SettingsRepository.maxKeyLength
+            !Array.isArray(data)
         ) {
 
-            throw new Error(
-                "Setting key must not exceed 255 characters.",
-            );
+            return [];
 
         }
 
 
-        if (
-            !SettingsRepository.keyPattern.test(
-                normalizedKey,
-            )
-        ) {
-
-            throw new Error(
-                "Setting key may contain only letters, numbers, dots, underscores, colons, and hyphens.",
-            );
-
-        }
-
-
-        return normalizedKey;
+        return data.filter(
+            (
+                row,
+            ): row is OrganizationSettingRow =>
+                this.isOrganizationSettingRow(
+                    row,
+                ),
+        );
 
     }
 
 
 
-
-
-    /**
-     * Normalize a setting key without performing validation.
-     */
-    private normalizeKey(
-        key: string,
+    private isOrganizationSettingRow(
+        value: unknown,
     ):
-        string {
+        value is OrganizationSettingRow {
+
+        if (
+            typeof value !==
+            "object" ||
+            value === null
+        ) {
+
+            return false;
+
+        }
 
 
-        return typeof key === "string"
-            ? key.trim().toLowerCase()
-            : "";
+        const row =
+            value as Record<
+                string,
+                unknown
+            >;
+
+
+        return (
+
+            typeof row.id ===
+                "string" &&
+
+            typeof row.organization_id ===
+                "string" &&
+
+            typeof row.setting_key ===
+                "string" &&
+
+            (
+                row.category ===
+                    null ||
+                typeof row.category ===
+                    "string"
+            ) &&
+
+            (
+                row.description ===
+                    null ||
+                typeof row.description ===
+                    "string"
+            ) &&
+
+            (
+                row.created_at ===
+                    null ||
+                typeof row.created_at ===
+                    "string"
+            ) &&
+
+            (
+                row.updated_at ===
+                    null ||
+                typeof row.updated_at ===
+                    "string"
+            )
+
+        );
+
+    }
+
+
+
+    private toIdRows(
+        data: unknown,
+    ):
+        Array<{
+            id: string;
+        }> {
+
+        if (
+            !Array.isArray(data)
+        ) {
+
+            return [];
+
+        }
+
+
+        return data.filter(
+            (
+                row,
+            ): row is {
+                id: string;
+            } =>
+
+                typeof row ===
+                    "object" &&
+
+                row !== null &&
+
+                "id" in row &&
+
+                typeof (
+                    row as {
+                        id?: unknown;
+                    }
+                ).id === "string",
+
+        );
 
     }
 
