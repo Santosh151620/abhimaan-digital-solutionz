@@ -1,4 +1,4 @@
-import type {
+﻿import type {
     SupabaseClient,
 } from '@supabase/supabase-js';
 
@@ -659,5 +659,3 @@ export function createPaymentsRepository(
 
 
 
-const PaymentsRepositoryInstance =
-    createPaymentsRepository;
