@@ -22,7 +22,35 @@ import type {
 } from '@/types/crm/Settings';
 
 
-async function repository() {
+type SettingAction =
+    | 'create'
+    | 'update'
+    | 'delete';
+
+
+const SETTING_KEY_PATTERN =
+    /^[a-zA-Z0-9._:-]+$/;
+
+
+const SETTING_KEY_MAX_LENGTH =
+    255;
+
+
+const SETTING_NAME_MAX_LENGTH =
+    150;
+
+
+const VALID_STATUSES:
+    readonly SettingStatus[] =
+    [
+        'Active',
+        'Inactive',
+    ];
+
+
+
+async function repository():
+    Promise<SettingsRepository> {
 
     const supabase =
         await createSupabaseServerClient();
@@ -34,17 +62,36 @@ async function repository() {
 }
 
 
+
 function validateId(
     id: string,
-) {
+): string {
 
-    if (!id || id.trim().length === 0) {
+    if (
+        typeof id !== 'string'
+    ) {
 
         throw new Error(
             'Invalid setting id.',
         );
 
     }
+
+
+    const normalized =
+        id.trim();
+
+
+    if (!normalized) {
+
+        throw new Error(
+            'Invalid setting id.',
+        );
+
+    }
+
+
+    return normalized;
 
 }
 
@@ -53,17 +100,34 @@ function validateId(
 function validateData(
     data: Partial<Setting>,
     isCreate = false,
-) {
+): void {
+
+    if (!data) {
+
+        throw new Error(
+            'Setting data is required.',
+        );
+
+    }
+
 
     const name =
-        data.name?.trim();
+        typeof data.name === 'string'
+            ? data.name.trim()
+            : undefined;
+
 
     const key =
-        data.key?.trim();
+        typeof data.key === 'string'
+            ? data.key.trim().toLowerCase()
+            : undefined;
 
 
 
-    if (isCreate && !key) {
+    if (
+        isCreate &&
+        !key
+    ) {
 
         throw new Error(
             'Setting key is required.',
@@ -101,13 +165,13 @@ function validateData(
 
     if (
         key &&
-        !/^[a-zA-Z0-9._-]+$/.test(
+        !SETTING_KEY_PATTERN.test(
             key,
         )
     ) {
 
         throw new Error(
-            'Setting key may contain only letters, numbers, dots, underscores and hyphens.',
+            'Setting key may contain only letters, numbers, dots, underscores, colons, and hyphens.',
         );
 
     }
@@ -116,11 +180,12 @@ function validateData(
 
     if (
         key &&
-        key.length > 150
+        key.length >
+            SETTING_KEY_MAX_LENGTH
     ) {
 
         throw new Error(
-            'Setting key cannot exceed 150 characters.',
+            `Setting key cannot exceed ${SETTING_KEY_MAX_LENGTH} characters.`,
         );
 
     }
@@ -129,11 +194,27 @@ function validateData(
 
     if (
         name &&
-        name.length > 150
+        name.length >
+            SETTING_NAME_MAX_LENGTH
     ) {
 
         throw new Error(
-            'Setting name cannot exceed 150 characters.',
+            `Setting name cannot exceed ${SETTING_NAME_MAX_LENGTH} characters.`,
+        );
+
+    }
+
+
+
+    if (
+        data.status !== undefined &&
+        !VALID_STATUSES.includes(
+            data.status,
+        )
+    ) {
+
+        throw new Error(
+            'Invalid setting status.',
         );
 
     }
@@ -142,12 +223,40 @@ function validateData(
 
 
 
+function normalizeData(
+    data: Partial<Setting>,
+):
+    Partial<Setting> {
+
+    return {
+
+        ...data,
+
+        ...(data.name !== undefined
+            ? {
+                name:
+                    data.name.trim(),
+            }
+            : {}),
+
+        ...(data.key !== undefined
+            ? {
+                key:
+                    data.key
+                        .trim()
+                        .toLowerCase(),
+            }
+            : {}),
+
+    };
+
+}
+
+
+
 function can(
-    action:
-        | 'create'
-        | 'update'
-        | 'delete',
-) {
+    action: SettingAction,
+): boolean {
 
     return PermissionServiceInstance.hasPermission(
         CRM_ADMIN_ROLE,
@@ -159,21 +268,19 @@ function can(
 
 
 
-function normalizeData(
-    data: Partial<Setting>,
-): Partial<Setting> {
+function requirePermission(
+    action: SettingAction,
+): void {
 
-    return {
+    if (
+        !can(action)
+    ) {
 
-        ...data,
+        throw new Error(
+            'Permission denied.',
+        );
 
-        name:
-            data.name?.trim(),
-
-        key:
-            data.key?.trim(),
-
-    };
+    }
 
 }
 
@@ -183,38 +290,55 @@ function translateError(
     error: unknown,
 ): Error {
 
-    const message =
-        error instanceof Error
-            ? error.message
-            : String(error);
-
-
-
     if (
-        message.includes('duplicate')
-        ||
-        message.includes('unique')
+        error instanceof Error
     ) {
 
-        return new Error(
-            'A setting with this key already exists.',
-        );
+        const message =
+            error.message;
+
+
+        const normalized =
+            message.toLowerCase();
+
+
+        if (
+            normalized.includes(
+                'duplicate',
+            ) ||
+            normalized.includes(
+                'unique',
+            ) ||
+            normalized.includes(
+                'already exists',
+            ) ||
+            normalized.includes(
+                '23505',
+            )
+        ) {
+
+            return new Error(
+                'A setting with this key already exists.',
+            );
+
+        }
+
+
+        return error;
 
     }
 
 
-
-    return error instanceof Error
-        ? error
-        : new Error(
-            'Unable to process setting request.',
-        );
+    return new Error(
+        'Unable to process setting request.',
+    );
 
 }
 
 
 
-export async function getSettings() {
+export async function getSettings():
+    Promise<Setting[]> {
 
     const repo =
         await repository();
@@ -225,7 +349,8 @@ export async function getSettings() {
 
 
 
-async function getArchivedSettings() {
+export async function getArchivedSettings():
+    Promise<Setting[]> {
 
     const repo =
         await repository();
@@ -238,15 +363,20 @@ async function getArchivedSettings() {
 
 export async function getSetting(
     id: string,
-) {
+):
+    Promise<Setting | null> {
 
-    validateId(id);
+    const normalizedId =
+        validateId(
+            id,
+        );
+
 
     const repo =
         await repository();
 
     return repo.details(
-        id,
+        normalizedId,
     );
 
 }
@@ -255,16 +385,12 @@ export async function getSetting(
 
 export async function createSetting(
     data: Partial<Setting>,
-) {
+):
+    Promise<Setting> {
 
-    if (!can('create')) {
-
-        throw new Error(
-            'Permission denied.',
-        );
-
-    }
-
+    requirePermission(
+        'create',
+    );
 
 
     try {
@@ -280,9 +406,10 @@ export async function createSetting(
 
 
         return await repo.create(
-            normalizeData(data),
+            normalizeData(
+                data,
+            ),
         );
-
 
     } catch (error) {
 
@@ -299,23 +426,20 @@ export async function createSetting(
 export async function updateSetting(
     id: string,
     data: Partial<Setting>,
-) {
+):
+    Promise<Setting> {
 
-    if (!can('update')) {
-
-        throw new Error(
-            'Permission denied.',
-        );
-
-    }
-
+    requirePermission(
+        'update',
+    );
 
 
     try {
 
-        validateId(
-            id,
-        );
+        const normalizedId =
+            validateId(
+                id,
+            );
 
 
         validateData(
@@ -328,10 +452,11 @@ export async function updateSetting(
 
 
         return await repo.update(
-            id,
-            normalizeData(data),
+            normalizedId,
+            normalizeData(
+                data,
+            ),
         );
-
 
     } catch (error) {
 
@@ -345,99 +470,143 @@ export async function updateSetting(
 
 
 
-async function deleteSetting(
+export async function deleteSetting(
     id: string,
-) {
+):
+    Promise<void> {
 
-    if (!can('delete')) {
+    requirePermission(
+        'delete',
+    );
 
-        throw new Error(
-            'Permission denied.',
+
+    try {
+
+        const normalizedId =
+            validateId(
+                id,
+            );
+
+
+        const repo =
+            await repository();
+
+
+        await repo.delete(
+            normalizedId,
+        );
+
+    } catch (error) {
+
+        throw translateError(
+            error,
         );
 
     }
-
-
-    validateId(
-        id,
-    );
-
-
-    const repo =
-        await repository();
-
-
-    return repo.delete(
-        id,
-    );
 
 }
 
 
 
-async function restoreSetting(
+export async function restoreSetting(
     id: string,
-) {
+):
+    Promise<boolean> {
 
-    if (!can('update')) {
+    requirePermission(
+        'update',
+    );
 
-        throw new Error(
-            'Permission denied.',
+
+    try {
+
+        const normalizedId =
+            validateId(
+                id,
+            );
+
+
+        const repo =
+            await repository();
+
+
+        return await repo.restore(
+            normalizedId,
+        );
+
+    } catch (error) {
+
+        throw translateError(
+            error,
         );
 
     }
-
-
-    validateId(
-        id,
-    );
-
-
-    const repo =
-        await repository();
-
-
-    return repo.restore(
-        id,
-    );
 
 }
 
 
 
-async function updateSettingStatus(
+export async function updateSettingStatus(
     id: string,
     status: SettingStatus,
-) {
+):
+    Promise<Setting> {
 
-    if (!can('update')) {
+    requirePermission(
+        'update',
+    );
 
-        throw new Error(
-            'Permission denied.',
+
+    try {
+
+        const normalizedId =
+            validateId(
+                id,
+            );
+
+
+        if (
+            !VALID_STATUSES.includes(
+                status,
+            )
+        ) {
+
+            throw new Error(
+                'Invalid setting status.',
+            );
+
+        }
+
+
+        const repo =
+            await repository();
+
+
+        return await repo.updateStatus(
+            normalizedId,
+            status,
+        );
+
+    } catch (error) {
+
+        throw translateError(
+            error,
         );
 
     }
-
-
-    validateId(
-        id,
-    );
-
-
-    const repo =
-        await repository();
-
-
-    return repo.updateStatus(
-        id,
-        status,
-    );
 
 }
 
 
 
-export async function getSettingsSummary() {
+export async function getSettingsSummary():
+    Promise<{
+        total: number;
+        active: number;
+        inactive: number;
+        editable: number;
+        encrypted: number;
+    }> {
 
     const repo =
         await repository();

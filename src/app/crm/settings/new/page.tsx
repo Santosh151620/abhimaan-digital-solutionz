@@ -19,6 +19,21 @@ import type {
 } from '@/types/crm/Settings';
 
 
+
+type ToastState = {
+
+    title: string;
+
+    message: string;
+
+    type:
+        | 'success'
+        | 'error';
+
+};
+
+
+
 export default function NewSettingPage() {
 
     const router =
@@ -30,16 +45,15 @@ export default function NewSettingPage() {
 
 
     const [toast, setToast] =
-        useState<{
-            title: string;
-            message: string;
-            type: 'success' | 'error';
-        } | null>(null);
+        useState<ToastState | null>(
+            null,
+        );
+
 
 
     async function handleSubmit(
         values: Partial<Setting>,
-    ) {
+    ): Promise<void> {
 
         if (loading) {
 
@@ -48,10 +62,12 @@ export default function NewSettingPage() {
         }
 
 
+        setLoading(true);
+
+        setToast(null);
+
+
         try {
-
-            setLoading(true);
-
 
             const setting =
                 await createSetting(
@@ -73,11 +89,6 @@ export default function NewSettingPage() {
             });
 
 
-            /*
-             * The detail page performs its own server-side
-             * load, so an additional router.refresh() is not
-             * required after navigation.
-             */
             router.push(
                 `/crm/settings/${setting.id}`,
             );
@@ -114,7 +125,8 @@ export default function NewSettingPage() {
     }
 
 
-    function handleCancel() {
+
+    function handleCancel(): void {
 
         if (loading) {
 
@@ -130,18 +142,28 @@ export default function NewSettingPage() {
     }
 
 
+
     return (
 
-        <div className="space-y-6">
-
+        <div
+            className="
+                space-y-6
+            "
+        >
 
             {
                 toast && (
 
                     <Toast
-                        title={toast.title}
-                        message={toast.message}
-                        type={toast.type}
+                        title={
+                            toast.title
+                        }
+                        message={
+                            toast.message
+                        }
+                        type={
+                            toast.type
+                        }
                         onClose={() =>
                             setToast(null)
                         }
@@ -151,25 +173,35 @@ export default function NewSettingPage() {
             }
 
 
-            <div className="
-                flex
-                flex-col
-                gap-4
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-            ">
-
+            <div
+                className="
+                    flex
+                    flex-col
+                    gap-4
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                "
+            >
 
                 <div>
 
-                    <h1 className="crm-title">
+                    <h1
+                        className="
+                            crm-title
+                        "
+                    >
                         Create Setting
                     </h1>
 
 
-                    <p className="crm-subtitle">
-                        Create a configuration setting for this organization.
+                    <p
+                        className="
+                            crm-subtitle
+                        "
+                    >
+                        Create a configuration setting
+                        for this organization.
                     </p>
 
                 </div>
@@ -178,6 +210,11 @@ export default function NewSettingPage() {
                 <Link
                     href="/crm/settings"
                     aria-disabled={loading}
+                    tabIndex={
+                        loading
+                            ? -1
+                            : undefined
+                    }
                     className="
                         inline-flex
                         w-fit
@@ -199,20 +236,29 @@ export default function NewSettingPage() {
                     Cancel
                 </Link>
 
-
             </div>
 
 
-            <div className="crm-card p-6">
+            <div
+                className="
+                    crm-card
+                    p-6
+                "
+            >
 
                 <SettingsForm
-                    loading={loading}
-                    onSubmit={handleSubmit}
-                    onCancel={handleCancel}
+                    loading={
+                        loading
+                    }
+                    onSubmit={
+                        handleSubmit
+                    }
+                    onCancel={
+                        handleCancel
+                    }
                 />
 
             </div>
-
 
         </div>
 

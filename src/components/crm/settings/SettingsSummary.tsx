@@ -1,18 +1,29 @@
 'use client';
 
+interface SettingsSummaryData {
 
-import type {
-    SettingsSummary as SettingsSummaryModel,
-} from '@/types/crm/Settings';
+    total: number;
 
+    active: number;
+
+    inactive: number;
+
+    editable: number;
+
+    encrypted: number;
+
+    system: number;
+
+    categories: number;
+
+}
 
 
 interface Props {
 
-    summary: SettingsSummaryModel;
+    summary: SettingsSummaryData;
 
 }
-
 
 
 interface CardProps {
@@ -26,13 +37,11 @@ interface CardProps {
 }
 
 
-
 function SummaryCard({
     title,
     value,
     description,
 }: CardProps) {
-
 
     return (
 
@@ -60,7 +69,6 @@ function SummaryCard({
                 {description}
             </p>
 
-
         </div>
 
     );
@@ -68,11 +76,9 @@ function SummaryCard({
 }
 
 
-
 export default function SettingsSummary({
     summary,
 }: Props) {
-
 
     return (
 
@@ -85,71 +91,49 @@ export default function SettingsSummary({
             "
         >
 
-
             <SummaryCard
-
                 title="Total"
-
                 value={
                     summary.total
                 }
-
                 description="All configured settings"
-
             />
 
 
             <SummaryCard
-
                 title="Active"
-
                 value={
                     summary.active
                 }
-
                 description="Currently enabled"
-
             />
 
 
             <SummaryCard
-
                 title="Inactive"
-
                 value={
                     summary.inactive
                 }
-
                 description="Disabled settings"
-
             />
 
 
             <SummaryCard
-
                 title="Editable"
-
                 value={
                     summary.editable
                 }
-
                 description="User editable values"
-
             />
 
 
             <SummaryCard
-
                 title="Encrypted"
-
                 value={
                     summary.encrypted
                 }
-
                 description="Protected values"
-
             />
-
 
         </div>
 

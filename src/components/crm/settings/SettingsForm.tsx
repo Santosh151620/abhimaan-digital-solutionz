@@ -7,7 +7,6 @@ import {
 import type {
     Setting,
     SettingCategory,
-    SettingStatus,
 } from '@/types/crm/Settings';
 
 
@@ -26,29 +25,84 @@ interface Props {
 }
 
 
-const MAX_NAME_LENGTH = 150;
+const MAX_NAME_LENGTH =
+    150;
 
-const MAX_KEY_LENGTH = 150;
+const MAX_KEY_LENGTH =
+    150;
 
 
-const categories: SettingCategory[] = [
+/**
+ * UI category catalogue.
+ *
+ * The persistence/domain layer remains the source of truth for
+ * validation. The form deliberately does not introduce a second
+ * SettingCategory contract.
+ */
+const categories = [
     'General',
-    'Company',
     'CRM',
-    'Notifications',
+    'Notification',
     'Security',
-    'Billing',
     'Email',
-    'Integrations',
+    'Integration',
+    'Company',
     'Appearance',
     'Other',
-];
+] as const;
 
 
-const statuses: SettingStatus[] = [
-    'Active',
-    'Inactive',
-];
+/**
+ * Convert a persisted SettingValue into a form-safe textarea value.
+ */
+function stringifyValue(
+    value: Setting['value'] | undefined,
+): string {
+
+    if (
+        value === undefined ||
+        value === null
+    ) {
+
+        return '';
+
+    }
+
+
+    if (
+        typeof value === 'string'
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        typeof value === 'number' ||
+        typeof value === 'boolean'
+    ) {
+
+        return String(value);
+
+    }
+
+
+    try {
+
+        return JSON.stringify(
+            value,
+            null,
+            2,
+        );
+
+    } catch {
+
+        return '';
+
+    }
+
+}
 
 
 export default function SettingsForm({
@@ -59,19 +113,22 @@ export default function SettingsForm({
 }: Props) {
 
 
-    const [form, setForm] =
+    const [
+        form,
+        setForm,
+    ] =
         useState<Partial<Setting>>({
 
             category:
-                'General',
+                'General' as SettingCategory,
 
-            status:
-                'Active',
-
-            editable:
+            isActive:
                 true,
 
-            encrypted:
+            isReadonly:
+                false,
+
+            isEncrypted:
                 false,
 
             ...initialValues,
@@ -79,7 +136,10 @@ export default function SettingsForm({
         });
 
 
-    const [error, setError] =
+    const [
+        error,
+        setError,
+    ] =
         useState<string | null>(
             null,
         );
@@ -88,25 +148,29 @@ export default function SettingsForm({
     function update<K extends keyof Setting>(
         key: K,
         value: Setting[K],
-    ) {
+    ): void {
 
-        setForm(previous => ({
+        setForm(
+            previous => ({
 
-            ...previous,
+                ...previous,
 
-            [key]:
-                value,
+                [key]:
+                    value,
 
-        }));
+            }),
+        );
 
-        setError(null);
+        setError(
+            null,
+        );
 
     }
 
 
     async function submit(
         event: React.FormEvent<HTMLFormElement>,
-    ) {
+    ): Promise<void> {
 
         event.preventDefault();
 
@@ -119,11 +183,13 @@ export default function SettingsForm({
 
 
         const name =
-            form.name?.trim() ?? '';
+            form.name?.trim() ??
+            '';
 
 
         const key =
-            form.key?.trim() ?? '';
+            form.key?.trim() ??
+            '';
 
 
         if (!name) {
@@ -137,7 +203,10 @@ export default function SettingsForm({
         }
 
 
-        if (name.length > MAX_NAME_LENGTH) {
+        if (
+            name.length >
+            MAX_NAME_LENGTH
+        ) {
 
             setError(
                 `Setting name cannot exceed ${MAX_NAME_LENGTH} characters.`,
@@ -159,7 +228,10 @@ export default function SettingsForm({
         }
 
 
-        if (key.length > MAX_KEY_LENGTH) {
+        if (
+            key.length >
+            MAX_KEY_LENGTH
+        ) {
 
             setError(
                 `Setting key cannot exceed ${MAX_KEY_LENGTH} characters.`,
@@ -170,10 +242,14 @@ export default function SettingsForm({
         }
 
 
-        if (!/^[a-zA-Z0-9._-]+$/.test(key)) {
+        if (
+            !/^[a-zA-Z0-9._:-]+$/.test(
+                key,
+            )
+        ) {
 
             setError(
-                'Setting key may contain only letters, numbers, dots, underscores and hyphens.',
+                'Setting key may contain only letters, numbers, dots, underscores, colons and hyphens.',
             );
 
             return;
@@ -183,7 +259,9 @@ export default function SettingsForm({
 
         try {
 
-            setError(null);
+            setError(
+                null,
+            );
 
 
             await onSubmit?.({
@@ -196,8 +274,9 @@ export default function SettingsForm({
 
             });
 
-
-        } catch (submitError) {
+        } catch (
+            submitError
+        ) {
 
             console.error(
                 'Settings form submission failed:',
@@ -219,9 +298,17 @@ export default function SettingsForm({
     return (
 
         <form
-            onSubmit={submit}
+            onSubmit={
+                submit
+            }
             noValidate
-            className="space-y-6 rounded-xl border bg-background p-6"
+            className="
+                space-y-6
+                rounded-xl
+                border
+                bg-background
+                p-6
+            "
         >
 
             {
@@ -229,7 +316,15 @@ export default function SettingsForm({
 
                     <div
                         role="alert"
-                        className="rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                        className="
+                            rounded-lg
+                            border
+                            border-destructive/30
+                            bg-destructive/10
+                            p-3
+                            text-sm
+                            text-destructive
+                        "
                     >
                         {error}
                     </div>
@@ -238,14 +333,24 @@ export default function SettingsForm({
             }
 
 
-            <div className="grid gap-4 md:grid-cols-2">
-
+            <div
+                className="
+                    grid
+                    gap-4
+                    md:grid-cols-2
+                "
+            >
 
                 <div>
 
                     <label
                         htmlFor="setting-name"
-                        className="mb-1 block text-sm font-medium"
+                        className="
+                            mb-1
+                            block
+                            text-sm
+                            font-medium
+                        "
                     >
                         Name
                     </label>
@@ -256,16 +361,31 @@ export default function SettingsForm({
                         name="name"
                         type="text"
                         required
-                        maxLength={MAX_NAME_LENGTH}
+                        maxLength={
+                            MAX_NAME_LENGTH
+                        }
                         autoComplete="off"
-                        disabled={loading}
-                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
-                        value={form.name ?? ''}
-                        onChange={event =>
-                            update(
-                                'name',
-                                event.target.value,
-                            )
+                        disabled={
+                            loading
+                        }
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            p-2
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
+                        value={
+                            form.name ??
+                            ''
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    'name',
+                                    event.target.value,
+                                )
                         }
                     />
 
@@ -276,7 +396,12 @@ export default function SettingsForm({
 
                     <label
                         htmlFor="setting-key"
-                        className="mb-1 block text-sm font-medium"
+                        className="
+                            mb-1
+                            block
+                            text-sm
+                            font-medium
+                        "
                     >
                         Key
                     </label>
@@ -287,17 +412,32 @@ export default function SettingsForm({
                         name="key"
                         type="text"
                         required
-                        maxLength={MAX_KEY_LENGTH}
+                        maxLength={
+                            MAX_KEY_LENGTH
+                        }
                         autoComplete="off"
                         placeholder="example.setting"
-                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
-                        disabled={loading}
-                        value={form.key ?? ''}
-                        onChange={event =>
-                            update(
-                                'key',
-                                event.target.value,
-                            )
+                        disabled={
+                            loading
+                        }
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            p-2
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
+                        value={
+                            form.key ??
+                            ''
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    'key',
+                                    event.target.value,
+                                )
                         }
                     />
 
@@ -308,7 +448,12 @@ export default function SettingsForm({
 
                     <label
                         htmlFor="setting-category"
-                        className="mb-1 block text-sm font-medium"
+                        className="
+                            mb-1
+                            block
+                            text-sm
+                            font-medium
+                        "
                     >
                         Category
                     </label>
@@ -317,31 +462,47 @@ export default function SettingsForm({
                     <select
                         id="setting-category"
                         name="category"
-                        disabled={loading}
-                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
+                        disabled={
+                            loading
+                        }
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            p-2
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
                         value={
                             form.category ??
                             'General'
                         }
-                        onChange={event =>
-                            update(
-                                'category',
-                                event.target.value as SettingCategory,
-                            )
+                        onChange={
+                            event =>
+                                update(
+                                    'category',
+                                    event.target.value as SettingCategory,
+                                )
                         }
                     >
 
                         {
-                            categories.map(category => (
+                            categories.map(
+                                category => (
 
-                                <option
-                                    key={category}
-                                    value={category}
-                                >
-                                    {category}
-                                </option>
+                                    <option
+                                        key={
+                                            category
+                                        }
+                                        value={
+                                            category
+                                        }
+                                    >
+                                        {category}
+                                    </option>
 
-                            ))
+                                ),
+                            )
                         }
 
                     </select>
@@ -352,53 +513,74 @@ export default function SettingsForm({
                 <div>
 
                     <label
-                        htmlFor="setting-status"
-                        className="mb-1 block text-sm font-medium"
+                        htmlFor="setting-active"
+                        className="
+                            mb-1
+                            block
+                            text-sm
+                            font-medium
+                        "
                     >
                         Status
                     </label>
 
 
                     <select
-                        id="setting-status"
-                        name="status"
-                        disabled={loading}
-                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
-                        value={
-                            form.status ??
-                            'Active'
+                        id="setting-active"
+                        name="isActive"
+                        disabled={
+                            loading
                         }
-                        onChange={event =>
-                            update(
-                                'status',
-                                event.target.value as SettingStatus,
-                            )
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            p-2
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
+                        value={
+                            form.isActive === false
+                                ? 'Inactive'
+                                : 'Active'
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    'isActive',
+                                    event.target.value ===
+                                        'Active',
+                                )
                         }
                     >
 
-                        {
-                            statuses.map(status => (
+                        <option value="Active">
+                            Active
+                        </option>
 
-                                <option
-                                    key={status}
-                                    value={status}
-                                >
-                                    {status}
-                                </option>
-
-                            ))
-                        }
+                        <option value="Inactive">
+                            Inactive
+                        </option>
 
                     </select>
 
                 </div>
 
 
-                <div className="md:col-span-2">
+                <div
+                    className="
+                        md:col-span-2
+                    "
+                >
 
                     <label
                         htmlFor="setting-value"
-                        className="mb-1 block text-sm font-medium"
+                        className="
+                            mb-1
+                            block
+                            text-sm
+                            font-medium
+                        "
                     >
                         Value
                     </label>
@@ -408,25 +590,50 @@ export default function SettingsForm({
                         id="setting-value"
                         name="value"
                         rows={5}
-                        disabled={loading}
-                        className="w-full rounded-lg border p-2 font-mono text-sm disabled:cursor-not-allowed disabled:opacity-60"
-                        value={form.value ?? ''}
-                        onChange={event =>
-                            update(
-                                'value',
-                                event.target.value,
+                        disabled={
+                            loading
+                        }
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            p-2
+                            font-mono
+                            text-sm
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
+                        value={
+                            stringifyValue(
+                                form.value,
                             )
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    'value',
+                                    event.target.value,
+                                )
                         }
                     />
 
                 </div>
 
 
-                <div className="md:col-span-2">
+                <div
+                    className="
+                        md:col-span-2
+                    "
+                >
 
                     <label
                         htmlFor="setting-description"
-                        className="mb-1 block text-sm font-medium"
+                        className="
+                            mb-1
+                            block
+                            text-sm
+                            font-medium
+                        "
                     >
                         Description
                     </label>
@@ -436,58 +643,89 @@ export default function SettingsForm({
                         id="setting-description"
                         name="description"
                         rows={3}
-                        disabled={loading}
-                        className="w-full rounded-lg border p-2 disabled:cursor-not-allowed disabled:opacity-60"
-                        value={form.description ?? ''}
-                        onChange={event =>
-                            update(
-                                'description',
-                                event.target.value,
-                            )
+                        disabled={
+                            loading
+                        }
+                        className="
+                            w-full
+                            rounded-lg
+                            border
+                            p-2
+                            disabled:cursor-not-allowed
+                            disabled:opacity-60
+                        "
+                        value={
+                            form.description ??
+                            ''
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    'description',
+                                    event.target.value,
+                                )
                         }
                     />
 
                 </div>
 
 
-                <label className="flex items-center gap-2">
+                <label
+                    className="
+                        flex
+                        items-center
+                        gap-2
+                    "
+                >
 
                     <input
                         type="checkbox"
-                        name="editable"
-                        disabled={loading}
-                        checked={
-                            form.editable ??
-                            true
+                        name="isReadonly"
+                        disabled={
+                            loading
                         }
-                        onChange={event =>
-                            update(
-                                'editable',
-                                event.target.checked,
-                            )
+                        checked={
+                            form.isReadonly ??
+                            false
+                        }
+                        onChange={
+                            event =>
+                                update(
+                                    'isReadonly',
+                                    event.target.checked,
+                                )
                         }
                     />
 
-                    Editable
+                    Read-only
 
                 </label>
 
 
-                <label className="flex items-center gap-2">
+                <label
+                    className="
+                        flex
+                        items-center
+                        gap-2
+                    "
+                >
 
                     <input
                         type="checkbox"
-                        name="encrypted"
-                        disabled={loading}
+                        name="isEncrypted"
+                        disabled={
+                            loading
+                        }
                         checked={
-                            form.encrypted ??
+                            form.isEncrypted ??
                             false
                         }
-                        onChange={event =>
-                            update(
-                                'encrypted',
-                                event.target.checked,
-                            )
+                        onChange={
+                            event =>
+                                update(
+                                    'isEncrypted',
+                                    event.target.checked,
+                                )
                         }
                     />
 
@@ -498,16 +736,35 @@ export default function SettingsForm({
             </div>
 
 
-            <div className="flex justify-end gap-3">
+            <div
+                className="
+                    flex
+                    justify-end
+                    gap-3
+                "
+            >
 
                 {
                     onCancel && (
 
                         <button
                             type="button"
-                            onClick={onCancel}
-                            disabled={loading}
-                            className="rounded-lg border px-4 py-2 transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
+                            onClick={
+                                onCancel
+                            }
+                            disabled={
+                                loading
+                            }
+                            className="
+                                rounded-lg
+                                border
+                                px-4
+                                py-2
+                                transition
+                                hover:bg-muted
+                                disabled:cursor-not-allowed
+                                disabled:opacity-60
+                            "
                         >
                             Cancel
                         </button>
@@ -518,8 +775,20 @@ export default function SettingsForm({
 
                 <button
                     type="submit"
-                    disabled={loading}
-                    className="rounded-lg bg-primary px-4 py-2 text-primary-foreground transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                    disabled={
+                        loading
+                    }
+                    className="
+                        rounded-lg
+                        bg-primary
+                        px-4
+                        py-2
+                        text-primary-foreground
+                        transition
+                        hover:opacity-90
+                        disabled:cursor-not-allowed
+                        disabled:opacity-60
+                    "
                 >
                     {
                         loading

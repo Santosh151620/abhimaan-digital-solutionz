@@ -18,136 +18,421 @@ import type {
     ThemeConfig,
 } from "@/types/theme/Theme";
 
+
+/**
+ * ============================================================================
+ * ADS ENTERPRISE PLATFORM
+ *
+ * ThemeProvider
+ *
+ * Responsibilities:
+ *
+ * - Own the active ADS theme for the current authenticated UI.
+ * - Provide the supported ADS theme catalogue.
+ * - Apply themes immediately to the document.
+ * - Load the persisted user preference.
+ * - Persist user theme changes.
+ * - Maintain a local fallback for resilient startup.
+ * - Roll back an optimistic theme change when persistence fails.
+ *
+ * Boundary:
+ *
+ * Runtime theme state only.
+ *
+ * The provider does NOT:
+ *
+ * - Access Supabase directly.
+ * - Access repositories directly.
+ * - Define database schema.
+ * - Contain organization authorization rules.
+ * - Allow arbitrary theme identifiers.
+ *
+ * Persistence is delegated to:
+ *
+ * /api/admin/user-preferences
+ *
+ * ============================================================================
+ */
+
+
+/**
+ * ---------------------------------------------------------------------------
+ * Supported ADS themes
+ * ---------------------------------------------------------------------------
+ */
+
 export const ADS_THEMES:
-Record<ADSTheme, ThemeConfig>
-=
-{
-    "ads-midnight": {
-        id: "ads-midnight",
-        name: "ADS Midnight",
-        description: "Premium dark ADS enterprise theme.",
-        official: true,
-        selectable: true,
-        colors: {
-            background: "#050914",
-            foreground: "#f4f8ff",
-            primary: "#168cff",
-            primarySoft: "#0b5fc2",
-            secondary: "#0b6fff",
-            accent: "#20c8ff",
-            accentSoft: "#0d7fc4",
-            backgroundDeep: "#030711",
-            backgroundElevated: "#07101e",
-            surface: "#0b1220",
-            surfaceMuted: "#111b2d",
-            surfaceGlass: "rgba(9,18,34,.78)",
-            surfaceGlassStrong: "rgba(8,17,31,.92)",
-            surfaceHover: "#101d31",
-            border: "#26354d",
-            borderSubtle: "rgba(96,165,250,.16)",
-            borderStrong: "rgba(37,140,255,.34)",
-            textPrimary: "#f4f8ff",
-            textSecondary: "#b5c4d8",
-            textMuted: "#71839d",
-            primaryHover: "#319bff",
-            primaryActive: "#0876e8",
-            info: "#38bdf8",
-            cyan: "#22d3ee",
-            blue: "#168cff",
-            success: "#10b981",
-            warning: "#f59e0b",
-            danger: "#ef4444",
-            muted: "#71839d",
-            shadowCard: "0 12px 36px rgba(0,0,0,.28)",
-            shadowGlow: "0 0 28px rgba(22,140,255,.16)",
-            glassBlur: "18px",
-        },
-    },
+    Record<ADSTheme, ThemeConfig>
+    =
+    {
 
-    "ads-azure": {
-        id: "ads-azure",
-        name: "ADS Azure",
-        description: "Modern blue enterprise theme.",
-        official: true,
-        selectable: true,
-        colors: {
-            background: "#07111f",
-            foreground: "#f5f9ff",
-            primary: "#248cff",
-            primarySoft: "#1268c7",
-            secondary: "#1677e8",
-            accent: "#27c9ff",
-            accentSoft: "#1599d5",
-            backgroundDeep: "#04101d",
-            backgroundElevated: "#0a192b",
-            surface: "#0d1a2b",
-            surfaceMuted: "#14253b",
-            surfaceGlass: "rgba(13,29,48,.80)",
-            surfaceGlassStrong: "rgba(10,23,39,.94)",
-            surfaceHover: "#172c46",
-            border: "#294563",
-            borderSubtle: "rgba(86,170,255,.18)",
-            borderStrong: "rgba(48,148,255,.38)",
-            textPrimary: "#f5f9ff",
-            textSecondary: "#b9c9dc",
-            textMuted: "#788da7",
-            primaryHover: "#42a0ff",
-            primaryActive: "#0879e8",
-            info: "#4bc8ff",
-            cyan: "#2dd4ff",
-            blue: "#248cff",
-            success: "#10b981",
-            warning: "#f59e0b",
-            danger: "#ef4444",
-            muted: "#788da7",
-            shadowCard: "0 12px 36px rgba(0,0,0,.24)",
-            shadowGlow: "0 0 30px rgba(36,140,255,.18)",
-            glassBlur: "18px",
-        },
-    },
+        "ads-midnight": {
 
-    "ads-platinum": {
-        id: "ads-platinum",
-        name: "ADS Platinum",
-        description: "Premium light enterprise theme.",
-        official: true,
-        selectable: true,
-        colors: {
-            background: "#f3f6fa",
-            foreground: "#142033",
-            primary: "#126fe8",
-            primarySoft: "#0b59b8",
-            secondary: "#1769d5",
-            accent: "#08a9dc",
-            accentSoft: "#087da8",
-            backgroundDeep: "#e8edf4",
-            backgroundElevated: "#ffffff",
-            surface: "#ffffff",
-            surfaceMuted: "#eef3f8",
-            surfaceGlass: "rgba(255,255,255,.82)",
-            surfaceGlassStrong: "rgba(255,255,255,.94)",
-            surfaceHover: "#e9f1fa",
-            border: "#d5deea",
-            borderSubtle: "rgba(37,76,120,.14)",
-            borderStrong: "rgba(18,111,232,.28)",
-            textPrimary: "#142033",
-            textSecondary: "#42536b",
-            textMuted: "#718096",
-            primaryHover: "#2d84ee",
-            primaryActive: "#095fc9",
-            info: "#078fca",
-            cyan: "#079fc8",
-            blue: "#126fe8",
-            success: "#10b981",
-            warning: "#f59e0b",
-            danger: "#ef4444",
-            muted: "#718096",
-            shadowCard: "0 12px 30px rgba(24,45,72,.10)",
-            shadowGlow: "0 0 24px rgba(18,111,232,.12)",
-            glassBlur: "18px",
+            id:
+                "ads-midnight",
+
+            name:
+                "ADS Midnight",
+
+            description:
+                "Premium dark ADS enterprise theme.",
+
+            official:
+                true,
+
+            selectable:
+                true,
+
+            colors: {
+
+                background:
+                    "#050914",
+
+                foreground:
+                    "#f4f8ff",
+
+                primary:
+                    "#168cff",
+
+                primarySoft:
+                    "#0b5fc2",
+
+                secondary:
+                    "#0b6fff",
+
+                accent:
+                    "#20c8ff",
+
+                accentSoft:
+                    "#0d7fc4",
+
+                backgroundDeep:
+                    "#030711",
+
+                backgroundElevated:
+                    "#07101e",
+
+                surface:
+                    "#0b1220",
+
+                surfaceMuted:
+                    "#111b2d",
+
+                surfaceGlass:
+                    "rgba(9,18,34,.78)",
+
+                surfaceGlassStrong:
+                    "rgba(8,17,31,.92)",
+
+                surfaceHover:
+                    "#101d31",
+
+                border:
+                    "#26354d",
+
+                borderSubtle:
+                    "rgba(96,165,250,.16)",
+
+                borderStrong:
+                    "rgba(37,140,255,.34)",
+
+                textPrimary:
+                    "#f4f8ff",
+
+                textSecondary:
+                    "#b5c4d8",
+
+                textMuted:
+                    "#71839d",
+
+                primaryHover:
+                    "#319bff",
+
+                primaryActive:
+                    "#0876e8",
+
+                info:
+                    "#38bdf8",
+
+                cyan:
+                    "#22d3ee",
+
+                blue:
+                    "#168cff",
+
+                success:
+                    "#10b981",
+
+                warning:
+                    "#f59e0b",
+
+                danger:
+                    "#ef4444",
+
+                muted:
+                    "#71839d",
+
+                shadowCard:
+                    "0 12px 36px rgba(0,0,0,.28)",
+
+                shadowGlow:
+                    "0 0 28px rgba(22,140,255,.16)",
+
+                glassBlur:
+                    "18px",
+
+            },
+
         },
-    },
-};
+
+
+        "ads-azure": {
+
+            id:
+                "ads-azure",
+
+            name:
+                "ADS Azure",
+
+            description:
+                "Modern blue enterprise theme.",
+
+            official:
+                true,
+
+            selectable:
+                true,
+
+            colors: {
+
+                background:
+                    "#07111f",
+
+                foreground:
+                    "#f5f9ff",
+
+                primary:
+                    "#248cff",
+
+                primarySoft:
+                    "#1268c7",
+
+                secondary:
+                    "#1677e8",
+
+                accent:
+                    "#27c9ff",
+
+                accentSoft:
+                    "#1599d5",
+
+                backgroundDeep:
+                    "#04101d",
+
+                backgroundElevated:
+                    "#0a192b",
+
+                surface:
+                    "#0d1a2b",
+
+                surfaceMuted:
+                    "#14253b",
+
+                surfaceGlass:
+                    "rgba(13,29,48,.80)",
+
+                surfaceGlassStrong:
+                    "rgba(10,23,39,.94)",
+
+                surfaceHover:
+                    "#172c46",
+
+                border:
+                    "#294563",
+
+                borderSubtle:
+                    "rgba(86,170,255,.18)",
+
+                borderStrong:
+                    "rgba(48,148,255,.38)",
+
+                textPrimary:
+                    "#f5f9ff",
+
+                textSecondary:
+                    "#b9c9dc",
+
+                textMuted:
+                    "#788da7",
+
+                primaryHover:
+                    "#42a0ff",
+
+                primaryActive:
+                    "#0879e8",
+
+                info:
+                    "#4bc8ff",
+
+                cyan:
+                    "#2dd4ff",
+
+                blue:
+                    "#248cff",
+
+                success:
+                    "#10b981",
+
+                warning:
+                    "#f59e0b",
+
+                danger:
+                    "#ef4444",
+
+                muted:
+                    "#788da7",
+
+                shadowCard:
+                    "0 12px 36px rgba(0,0,0,.24)",
+
+                shadowGlow:
+                    "0 0 30px rgba(36,140,255,.18)",
+
+                glassBlur:
+                    "18px",
+
+            },
+
+        },
+
+
+        "ads-platinum": {
+
+            id:
+                "ads-platinum",
+
+            name:
+                "ADS Platinum",
+
+            description:
+                "Premium light enterprise theme.",
+
+            official:
+                true,
+
+            selectable:
+                true,
+
+            colors: {
+
+                background:
+                    "#f3f6fa",
+
+                foreground:
+                    "#142033",
+
+                primary:
+                    "#126fe8",
+
+                primarySoft:
+                    "#0b59b8",
+
+                secondary:
+                    "#1769d5",
+
+                accent:
+                    "#08a9dc",
+
+                accentSoft:
+                    "#087da8",
+
+                backgroundDeep:
+                    "#e8edf4",
+
+                backgroundElevated:
+                    "#ffffff",
+
+                surface:
+                    "#ffffff",
+
+                surfaceMuted:
+                    "#eef3f8",
+
+                surfaceGlass:
+                    "rgba(255,255,255,.82)",
+
+                surfaceGlassStrong:
+                    "rgba(255,255,255,.94)",
+
+                surfaceHover:
+                    "#e9f1fa",
+
+                border:
+                    "#d5deea",
+
+                borderSubtle:
+                    "rgba(37,76,120,.14)",
+
+                borderStrong:
+                    "rgba(18,111,232,.28)",
+
+                textPrimary:
+                    "#142033",
+
+                textSecondary:
+                    "#42536b",
+
+                textMuted:
+                    "#718096",
+
+                primaryHover:
+                    "#2d84ee",
+
+                primaryActive:
+                    "#095fc9",
+
+                info:
+                    "#078fca",
+
+                cyan:
+                    "#079fc8",
+
+                blue:
+                    "#126fe8",
+
+                success:
+                    "#10b981",
+
+                warning:
+                    "#f59e0b",
+
+                danger:
+                    "#ef4444",
+
+                muted:
+                    "#718096",
+
+                shadowCard:
+                    "0 12px 30px rgba(24,45,72,.10)",
+
+                shadowGlow:
+                    "0 0 24px rgba(18,111,232,.12)",
+
+                glassBlur:
+                    "18px",
+
+            },
+
+        },
+
+    };
+
+
+/**
+ * ---------------------------------------------------------------------------
+ * Context contract
+ * ---------------------------------------------------------------------------
+ */
 
 interface ThemeContextValue {
 
@@ -170,24 +455,50 @@ interface ThemeContextValue {
 
 
 const ThemeContext =
-createContext<
-    ThemeContextValue | undefined
->(undefined);
+    createContext<
+        ThemeContextValue | undefined
+    >(
+        undefined,
+    );
+
+
+/**
+ * ---------------------------------------------------------------------------
+ * Theme helpers
+ * ---------------------------------------------------------------------------
+ */
+
+function isADSTheme(
+    value: unknown,
+):
+    value is ADSTheme {
+
+    return (
+        typeof value === "string" &&
+        Object.prototype.hasOwnProperty.call(
+            ADS_THEMES,
+            value,
+        )
+    );
+
+}
 
 
 function applyTheme(
     theme: ADSTheme,
-): void {
+):
+    void {
 
     if (
-        typeof document ===
-        "undefined"
+        typeof document === "undefined"
     ) {
         return;
     }
 
+
     const root =
         document.documentElement;
+
 
     root.dataset.theme =
         theme;
@@ -198,21 +509,56 @@ function applyTheme(
 }
 
 
-function isADSTheme(
-    value: unknown,
-): value is ADSTheme {
+function readLocalTheme():
+    ADSTheme | null {
 
-    return (
-        typeof value ===
-        "string" &&
-        Object.prototype.hasOwnProperty.call(
-            ADS_THEMES,
-            value,
-        )
+    if (
+        typeof window === "undefined"
+    ) {
+        return null;
+    }
+
+
+    const stored =
+        window.localStorage.getItem(
+            "ads-theme",
+        );
+
+
+    return isADSTheme(
+        stored,
+    )
+        ? stored
+        : null;
+
+}
+
+
+function writeLocalTheme(
+    theme: ADSTheme,
+):
+    void {
+
+    if (
+        typeof window === "undefined"
+    ) {
+        return;
+    }
+
+
+    window.localStorage.setItem(
+        "ads-theme",
+        theme,
     );
 
 }
 
+
+/**
+ * ---------------------------------------------------------------------------
+ * API contracts
+ * ---------------------------------------------------------------------------
+ */
 
 interface UserPreferenceResponse {
 
@@ -233,17 +579,56 @@ interface UserPreferenceResponse {
 }
 
 
-async function fetchUserTheme(): Promise<ADSTheme | null> {
+interface UserPreferenceErrorResponse {
+
+    error?:
+        string;
+
+    message?:
+        string;
+
+}
+
+
+/**
+ * ---------------------------------------------------------------------------
+ * User preference API
+ * ---------------------------------------------------------------------------
+ */
+
+async function fetchUserTheme():
+    Promise<ADSTheme | null> {
 
     const response =
         await fetch(
             "/api/admin/user-preferences",
             {
-                method: "GET",
-                credentials: "include",
-                cache: "no-store",
+                method:
+                    "GET",
+
+                credentials:
+                    "include",
+
+                cache:
+                    "no-store",
+
             },
         );
+
+
+    /*
+     * A missing/expired session should not destroy the visual shell.
+     *
+     * The provider will fall back to local/default theme.
+     */
+    if (
+        response.status === 401
+    ) {
+
+        return null;
+
+    }
+
 
     if (
         !response.ok
@@ -255,13 +640,17 @@ async function fetchUserTheme(): Promise<ADSTheme | null> {
 
     }
 
+
     const payload =
         await response.json() as
             UserPreferenceResponse;
 
+
     const theme =
         payload.preference?.theme ??
-        payload.data?.theme;
+        payload.data?.theme ??
+        null;
+
 
     return isADSTheme(
         theme,
@@ -274,59 +663,82 @@ async function fetchUserTheme(): Promise<ADSTheme | null> {
 
 async function persistUserTheme(
     theme: ADSTheme,
-): Promise<void> {
+):
+    Promise<void> {
 
     const response =
         await fetch(
             "/api/admin/user-preferences",
             {
-                method: "PATCH",
-                credentials: "include",
+                method:
+                    "PATCH",
+
+                credentials:
+                    "include",
+
                 headers: {
+
                     "Content-Type":
                         "application/json",
+
                 },
+
                 body:
                     JSON.stringify({
                         theme,
                     }),
+
             },
         );
 
+
     if (
-        !response.ok
+        response.ok
     ) {
 
-        let message =
-            `Failed to save theme (${response.status}).`;
-
-        try {
-
-            const payload =
-                await response.json() as {
-                    error?: string;
-                    message?: string;
-                };
-
-            message =
-                payload.error ??
-                payload.message ??
-                message;
-
-        } catch {
-
-            // Preserve the original HTTP error.
-
-        }
-
-        throw new Error(
-            message,
-        );
+        return;
 
     }
 
+
+    let message =
+        `Failed to save theme (${response.status}).`;
+
+
+    try {
+
+        const payload =
+            await response.json() as
+                UserPreferenceErrorResponse;
+
+
+        message =
+            payload.error ??
+            payload.message ??
+            message;
+
+    } catch {
+
+        /*
+         * Preserve the original HTTP failure when
+         * the server does not return JSON.
+         */
+
+    }
+
+
+    throw new Error(
+        message,
+    );
+
 }
 
+
+/**
+ * ============================================================================
+ * ThemeProvider
+ * ============================================================================
+ */
 
 export default function ThemeProvider({
     children,
@@ -338,26 +750,45 @@ export default function ThemeProvider({
         theme,
         setThemeState,
     ] =
-    useState<ADSTheme>(
-        "ads-midnight",
-    );
+        useState<ADSTheme>(
+            "ads-midnight",
+        );
+
 
     const [
         loading,
         setLoading,
     ] =
-    useState<boolean>(
-        true,
-    );
+        useState<boolean>(
+            true,
+        );
+
 
     const [
         error,
         setError,
     ] =
-    useState<string | null>(
-        null,
-    );
+        useState<string | null>(
+            null,
+        );
 
+
+    /**
+     * ------------------------------------------------------------------------
+     * Initial theme resolution
+     * ------------------------------------------------------------------------
+     *
+     * Resolution order:
+     *
+     * 1. Local cached theme for immediate visual continuity.
+     * 2. Server-persisted user preference.
+     * 3. Local cached theme.
+     * 4. ADS Midnight.
+     *
+     * Organization policy will later sit above user preference at the
+     * resolution boundary without requiring a new theme table.
+     * ------------------------------------------------------------------------
+     */
 
     useEffect(() => {
 
@@ -365,7 +796,8 @@ export default function ThemeProvider({
             false;
 
 
-        async function loadTheme() {
+        async function loadTheme():
+            Promise<void> {
 
             try {
 
@@ -378,19 +810,14 @@ export default function ThemeProvider({
                 );
 
 
-                const stored =
-                    window.localStorage.getItem(
-                        "ads-theme",
-                    );
-
-
                 const cachedTheme =
-                    isADSTheme(
-                        stored,
-                    )
-                        ? stored
-                        : null;
+                    readLocalTheme();
 
+
+                /*
+                 * Apply the cached theme immediately so the application
+                 * does not remain visually unthemed while the server loads.
+                 */
 
                 if (
                     cachedTheme
@@ -432,9 +859,7 @@ export default function ThemeProvider({
                     activeTheme,
                 );
 
-
-                window.localStorage.setItem(
-                    "ads-theme",
+                writeLocalTheme(
                     activeTheme,
                 );
 
@@ -461,18 +886,9 @@ export default function ThemeProvider({
                 );
 
 
-                const stored =
-                    window.localStorage.getItem(
-                        "ads-theme",
-                    );
-
-
                 const fallback =
-                    isADSTheme(
-                        stored,
-                    )
-                        ? stored
-                        : "ads-midnight";
+                    readLocalTheme() ??
+                    "ads-midnight";
 
 
                 setThemeState(
@@ -514,11 +930,29 @@ export default function ThemeProvider({
     }, []);
 
 
+    /**
+     * ------------------------------------------------------------------------
+     * Change theme
+     * ------------------------------------------------------------------------
+     *
+     * Optimistic UI:
+     *
+     * - State changes immediately.
+     * - DOM changes immediately.
+     * - Local cache changes immediately.
+     *
+     * Persistence then happens asynchronously.
+     *
+     * If persistence fails, the previous state is restored.
+     * ------------------------------------------------------------------------
+     */
+
     const setTheme =
         useCallback(
             async (
                 value: ADSTheme,
-            ): Promise<void> => {
+            ):
+                Promise<void> => {
 
                 if (
                     !isADSTheme(
@@ -526,7 +960,9 @@ export default function ThemeProvider({
                     )
                 ) {
 
-                    return;
+                    throw new Error(
+                        "Unsupported ADS theme.",
+                    );
 
                 }
 
@@ -535,15 +971,22 @@ export default function ThemeProvider({
                     theme;
 
 
+                if (
+                    previousTheme === value
+                ) {
+
+                    return;
+
+                }
+
+
                 setError(
                     null,
                 );
 
 
                 /*
-                 * Apply immediately.
-                 *
-                 * The UI does not wait for the database.
+                 * Immediate UI update.
                  */
 
                 setThemeState(
@@ -554,8 +997,7 @@ export default function ThemeProvider({
                     value,
                 );
 
-                window.localStorage.setItem(
-                    "ads-theme",
+                writeLocalTheme(
                     value,
                 );
 
@@ -571,9 +1013,10 @@ export default function ThemeProvider({
                 ) {
 
                     /*
-                     * Roll back if persistence failed.
-                     * This prevents the UI and DB from silently
-                     * diverging.
+                     * Persistence failed.
+                     *
+                     * Restore the previous known-good state so the UI
+                     * cannot silently diverge from persisted preferences.
                      */
 
                     setThemeState(
@@ -584,8 +1027,7 @@ export default function ThemeProvider({
                         previousTheme,
                     );
 
-                    window.localStorage.setItem(
-                        "ads-theme",
+                    writeLocalTheme(
                         previousTheme,
                     );
 
@@ -612,15 +1054,27 @@ export default function ThemeProvider({
         );
 
 
+    /**
+     * ------------------------------------------------------------------------
+     * Stable context value
+     * ------------------------------------------------------------------------
+     */
+
     const contextValue =
         useMemo(
             () => ({
+
                 theme,
+
                 setTheme,
+
                 themes:
                     ADS_THEMES,
+
                 loading,
+
                 error,
+
             }),
             [
                 theme,
@@ -632,6 +1086,7 @@ export default function ThemeProvider({
 
 
     return (
+
         <ThemeContext.Provider
             value={
                 contextValue
@@ -639,12 +1094,20 @@ export default function ThemeProvider({
         >
             {children}
         </ThemeContext.Provider>
+
     );
 
 }
 
 
-export function useADSTheme() {
+/**
+ * ============================================================================
+ * useADSTheme
+ * ============================================================================
+ */
+
+export function useADSTheme():
+    ThemeContextValue {
 
     const context =
         useContext(
@@ -657,7 +1120,7 @@ export function useADSTheme() {
     ) {
 
         throw new Error(
-            "useADSTheme must be used inside ThemeProvider",
+            "useADSTheme must be used inside ThemeProvider.",
         );
 
     }

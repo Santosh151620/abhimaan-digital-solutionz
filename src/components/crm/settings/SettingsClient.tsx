@@ -22,7 +22,7 @@ import {
 
 import type {
     Setting,
-    SettingsSummary as SettingsSummaryModel,
+    SettingsSummary as ServerSettingsSummary,
 } from '@/types/crm/Settings';
 
 
@@ -30,7 +30,7 @@ interface Props {
 
     initialSettings: Setting[];
 
-    summary: SettingsSummaryModel;
+    summary: ServerSettingsSummary;
 
 }
 
@@ -41,10 +41,30 @@ type MessageType =
     | null;
 
 
+interface DisplaySummary {
+
+    total: number;
+
+    active: number;
+
+    inactive: number;
+
+    editable: number;
+
+    encrypted: number;
+
+    system: number;
+
+    categories: number;
+
+}
+
+
 export default function SettingsClient({
     initialSettings,
     summary,
 }: Props) {
+
 
     const router =
         useRouter();
@@ -97,7 +117,9 @@ export default function SettingsClient({
 
         return () => {
 
-            if (messageTimer.current) {
+            if (
+                messageTimer.current
+            ) {
 
                 clearTimeout(
                     messageTimer.current,
@@ -112,13 +134,16 @@ export default function SettingsClient({
 
     function clearMessage() {
 
-        if (messageTimer.current) {
+        if (
+            messageTimer.current
+        ) {
 
             clearTimeout(
                 messageTimer.current,
             );
 
-            messageTimer.current = null;
+            messageTimer.current =
+                null;
 
         }
 
@@ -135,7 +160,9 @@ export default function SettingsClient({
         type: MessageType,
     ) {
 
-        if (messageTimer.current) {
+        if (
+            messageTimer.current
+        ) {
 
             clearTimeout(
                 messageTimer.current,
@@ -150,15 +177,19 @@ export default function SettingsClient({
 
 
         messageTimer.current =
-            setTimeout(() => {
+            setTimeout(
+                () => {
 
-                setMessage(null);
+                    setMessage(null);
 
-                setMessageType(null);
+                    setMessageType(null);
 
-                messageTimer.current = null;
+                    messageTimer.current =
+                        null;
 
-            }, 4000);
+                },
+                4000,
+            );
 
     }
 
@@ -167,7 +198,9 @@ export default function SettingsClient({
         values: Partial<Setting>,
     ) {
 
-        if (loading) {
+        if (
+            loading
+        ) {
 
             return;
 
@@ -187,22 +220,15 @@ export default function SettingsClient({
                 );
 
 
-            if (created) {
-
-                setSettings(
-                    current => [
-                        ...current,
-                        created,
-                    ],
-                );
-
-            }
+            setSettings(
+                current => [
+                    ...current,
+                    created,
+                ],
+            );
 
 
             setShowForm(false);
-
-
-            router.refresh();
 
 
             showMessage(
@@ -210,6 +236,8 @@ export default function SettingsClient({
                 'success',
             );
 
+
+            router.refresh();
 
         } catch (error) {
 
@@ -226,7 +254,6 @@ export default function SettingsClient({
                 'error',
             );
 
-
         } finally {
 
             setLoading(false);
@@ -236,67 +263,53 @@ export default function SettingsClient({
     }
 
 
+    /*
+     * Build the presentation summary explicitly.
+     *
+     * The server summary intentionally does not need to contain
+     * the client-derived editable count.
+     */
+    const displaySummary: DisplaySummary = {
+
+        total:
+            settings.length,
+
+        active:
+            summary.active,
+
+        inactive:
+            summary.inactive,
+
+        editable:
+            settings.reduce(
+                (
+                    count,
+                    setting,
+                ) =>
+                    count +
+                    (
+                        setting.editable
+                            ? 1
+                            : 0
+                    ),
+                0,
+            ),
+
+        encrypted:
+            summary.encrypted,
+
+        system:
+            summary.system,
+
+        categories:
+            summary.categories,
+
+    };
+
+
     return (
 
         <div className="space-y-6">
-
-            <div
-                className="
-                    crm-card
-                    flex
-                    items-center
-                    justify-between
-                    gap-4
-                    p-6
-                "
-            >
-
-                <div>
-
-                    <h1 className="text-2xl font-bold">
-                        CRM Settings
-                    </h1>
-
-
-                    <p className="mt-1 text-sm text-muted-foreground">
-                        Manage application configuration and preferences.
-                    </p>
-
-                </div>
-
-
-                <button
-                    type="button"
-                    disabled={loading}
-                    onClick={() => {
-
-                        clearMessage();
-
-                        setShowForm(true);
-
-                    }}
-                    className="
-                        rounded-lg
-                        bg-primary
-                        px-5
-                        py-2.5
-                        font-medium
-                        text-primary-foreground
-                        transition
-                        hover:opacity-90
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-primary/20
-                        disabled:cursor-not-allowed
-                        disabled:opacity-50
-                    "
-                >
-
-                    New Setting
-
-                </button>
-
-            </div>
 
 
             {
@@ -333,11 +346,48 @@ export default function SettingsClient({
 
 
             <SettingsSummary
-                summary={{
-                    ...summary,
-                    total: settings.length,
-                }}
+                summary={
+                    displaySummary
+                }
             />
+
+
+            <div className="flex justify-end">
+
+                <button
+                    type="button"
+                    disabled={loading}
+                    onClick={() => {
+
+                        clearMessage();
+
+                        setShowForm(
+                            true,
+                        );
+
+                    }}
+                    className="
+                        rounded-lg
+                        bg-primary
+                        px-5
+                        py-2.5
+                        font-medium
+                        text-primary-foreground
+                        transition
+                        hover:opacity-90
+                        focus:outline-none
+                        focus:ring-2
+                        focus:ring-primary/20
+                        disabled:cursor-not-allowed
+                        disabled:opacity-50
+                    "
+                >
+
+                    New Setting
+
+                </button>
+
+            </div>
 
 
             {
@@ -354,13 +404,18 @@ export default function SettingsClient({
                             }
                             onCancel={() => {
 
-                                if (loading) {
+                                if (
+                                    loading
+                                ) {
 
                                     return;
 
                                 }
 
-                                setShowForm(false);
+
+                                setShowForm(
+                                    false,
+                                );
 
                                 clearMessage();
 

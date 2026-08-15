@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import {
     getSetting,
-} from '../actions';
+} from "../actions";
 
 
 interface Props {
@@ -15,87 +15,213 @@ interface Props {
 }
 
 
+/**
+ * ============================================================================
+ * CRM SETTING DETAILS
+ * ============================================================================
+ *
+ * Responsibilities:
+ * - Display one CRM setting.
+ * - Respect the canonical Setting domain contract.
+ * - Safely render JSON-backed setting values.
+ * - Preserve compatibility with legacy Settings UI properties.
+ *
+ * Does not:
+ * - Access the database directly.
+ * - Modify settings.
+ * - Implement persistence rules.
+ * ============================================================================
+ */
+
+
 export async function generateMetadata({
     params,
 }: Props) {
 
-    const { id } =
+    const {
+        id,
+    } =
         await params;
 
 
     const setting =
-        await getSetting(id);
+        await getSetting(
+            id,
+        );
 
 
     return {
 
-        title: setting
-            ? `${setting.name} | CRM Settings`
-            : 'CRM Setting',
+        title:
+            setting
+                ? `${setting.name} | CRM Settings`
+                : "CRM Setting",
 
     };
 
 }
 
 
+/**
+ * Render a setting value safely regardless of its JSON-backed type.
+ */
+function formatSettingValue(
+    value: unknown,
+): string {
 
-function displayValue(
-    encrypted: boolean,
-    value?: string | null,
-) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
 
-    if (encrypted) {
-
-        return '••••••••';
+        return "-";
 
     }
 
 
-    return value?.trim()
-        ? value
-        : '-';
+    if (
+        typeof value === "string"
+    ) {
+
+        return value.trim()
+            ? value
+            : "-";
+
+    }
+
+
+    if (
+        typeof value === "number" ||
+        typeof value === "boolean"
+    ) {
+
+        return String(
+            value,
+        );
+
+    }
+
+
+    try {
+
+        return JSON.stringify(
+            value,
+            null,
+            2,
+        );
+
+    } catch {
+
+        return String(
+            value,
+        );
+
+    }
 
 }
 
+
+/**
+ * Render a value while respecting the encryption state.
+ */
+function displayValue(
+    encrypted: boolean,
+    value: unknown,
+): string {
+
+    if (
+        encrypted
+    ) {
+
+        return "••••••••";
+
+    }
+
+
+    return formatSettingValue(
+        value,
+    );
+
+}
 
 
 export default async function SettingDetailsPage({
     params,
 }: Props) {
 
-
-    const { id } =
+    const {
+        id,
+    } =
         await params;
 
 
     const setting =
-        await getSetting(id);
+        await getSetting(
+            id,
+        );
 
 
-
-    if (!setting) {
+    if (
+        !setting
+    ) {
 
         notFound();
 
     }
 
 
+    const encrypted =
+        setting.encrypted ??
+        setting.isEncrypted ??
+        false;
+
+
+    const editable =
+        setting.editable ??
+        (
+            !setting.isReadonly &&
+            !setting.isSystem
+        );
+
+
+    const status =
+        setting.status ??
+        (
+            setting.isActive
+                ? "Active"
+                : "Inactive"
+        );
+
 
     return (
 
-        <div className="space-y-8">
+        <div
+            className="
+                space-y-8
+            "
+        >
 
+            <div
+                className="
+                    flex
+                    flex-col
+                    gap-4
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                "
+            >
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
-
-                <div className="flex items-start gap-3">
-
+                <div
+                    className="
+                        flex
+                        items-start
+                        gap-3
+                    "
+                >
 
                     <Link
-
                         href="/crm/settings"
-
                         className="
                             inline-flex
                             items-center
@@ -111,23 +237,30 @@ export default async function SettingDetailsPage({
                             focus:ring-2
                             focus:ring-primary/20
                         "
-
                     >
-
                         ← Back
-
                     </Link>
 
 
                     <div>
 
-                        <h1 className="text-2xl font-semibold">
+                        <h1
+                            className="
+                                text-2xl
+                                font-semibold
+                            "
+                        >
                             {setting.name}
                         </h1>
 
 
-                        <p className="text-sm text-muted-foreground">
-                            {setting.settingNumber}
+                        <p
+                            className="
+                                text-sm
+                                text-muted-foreground
+                            "
+                        >
+                            {setting.settingNumber ?? setting.key}
                         </p>
 
                     </div>
@@ -135,14 +268,13 @@ export default async function SettingDetailsPage({
                 </div>
 
 
-
                 {
-                    setting.editable && (
+                    editable && (
 
                         <Link
-
-                            href={`/crm/settings/${setting.id}/edit`}
-
+                            href={
+                                `/crm/settings/${setting.id}/edit`
+                            }
                             className="
                                 inline-flex
                                 items-center
@@ -159,28 +291,31 @@ export default async function SettingDetailsPage({
                                 focus:ring-2
                                 focus:ring-primary/20
                             "
-
                         >
-
                             Edit
-
                         </Link>
 
                     )
                 }
 
-
             </div>
 
 
+            <div
+                className="
+                    grid
+                    gap-6
+                    md:grid-cols-2
+                "
+            >
 
-
-            <div className="grid gap-6 md:grid-cols-2">
-
-
-
-                <div className="crm-card space-y-5 p-6">
-
+                <div
+                    className="
+                        crm-card
+                        space-y-5
+                        p-6
+                    "
+                >
 
                     <Info
                         label="Key"
@@ -196,122 +331,117 @@ export default async function SettingDetailsPage({
 
                     <Info
                         label="Status"
-                        value={setting.status}
+                        value={status}
                     />
-
 
                 </div>
 
 
-
-
-
-                <div className="crm-card space-y-5 p-6">
-
+                <div
+                    className="
+                        crm-card
+                        space-y-5
+                        p-6
+                    "
+                >
 
                     <Info
-
                         label="Editable"
-
                         value={
-                            setting.editable
-                                ? 'Yes'
-                                : 'No'
+                            editable
+                                ? "Yes"
+                                : "No"
                         }
-
                     />
-
 
 
                     <Info
-
                         label="Encrypted"
-
                         value={
-                            setting.encrypted
-                                ? 'Yes'
-                                : 'No'
+                            encrypted
+                                ? "Yes"
+                                : "No"
                         }
-
                     />
-
 
 
                     <div>
 
-
-                        <div className="text-sm text-muted-foreground">
+                        <div
+                            className="
+                                text-sm
+                                text-muted-foreground
+                            "
+                        >
                             Value
                         </div>
 
 
-
-                        <pre className="
-                            mt-2
-                            whitespace-pre-wrap
-                            break-words
-                            rounded-lg
-                            bg-muted
-                            p-3
-                            text-sm
-                        ">
-
+                        <pre
+                            className="
+                                mt-2
+                                whitespace-pre-wrap
+                                break-words
+                                rounded-lg
+                                bg-muted
+                                p-3
+                                text-sm
+                            "
+                        >
                             {
                                 displayValue(
-                                    setting.encrypted,
+                                    encrypted,
                                     setting.value,
                                 )
                             }
-
                         </pre>
-
 
                     </div>
 
-
                 </div>
 
-
-
             </div>
-
-
-
 
 
             {
                 setting.description && (
 
-                    <div className="crm-card p-6">
+                    <div
+                        className="
+                            crm-card
+                            p-6
+                        "
+                    >
 
-
-                        <h2 className="mb-3 font-semibold">
+                        <h2
+                            className="
+                                mb-3
+                                font-semibold
+                            "
+                        >
                             Description
                         </h2>
 
 
-
-                        <p className="whitespace-pre-wrap text-sm">
+                        <p
+                            className="
+                                whitespace-pre-wrap
+                                text-sm
+                            "
+                        >
                             {setting.description}
                         </p>
-
-
 
                     </div>
 
                 )
             }
 
-
-
         </div>
 
     );
 
 }
-
-
-
 
 
 function Info({
@@ -322,22 +452,31 @@ function Info({
     value?: string | null;
 }) {
 
-
     return (
 
         <div>
 
-
-            <div className="text-sm text-muted-foreground">
+            <div
+                className="
+                    text-sm
+                    text-muted-foreground
+                "
+            >
                 {label}
             </div>
 
 
-            <div className="break-words font-medium">
-                {value || '-'}
+            <div
+                className="
+                    break-words
+                    font-medium
+                "
+            >
+                {
+                    value ||
+                    "-"
+                }
             </div>
-
-
 
         </div>
 
