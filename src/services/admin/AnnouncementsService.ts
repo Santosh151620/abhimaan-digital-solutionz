@@ -8,6 +8,38 @@ import type {
 } from "@/repositories/admin/AnnouncementsRepository";
 
 
+
+/**
+ * ============================================================================
+ * ADS ADMIN — ANNOUNCEMENTS SERVICE
+ * ============================================================================
+ *
+ * Canonical business-service boundary for administrator announcements.
+ *
+ * Responsibilities:
+ *
+ * - Validate announcement input.
+ * - Normalize user-provided identifiers and required text.
+ * - Delegate persistence to the repository.
+ * - Preserve the existing repository contract.
+ * - Prevent invalid identifiers from reaching persistence.
+ *
+ * Architecture:
+ *
+ *   UI / Server Action
+ *          ↓
+ *   AnnouncementsService
+ *          ↓
+ *   AnnouncementsRepository
+ *          ↓
+ *   Persistence / Supabase
+ *
+ * The repository remains responsible for database access, tenant/security
+ * enforcement and persistence semantics.
+ * ============================================================================
+ */
+
+
 export class AnnouncementsService {
 
 
@@ -20,6 +52,9 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Return all announcements available to the repository context.
+     */
     async list():
 
     Promise<Announcement[]> {
@@ -30,6 +65,9 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Return currently published announcements.
+     */
     async listPublished():
 
     Promise<Announcement[]> {
@@ -40,6 +78,9 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Find an announcement by identifier.
+     */
     async findById(
 
         id: string,
@@ -64,6 +105,12 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Create or update an announcement.
+     *
+     * The repository remains the canonical persistence boundary. The service
+     * only prepares and validates the business payload.
+     */
     async save(
 
         announcement:
@@ -107,6 +154,12 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Delete an existing announcement.
+     *
+     * Existence is checked first so callers receive a stable domain-level
+     * error rather than relying on repository-specific behavior.
+     */
     async delete(
 
         id: string,
@@ -123,7 +176,7 @@ export class AnnouncementsService {
             );
 
 
-        const announcement =
+        const existing =
             await this.repository.findById(
 
                 normalizedId,
@@ -131,7 +184,7 @@ export class AnnouncementsService {
             );
 
 
-        if (!announcement) {
+        if (!existing) {
 
             throw new Error(
 
@@ -152,6 +205,9 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Validate the announcement payload before persistence.
+     */
     private validateAnnouncement(
 
         announcement:
@@ -193,6 +249,9 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Normalize required textual business values.
+     */
     private normalizeRequiredText(
 
         value:
@@ -227,6 +286,9 @@ export class AnnouncementsService {
 
 
 
+    /**
+     * Validate and normalize an entity identifier.
+     */
     private validateId(
 
         id: string,

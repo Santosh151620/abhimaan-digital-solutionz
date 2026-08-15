@@ -1,31 +1,89 @@
+/**
+ * ============================================================================
+ * ADS WORKFLOW AUTOMATION SERVICE
+ * ============================================================================
+ *
+ * Canonical execution boundary for workflow automation actions.
+ *
+ * Responsibilities:
+ *
+ * - Validate automation execution requests.
+ * - Execute actions in deterministic order.
+ * - Capture per-action execution results.
+ * - Support fail-fast and continue-on-error execution modes.
+ * - Normalize unknown errors into stable result information.
+ * - Provide a single-execution convenience API.
+ *
+ * IMPORTANT:
+ *
+ * This service orchestrates execution only.
+ *
+ * It does NOT:
+ *
+ * - resolve tenant context;
+ * - bypass authorization;
+ * - access Supabase directly;
+ * - persist workflow definitions;
+ * - implement individual automation actions.
+ *
+ * Individual actions remain responsible for their own business rules and
+ * authorization requirements.
+ * ============================================================================
+ */
+
 import type {
     AutomationExecution,
     AutomationResult,
 } from "@/types/workflow/Automation";
 
 
+
+/**
+ * Input contract for one automation action.
+ */
 export interface AutomationExecutionInput {
 
-    workflowId: string;
+    readonly workflowId: string;
 
-    actionId: string;
+    readonly actionId: string;
 
-    execute: () =>
-        Promise<void>;
+    readonly execute:
+        () => Promise<void>;
 
 }
 
 
+
+/**
+ * Execution behavior options.
+ */
 export interface AutomationExecutionOptions {
 
-    continueOnError?: boolean;
+    /**
+     * Continue executing remaining actions after an action fails.
+     *
+     * Defaults to true so independent automation actions do not unnecessarily
+     * prevent one another from completing.
+     */
+    readonly continueOnError?: boolean;
 
 }
 
 
+
+/**
+ * Canonical workflow automation orchestration service.
+ */
 export class AutomationService {
 
 
+    /**
+     * Execute a collection of automation actions sequentially.
+     *
+     * Each action receives an independent result entry.
+     *
+     * When `continueOnError` is false, execution stops after the first failure.
+     */
     async execute(
         executions:
             AutomationExecutionInput[] = [],
@@ -45,9 +103,9 @@ export class AutomationService {
             );
 
 
-        const {
-            continueOnError = true,
-        } = options;
+        const continueOnError =
+            options.continueOnError ??
+            true;
 
 
         const results:
@@ -90,13 +148,8 @@ export class AutomationService {
 
             }
 
+
             catch (error) {
-
-                const message =
-                    this.getErrorMessage(
-                        error,
-                    );
-
 
                 results.push({
 
@@ -109,7 +162,10 @@ export class AutomationService {
                     success:
                         false,
 
-                    message,
+                    message:
+                        this.getErrorMessage(
+                            error,
+                        ),
 
                     errorCode:
                         this.getErrorCode(
@@ -142,6 +198,10 @@ export class AutomationService {
             new Date();
 
 
+        /*
+         * If fail-fast execution stopped before all actions were attempted,
+         * the overall execution is necessarily unsuccessful.
+         */
         const success =
             results.length ===
                 normalizedExecutions.length &&
@@ -172,13 +232,20 @@ export class AutomationService {
     }
 
 
+
+    /**
+     * Execute exactly one automation action.
+     *
+     * Uses fail-fast semantics because there are no subsequent actions to
+     * continue with.
+     */
     async executeOne(
         execution:
             AutomationExecutionInput,
     ): Promise<AutomationExecution> {
 
 
-        const results =
+        const result =
             await this.execute(
 
                 [
@@ -193,11 +260,11 @@ export class AutomationService {
             );
 
 
-        const result =
-            results.executions[0];
+        const executionResult =
+            result.executions[0];
 
 
-        if (!result) {
+        if (!executionResult) {
 
             throw new Error(
                 "Automation execution did not produce a result.",
@@ -206,11 +273,18 @@ export class AutomationService {
         }
 
 
-        return result;
+        return executionResult;
 
     }
 
 
+
+    /**
+     * Validate and normalize an automation execution collection.
+     *
+     * IDs are trimmed once at the service boundary so downstream actions
+     * receive canonical identifiers.
+     */
     private validateExecutions(
         executions:
             AutomationExecutionInput[],
@@ -264,7 +338,9 @@ export class AutomationService {
                         : "";
 
 
-                if (!workflowId) {
+                if (
+                    !workflowId
+                ) {
 
                     throw new Error(
                         `Automation workflow id is required at index ${index}.`,
@@ -273,7 +349,9 @@ export class AutomationService {
                 }
 
 
-                if (!actionId) {
+                if (
+                    !actionId
+                ) {
 
                     throw new Error(
                         `Automation action id is required at index ${index}.`,
@@ -310,6 +388,10 @@ export class AutomationService {
     }
 
 
+
+    /**
+     * Normalize an unknown thrown value into a safe user/service message.
+     */
     private getErrorMessage(
         error: unknown,
     ): string {
@@ -319,7 +401,10 @@ export class AutomationService {
             error instanceof Error
         ) {
 
-            return error.message;
+            return (
+                error.message.trim() ||
+                "Automation execution failed."
+            );
 
         }
 
@@ -329,7 +414,10 @@ export class AutomationService {
             "string"
         ) {
 
-            return error;
+            return (
+                error.trim() ||
+                "Automation execution failed."
+            );
 
         }
 
@@ -339,6 +427,10 @@ export class AutomationService {
     }
 
 
+
+    /**
+     * Extract an optional machine-readable error code.
+     */
     private getErrorCode(
         error: unknown,
     ): string | undefined {
@@ -363,16 +455,31 @@ export class AutomationService {
             ).code;
 
 
-        return typeof candidate ===
-            "string" &&
-            candidate.trim()
-            ? candidate.trim()
-            : undefined;
+        if (
+            typeof candidate !==
+            "string"
+        ) {
+
+            return undefined;
+
+        }
+
+
+        const code =
+            candidate.trim();
+
+
+        return code ||
+            undefined;
 
     }
 
 }
 
 
+
+/**
+ * Canonical application-wide automation service instance.
+ */
 export const automationService =
     new AutomationService();

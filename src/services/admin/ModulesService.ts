@@ -9,8 +9,38 @@ import type {
 
 
 
-export class ModulesService {
+/**
+ * ============================================================================
+ * ADS ADMIN — MODULES SERVICE
+ * ============================================================================
+ *
+ * Canonical business-service boundary for platform modules.
+ *
+ * Responsibilities:
+ *
+ * - Validate and normalize module input.
+ * - Enforce module-code uniqueness.
+ * - Validate module dependency integrity.
+ * - Prevent self-dependencies.
+ * - Protect system modules from deletion.
+ * - Delegate persistence to ModulesRepository.
+ *
+ * Architecture:
+ *
+ *   UI / Server Action
+ *          ↓
+ *   ModulesService
+ *          ↓
+ *   ModulesRepository
+ *          ↓
+ *   Persistence
+ *
+ * Security / tenant / persistence concerns remain below this boundary.
+ * ============================================================================
+ */
 
+
+export class ModulesService {
 
 
     constructor(
@@ -22,6 +52,9 @@ export class ModulesService {
 
 
 
+    /**
+     * Return all platform modules.
+     */
     async list():
 
     Promise<PlatformModule[]> {
@@ -32,6 +65,9 @@ export class ModulesService {
 
 
 
+    /**
+     * Find a module by identifier.
+     */
     async findById(
 
         id: string,
@@ -56,6 +92,9 @@ export class ModulesService {
 
 
 
+    /**
+     * Find a module by normalized business code.
+     */
     async findByCode(
 
         code: string,
@@ -80,6 +119,9 @@ export class ModulesService {
 
 
 
+    /**
+     * Determine whether a module is currently enabled.
+     */
     async isEnabled(
 
         code: string,
@@ -90,9 +132,7 @@ export class ModulesService {
 
         const platformModule =
             await this.findByCode(
-
                 code,
-
             );
 
 
@@ -107,6 +147,11 @@ export class ModulesService {
 
 
 
+    /**
+     * Verify that all declared module dependencies are active.
+     *
+     * Dependencies are interpreted as module codes.
+     */
     async dependenciesSatisfied(
 
         platformModule:
@@ -116,7 +161,13 @@ export class ModulesService {
 
     Promise<boolean> {
 
-        if (!platformModule) {
+        if (
+
+            !platformModule ||
+
+            typeof platformModule !== "object"
+
+        ) {
 
             throw new Error(
 
@@ -127,12 +178,16 @@ export class ModulesService {
         }
 
 
+        const moduleCode =
+            this.normalizeCode(
+                platformModule.code,
+            );
+
+
         const dependencies =
-            Array.isArray(
+            this.normalizeDependencies(
                 platformModule.dependencies,
-            )
-                ? platformModule.dependencies
-                : [];
+            );
 
 
         if (!dependencies.length) {
@@ -142,45 +197,54 @@ export class ModulesService {
         }
 
 
+        if (
+
+            dependencies.includes(
+                moduleCode,
+            )
+
+        ) {
+
+            throw new Error(
+
+                "A module cannot depend on itself.",
+
+            );
+
+        }
+
+
         const modules =
             await this.repository.list();
 
 
+        const activeCodes =
+            new Set(
+
+                modules
+
+                    .filter(
+                        item =>
+                            item.status ===
+                            "Active",
+                    )
+
+                    .map(
+                        item =>
+                            this.normalizeCode(
+                                item.code,
+                            ),
+                    ),
+
+            );
+
+
         return dependencies.every(
 
-            dependency => {
-
-                const normalizedDependency =
-                    typeof dependency ===
-                    "string"
-                        ? dependency
-                            .trim()
-                            .toUpperCase()
-                        : "";
-
-
-                if (!normalizedDependency) {
-
-                    return false;
-
-                }
-
-
-                return modules.some(
-
-                    item =>
-
-                        this.normalizeCode(
-                            item.code,
-                        ) ===
-                            normalizedDependency &&
-
-                        item.status ===
-                            "Active",
-
-                );
-
-            },
+            dependency =>
+                activeCodes.has(
+                    dependency,
+                ),
 
         );
 
@@ -188,6 +252,11 @@ export class ModulesService {
 
 
 
+    /**
+     * Create or update a platform module.
+     *
+     * Module code uniqueness is enforced before persistence.
+     */
     async save(
 
         module:
@@ -203,6 +272,14 @@ export class ModulesService {
             );
 
 
+        const normalizedId =
+            module.id
+                ? this.validateId(
+                    module.id,
+                )
+                : undefined;
+
+
         const existing =
             await this.repository.findByCode(
 
@@ -215,8 +292,7 @@ export class ModulesService {
 
             existing &&
 
-            existing.id !==
-                module.id
+            existing.id !== normalizedId
 
         ) {
 
@@ -229,10 +305,56 @@ export class ModulesService {
         }
 
 
+        const normalizedDependencies =
+            this.normalizeDependencies(
+                module.dependencies,
+            );
+
+
+        if (
+
+            normalizedDependencies.includes(
+                normalizedModule.code,
+            )
+
+        ) {
+
+            throw new Error(
+
+                "A module cannot depend on itself.",
+
+            );
+
+        }
+
+
+        const moduleForValidation = {
+
+            ...module,
+
+            ...(normalizedId
+                ? {
+                    id:
+                        normalizedId,
+                }
+                : {}),
+
+            code:
+                normalizedModule.code,
+
+            name:
+                normalizedModule.name,
+
+            dependencies:
+                normalizedDependencies,
+
+        };
+
+
         const dependenciesSatisfied =
             await this.dependenciesSatisfied(
 
-                module,
+                moduleForValidation,
 
             );
 
@@ -252,13 +374,7 @@ export class ModulesService {
 
             {
 
-                ...module,
-
-                code:
-                    normalizedModule.code,
-
-                name:
-                    normalizedModule.name,
+                ...moduleForValidation,
 
                 updatedAt:
                     new Date()
@@ -272,6 +388,9 @@ export class ModulesService {
 
 
 
+    /**
+     * Delete a non-system module.
+     */
     async delete(
 
         id: string,
@@ -326,6 +445,9 @@ export class ModulesService {
 
 
 
+    /**
+     * Validate required module fields and return normalized values.
+     */
     private validateModule(
 
         module:
@@ -339,7 +461,15 @@ export class ModulesService {
 
     } {
 
-        if (!module) {
+        if (
+
+            !module ||
+
+            typeof module !== "object" ||
+
+            Array.isArray(module)
+
+        ) {
 
             throw new Error(
 
@@ -359,7 +489,9 @@ export class ModulesService {
         const name =
             typeof module.name ===
             "string"
+
                 ? module.name.trim()
+
                 : "";
 
 
@@ -397,20 +529,23 @@ export class ModulesService {
 
 
 
+    /**
+     * Normalize a module-code value.
+     */
     private normalizeCode(
 
         code: string,
 
-    ):
-
-    string {
+    ): string {
 
         const normalizedCode =
             typeof code ===
             "string"
+
                 ? code
                     .trim()
                     .toUpperCase()
+
                 : "";
 
 
@@ -425,24 +560,114 @@ export class ModulesService {
         }
 
 
+        if (
+
+            !/^[A-Z0-9][A-Z0-9_-]*$/.test(
+                normalizedCode,
+            )
+
+        ) {
+
+            throw new Error(
+
+                "Module code may contain only letters, numbers, underscores, and hyphens.",
+
+            );
+
+        }
+
+
         return normalizedCode;
 
     }
 
 
 
+    /**
+     * Normalize dependency codes and remove duplicates.
+     */
+    private normalizeDependencies(
+
+        dependencies:
+            readonly string[] |
+            null |
+            undefined,
+
+    ): string[] {
+
+        if (!dependencies) {
+
+            return [];
+
+        }
+
+
+        if (!Array.isArray(dependencies)) {
+
+            throw new Error(
+
+                "Module dependencies must be an array.",
+
+            );
+
+        }
+
+
+        const normalized =
+            dependencies.map(
+
+                dependency => {
+
+                    if (
+                        typeof dependency !==
+                        "string"
+                    ) {
+
+                        throw new Error(
+
+                            "Module dependency codes must be strings.",
+
+                        );
+
+                    }
+
+
+                    return this.normalizeCode(
+                        dependency,
+                    );
+
+                },
+
+            );
+
+
+        return Array.from(
+
+            new Set(
+                normalized,
+            ),
+
+        );
+
+    }
+
+
+
+    /**
+     * Validate and normalize an entity identifier.
+     */
     private validateId(
 
         id: string,
 
-    ):
-
-    string {
+    ): string {
 
         const normalizedId =
             typeof id ===
             "string"
+
                 ? id.trim()
+
                 : "";
 
 

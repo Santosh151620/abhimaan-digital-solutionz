@@ -1,10 +1,12 @@
 import {
     notFound,
-} from 'next/navigation';
+} from "next/navigation";
+
 
 import {
     getInvoice,
-} from '../actions';
+} from "../actions";
+
 
 
 interface Props {
@@ -14,6 +16,86 @@ interface Props {
     }>;
 
 }
+
+
+
+function formatDate(
+    value?: string | null,
+): string {
+
+    if (!value) {
+
+        return "-";
+
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if (
+        Number.isNaN(
+            date.getTime(),
+        )
+    ) {
+
+        return value;
+
+    }
+
+
+    return new Intl.DateTimeFormat(
+        "en-IN",
+        {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        },
+    ).format(date);
+
+}
+
+
+
+function formatCurrency(
+    value: number | null | undefined,
+    currency?: string | null,
+): string {
+
+    const amount =
+        typeof value === "number" &&
+        Number.isFinite(value)
+            ? value
+            : 0;
+
+
+    const code =
+        typeof currency === "string" &&
+        currency.trim()
+            ? currency.trim().toUpperCase()
+            : "INR";
+
+
+    try {
+
+        return new Intl.NumberFormat(
+            "en-IN",
+            {
+                style: "currency",
+                currency: code,
+                maximumFractionDigits: 2,
+            },
+        ).format(amount);
+
+    } catch {
+
+        return `${code} ${amount.toLocaleString("en-IN")}`;
+
+    }
+
+}
+
 
 
 export default async function InvoicePage({
@@ -37,37 +119,63 @@ export default async function InvoicePage({
     }
 
 
+    const total =
+        formatCurrency(
+            invoice.total,
+            invoice.currency,
+        );
+
+
+    const balance =
+        formatCurrency(
+            invoice.balanceAmount ?? 0,
+            invoice.currency,
+        );
+
+
     return (
 
-        <div className="space-y-6 p-6">
+        <main className="space-y-6 p-6">
 
 
-            <div>
+            <header>
 
                 <h1 className="text-3xl font-bold">
-                    {invoice.title ?? 'Invoice'}
+
+                    {invoice.title || "Invoice"}
+
                 </h1>
 
 
                 <p className="text-muted-foreground">
+
                     {invoice.invoiceNumber}
+
                 </p>
 
-            </div>
+            </header>
 
 
 
-            <div className="grid gap-6 md:grid-cols-2 rounded-xl border bg-card p-6">
+            <section
+                aria-label="Invoice details"
+                className="grid gap-6 rounded-xl border bg-card p-6 md:grid-cols-2"
+            >
 
 
                 <div>
 
                     <div className="text-sm text-muted-foreground">
+
                         Customer
+
                     </div>
 
+
                     <div className="font-medium">
-                        {invoice.customerName}
+
+                        {invoice.customerName || "-"}
+
                     </div>
 
                 </div>
@@ -77,11 +185,16 @@ export default async function InvoicePage({
                 <div>
 
                     <div className="text-sm text-muted-foreground">
+
                         Status
+
                     </div>
 
+
                     <div className="font-medium">
+
                         {invoice.status}
+
                     </div>
 
                 </div>
@@ -91,11 +204,18 @@ export default async function InvoicePage({
                 <div>
 
                     <div className="text-sm text-muted-foreground">
+
                         Issue Date
+
                     </div>
 
+
                     <div className="font-medium">
-                        {invoice.issueDate}
+
+                        {formatDate(
+                            invoice.issueDate,
+                        )}
+
                     </div>
 
                 </div>
@@ -105,11 +225,18 @@ export default async function InvoicePage({
                 <div>
 
                     <div className="text-sm text-muted-foreground">
+
                         Due Date
+
                     </div>
 
+
                     <div className="font-medium">
-                        {invoice.dueDate}
+
+                        {formatDate(
+                            invoice.dueDate,
+                        )}
+
                     </div>
 
                 </div>
@@ -119,12 +246,16 @@ export default async function InvoicePage({
                 <div>
 
                     <div className="text-sm text-muted-foreground">
+
                         Total
+
                     </div>
 
+
                     <div className="font-medium">
-                        {invoice.currency}{' '}
-                        {invoice.total.toLocaleString()}
+
+                        {total}
+
                     </div>
 
                 </div>
@@ -134,41 +265,48 @@ export default async function InvoicePage({
                 <div>
 
                     <div className="text-sm text-muted-foreground">
+
                         Balance
+
                     </div>
 
+
                     <div className="font-medium">
-                        {invoice.currency}{' '}
-                        {(invoice.balanceAmount ?? 0).toLocaleString()}
+
+                        {balance}
+
                     </div>
 
                 </div>
 
 
-            </div>
+            </section>
 
 
 
             {invoice.notes && (
 
-                <div className="rounded-xl border bg-card p-6">
+                <section className="rounded-xl border bg-card p-6">
 
                     <h2 className="mb-2 font-semibold">
+
                         Notes
+
                     </h2>
 
 
                     <p className="whitespace-pre-wrap">
+
                         {invoice.notes}
+
                     </p>
 
-
-                </div>
+                </section>
 
             )}
 
 
-        </div>
+        </main>
 
     );
 

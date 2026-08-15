@@ -9,6 +9,40 @@ import {
 
 
 
+/**
+ * ============================================================================
+ * ADS ADMIN — LOCATIONS SERVICE
+ * ============================================================================
+ *
+ * Canonical business-service boundary for administrative locations.
+ *
+ * Responsibilities:
+ *
+ * - Validate and normalize location input.
+ * - Normalize identifiers before repository access.
+ * - Enforce location-code uniqueness at the service boundary.
+ * - Prevent invalid domain values from reaching persistence.
+ * - Delegate persistence to LocationsRepository.
+ *
+ * Architecture:
+ *
+ *   UI / Server Action
+ *          ↓
+ *   LocationsService
+ *          ↓
+ *   LocationsRepository
+ *          ↓
+ *   Persistence / Supabase
+ *
+ * Repository responsibilities remain unchanged:
+ *
+ * - Database access.
+ * - Tenant/security enforcement.
+ * - Persistence semantics.
+ * ============================================================================
+ */
+
+
 export class LocationsService {
 
 
@@ -21,6 +55,9 @@ export class LocationsService {
 
 
 
+    /**
+     * Return all locations available to the repository context.
+     */
     async list():
 
     Promise<Location[]> {
@@ -31,6 +68,9 @@ export class LocationsService {
 
 
 
+    /**
+     * Find a location by identifier.
+     */
     async findById(
 
         id: string,
@@ -38,7 +78,6 @@ export class LocationsService {
     ):
 
     Promise<Location | null> {
-
 
         const normalizedId =
             this.validateId(
@@ -56,6 +95,9 @@ export class LocationsService {
 
 
 
+    /**
+     * Find a location by normalized business code.
+     */
     async findByCode(
 
         code: string,
@@ -63,7 +105,6 @@ export class LocationsService {
     ):
 
     Promise<Location | null> {
-
 
         const normalizedCode =
             this.normalizeCode(
@@ -81,6 +122,12 @@ export class LocationsService {
 
 
 
+    /**
+     * Create or update a location.
+     *
+     * The service normalizes the business fields and prevents a location
+     * code from being reused by another location.
+     */
     async save(
 
         location:
@@ -90,11 +137,43 @@ export class LocationsService {
 
     Promise<Location> {
 
-
         const normalizedLocation =
             this.validateLocation(
                 location,
             );
+
+
+        const normalizedId =
+            location.id
+                ? this.validateId(
+                    location.id,
+                )
+                : undefined;
+
+
+        const existing =
+            await this.repository.findByCode(
+
+                normalizedLocation.locationCode,
+
+            );
+
+
+        if (
+
+            existing &&
+
+            existing.id !== normalizedId
+
+        ) {
+
+            throw new Error(
+
+                "Location code already exists.",
+
+            );
+
+        }
 
 
         return this.repository.save(
@@ -102,6 +181,13 @@ export class LocationsService {
             {
 
                 ...location,
+
+                ...(normalizedId
+                    ? {
+                        id:
+                            normalizedId,
+                    }
+                    : {}),
 
                 locationCode:
                     normalizedLocation.locationCode,
@@ -117,6 +203,9 @@ export class LocationsService {
 
 
 
+    /**
+     * Delete an existing location.
+     */
     async delete(
 
         id: string,
@@ -124,7 +213,6 @@ export class LocationsService {
     ):
 
     Promise<void> {
-
 
         const normalizedId =
             this.validateId(
@@ -143,7 +231,9 @@ export class LocationsService {
         if (!existing) {
 
             throw new Error(
+
                 "Location not found.",
+
             );
 
         }
@@ -159,6 +249,9 @@ export class LocationsService {
 
 
 
+    /**
+     * Validate and normalize a location payload.
+     */
     private validateLocation(
 
         location:
@@ -172,7 +265,6 @@ export class LocationsService {
 
     } {
 
-
         if (
 
             !location ||
@@ -184,7 +276,9 @@ export class LocationsService {
         ) {
 
             throw new Error(
+
                 "Location is required.",
+
             );
 
         }
@@ -194,7 +288,9 @@ export class LocationsService {
 
             locationCode:
                 this.normalizeCode(
+
                     location.locationCode,
+
                 ),
 
 
@@ -213,6 +309,12 @@ export class LocationsService {
 
 
 
+    /**
+     * Normalize a location business code.
+     *
+     * Codes are stored and compared in uppercase form so uniqueness checks
+     * remain deterministic.
+     */
     private normalizeCode(
 
         code:
@@ -220,7 +322,6 @@ export class LocationsService {
             undefined,
 
     ): string {
-
 
         const normalized =
             typeof code === "string"
@@ -235,7 +336,28 @@ export class LocationsService {
         if (!normalized) {
 
             throw new Error(
+
                 "Location code is required.",
+
+            );
+
+        }
+
+
+        if (
+
+            !/^[A-Z0-9][A-Z0-9_-]*$/.test(
+
+                normalized,
+
+            )
+
+        ) {
+
+            throw new Error(
+
+                "Location code may contain only uppercase letters, numbers, underscores, and hyphens.",
+
             );
 
         }
@@ -247,6 +369,9 @@ export class LocationsService {
 
 
 
+    /**
+     * Normalize required textual business values.
+     */
     private normalizeRequiredText(
 
         value:
@@ -257,7 +382,6 @@ export class LocationsService {
             string,
 
     ): string {
-
 
         const normalized =
             typeof value === "string"
@@ -270,7 +394,9 @@ export class LocationsService {
         if (!normalized) {
 
             throw new Error(
+
                 message,
+
             );
 
         }
@@ -282,13 +408,15 @@ export class LocationsService {
 
 
 
+    /**
+     * Validate and normalize an entity identifier.
+     */
     private validateId(
 
         id:
             string,
 
     ): string {
-
 
         const normalized =
             typeof id === "string"
@@ -301,7 +429,9 @@ export class LocationsService {
         if (!normalized) {
 
             throw new Error(
+
                 "Location id is required.",
+
             );
 
         }

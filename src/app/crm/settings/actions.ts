@@ -22,12 +22,10 @@ import type {
 } from "@/types/crm/Settings";
 
 
-
 type SettingAction =
     | "create"
     | "update"
     | "delete";
-
 
 
 const SETTING_KEY_PATTERN =
@@ -47,6 +45,9 @@ const VALID_STATUSES:
     ];
 
 
+/* ============================================================================
+ * REPOSITORY
+ * ========================================================================== */
 
 async function repository():
     Promise<SettingsRepository> {
@@ -61,6 +62,9 @@ async function repository():
 }
 
 
+/* ============================================================================
+ * VALIDATION
+ * ========================================================================== */
 
 function validateId(
     id: string,
@@ -76,10 +80,8 @@ function validateId(
 
     }
 
-
     const normalized =
         id.trim();
-
 
     if (!normalized) {
 
@@ -89,16 +91,14 @@ function validateId(
 
     }
 
-
     return normalized;
 
 }
 
 
-
 function validateData(
     data: Partial<Setting>,
-    isCreate = false,
+    requireKey = false,
 ): void {
 
     if (
@@ -112,12 +112,10 @@ function validateData(
 
     }
 
-
     const key =
         typeof data.key === "string"
             ? data.key.trim().toLowerCase()
             : undefined;
-
 
     const name =
         typeof data.name === "string"
@@ -125,9 +123,8 @@ function validateData(
             : undefined;
 
 
-
     if (
-        isCreate &&
+        (requireKey || data.key !== undefined) &&
         !key
     ) {
 
@@ -136,20 +133,6 @@ function validateData(
         );
 
     }
-
-
-
-    if (
-        data.key !== undefined &&
-        !key
-    ) {
-
-        throw new Error(
-            "Setting key is required.",
-        );
-
-    }
-
 
 
     if (
@@ -164,12 +147,9 @@ function validateData(
     }
 
 
-
     if (
         key &&
-        !SETTING_KEY_PATTERN.test(
-            key,
-        )
+        !SETTING_KEY_PATTERN.test(key)
     ) {
 
         throw new Error(
@@ -179,11 +159,10 @@ function validateData(
     }
 
 
-
     if (
         key &&
         key.length >
-            SETTING_KEY_MAX_LENGTH
+        SETTING_KEY_MAX_LENGTH
     ) {
 
         throw new Error(
@@ -193,11 +172,10 @@ function validateData(
     }
 
 
-
     if (
         name &&
         name.length >
-            SETTING_NAME_MAX_LENGTH
+        SETTING_NAME_MAX_LENGTH
     ) {
 
         throw new Error(
@@ -205,7 +183,6 @@ function validateData(
         );
 
     }
-
 
 
     if (
@@ -224,14 +201,12 @@ function validateData(
 }
 
 
-
 function normalizeData(
     data: Partial<Setting>,
 ):
     Partial<Setting> {
 
-    const normalized:
-        Partial<Setting> = {
+    const normalized = {
         ...data,
     };
 
@@ -259,8 +234,7 @@ function normalizeData(
 
 
     if (
-        typeof data.description ===
-        "string"
+        typeof data.description === "string"
     ) {
 
         normalized.description =
@@ -274,20 +248,38 @@ function normalizeData(
 }
 
 
+function validateStatus(
+    status: SettingStatus,
+): void {
+
+    if (
+        !VALID_STATUSES.includes(status)
+    ) {
+
+        throw new Error(
+            "Invalid setting status.",
+        );
+
+    }
+
+}
+
+
+/* ============================================================================
+ * AUTHORIZATION
+ * ========================================================================== */
 
 function requirePermission(
     action: SettingAction,
 ): void {
 
-    const allowed =
-        PermissionServiceInstance.hasPermission(
+    if (
+        !PermissionServiceInstance.hasPermission(
             CRM_ADMIN_ROLE,
             "Settings",
             action,
-        );
-
-
-    if (!allowed) {
+        )
+    ) {
 
         throw new Error(
             "Permission denied.",
@@ -298,6 +290,9 @@ function requirePermission(
 }
 
 
+/* ============================================================================
+ * ERROR BOUNDARY
+ * ========================================================================== */
 
 function translateError(
     error: unknown,
@@ -313,20 +308,11 @@ function translateError(
         const normalized =
             message.toLowerCase();
 
-
         if (
-            normalized.includes(
-                "duplicate",
-            ) ||
-            normalized.includes(
-                "unique",
-            ) ||
-            normalized.includes(
-                "already exists",
-            ) ||
-            normalized.includes(
-                "23505",
-            )
+            normalized.includes("duplicate") ||
+            normalized.includes("unique") ||
+            normalized.includes("already exists") ||
+            normalized.includes("23505")
         ) {
 
             return new Error(
@@ -335,11 +321,9 @@ function translateError(
 
         }
 
-
         return error;
 
     }
-
 
     return new Error(
         "Unable to process setting request.",
@@ -348,17 +332,29 @@ function translateError(
 }
 
 
+async function execute<T>(
+    operation: () => Promise<T>,
+):
+    Promise<T> {
 
-/**
- * --------------------------------------------------------------------------
+    try {
+
+        return await operation();
+
+    } catch (error) {
+
+        throw translateError(
+            error,
+        );
+
+    }
+
+}
+
+
+/* ============================================================================
  * READ OPERATIONS
- * --------------------------------------------------------------------------
- *
- * These operations intentionally use the authenticated server repository.
- * Tenant isolation remains owned by BaseRepository / organization context
- * and Supabase RLS.
- * --------------------------------------------------------------------------
- */
+ * ========================================================================== */
 
 export async function getSettings():
     Promise<Setting[]> {
@@ -369,7 +365,6 @@ export async function getSettings():
     return repo.list();
 
 }
-
 
 
 export async function getArchivedSettings():
@@ -383,17 +378,13 @@ export async function getArchivedSettings():
 }
 
 
-
 export async function getSetting(
     id: string,
 ):
     Promise<Setting | null> {
 
     const normalizedId =
-        validateId(
-            id,
-        );
-
+        validateId(id);
 
     const repo =
         await repository();
@@ -403,7 +394,6 @@ export async function getSetting(
     );
 
 }
-
 
 
 export async function getSettingsSummary():
@@ -423,12 +413,9 @@ export async function getSettingsSummary():
 }
 
 
-
-/**
- * --------------------------------------------------------------------------
+/* ============================================================================
  * CREATE
- * --------------------------------------------------------------------------
- */
+ * ========================================================================== */
 
 export async function createSetting(
     data: Partial<Setting>,
@@ -439,42 +426,33 @@ export async function createSetting(
         "create",
     );
 
+    validateData(
+        data,
+        true,
+    );
 
-    try {
+    const normalizedData =
+        normalizeData(data);
 
-        validateData(
-            data,
-            true,
-        );
+    return execute(
+        async () => {
 
+            const repo =
+                await repository();
 
-        const repo =
-            await repository();
+            return repo.create(
+                normalizedData,
+            );
 
-
-        return await repo.create(
-            normalizeData(
-                data,
-            ),
-        );
-
-    } catch (error) {
-
-        throw translateError(
-            error,
-        );
-
-    }
+        },
+    );
 
 }
 
 
-
-/**
- * --------------------------------------------------------------------------
+/* ============================================================================
  * UPDATE
- * --------------------------------------------------------------------------
- */
+ * ========================================================================== */
 
 export async function updateSetting(
     id: string,
@@ -486,48 +464,34 @@ export async function updateSetting(
         "update",
     );
 
+    const normalizedId =
+        validateId(id);
 
-    try {
+    validateData(data);
 
-        const normalizedId =
-            validateId(
-                id,
+    const normalizedData =
+        normalizeData(data);
+
+    return execute(
+        async () => {
+
+            const repo =
+                await repository();
+
+            return repo.update(
+                normalizedId,
+                normalizedData,
             );
 
-
-        validateData(
-            data,
-        );
-
-
-        const repo =
-            await repository();
-
-
-        return await repo.update(
-            normalizedId,
-            normalizeData(
-                data,
-            ),
-        );
-
-    } catch (error) {
-
-        throw translateError(
-            error,
-        );
-
-    }
+        },
+    );
 
 }
 
 
-
-/**
- * --------------------------------------------------------------------------
+/* ============================================================================
  * DELETE
- * --------------------------------------------------------------------------
- */
+ * ========================================================================== */
 
 export async function deleteSetting(
     id: string,
@@ -538,45 +502,28 @@ export async function deleteSetting(
         "delete",
     );
 
+    const normalizedId =
+        validateId(id);
 
-    try {
+    return execute(
+        async () => {
 
-        const normalizedId =
-            validateId(
-                id,
+            const repo =
+                await repository();
+
+            await repo.delete(
+                normalizedId,
             );
 
-
-        const repo =
-            await repository();
-
-
-        await repo.delete(
-            normalizedId,
-        );
-
-    } catch (error) {
-
-        throw translateError(
-            error,
-        );
-
-    }
+        },
+    );
 
 }
 
 
-
-/**
- * --------------------------------------------------------------------------
+/* ============================================================================
  * RESTORE
- * --------------------------------------------------------------------------
- *
- * The current organization_settings schema has no archived column/state.
- * The repository therefore preserves this API for compatibility without
- * manufacturing an archive field.
- * --------------------------------------------------------------------------
- */
+ * ========================================================================== */
 
 export async function restoreSetting(
     id: string,
@@ -587,40 +534,28 @@ export async function restoreSetting(
         "update",
     );
 
+    const normalizedId =
+        validateId(id);
 
-    try {
+    return execute(
+        async () => {
 
-        const normalizedId =
-            validateId(
-                id,
+            const repo =
+                await repository();
+
+            return repo.restore(
+                normalizedId,
             );
 
-
-        const repo =
-            await repository();
-
-
-        return await repo.restore(
-            normalizedId,
-        );
-
-    } catch (error) {
-
-        throw translateError(
-            error,
-        );
-
-    }
+        },
+    );
 
 }
 
 
-
-/**
- * --------------------------------------------------------------------------
+/* ============================================================================
  * STATUS
- * --------------------------------------------------------------------------
- */
+ * ========================================================================== */
 
 export async function updateSettingStatus(
     id: string,
@@ -632,43 +567,25 @@ export async function updateSettingStatus(
         "update",
     );
 
+    const normalizedId =
+        validateId(id);
 
-    try {
+    validateStatus(
+        status,
+    );
 
-        const normalizedId =
-            validateId(
-                id,
-            );
+    return execute(
+        async () => {
 
+            const repo =
+                await repository();
 
-        if (
-            !VALID_STATUSES.includes(
+            return repo.updateStatus(
+                normalizedId,
                 status,
-            )
-        ) {
-
-            throw new Error(
-                "Invalid setting status.",
             );
 
-        }
-
-
-        const repo =
-            await repository();
-
-
-        return await repo.updateStatus(
-            normalizedId,
-            status,
-        );
-
-    } catch (error) {
-
-        throw translateError(
-            error,
-        );
-
-    }
+        },
+    );
 
 }

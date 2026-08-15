@@ -3,39 +3,84 @@ import type {
 } from "@/types/auth/role";
 
 
+/**
+ * ============================================================================
+ * ADS ROLE GOVERNANCE
+ * ============================================================================
+ *
+ * Canonical descriptive governance metadata for application roles.
+ *
+ * Responsibilities:
+ *
+ * - Define the business meaning of every supported Role.
+ * - Provide stable descriptive metadata for Admin / authorization UI.
+ * - Preserve legacy roles required for backward compatibility.
+ *
+ * IMPORTANT:
+ *
+ * This module does NOT grant permissions.
+ *
+ * Permission authority remains in the permission/authorization layer.
+ * Role governance describes responsibility and hierarchy only.
+ *
+ * Do not add database access, Supabase calls, tenant resolution, or request
+ * authorization logic here.
+ * ============================================================================
+ */
 
-interface RoleGovernance {
 
+export interface RoleGovernance {
 
-    role: Role;
+    readonly role: Role;
 
+    readonly description: string;
 
-    description: string;
-
-
-    responsibilities: readonly string[];
-
+    readonly responsibilities:
+        readonly string[];
 
 }
 
 
+/**
+ * ============================================================================
+ * CANONICAL ROLE GOVERNANCE
+ * ============================================================================
+ *
+ * Primary ADS governance hierarchy:
+ *
+ * PLATFORM_OWNER
+ *     ↓
+ * PLATFORM_ADMIN
+ *     ↓
+ * ORGANIZATION_ADMIN
+ *     ↓
+ * DEPARTMENT_ADMIN
+ *     ↓
+ * TEAM_LEAD
+ *     ↓
+ * USER
+ *
+ * VIEWER is a read-only compatibility/business role.
+ *
+ * SUPER_ADMIN, ADMIN and MANAGER are retained as legacy compatibility roles.
+ * They must not be removed until all persisted role assignments and dependent
+ * application flows have been migrated.
+ * ============================================================================
+ */
 
-const ROLE_GOVERNANCE:
 
-Record<Role, RoleGovernance> = {
-
+export const ROLE_GOVERNANCE:
+    Readonly<Record<Role, RoleGovernance>> = {
 
     PLATFORM_OWNER: {
 
-
-        role:"PLATFORM_OWNER",
-
+        role:
+            "PLATFORM_OWNER",
 
         description:
             "Ultimate platform authority",
 
-
-        responsibilities:[
+        responsibilities: [
 
             "Manage platform configuration",
 
@@ -50,18 +95,15 @@ Record<Role, RoleGovernance> = {
     },
 
 
-
     PLATFORM_ADMIN: {
 
-
-        role:"PLATFORM_ADMIN",
-
+        role:
+            "PLATFORM_ADMIN",
 
         description:
             "Platform operations administrator",
 
-
-        responsibilities:[
+        responsibilities: [
 
             "Manage platform settings",
 
@@ -74,18 +116,15 @@ Record<Role, RoleGovernance> = {
     },
 
 
-
     ORGANIZATION_ADMIN: {
 
-
-        role:"ORGANIZATION_ADMIN",
-
+        role:
+            "ORGANIZATION_ADMIN",
 
         description:
             "Organization administrator",
 
-
-        responsibilities:[
+        responsibilities: [
 
             "Manage organization users",
 
@@ -98,18 +137,15 @@ Record<Role, RoleGovernance> = {
     },
 
 
-
     DEPARTMENT_ADMIN: {
 
-
-        role:"DEPARTMENT_ADMIN",
-
+        role:
+            "DEPARTMENT_ADMIN",
 
         description:
             "Department administrator",
 
-
-        responsibilities:[
+        responsibilities: [
 
             "Manage department users",
 
@@ -120,18 +156,15 @@ Record<Role, RoleGovernance> = {
     },
 
 
-
     TEAM_LEAD: {
 
-
-        role:"TEAM_LEAD",
-
+        role:
+            "TEAM_LEAD",
 
         description:
             "Team supervisor",
 
-
-        responsibilities:[
+        responsibilities: [
 
             "Manage team activities",
 
@@ -142,18 +175,15 @@ Record<Role, RoleGovernance> = {
     },
 
 
-
     USER: {
 
-
-        role:"USER",
-
+        role:
+            "USER",
 
         description:
             "Standard business user",
 
-
-        responsibilities:[
+        responsibilities: [
 
             "Execute assigned business activities",
 
@@ -162,74 +192,166 @@ Record<Role, RoleGovernance> = {
     },
 
 
-VIEWER: {
+    VIEWER: {
 
-    role:"VIEWER",
+        role:
+            "VIEWER",
 
-    description:
-        "Read-only user",
+        description:
+            "Read-only user",
 
-    responsibilities:[
+        responsibilities: [
 
-        "View permitted information",
+            "View permitted information",
 
-    ],
+        ],
 
-},
-
-
-SUPER_ADMIN: {
-
-    role:"SUPER_ADMIN",
-
-    description:
-        "Legacy platform super administrator",
-
-    responsibilities:[
-
-        "Compatibility role",
-
-        "Full administrative access",
-
-    ],
-
-},
+    },
 
 
-ADMIN: {
+    /**
+     * Legacy compatibility role.
+     *
+     * Retained so existing persisted assignments do not break while the
+     * platform governance model is migrated to the canonical hierarchy.
+     */
+    SUPER_ADMIN: {
 
-    role:"ADMIN",
+        role:
+            "SUPER_ADMIN",
 
-    description:
-        "Legacy administrator role",
+        description:
+            "Legacy platform super administrator",
 
-    responsibilities:[
+        responsibilities: [
 
-        "Compatibility role",
+            "Compatibility role",
 
-        "Administrative operations",
+            "Full administrative access",
 
-    ],
+        ],
 
-},
+    },
 
 
-MANAGER: {
+    /**
+     * Legacy compatibility role.
+     */
+    ADMIN: {
 
-    role:"MANAGER",
+        role:
+            "ADMIN",
 
-    description:
-        "Legacy manager role",
+        description:
+            "Legacy administrator role",
 
-    responsibilities:[
+        responsibilities: [
 
-        "Compatibility role",
+            "Compatibility role",
 
-        "Team management",
+            "Administrative operations",
 
-    ],
+        ],
 
-},
+    },
 
+
+    /**
+     * Legacy compatibility role.
+     */
+    MANAGER: {
+
+        role:
+            "MANAGER",
+
+        description:
+            "Legacy manager role",
+
+        responsibilities: [
+
+            "Compatibility role",
+
+            "Team management",
+
+        ],
+
+    },
 
 };
+
+
+/**
+ * ============================================================================
+ * ROLE GOVERNANCE HELPERS
+ * ============================================================================
+ */
+
+
+/**
+ * Return governance metadata for a role.
+ */
+export function getRoleGovernance(
+    role: Role,
+): RoleGovernance {
+
+    return ROLE_GOVERNANCE[role];
+
+}
+
+
+/**
+ * Return the human-readable description for a role.
+ */
+export function getRoleDescription(
+    role: Role,
+): string {
+
+    return ROLE_GOVERNANCE[role].description;
+
+}
+
+
+/**
+ * Return an immutable responsibility list for a role.
+ */
+export function getRoleResponsibilities(
+    role: Role,
+): readonly string[] {
+
+    return ROLE_GOVERNANCE[role].responsibilities;
+
+}
+
+
+/**
+ * Return all supported role governance definitions.
+ *
+ * The returned array is derived from the canonical map so there is only one
+ * source of truth for role metadata.
+ */
+export function listRoleGovernance():
+    readonly RoleGovernance[] {
+
+    return Object.values(
+        ROLE_GOVERNANCE,
+    );
+
+}
+
+
+/**
+ * Return whether governance metadata exists for the supplied role.
+ *
+ * Useful at compatibility boundaries where a role may originate from an
+ * external/persisted string before it is narrowed to the Role type.
+ */
+export function hasRoleGovernance(
+    role: string,
+): role is Role {
+
+    return Object.prototype.hasOwnProperty.call(
+        ROLE_GOVERNANCE,
+        role,
+    );
+
+}

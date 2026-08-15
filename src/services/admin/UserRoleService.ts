@@ -1,3 +1,26 @@
+/**
+ * ============================================================================
+ * ADS ADMIN USER ROLE SERVICE
+ * ============================================================================
+ *
+ * Canonical business-service boundary for user/role assignments.
+ *
+ * Responsibilities:
+ *
+ * - Validate user and role identifiers.
+ * - Normalize role assignment input.
+ * - Prevent duplicate active assignments.
+ * - Ensure primary roles are assigned before promotion.
+ * - Delegate persistence to IUserRoleRepository.
+ *
+ * IMPORTANT:
+ *
+ * Role persistence remains inside the repository layer.
+ * This service does not access Supabase directly and does not bypass
+ * authorization or RLS.
+ * ============================================================================
+ */
+
 import type {
     UserRole,
 } from "@/types/admin/UserRole";
@@ -8,26 +31,27 @@ import type {
 } from "@/repositories/admin/UserRoleRepository";
 
 
+
+/**
+ * Canonical user-role business service.
+ */
 export class UserRoleService {
 
 
     constructor(
-
         private readonly repository:
             IUserRoleRepository,
-
     ) {}
 
 
 
-
+    /**
+     * Return all role assignments for a user.
+     */
     async rolesForUser(
-
         userId: string,
-
     ):
-
-    Promise<UserRole[]> {
+        Promise<UserRole[]> {
 
         const normalizedUserId =
             this.validateId(
@@ -37,25 +61,24 @@ export class UserRoleService {
 
 
         return this.repository.rolesForUser(
-
             normalizedUserId,
-
         );
 
     }
 
 
 
-
+    /**
+     * Assign a role to a user.
+     *
+     * Repeated assignment of an already-active role is intentionally
+     * idempotent.
+     */
     async assignRole(
-
         userId: string,
-
         roleId: string,
-
     ):
-
-    Promise<void> {
+        Promise<void> {
 
         const normalizedUserId =
             this.validateId(
@@ -73,26 +96,22 @@ export class UserRoleService {
 
         const existing =
             await this.repository.rolesForUser(
-
                 normalizedUserId,
-
             );
 
 
         const alreadyAssigned =
             existing.some(
-
-                item =>
-
-                    item.roleId ===
+                assignment =>
+                    assignment.roleId ===
                         normalizedRoleId &&
-
-                    item.isActive,
-
+                    assignment.isActive,
             );
 
 
-        if (alreadyAssigned) {
+        if (
+            alreadyAssigned
+        ) {
 
             return;
 
@@ -100,27 +119,22 @@ export class UserRoleService {
 
 
         await this.repository.assignRole(
-
             normalizedUserId,
-
             normalizedRoleId,
-
         );
 
     }
 
 
 
-
+    /**
+     * Remove a role assignment from a user.
+     */
     async removeRole(
-
         userId: string,
-
         roleId: string,
-
     ):
-
-    Promise<void> {
+        Promise<void> {
 
         const normalizedUserId =
             this.validateId(
@@ -137,27 +151,25 @@ export class UserRoleService {
 
 
         await this.repository.removeRole(
-
             normalizedUserId,
-
             normalizedRoleId,
-
         );
 
     }
 
 
 
-
+    /**
+     * Replace the complete role assignment set for a user.
+     *
+     * Role identifiers are trimmed, invalid non-string values are discarded,
+     * and duplicate identifiers are removed before reaching persistence.
+     */
     async replaceRoles(
-
         userId: string,
-
         roleIds: string[],
-
     ):
-
-    Promise<void> {
+        Promise<void> {
 
         const normalizedUserId =
             this.validateId(
@@ -166,7 +178,11 @@ export class UserRoleService {
             );
 
 
-        if (!Array.isArray(roleIds)) {
+        if (
+            !Array.isArray(
+                roleIds,
+            )
+        ) {
 
             throw new Error(
                 "Role ids are required.",
@@ -175,57 +191,52 @@ export class UserRoleService {
         }
 
 
-        const uniqueRoles =
+        const normalizedRoleIds =
+            roleIds
+                .filter(
+                    (
+                        roleId,
+                    ): roleId is string =>
+                        typeof roleId ===
+                        "string",
+                )
+                .map(
+                    roleId =>
+                        roleId.trim(),
+                )
+                .filter(
+                    roleId =>
+                        roleId.length > 0,
+                );
+
+
+        const uniqueRoleIds =
             Array.from(
-
                 new Set(
-
-                    roleIds
-
-                        .filter(
-                            (
-                                roleId,
-                            ): roleId is string =>
-                                typeof roleId ===
-                                "string",
-                        )
-
-                        .map(
-                            roleId =>
-                                roleId.trim(),
-                        )
-
-                        .filter(
-                            Boolean,
-                        ),
-
+                    normalizedRoleIds,
                 ),
-
             );
 
 
         await this.repository.replaceRoles(
-
             normalizedUserId,
-
-            uniqueRoles,
-
+            uniqueRoleIds,
         );
 
     }
 
 
 
-
+    /**
+     * Set the user's primary role.
+     *
+     * A role must already be actively assigned before it can become primary.
+     */
     async setPrimaryRole(
-
         userId: string,
-
         roleId: string,
-
     ):
-
-    Promise<void> {
+        Promise<void> {
 
         const normalizedUserId =
             this.validateId(
@@ -243,26 +254,22 @@ export class UserRoleService {
 
         const roles =
             await this.repository.rolesForUser(
-
                 normalizedUserId,
-
             );
 
 
         const assigned =
             roles.some(
-
                 role =>
-
                     role.roleId ===
                         normalizedRoleId &&
-
                     role.isActive,
-
             );
 
 
-        if (!assigned) {
+        if (
+            !assigned
+        ) {
 
             throw new Error(
                 "Cannot set primary role before assignment.",
@@ -272,24 +279,20 @@ export class UserRoleService {
 
 
         await this.repository.setPrimaryRole(
-
             normalizedUserId,
-
             normalizedRoleId,
-
         );
 
     }
 
 
 
-
+    /**
+     * Validate and normalize an entity identifier.
+     */
     private validateId(
-
         id: string,
-
         entity: string,
-
     ): string {
 
         const normalizedId =
@@ -298,7 +301,9 @@ export class UserRoleService {
                 : "";
 
 
-        if (!normalizedId) {
+        if (
+            !normalizedId
+        ) {
 
             throw new Error(
                 `${entity} id is required.`,

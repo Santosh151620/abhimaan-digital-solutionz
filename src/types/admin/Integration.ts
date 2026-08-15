@@ -1,15 +1,35 @@
 /**
  * ============================================================================
+ * Abhimaan Digital Solutionz
+ *
  * Integration
+ *
  * Enterprise Integration Contract
  * CRM + Admin Compatible
  * Production SaaS Contract
  * ============================================================================
+ *
+ * Contract-only definition.
+ *
+ * Integration credentials must never be stored directly in this contract.
+ * credentialReference must point to an approved server-side secret/credential
+ * store.
+ *
+ * Connection management, authentication, synchronization, retry handling,
+ * authorization and tenant isolation belong to the integration service and
+ * infrastructure layers.
+ * ============================================================================
  */
 
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
 
 
+
+/**
+ * Integration transport/category.
+ */
 export type IntegrationType =
     | "REST"
     | "SOAP"
@@ -20,6 +40,10 @@ export type IntegrationType =
     | "Queue";
 
 
+
+/**
+ * Integration lifecycle/connection status.
+ */
 export type IntegrationStatus =
     | "Connected"
     | "Disconnected"
@@ -28,6 +52,10 @@ export type IntegrationStatus =
     | "Error";
 
 
+
+/**
+ * Supported authentication mechanisms.
+ */
 export type IntegrationAuthType =
     | "None"
     | "APIKey"
@@ -36,77 +64,113 @@ export type IntegrationAuthType =
     | "Certificate";
 
 
-export interface Integration extends BaseEntity {
+
+/**
+ * Enterprise integration contract.
+ */
+export interface Integration
+    extends BaseEntity {
+
 
     /**
      * Tenant ownership.
-     * Optional for platform integrations.
+     *
+     * Undefined represents a platform-level integration.
      */
     organizationId?: string;
 
 
+
     /**
-     * Integration identity.
+     * Human-readable integration name.
      */
     name: string;
 
 
+
+    /**
+     * Stable machine-readable integration code.
+     */
     code: string;
 
 
+
     /**
-     * Connection category.
+     * Integration transport/category.
      */
     type: IntegrationType;
 
 
+
     /**
-     * External provider name.
-     * Example:
-     * Supabase, Stripe, OpenAI
+     * External provider/service name.
+     *
+     * Examples:
+     * Supabase, Stripe, OpenAI.
      */
     provider: string;
 
 
+
+    /**
+     * Current integration connection/lifecycle state.
+     */
     status: IntegrationStatus;
 
 
+
     /**
-     * External endpoint.
+     * External service endpoint.
+     *
+     * Sensitive endpoints should not be exposed to unauthorized clients.
      */
     endpoint?: string;
 
 
+
     /**
-     * Authentication mechanism.
+     * Authentication mechanism used by the integration.
      */
     authenticationType?: IntegrationAuthType;
 
 
+
     /**
-     * Integration enabled state.
+     * Whether the integration is enabled for execution.
      */
     enabled: boolean;
 
 
+
     /**
-     * Reference to secret storage.
-     * Never store credentials here.
+     * Reference to server-side credential/secret storage.
+     *
+     * IMPORTANT:
+     * This is a reference only. Never store API keys, passwords, tokens,
+     * private keys or certificates directly in this field.
      */
     credentialReference?: string;
 
 
+
     /**
-     * Synchronization tracking.
+     * Last successful synchronization timestamp.
      */
     lastSyncAt?: string;
 
 
+
+    /**
+     * Extensible non-sensitive metadata.
+     */
     metadata?: Record<string, unknown>;
 
 
-    createdBy?: string;
 
+    /**
+     * Audit ownership.
+     */
+    createdBy?: string;
 
     updatedBy?: string;
 

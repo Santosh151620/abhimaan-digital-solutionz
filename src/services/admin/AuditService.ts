@@ -1,330 +1,424 @@
-/**
- * ============================================================================
- * ADS ENTERPRISE PLATFORM
- *
- * Audit Service
- *
- * Application layer for:
- * - Admin
- * - CRM
- * - Workflow
- * - Security events
- *
- * Responsibilities:
- * - Validate audit records before persistence
- * - Normalize audit query filters
- * - Enforce safe audit query limits
- * - Delegate persistence to the audit repository
- *
- * Security:
- * - Tenant scoping remains the responsibility of the repository layer
- * - This service does not bypass repository security boundaries
- * ============================================================================
- */
+ /**
+  * ============================================================================
+  * ADS ENTERPRISE PLATFORM
+  *
+  * Audit Service
+  *
+  * Application layer for:
+  * - Admin
+  * - CRM
+  * - Workflow
+  * - Security events
+  *
+  * Responsibilities:
+  * - Validate audit records before persistence
+  * - Normalize audit query filters
+  * - Enforce safe audit query limits
+  * - Delegate persistence to the audit repository
+  *
+  * Security:
+  * - Tenant scoping remains the responsibility of the repository layer
+  * - This service does not bypass repository security boundaries
+  * ============================================================================
+  */
 
+ import type {
+     AuditRecord,
+ } from "@/types/admin/Audit";
 
-import type {
-    AuditRecord,
-} from "@/types/admin/Audit";
 
+ import type {
+     IAuditRepository,
+ } from "@/repositories/admin/AuditRepository";
 
-import type {
-    IAuditRepository,
-} from "@/repositories/admin/AuditRepository";
 
 
+ const MAX_AUDIT_QUERY_LIMIT =
+     500;
 
-export class AuditService {
 
 
+ export class AuditService {
 
-    constructor(
 
-        private readonly repository:
-            IAuditRepository,
 
-    ) {}
+     constructor(
 
+         private readonly repository:
+             IAuditRepository,
 
+     ) {}
 
-    async log(
 
-        entry: AuditRecord,
 
-    ):
+     /**
+      * Persist one validated audit record.
+      *
+      * The repository remains responsible for tenant scoping,
+      * authorization and database-level security.
+      */
+     async log(
 
-    Promise<void> {
+         entry: AuditRecord,
 
-        const normalized =
-            this.normalizeAudit(
-                entry,
-            );
+     ):
 
+     Promise<void> {
 
-        await this.repository.log(
+         const normalized =
+             this.normalizeAudit(
+                 entry,
+             );
 
-            {
 
-                ...entry,
+         await this.repository.log(
 
-                action:
-                    normalized.action,
+             {
 
-                entityType:
-                    normalized.entityType,
+                 ...entry,
 
-                entityId:
-                    normalized.entityId,
+                 action:
+                     normalized.action,
 
-                createdAt:
-                    this.normalizeCreatedAt(
-                        entry.createdAt,
-                    ),
+                 entityType:
+                     normalized.entityType,
 
-            },
+                 entityId:
+                     normalized.entityId,
 
-        );
+                 createdAt:
+                     normalized.createdAt,
 
-    }
+             },
 
+         );
 
+     }
 
-    async getLogs(
 
-        options?: {
 
-            entityType?: string;
+     /**
+      * Query audit records using normalized, bounded filters.
+      */
+     async getLogs(
 
-            entityId?: string;
+         options?: {
 
-            limit?: number;
+             entityType?: string;
 
-        },
+             entityId?: string;
 
-    ):
+             limit?: number;
 
-    Promise<AuditRecord[]> {
+         },
 
+     ):
 
-        const entityType =
-            typeof options?.entityType ===
-            "string"
-                ? options.entityType.trim()
-                : undefined;
+     Promise<AuditRecord[]> {
 
 
-        const entityId =
-            typeof options?.entityId ===
-            "string"
-                ? options.entityId.trim()
-                : undefined;
+         const entityType =
+             this.normalizeOptionalText(
+                 options?.entityType,
+             );
 
 
-        return this.repository.getLogs(
+         const entityId =
+             this.normalizeOptionalText(
+                 options?.entityId,
+             );
 
-            {
 
-                entityType:
-                    entityType || undefined,
+         return this.repository.getLogs(
 
-                entityId:
-                    entityId || undefined,
+             {
 
-                limit:
-                    this.normalizeLimit(
-                        options?.limit,
-                    ),
+                 entityType,
 
-            },
+                 entityId,
 
-        );
+                 limit:
+                     this.normalizeLimit(
+                         options?.limit,
+                     ),
 
-    }
+             },
 
+         );
 
+     }
 
-    private normalizeAudit(
 
-        entry: AuditRecord,
 
-    ): {
+     /**
+      * Validate and normalize an audit record.
+      */
+     private normalizeAudit(
 
-        action: string;
+         entry: AuditRecord,
 
-        entityType: string;
+     ): {
 
-        entityId: string;
+         action: string;
 
-    } {
+         entityType: string;
 
+         entityId: string;
 
-        if (!entry) {
+         createdAt: string;
 
-            throw new Error(
+     } {
 
-                "Audit entry is required.",
 
-            );
+         if (
 
-        }
+             !entry ||
 
+             typeof entry !== "object"
 
-        const action =
-            typeof entry.action ===
-            "string"
-                ? entry.action.trim()
-                : "";
+         ) {
 
+             throw new Error(
 
-        const entityType =
-            typeof entry.entityType ===
-            "string"
-                ? entry.entityType.trim()
-                : "";
+                 "Audit entry is required.",
 
+             );
 
-        const entityId =
-            typeof entry.entityId ===
-            "string"
-                ? entry.entityId.trim()
-                : "";
+         }
 
 
-        if (!action) {
+         const action =
+             typeof entry.action ===
+             "string"
 
-            throw new Error(
+                 ? entry.action.trim()
 
-                "Audit action is required.",
+                 : "";
 
-            );
 
-        }
+         const entityType =
+             typeof entry.entityType ===
+             "string"
 
+                 ? entry.entityType.trim()
 
-        if (!entityType) {
+                 : "";
 
-            throw new Error(
 
-                "Audit entity type is required.",
+         const entityId =
+             typeof entry.entityId ===
+             "string"
 
-            );
+                 ? entry.entityId.trim()
 
-        }
+                 : "";
 
 
-        if (!entityId) {
+         if (!action) {
 
-            throw new Error(
+             throw new Error(
 
-                "Audit entity id is required.",
+                 "Audit action is required.",
 
-            );
+             );
 
-        }
+         }
 
 
-        return {
+         if (!entityType) {
 
-            action,
+             throw new Error(
 
-            entityType,
+                 "Audit entity type is required.",
 
-            entityId,
+             );
 
-        };
+         }
 
-    }
 
+         if (!entityId) {
 
+             throw new Error(
 
-    private normalizeCreatedAt(
+                 "Audit entity id is required.",
 
-        createdAt?: string,
+             );
 
-    ): string {
+         }
 
-        const normalized =
-            typeof createdAt ===
-            "string"
-                ? createdAt.trim()
-                : "";
 
+         return {
 
-        return (
+             action,
 
-            normalized ||
+             entityType,
 
-            new Date()
-                .toISOString()
+             entityId,
 
-        );
+             createdAt:
+                 this.normalizeCreatedAt(
+                     entry.createdAt,
+                 ),
 
-    }
+         };
 
+     }
 
 
-    private normalizeLimit(
 
-        limit?: number,
+     /**
+      * Normalize optional query text.
+      *
+      * Empty strings are converted to undefined so they do not
+      * become meaningless repository filters.
+      */
+     private normalizeOptionalText(
 
-    ):
+         value?: string,
 
-    number | undefined {
+     ): string | undefined {
 
 
-        if (
+         if (
 
-            limit === undefined
+             typeof value !==
+             "string"
 
-        ) {
+         ) {
 
-            return undefined;
+             return undefined;
 
-        }
+         }
 
 
-        if (
+         const normalized =
+             value.trim();
 
-            !Number.isFinite(
-                limit,
-            )
 
-        ) {
+         return normalized || undefined;
 
-            throw new Error(
+     }
 
-                "Audit limit must be a finite number.",
 
-            );
 
-        }
+     /**
+      * Normalize the audit timestamp.
+      *
+      * Existing timestamps are preserved. Missing timestamps use
+      * the current UTC timestamp.
+      */
+     private normalizeCreatedAt(
 
+         createdAt?: string,
 
-        if (
+     ): string {
 
-            limit <= 0
 
-        ) {
+         const normalized =
+             typeof createdAt ===
+             "string"
 
-            throw new Error(
+                 ? createdAt.trim()
 
-                "Audit limit must be greater than zero.",
+                 : "";
 
-            );
 
-        }
+         return (
 
+             normalized ||
 
-        return Math.min(
+             new Date().toISOString()
 
-            Math.floor(
-                limit,
-            ),
+         );
 
-            500,
+     }
 
-        );
 
-    }
 
-}
+     /**
+      * Enforce a safe upper bound on audit queries.
+      *
+      * Fractional values are rejected rather than being silently
+      * converted to zero by Math.floor().
+      */
+     private normalizeLimit(
+
+         limit?: number,
+
+     ): number | undefined {
+
+
+         if (
+
+             limit === undefined
+
+         ) {
+
+             return undefined;
+
+         }
+
+
+         if (
+
+             typeof limit !==
+             "number" ||
+
+             !Number.isFinite(
+                 limit,
+             )
+
+         ) {
+
+             throw new Error(
+
+                 "Audit limit must be a finite number.",
+
+             );
+
+         }
+
+
+         if (
+
+             !Number.isInteger(
+                 limit,
+             )
+
+         ) {
+
+             throw new Error(
+
+                 "Audit limit must be an integer.",
+
+             );
+
+         }
+
+
+         if (
+
+             limit <= 0
+
+         ) {
+
+             throw new Error(
+
+                 "Audit limit must be greater than zero.",
+
+             );
+
+         }
+
+
+         return Math.min(
+
+             limit,
+
+             MAX_AUDIT_QUERY_LIMIT,
+
+         );
+
+     }
+
+ }

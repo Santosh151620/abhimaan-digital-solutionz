@@ -1,31 +1,43 @@
 import {
     KnowledgeBaseClient,
-} from '@/components/crm/knowledge-base';
+} from "@/components/crm/knowledge-base";
+
 
 import {
     getKnowledgeArticles,
-} from './actions';
+} from "./actions";
+
+
 
 export default async function KnowledgeBasePage() {
 
     const articles =
         await getKnowledgeArticles();
 
+
+
     return (
 
         <div className="space-y-6">
 
-            <div>
+            <header>
 
                 <h1 className="text-2xl font-semibold">
+
                     Knowledge Base
+
                 </h1>
 
+
                 <p className="text-sm text-muted-foreground">
-                    Articles, documentation, SOPs and internal knowledge.
+
+                    Articles, documentation, SOPs
+                    and internal knowledge.
+
                 </p>
 
-            </div>
+            </header>
+
 
             <KnowledgeBaseClient
                 initialArticles={articles}
@@ -36,4 +48,3 @@ export default async function KnowledgeBasePage() {
     );
 
 }
-

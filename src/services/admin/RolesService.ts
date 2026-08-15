@@ -9,6 +9,41 @@ import type {
 
 
 
+/**
+ * ============================================================================
+ * ADS ADMIN — ROLES SERVICE
+ * ============================================================================
+ *
+ * Canonical business-service boundary for administrative roles.
+ *
+ * Responsibilities:
+ *
+ * - Validate role input.
+ * - Normalize role identifiers.
+ * - Prevent duplicate role codes.
+ * - Protect system roles from deletion.
+ * - Delegate persistence exclusively to the repository.
+ * - Keep repository/database concerns outside the service layer.
+ *
+ * Architecture:
+ *
+ *   UI / Server Action
+ *          ↓
+ *   RolesService
+ *          ↓
+ *   IRolesRepository
+ *          ↓
+ *   Persistence / Supabase
+ *
+ * IMPORTANT:
+ *
+ * This service deliberately does not access Supabase directly.
+ * Authorization, tenant/security enforcement and persistence remain below
+ * this boundary according to the existing repository architecture.
+ * ============================================================================
+ */
+
+
 export class RolesService {
 
 
@@ -21,6 +56,9 @@ export class RolesService {
 
 
 
+    /**
+     * Return all roles.
+     */
     async list():
 
     Promise<Role[]> {
@@ -31,6 +69,9 @@ export class RolesService {
 
 
 
+    /**
+     * Return active roles only.
+     */
     async active():
 
     Promise<Role[]> {
@@ -41,6 +82,9 @@ export class RolesService {
 
 
 
+    /**
+     * Find a role by identifier.
+     */
     async findById(
 
         id: string,
@@ -51,11 +95,8 @@ export class RolesService {
 
         const normalizedId =
             this.validateId(
-
                 id,
-
                 "Role",
-
             );
 
 
@@ -69,6 +110,9 @@ export class RolesService {
 
 
 
+    /**
+     * Find a role by normalized role code.
+     */
     async findByCode(
 
         code: string,
@@ -79,9 +123,7 @@ export class RolesService {
 
         const normalizedCode =
             this.normalizeCode(
-
                 code,
-
             );
 
 
@@ -95,6 +137,15 @@ export class RolesService {
 
 
 
+    /**
+     * Create or update a role.
+     *
+     * Existing callers continue to provide a complete Role object.
+     *
+     * Business validation and normalization happen before persistence.
+     * Duplicate role codes are rejected unless the existing role is the
+     * same record being updated.
+     */
     async save(
 
         role: Role,
@@ -102,17 +153,26 @@ export class RolesService {
     ): Promise<Role> {
 
         this.validateRole(
-
             role,
-
         );
+
+
+        const normalizedId =
+            this.validateId(
+                role.id,
+                "Role",
+            );
 
 
         const normalizedCode =
             this.normalizeCode(
-
                 role.code,
+            );
 
+
+        const normalizedName =
+            this.normalizeName(
+                role.name,
             );
 
 
@@ -128,14 +188,12 @@ export class RolesService {
 
             existing &&
 
-            existing.id !== role.id
+            existing.id !== normalizedId
 
         ) {
 
             throw new Error(
-
                 "Role code already exists.",
-
             );
 
         }
@@ -147,19 +205,22 @@ export class RolesService {
 
                 ...role,
 
+                id:
+                    normalizedId,
+
                 name:
-                    role.name.trim(),
+                    normalizedName,
 
                 code:
                     normalizedCode,
 
                 description:
-                    role.description?.trim()
-                    || undefined,
+                    this.normalizeOptionalText(
+                        role.description,
+                    ),
 
                 updatedAt:
-                    new Date()
-                        .toISOString(),
+                    new Date().toISOString(),
 
             },
 
@@ -169,21 +230,21 @@ export class RolesService {
 
 
 
+    /**
+     * Delete a role.
+     *
+     * System roles are protected from deletion.
+     */
     async delete(
 
         id: string,
 
-    ):
-
-    Promise<void> {
+    ): Promise<void> {
 
         const normalizedId =
             this.validateId(
-
                 id,
-
                 "Role",
-
             );
 
 
@@ -198,9 +259,7 @@ export class RolesService {
         if (!role) {
 
             throw new Error(
-
                 "Role not found.",
-
             );
 
         }
@@ -209,9 +268,7 @@ export class RolesService {
         if (role.isSystem) {
 
             throw new Error(
-
                 "System roles cannot be deleted.",
-
             );
 
         }
@@ -227,47 +284,52 @@ export class RolesService {
 
 
 
+    /**
+     * Validate the complete role contract before persistence.
+     */
     private validateRole(
 
         role: Role,
 
     ): void {
 
-        if (!role) {
+        if (
+
+            !role ||
+
+            typeof role !== "object" ||
+
+            Array.isArray(role)
+
+        ) {
 
             throw new Error(
-
                 "Role is required.",
-
             );
 
         }
 
 
-        if (!role.name?.trim()) {
+        this.validateId(
+            role.id,
+            "Role",
+        );
 
-            throw new Error(
 
-                "Role name is required.",
-
-            );
-
-        }
+        this.normalizeName(
+            role.name,
+        );
 
 
         this.normalizeCode(
-
             role.code,
-
         );
 
 
         if (!role.type) {
 
             throw new Error(
-
                 "Role type is required.",
-
             );
 
         }
@@ -276,9 +338,7 @@ export class RolesService {
         if (!role.level) {
 
             throw new Error(
-
                 "Role level is required.",
-
             );
 
         }
@@ -287,9 +347,7 @@ export class RolesService {
         if (!role.status) {
 
             throw new Error(
-
                 "Role status is required.",
-
             );
 
         }
@@ -298,41 +356,25 @@ export class RolesService {
 
 
 
-    private normalizeCode(
+    /**
+     * Normalize role names while preserving user-facing capitalization.
+     */
+    private normalizeName(
 
-        code: string,
+        name: string,
 
     ): string {
 
         const normalized =
-            code?.trim().toLowerCase();
+            typeof name === "string"
+                ? name.trim()
+                : "";
 
 
         if (!normalized) {
 
             throw new Error(
-
-                "Role code is required.",
-
-            );
-
-        }
-
-
-        if (
-
-            !/^[a-z0-9_-]+$/.test(
-
-                normalized,
-
-            )
-
-        ) {
-
-            throw new Error(
-
-                "Role code may contain only lowercase letters, numbers, underscores, and hyphens.",
-
+                "Role name is required.",
             );
 
         }
@@ -344,6 +386,91 @@ export class RolesService {
 
 
 
+    /**
+     * Normalize and validate the persistent role code.
+     *
+     * Role codes are canonicalized to lowercase to ensure deterministic
+     * duplicate detection and repository lookups.
+     */
+    private normalizeCode(
+
+        code: string,
+
+    ): string {
+
+        const normalized =
+            typeof code === "string"
+                ? code.trim().toLowerCase()
+                : "";
+
+
+        if (!normalized) {
+
+            throw new Error(
+                "Role code is required.",
+            );
+
+        }
+
+
+        if (
+
+            !/^[a-z0-9_-]+$/.test(
+                normalized,
+            )
+
+        ) {
+
+            throw new Error(
+                "Role code may contain only lowercase letters, numbers, underscores, and hyphens.",
+            );
+
+        }
+
+
+        return normalized;
+
+    }
+
+
+
+    /**
+     * Normalize optional descriptive fields.
+     *
+     * Empty strings are persisted as undefined rather than meaningless
+     * whitespace values.
+     */
+    private normalizeOptionalText(
+
+        value:
+            string | null | undefined,
+
+    ):
+
+    string | undefined {
+
+        if (
+            typeof value !== "string"
+        ) {
+
+            return undefined;
+
+        }
+
+
+        const normalized =
+            value.trim();
+
+
+        return normalized || undefined;
+
+    }
+
+
+
+    /**
+     * Validate and normalize entity identifiers.
+     */
     private validateId(
 
         id: string,
@@ -353,15 +480,15 @@ export class RolesService {
     ): string {
 
         const normalized =
-            id?.trim();
+            typeof id === "string"
+                ? id.trim()
+                : "";
 
 
         if (!normalized) {
 
             throw new Error(
-
                 `${entity} id is required.`,
-
             );
 
         }
@@ -371,7 +498,4 @@ export class RolesService {
 
     }
 
-
-
 }
-

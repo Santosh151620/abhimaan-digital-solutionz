@@ -1,23 +1,102 @@
+/**
+ * ============================================================================
+ * Abhimaan Digital Solutionz
+ *
+ * Designation
+ *
+ * Enterprise Organization Structure Contract
+ * ============================================================================
+ *
+ * Contract-only definition.
+ *
+ * Designation hierarchy, organization ownership, department relationships,
+ * authorization and persistence rules belong to the service/repository/
+ * database layers.
+ * ============================================================================
+ */
+
+
+/**
+ * Designation lifecycle status.
+ */
+export type DesignationStatus =
+    | "Active"
+    | "Inactive";
+
+
+
+/**
+ * Enterprise designation contract.
+ */
 export interface Designation {
 
-    id:string;
 
-    organizationId:string;
+    /**
+     * Unique designation identifier.
+     */
+    id: string;
 
-    departmentId?:string;
 
-    designationCode:string;
 
-    designationName:string;
+    /**
+     * Organization owning the designation.
+     */
+    organizationId: string;
 
-    description?:string;
 
-    status:"Active" | "Inactive";
 
-    metadata:Record<string, unknown>;
+    /**
+     * Optional department association.
+     */
+    departmentId?: string;
 
-    createdAt:string;
 
-    updatedAt:string;
+
+    /**
+     * Stable organization-scoped designation code.
+     */
+    designationCode: string;
+
+
+
+    /**
+     * Human-readable designation name.
+     */
+    designationName: string;
+
+
+
+    /**
+     * Optional designation description.
+     */
+    description?: string;
+
+
+
+    /**
+     * Designation lifecycle status.
+     */
+    status: DesignationStatus;
+
+
+
+    /**
+     * Extensible designation metadata.
+     */
+    metadata: Record<string, unknown>;
+
+
+
+    /**
+     * Creation timestamp.
+     */
+    createdAt: string;
+
+
+
+    /**
+     * Last modification timestamp.
+     */
+    updatedAt: string;
 
 }

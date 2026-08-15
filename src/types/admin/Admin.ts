@@ -4,11 +4,24 @@
  * Admin Platform Contract
  * Enterprise Administration
  * ============================================================================
+ *
+ * Canonical type contract for Admin platform entities and dashboard data.
+ *
+ * This file intentionally contains contracts only.
+ * Persistence, authorization, tenant isolation and business rules belong to
+ * their respective repository/service layers.
+ * ============================================================================
  */
 
-import type { BaseEntity } from "@/types/platform/BaseEntity";
+import type {
+    BaseEntity,
+} from "@/types/platform/BaseEntity";
 
 
+
+/**
+ * Entity categories addressable by the Admin platform.
+ */
 export type AdminEntityType =
     | "organization"
     | "user"
@@ -19,7 +32,15 @@ export type AdminEntityType =
     | "audit";
 
 
-export interface AdminEntity extends BaseEntity {
+
+/**
+ * Common Admin entity contract.
+ *
+ * organizationId is optional because platform-level entities such as
+ * organizations/modules may exist outside an organization scope.
+ */
+export interface AdminEntity
+    extends BaseEntity {
 
     organizationId?: string;
 
@@ -32,6 +53,10 @@ export interface AdminEntity extends BaseEntity {
 }
 
 
+
+/**
+ * Aggregated Admin platform metrics.
+ */
 export interface AdminSummary {
 
     organizations: number;
@@ -53,6 +78,10 @@ export interface AdminSummary {
 }
 
 
+
+/**
+ * Admin dashboard snapshot.
+ */
 export interface AdminDashboard {
 
     summary: AdminSummary;
@@ -60,6 +89,3 @@ export interface AdminDashboard {
     generatedAt: string;
 
 }
-
-
-

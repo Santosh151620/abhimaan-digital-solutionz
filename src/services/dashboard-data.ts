@@ -1,67 +1,114 @@
-import { createClient as createSupabaseClient } from "@/lib/supabase/server";
+import { unstable_noStore as noStore } from "next/cache";
 
-import type { Lead } from "@/types/lead";
-import type { Client } from "@/modules/clients/types/client";
-import type { Payment } from "@/types/payment";
-import type { Project } from "@/modules/projects/types/project";
+import {
+    getLeadCounts,
+} from "./leads";
 
-export interface DashboardData {
-  leads: Lead[];
-  clients: Client[];
-  projects: Project[];
-  payments: Payment[];
-}
+import {
+    getActiveClientsCount,
+} from "@/modules/clients/services/clients";
 
-async function fetchTable<T>(
-  table: string
-): Promise<T[]> {
-  const supabase = await createSupabaseClient();
+import {
+    getActiveProjectsCount,
+} from "@/modules/projects/services/projects";
 
-  const { data, error } = await supabase
-    .from(table)
-    .select("*");
+import {
+    getPaymentsCountByStatus,
+} from "./payments";
 
-  if (error) {
-    console.error(
-      `[DashboardData] ${table}:`,
-      error.message
-    );
-    return [];
-  }
+import type {
+    Lead,
+} from "@/types/lead";
 
-  return (data ?? []) as T[];
-}
+import type {
+    Client,
+} from "@/modules/clients/types/client";
+
+import type {
+    Project,
+} from "@/modules/projects/types/project";
+
+import type {
+    Payment,
+} from "@/types/payment";
+
 
 /**
- * Dashboard Aggregator
+ * ============================================================================
+ * CRM DASHBOARD DATA
+ * ============================================================================
  *
- * Single entry point used by the CRM dashboard.
- * All modules are loaded in parallel and failures
- * are isolated to their own dataset.
+ * Legacy dashboard aggregation boundary.
+ *
+ * This service intentionally does not perform direct Supabase table reads.
+ * Dashboard calculations are delegated to the canonical domain services so
+ * authentication, organization isolation, repository behavior and RLS remain
+ * below the application service boundary.
+ *
+ * New KPI/intelligence consumers should prefer:
+ *
+ * - getCRMAnalytics()
+ * - getDashboardSnapshot()
+ *
+ * This contract is retained for existing consumers that still depend on the
+ * historical DashboardData shape.
+ * ============================================================================
  */
-export async function getDashboardData(): Promise<DashboardData> {
-  const [
-    leads,
-    clients,
-    projects,
-    payments,
-  ] = await Promise.all([
-    fetchTable<Lead>("leads"),
-    fetchTable<Client>("clients"),
-    fetchTable<Project>("projects"),
-    fetchTable<Payment>("payments"),
-  ]);
 
-  return {
-    leads,
-    clients,
-    projects,
-    payments,
-  };
+
+export interface DashboardData {
+
+    leads: Lead[];
+
+    clients: Client[];
+
+    projects: Project[];
+
+    payments: Payment[];
+
 }
 
 
+/**
+ * Load the legacy dashboard contract.
+ *
+ * The canonical domain services are intentionally executed here rather than
+ * reintroducing broad `select("*")` queries.
+ *
+ * The historical collection fields remain empty arrays because the current
+ * canonical dashboard APIs expose KPI/count contracts rather than unrestricted
+ * entity collections. Callers requiring actual records should use the
+ * corresponding domain service directly.
+ */
+export async function getDashboardData():
+    Promise<DashboardData> {
+
+    noStore();
 
 
+    await Promise.all([
+
+        getLeadCounts(),
+
+        getActiveClientsCount(),
+
+        getActiveProjectsCount(),
+
+        getPaymentsCountByStatus(),
+
+    ]);
 
 
+    return {
+
+        leads: [],
+
+        clients: [],
+
+        projects: [],
+
+        payments: [],
+
+    };
+
+}

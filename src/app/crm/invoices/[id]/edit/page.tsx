@@ -1,20 +1,21 @@
 import type {
     InvoiceStatus,
-} from '@/types/crm/Invoices';
+} from "@/types/crm/Invoices";
+
 
 import {
     notFound,
     redirect,
-} from 'next/navigation';
+} from "next/navigation";
 
 
-import InvoicesForm from '@/components/crm/invoices/InvoicesForm';
+import InvoicesForm from "@/components/crm/invoices/InvoicesForm";
 
 
 import {
     getInvoice,
     updateInvoice,
-} from '../../actions';
+} from "../../actions";
 
 
 
@@ -23,6 +24,81 @@ interface Props {
     params: Promise<{
         id: string;
     }>;
+
+}
+
+
+
+function getFormString(
+    formData: FormData,
+    key: string,
+): string {
+
+    const value =
+        formData.get(key);
+
+
+    return typeof value === "string"
+        ? value.trim()
+        : "";
+
+}
+
+
+
+function getFormNumber(
+    formData: FormData,
+    key: string,
+): number {
+
+    const value =
+        getFormString(
+            formData,
+            key,
+        );
+
+
+    if (!value) {
+
+        return 0;
+
+    }
+
+
+    const parsed =
+        Number(value);
+
+
+    if (!Number.isFinite(parsed)) {
+
+        throw new Error(
+            `${key} must be a valid number.`,
+        );
+
+    }
+
+
+    return parsed;
+
+}
+
+
+
+function getInvoiceStatus(
+    formData: FormData,
+    fallback: InvoiceStatus,
+): InvoiceStatus {
+
+    const value =
+        getFormString(
+            formData,
+            "status",
+        );
+
+
+    return (
+        value || fallback
+    ) as InvoiceStatus;
 
 }
 
@@ -38,10 +114,8 @@ export default async function EditInvoicePage({
     } = await params;
 
 
-
     const invoice =
         await getInvoice(id);
-
 
 
     if (!invoice) {
@@ -51,91 +125,108 @@ export default async function EditInvoicePage({
     }
 
 
+    /*
+     * Preserve the narrowed invoice value for
+     * the nested server action closure.
+     */
+    const existingInvoice =
+        invoice;
+
+
 
     async function submit(
-        formData: FormData
-    ) {
+        formData: FormData,
+    ): Promise<void> {
 
-        'use server';
+        "use server";
 
+
+        const companyId =
+            getFormString(
+                formData,
+                "companyId",
+            );
 
 
         await updateInvoice(
+
             id,
+
             {
 
                 invoiceNumber:
-                    String(
-                        formData.get('invoiceNumber') ?? ''
+                    getFormString(
+                        formData,
+                        "invoiceNumber",
                     ),
 
 
                 title:
-                    String(
-                        formData.get('title') ?? ''
+                    getFormString(
+                        formData,
+                        "title",
                     ),
 
 
                 customerName:
-                    String(
-                        formData.get('customerName') ?? ''
+                    getFormString(
+                        formData,
+                        "customerName",
                     ),
 
 
                 companyId:
-                    String(
-                        formData.get('companyId') ?? ''
-                    ),
+                    companyId || undefined,
 
 
                 issueDate:
-                    String(
-                        formData.get('issueDate') ?? ''
+                    getFormString(
+                        formData,
+                        "issueDate",
                     ),
 
 
                 dueDate:
-                    String(
-                        formData.get('dueDate') ?? ''
+                    getFormString(
+                        formData,
+                        "dueDate",
                     ),
 
 
                 total:
-                    Number(
-                        formData.get('total') ?? 0
-                    ),
-
-
-                balanceAmount:
-                    Number(
-                        formData.get('total') ?? 0
+                    getFormNumber(
+                        formData,
+                        "total",
                     ),
 
 
                 currency:
-                    String(
-                        formData.get('currency') ?? 'INR'
-                    ),
+                    getFormString(
+                        formData,
+                        "currency",
+                    ) || "INR",
 
 
                 status:
-    String(
-        formData.get('status') ?? invoice?.status
-    ) as InvoiceStatus,
+                    getInvoiceStatus(
+                        formData,
+                        existingInvoice.status,
+                    ),
 
 
                 notes:
-                    String(
-                        formData.get('notes') ?? ''
-                    ),
+                    getFormString(
+                        formData,
+                        "notes",
+                    ) || undefined,
 
-            }
+            },
+
         );
 
 
-
         redirect(
-            `/crm/invoices/${id}`
+            `/crm/invoices/${id}`,
         );
 
     }
@@ -147,14 +238,30 @@ export default async function EditInvoicePage({
         <div className="space-y-6 p-6">
 
 
-            <h1 className="text-2xl font-bold">
-                Edit Invoice
-            </h1>
+            <header>
+
+                <h1 className="text-2xl font-bold">
+
+                    Edit Invoice
+
+                </h1>
+
+
+                <p className="text-sm text-muted-foreground">
+
+                    {existingInvoice.invoiceNumber}
+
+                </p>
+
+            </header>
 
 
             <InvoicesForm
-                initialData={invoice}
+
+                initialData={existingInvoice}
+
                 action={submit}
+
             />
 
 

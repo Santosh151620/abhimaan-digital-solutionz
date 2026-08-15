@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * ADS ENTERPRISE PLATFORM
+ * Abhimaan Digital Solutionz
  *
  * Audit Record
  *
@@ -25,6 +25,9 @@ import type {
 
 
 
+/**
+ * Audit event severity.
+ */
 export type AuditSeverity =
     | "Info"
     | "Warning"
@@ -33,6 +36,9 @@ export type AuditSeverity =
 
 
 
+/**
+ * Identity responsible for generating an audit event.
+ */
 export type AuditActorType =
     | "USER"
     | "SYSTEM"
@@ -40,6 +46,9 @@ export type AuditActorType =
 
 
 
+/**
+ * Canonical high-level audit action.
+ */
 export type AuditActionType =
     | "Create"
     | "Read"
@@ -52,109 +61,164 @@ export type AuditActionType =
 
 
 
-export interface AuditRecord extends BaseEntity {
+/**
+ * Enterprise audit record.
+ *
+ * Tenant ownership, authorization and persistence security remain enforced
+ * by the repository/database layer.
+ */
+export interface AuditRecord
+    extends BaseEntity {
 
 
     /**
-     * Tenant ownership
+     * Organization owning the audit event.
+     *
+     * Required for tenant-scoped audit records.
      */
     organizationId: string;
 
 
 
     /**
-     * Who performed the action
+     * Application user associated with the action, when applicable.
      */
     userId?: string;
 
 
+
+    /**
+     * Actor identifier.
+     *
+     * May identify a user, service or system actor depending on actorType.
+     */
     actorId?: string;
 
 
+
+    /**
+     * Type of actor responsible for the event.
+     */
     actorType?: AuditActorType;
 
 
 
     /**
-     * Audit classification
+     * Primary module responsible for the event.
+     *
+     * Examples:
+     * Admin, CRM, Workflow, Security.
      */
     module: string;
 
 
+
+    /**
+     * Optional originating sub-module.
+     */
     sourceModule?: string;
 
 
+
+    /**
+     * Machine-readable event identifier.
+     */
     eventType?: string;
 
 
+
+    /**
+     * Higher-level event classification.
+     */
     eventCategory?: string;
 
 
 
     /**
-     * Entity reference
-     *
-     * Entity driven architecture
+     * Entity name associated with the audit event.
      */
     entity: string;
 
 
+
+    /**
+     * Optional entity type classification.
+     */
     entityType?: string;
 
 
+
+    /**
+     * Identifier of the affected entity.
+     */
     entityId: string;
 
 
 
     /**
-     * Action details
+     * Human-readable or domain-specific action name.
      */
     action: string;
 
 
+
+    /**
+     * Canonical action classification.
+     */
     actionType: AuditActionType;
 
 
 
+    /**
+     * Human-readable event description.
+     */
     description?: string;
 
 
 
     /**
-     * Severity
+     * Security/compliance severity.
      */
     severity: AuditSeverity;
 
 
 
     /**
-     * Request context
+     * Request/network context.
+     *
+     * Sensitive request data should only be retained according to the
+     * platform's security and retention policy.
      */
     ipAddress?: string;
 
-
     userAgent?: string;
 
-
     requestId?: string;
-
 
     sessionId?: string;
 
 
 
     /**
-     * State snapshots
+     * State before the operation.
+     *
+     * Avoid storing secrets or credentials in audit snapshots.
      */
     beforeData?: Record<string, unknown>;
 
 
+
+    /**
+     * State after the operation.
+     *
+     * Avoid storing secrets or credentials in audit snapshots.
+     */
     afterData?: Record<string, unknown>;
 
 
 
     /**
-     * Additional context
+     * Additional non-sensitive event context.
      */
     metadata?: Record<string, unknown>;
 

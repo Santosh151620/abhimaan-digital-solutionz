@@ -1,15 +1,20 @@
-import Link from 'next/link';
+import Link from "next/link";
 import {
     notFound,
-} from 'next/navigation';
+} from "next/navigation";
+
 
 import {
     KnowledgeBaseForm,
-} from '@/components/crm/knowledge-base';
+} from "@/components/crm/knowledge-base";
+
 
 import {
     getKnowledgeArticle,
-} from '../../actions';
+    updateKnowledgeArticle,
+} from "../../actions";
+
+
 
 interface Props {
 
@@ -19,6 +24,8 @@ interface Props {
 
 }
 
+
+
 export default async function EditKnowledgeArticlePage({
     params,
 }: Props) {
@@ -27,10 +34,12 @@ export default async function EditKnowledgeArticlePage({
         id,
     } = await params;
 
+
     const article =
         await getKnowledgeArticle(
             id,
         );
+
 
     if (!article) {
 
@@ -38,35 +47,62 @@ export default async function EditKnowledgeArticlePage({
 
     }
 
+
+
     return (
 
         <div className="space-y-6">
 
-            <div>
+            <header>
 
                 <h1 className="text-2xl font-semibold">
+
                     Edit Knowledge Article
+
                 </h1>
 
+
                 <p className="text-sm text-muted-foreground">
+
                     {article.articleNumber}
+
                 </p>
 
-            </div>
+            </header>
+
 
             <KnowledgeBaseForm
 
                 initialValues={article}
 
-                onSubmit={async () => {}}
+                onSubmit={
+                    async data => {
+
+                        await updateKnowledgeArticle(
+                            id,
+                            data,
+                        );
+
+                    }
+                }
 
             />
 
+
             <Link
-                href={`/crm/knowledge-base/${id}`}
-                className="text-sm underline"
+                href={`/en/dashboard/knowledge-base/${id}`}
+                className="
+                    inline-flex
+                    text-sm
+                    font-medium
+                    underline
+                    underline-offset-4
+                    hover:no-underline
+                "
             >
+
                 Back to Article
+
             </Link>
 
         </div>
