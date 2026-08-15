@@ -1,4 +1,4 @@
-import type {
+﻿import type {
     SupabaseClient,
 } from '@supabase/supabase-js';
 
@@ -20,45 +20,391 @@ import type {
 
 
 
+
+type CompanyDbRow = {
+
+    id: string;
+
+    organization_id: string;
+
+    company_code?: string | null;
+
+    company_name: string;
+
+    legal_name?: string | null;
+
+    display_name?: string | null;
+
+    industry_id?: string | null;
+
+    website?: string | null;
+
+    email?: string | null;
+
+    phone?: string | null;
+
+    employee_count?: number | null;
+
+    annual_revenue?: number | null;
+
+    status:
+    | 'active'
+    | 'inactive'
+    | 'archived';
+
+    description?: string | null;
+
+    created_at: string;
+
+    updated_at: string;
+
+    deleted_at?: string | null;
+
+};
+
+
+
+
 export class CompaniesRepository
     extends BaseRepository<Company> {
 
-
     constructor(
-        supabase: SupabaseClient
+        supabase: SupabaseClient,
     ) {
 
         super(
             supabase,
-            'companies'
+            'companies',
         );
 
     }
 
 
+    private mapStatusFromDb(
+    status:
+        | string
+        | null
+        | undefined,
+): Company['status'] {
+
+    switch(status){
+
+        case "active":
+            return "ACTIVE";
+
+        case "inactive":
+            return "INACTIVE";
+
+        case "archived":
+            return "ARCHIVED";
+
+        case "prospect":
+            return "PROSPECT";
+
+        default:
+            return "ACTIVE";
+    }
+}
+
+private mapStatusToDb(
+    status: Company['status'] | undefined,
+):
+    | "active"
+    | "inactive"
+    | "archived"
+    | "prospect" {
+
+
+    switch(status){
+
+        case "INACTIVE":
+            return "inactive";
+
+        case "ARCHIVED":
+            return "archived";
+
+        case "PROSPECT":
+            return "prospect";
+
+        case "ACTIVE":
+        default:
+            return "active";
+
+    }
+
+}
+
+
+    private mapFromDb(
+        row: CompanyDbRow,
+    ): Company {
+
+
+        return {
+
+            entityType:
+                'Company',
+
+
+            id:
+                row.id,
+
+
+            organizationId:
+                row.organization_id,
+
+
+
+            companyNumber:
+                row.company_code
+                ??
+                undefined,
+
+
+            name:
+                row.company_name,
+
+
+
+            legalName:
+                row.legal_name
+                ??
+                undefined,
+
+
+
+            industry:
+                row.industry_id
+                ??
+                undefined,
+
+
+
+            website:
+                row.website
+                ??
+                undefined,
+
+
+
+            phone:
+                row.phone
+                ??
+                undefined,
+
+
+
+            email:
+                row.email
+                ??
+                undefined,
+
+
+
+            status:
+                this.mapStatusFromDb(
+                    row.status,
+                ),
+
+
+
+            employees:
+                row.employee_count
+                ??
+                undefined,
+
+
+
+            annualRevenue:
+                row.annual_revenue
+                ??
+                undefined,
+
+
+
+            description:
+                row.description
+                ??
+                undefined,
+
+            deletedAt:
+                row.deleted_at
+                ??
+                undefined,
+
+
+
+            createdAt:
+                row.created_at,
+
+
+
+            updatedAt:
+                row.updated_at,
+
+        };
+
+    }
+
+
+
+
+
+
+
+
+
+    private mapToDb(
+        data: Partial<Company>,
+    ): Record<string, unknown> {
+
+
+        const payload:
+            Record<string, unknown> = {};
+
+
+
+        if (data.name !== undefined) {
+
+            payload.company_name =
+                data.name;
+
+        }
+
+
+
+        if (data.companyNumber !== undefined) {
+
+            payload.company_code =
+                data.companyNumber;
+
+        }
+
+
+
+        if (data.legalName !== undefined) {
+
+            payload.legal_name =
+                data.legalName;
+
+        }
+
+
+
+        if (data.website !== undefined) {
+
+            payload.website =
+                data.website;
+
+        }
+
+
+
+        if (data.email !== undefined) {
+
+            payload.email =
+                data.email;
+
+        }
+
+
+
+        if (data.phone !== undefined) {
+
+            payload.phone =
+                data.phone;
+
+        }
+
+
+
+        if (data.employees !== undefined) {
+
+            payload.employee_count =
+                data.employees;
+
+        }
+
+
+
+        if (data.annualRevenue !== undefined) {
+
+            payload.annual_revenue =
+                data.annualRevenue;
+
+        }
+
+
+
+        if (data.description !== undefined) {
+
+            payload.description =
+                data.description;
+
+        }
+
+
+
+        if (data.status !== undefined) {
+
+            payload.status =
+                this.mapStatusToDb(
+                    data.status,
+                );
+
+        }
+
+
+
+        if (data.deletedAt !== undefined) {
+
+            payload.deleted_at =
+                data.deletedAt;
+
+        }
+
+
+
+        return payload;
+
+    }
+
+
+
+
+
+
+
 
     async list(): Promise<Company[]> {
+
 
         const {
             data,
             error,
         } =
             await this.tableRef()
+
                 .select('*')
+
                 .eq(
                     'organization_id',
-                    this.organizationId
+                    this.organizationId,
                 )
+
                 .neq(
                     'status',
-                    'ARCHIVED'
+                    'archived',
                 )
+
                 .order(
                     'created_at',
                     {
                         ascending: false,
-                    }
+                    },
                 );
+
+
 
 
         if (error) {
@@ -67,12 +413,13 @@ export class CompaniesRepository
 
         }
 
-
-        return (
-            data ?? []
-        ) as Company[];
-
+        return (data as CompanyDbRow[] ?? [])
+            .map((row) => this.mapFromDb(row));
     }
+
+
+
+
 
 
 
@@ -80,26 +427,33 @@ export class CompaniesRepository
 
     async listArchived(): Promise<Company[]> {
 
+
         const {
             data,
             error,
         } =
             await this.tableRef()
+
                 .select('*')
+
                 .eq(
                     'organization_id',
-                    this.organizationId
+                    this.organizationId,
                 )
+
                 .eq(
                     'status',
-                    'ARCHIVED'
+                    'archived',
                 )
+
                 .order(
                     'updated_at',
                     {
                         ascending: false,
-                    }
+                    },
                 );
+
+
 
 
         if (error) {
@@ -109,9 +463,12 @@ export class CompaniesRepository
         }
 
 
-        return (
-            data ?? []
-        ) as Company[];
+
+
+        return ((data ?? []) as CompanyDbRow[]).map(
+                row =>
+                    this.mapFromDb(row),
+            );
 
     }
 
@@ -119,22 +476,26 @@ export class CompaniesRepository
 
 
 
+
+
+
     async findById(
-        id: string
+        id: string,
     ): Promise<Company | null> {
 
 
-        if (!id) {
+        const company =
+            await super.findById(id);
 
-            throw new Error(
-                'Company id is required'
-            );
+
+
+        if (!company) {
+
+            return null;
 
         }
-
-
-        return super.findById(
-            id
+        return this.mapFromDb(
+            company as unknown as CompanyDbRow,
         );
 
     }
@@ -143,15 +504,18 @@ export class CompaniesRepository
 
 
 
+
+
+
+
     async details(
-        id: string
+        id: string,
     ): Promise<CompanyDetails | null> {
 
 
         const company =
-            await this.findById(
-                id
-            );
+            await this.findById(id);
+
 
 
         if (!company) {
@@ -161,6 +525,7 @@ export class CompaniesRepository
         }
 
 
+
         const [
             contacts,
             opportunities,
@@ -168,17 +533,11 @@ export class CompaniesRepository
         ] =
             await Promise.all([
 
-                this.loadContacts(
-                    id
-                ),
+                this.loadContacts(id),
 
-                this.loadOpportunities(
-                    id
-                ),
+                this.loadOpportunities(id),
 
-                this.loadActivities(
-                    id
-                ),
+                this.loadActivities(id),
 
             ]);
 
@@ -202,123 +561,154 @@ export class CompaniesRepository
 
 
 
+
+
+
     async create(
-        data: Partial<Company>
+        data: Partial<Company>,
     ): Promise<Company> {
 
 
-        const payload: Partial<Company> = {
-
-            ...data,
-
-            entityType:
-                'Company',
-
-            status:
-                data.status
-                ??
-                'ACTIVE',
-
-        };
-
-
-        return super.create(
-            payload
-        );
-
-    }
-
-
-
-
-
-    async update(
-        id: string,
-
-        data: Partial<Company>
-
-    ): Promise<Company> {
-
-
-        if (!id) {
-
-            throw new Error(
-                'Company id is required'
-            );
-
-        }
-
-
-        return super.update(
-
-            id,
-
-            {
+        const payload =
+            this.mapToDb({
 
                 ...data,
 
                 entityType:
                     'Company',
 
-            }
+                status:
+                    data.status
+                    ??
+                    'ACTIVE',
 
+            });
+
+
+
+        const created =
+            await super.create(
+                payload as Partial<Company>,
+            );
+
+
+
+        return this.mapFromDb(
+            created as unknown as CompanyDbRow,
         );
 
     }
+    async update(
+        id: string,
+        data: Partial<Company>,
+    ): Promise<Company> {
+
+
+        if (!id) {
+
+            throw new Error(
+                'Company id is required',
+            );
+
+        }
+
+
+
+        const payload =
+            this.mapToDb(data);
+
+
+
+        const updated =
+            await super.update(
+
+                id,
+
+                payload as Partial<Company>,
+
+            );
+
+
+
+        return this.mapFromDb(
+            updated as unknown as CompanyDbRow,
+        );
+
+    }
+
+
+
 
 
 
 
 
     async delete(
-        id: string
+        id: string,
     ): Promise<void> {
 
 
         await this.update(
+
             id,
-            {                status:
+
+            {
+
+                status:
                     'ARCHIVED',
+
                 deletedAt:
                     new Date()
                         .toISOString(),
-            }
+
+            },
+
         );
+
     }
 
+
+
+
+
+
+
+
+
     async restore(
-        id: string
+        id: string,
     ): Promise<boolean> {
 
 
-        const company =
-            await this.findById(
-                id
-            );
+        const existing =
+            await this.findById(id);
 
 
-        if (!company) {
+
+        if (!existing) {
 
             return false;
 
         }
 
 
+
         await this.update(
 
-    id,
+            id,
 
-    {
+            {
 
-        status:
-            'ACTIVE',
+                status:
+                    'ACTIVE',
 
-        deletedAt:
-            undefined,
+                deletedAt:
+                    undefined,
 
-    }
+            },
 
-);
+        );
+
 
 
         return true;
@@ -329,69 +719,101 @@ export class CompaniesRepository
 
 
 
+
+
+
+
     async search(
-        filters?: CompanySearchFilters
+        filters?: CompanySearchFilters,
     ): Promise<Company[]> {
 
 
         let query =
             this.tableRef()
+
                 .select('*')
+
                 .eq(
                     'organization_id',
-                    this.organizationId
+                    this.organizationId,
                 );
+
+
 
 
 
         if (filters?.status) {
 
+
             query =
                 query.eq(
+
                     'status',
-                    filters.status
+
+                    this.mapStatusToDb(
+                        filters.status,
+                    ),
+
                 );
 
         }
+
+
 
 
 
         if (filters?.industry) {
 
+
             query =
                 query.eq(
-                    'industry',
-                    filters.industry
+
+                    'industry_id',
+
+                    filters.industry,
+
                 );
 
         }
 
 
 
+
+
         if (filters?.search) {
+
 
             const keyword =
                 filters.search.trim();
 
 
 
-            if (keyword.length > 0) {
+            if (keyword.length) {
+
 
                 query =
                     query.or(
 
                         [
-                            `name.ilike.%${keyword}%`,
+
+                            `company_name.ilike.%${keyword}%`,
+
                             `email.ilike.%${keyword}%`,
+
                             `website.ilike.%${keyword}%`,
+
                             `phone.ilike.%${keyword}%`,
-                        ].join(',')
+
+                        ]
+                            .join(','),
 
                     );
 
             }
 
         }
+
+
 
 
 
@@ -404,10 +826,14 @@ export class CompaniesRepository
                 'created_at',
 
                 {
+
                     ascending: false,
-                }
+
+                },
 
             );
+
+
 
 
         if (error) {
@@ -418,11 +844,21 @@ export class CompaniesRepository
 
 
 
-        return (
-            data ?? []
-        ) as Company[];
+
+
+        return ((data ?? []) as CompanyDbRow[]).map(
+
+                row =>
+
+                    this.mapFromDb(row),
+
+            );
 
     }
+
+
+
+
 
 
 
@@ -438,36 +874,59 @@ export class CompaniesRepository
 
         return {
 
+
             total:
                 companies.length,
 
 
+
             active:
+
                 companies.filter(
+
                     company =>
-                        company.status === 'ACTIVE'
-                ).length,
+
+                        company.status === 'ACTIVE',
+
+                )
+                    .length,
+
 
 
             inactive:
+
                 companies.filter(
+
                     company =>
-                        company.status === 'INACTIVE'
-                ).length,
+
+                        company.status === 'INACTIVE',
+
+                )
+                    .length,
+
 
 
             prospects:
+
                 companies.filter(
+
                     company =>
-                        company.status === 'PROSPECT'
-                ).length,
+
+                        company.status === 'PROSPECT',
+
+                )
+                    .length,
+
 
 
             archived:
-                companies.filter(
-                    company =>
-                        company.status === 'ARCHIVED'
-                ).length,
+
+                (
+
+                    await this.listArchived()
+
+                )
+                    .length,
 
         };
 
@@ -477,8 +936,12 @@ export class CompaniesRepository
 
 
 
+
+
+
+
     private async loadContacts(
-        companyId: string
+        companyId: string,
     ): Promise<CompanyContact[]> {
 
 
@@ -487,20 +950,27 @@ export class CompaniesRepository
             error,
         } =
             await this.supabase
+
                 .from('contacts')
+
                 .select('*')
+
                 .eq(
-                    'entityType',
-                    'Company'
+
+                    'company_id',
+
+                    companyId,
+
                 )
+
                 .eq(
-                    'entityId',
-                    companyId
-                )
-                .eq(
+
                     'organization_id',
-                    this.organizationId
+
+                    this.organizationId,
+
                 );
+
 
 
 
@@ -513,8 +983,41 @@ export class CompaniesRepository
 
 
         return (
+
             data ?? []
-        ) as CompanyContact[];
+
+        )
+            .map(
+
+                row => ({
+
+                    id:
+                        row.id,
+
+                    firstName:
+                        row.first_name,
+
+                    lastName:
+                        row.last_name,
+
+                    name:
+                        row.display_name
+                        ??
+                        `${row.first_name ?? ''} ${row.last_name ?? ''}`
+                            .trim(),
+
+                    email:
+                        row.email,
+
+                    phone:
+                        row.phone,
+
+                    role:
+                        row.job_title,
+
+                })
+
+            );
 
     }
 
@@ -522,8 +1025,12 @@ export class CompaniesRepository
 
 
 
+
+
+
+
     private async loadOpportunities(
-        companyId: string
+        companyId: string,
     ): Promise<CompanyOpportunity[]> {
 
 
@@ -532,20 +1039,27 @@ export class CompaniesRepository
             error,
         } =
             await this.supabase
+
                 .from('opportunities')
+
                 .select('*')
+
                 .eq(
-                    'entityType',
-                    'Company'
+
+                    'company_id',
+
+                    companyId,
+
                 )
+
                 .eq(
-                    'entityId',
-                    companyId
-                )
-                .eq(
+
                     'organization_id',
-                    this.organizationId
+
+                    this.organizationId,
+
                 );
+
 
 
 
@@ -557,9 +1071,43 @@ export class CompaniesRepository
 
 
 
+
         return (
+
             data ?? []
-        ) as CompanyOpportunity[];
+
+        )
+            .map(
+
+                row => ({
+
+                    id:
+                        row.id,
+
+                    title:
+                        row.title,
+
+                    value:
+                        row.expected_revenue
+                        ??
+                        0,
+
+                    currency:
+                        row.currency,
+
+                    stage:
+                        row.status
+                        ??
+                        'open',
+
+                    probability:
+                        row.probability
+                        ??
+                        0,
+
+                })
+
+            );
 
     }
 
@@ -567,8 +1115,12 @@ export class CompaniesRepository
 
 
 
+
+
+
+
     private async loadActivities(
-        companyId: string
+        companyId: string,
     ): Promise<CompanyActivity[]> {
 
 
@@ -577,26 +1129,47 @@ export class CompaniesRepository
             error,
         } =
             await this.supabase
+
                 .from('activities')
+
                 .select('*')
+
                 .eq(
-                    'entityType',
-                    'Company'
+
+                    'entity_id',
+
+                    companyId,
+
                 )
+
                 .eq(
-                    'entityId',
-                    companyId
+
+                    'entity_type',
+
+                    'Company',
+
                 )
+
                 .eq(
+
                     'organization_id',
-                    this.organizationId
+
+                    this.organizationId,
+
                 )
+
                 .order(
+
                     'created_at',
+
                     {
+
                         ascending: false,
-                    }
+
+                    },
+
                 );
+
 
 
 
@@ -608,11 +1181,37 @@ export class CompaniesRepository
 
 
 
+
         return (
+
             data ?? []
-        ) as CompanyActivity[];
+
+        )
+            .map(
+
+                row => ({
+
+                    id:
+                        row.id,
+
+                    type:
+                        row.type,
+
+                    title:
+                        row.title,
+
+                    description:
+                        row.description,
+
+                    createdAt:
+                        row.created_at,
+
+                })
+
+            );
 
     }
 
 
 }
+
