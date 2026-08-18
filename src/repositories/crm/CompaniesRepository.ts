@@ -19,8 +19,6 @@ import type {
 } from '@/types/crm/Companies';
 
 
-
-
 type CompanyDbRow = {
 
     id: string;
@@ -50,7 +48,8 @@ type CompanyDbRow = {
     status:
     | 'active'
     | 'inactive'
-    | 'archived';
+    | 'archived'
+    | 'prospect';
 
     description?: string | null;
 
@@ -256,6 +255,7 @@ private mapStatusToDb(
 
     private mapToDb(
         data: Partial<Company>,
+        deletedAtOverride?: string | null,
     ): Record<string, unknown> {
 
 
@@ -356,7 +356,12 @@ private mapStatusToDb(
 
 
 
-        if (data.deletedAt !== undefined) {
+        if (deletedAtOverride !== undefined) {
+
+            payload.deleted_at =
+                deletedAtOverride;
+
+        } else if (data.deletedAt !== undefined) {
 
             payload.deleted_at =
                 data.deletedAt;
@@ -668,13 +673,6 @@ private mapStatusToDb(
     }
 
 
-
-
-
-
-
-
-
     async restore(
         id: string,
     ): Promise<boolean> {
@@ -693,19 +691,22 @@ private mapStatusToDb(
 
 
 
-        await this.update(
+        const payload =
+            this.mapToDb(
+                {
+                    status:
+                        'ACTIVE',
+                },
+                null,
+            );
+
+
+
+        await super.update(
 
             id,
 
-            {
-
-                status:
-                    'ACTIVE',
-
-                deletedAt:
-                    undefined,
-
-            },
+            payload as Partial<Company>,
 
         );
 
@@ -714,10 +715,6 @@ private mapStatusToDb(
         return true;
 
     }
-
-
-
-
 
 
 
@@ -1214,4 +1211,12 @@ private mapStatusToDb(
 
 
 }
+
+
+
+
+
+
+
+
 
