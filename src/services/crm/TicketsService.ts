@@ -1,10 +1,5 @@
 ﻿import {
-    createClient,
-} from '@/lib/supabase/server';
-
-
-import {
-    TicketsRepository,
+    TicketsRepositoryInstance,
 } from '@/repositories/crm/TicketsRepository';
 
 
@@ -19,53 +14,27 @@ import type {
 export class TicketsService {
 
 
-    private async repository() {
+    list(): Ticket[] {
 
-        const supabase =
-            await createClient();
-
-
-        return new TicketsRepository(
-            supabase,
-        );
+        return TicketsRepositoryInstance.list();
 
     }
 
 
 
-    async list(): Promise<Ticket[]> {
+    listArchived(): Ticket[] {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.list();
+        return TicketsRepositoryInstance.listArchived();
 
     }
 
 
 
-    async listArchived(): Promise<Ticket[]> {
+    findById(
+        id: string,
+    ): Ticket | null {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.listArchived();
-
-    }
-
-
-
-    async findById(
-        id:string,
-    ):Promise<Ticket | null> {
-
-        const repository =
-            await this.repository();
-
-
-        return repository.findById(
+        return TicketsRepositoryInstance.findById(
             id,
         );
 
@@ -73,8 +42,8 @@ export class TicketsService {
 
 
 
-    async details(
-        id:string,
+    details(
+        id: string,
     ) {
 
         return this.findById(
@@ -85,15 +54,11 @@ export class TicketsService {
 
 
 
-    async search(
-        filters?:TicketSearchFilters,
-    ):Promise<Ticket[]> {
+    search(
+        filters?: TicketSearchFilters,
+    ): Ticket[] {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.search(
+        return TicketsRepositoryInstance.search(
             filters,
         );
 
@@ -101,15 +66,11 @@ export class TicketsService {
 
 
 
-    async create(
-        data:Partial<Ticket>,
-    ):Promise<Ticket> {
+    create(
+        data: Partial<Ticket>,
+    ): Ticket {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.create(
+        return TicketsRepositoryInstance.create(
             data,
         );
 
@@ -117,16 +78,12 @@ export class TicketsService {
 
 
 
-    async update(
-        id:string,
-        data:Partial<Ticket>,
-    ):Promise<Ticket> {
+    update(
+        id: string,
+        data: Partial<Ticket>,
+    ) {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.update(
+        return TicketsRepositoryInstance.update(
             id,
             data,
         );
@@ -135,16 +92,12 @@ export class TicketsService {
 
 
 
-    async updateStatus(
-        id:string,
-        status:TicketStatus,
+    updateStatus(
+        id: string,
+        status: TicketStatus,
     ) {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.updateStatus(
+        return TicketsRepositoryInstance.updateStatus(
             id,
             status,
         );
@@ -153,15 +106,11 @@ export class TicketsService {
 
 
 
-    async delete(
-        id:string,
+    delete(
+        id: string,
     ) {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.delete(
+        return TicketsRepositoryInstance.delete(
             id,
         );
 
@@ -169,15 +118,11 @@ export class TicketsService {
 
 
 
-    async restore(
-        id:string,
+    restore(
+        id: string,
     ) {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.restore(
+        return TicketsRepositoryInstance.restore(
             id,
         );
 
@@ -185,13 +130,9 @@ export class TicketsService {
 
 
 
-    async summary() {
+    summary() {
 
-        const repository =
-            await this.repository();
-
-
-        return repository.summary();
+        return TicketsRepositoryInstance.summary();
 
     }
 
@@ -209,11 +150,8 @@ export const TicketsServiceInstance =
 
 
 
-
-
 /**
  * Legacy compatibility export.
  */
 export const ticketsService =
     TicketsServiceInstance;
-
