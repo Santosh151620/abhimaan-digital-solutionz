@@ -83,7 +83,7 @@ const primaryItems: NavItem[] = [
     },
     {
         label: "Leads",
-        href: "/crm/leads",
+        href: "/dashboard/leads",
         icon: UserRound,
     },
     {
@@ -772,3 +772,4 @@ export default function CRMSidebar() {
         </aside>
     );
 }
+

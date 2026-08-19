@@ -14,6 +14,7 @@ import {
 
 import type {
     Opportunity,
+    UpdateOpportunityInput,
 } from '@/types/crm/Opportunities';
 
 
@@ -23,7 +24,7 @@ interface Props {
 
     updateOpportunity: (
         id: string,
-        values: Partial<Opportunity>,
+        values: UpdateOpportunityInput,
     ) => Promise<unknown>;
 
 }
@@ -59,8 +60,8 @@ export default function EditOpportunityClient({
 
 
     async function handleSubmit(
-        values: Partial<Opportunity>,
-    ) {
+        values: UpdateOpportunityInput,
+    ): Promise<void> {
 
         if (loading) {
 
@@ -77,8 +78,11 @@ export default function EditOpportunityClient({
         try {
 
             await updateOpportunity(
+
                 opportunity.id,
+
                 values,
+
             );
 
 
@@ -98,15 +102,33 @@ export default function EditOpportunityClient({
 
 
             setError(
+
                 submitError instanceof Error
+
                     ? submitError.message
+
                     : 'Failed to update opportunity.',
+
             );
 
 
             setLoading(false);
 
         }
+
+    }
+
+
+    function handleCancel(): void {
+
+        if (loading) {
+
+            return;
+
+        }
+
+
+        router.back();
 
     }
 
@@ -144,15 +166,9 @@ export default function EditOpportunityClient({
                     handleSubmit
                 }
 
-                onCancel={() => {
-
-                    if (!loading) {
-
-                        router.back();
-
-                    }
-
-                }}
+                onCancel={
+                    handleCancel
+                }
 
             />
 

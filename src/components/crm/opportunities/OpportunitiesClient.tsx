@@ -2,7 +2,9 @@
 
 import {
     useCallback,
+    useEffect,
     useMemo,
+    useRef,
     useState,
 } from 'react';
 
@@ -28,7 +30,13 @@ interface Props {
 export default function OpportunitiesClient({
 
     initialOpportunities = [],
+
+    locale,
+
 }: Props) {
+
+
+    void locale;
 
 
     const [
@@ -65,11 +73,19 @@ export default function OpportunitiesClient({
         );
 
 
+    const requestSequence =
+        useRef(0);
+
+
     const loadOpportunities =
         useCallback(
             async (
                 nextFilters: OpportunitySearchFilters,
             ) => {
+
+                const requestId =
+                    ++requestSequence.current;
+
 
                 setLoading(true);
 
@@ -82,22 +98,21 @@ export default function OpportunitiesClient({
                         new URLSearchParams();
 
 
-                    if (
-                        nextFilters.search
-                        ?.trim()
-                    ) {
+                    const search =
+                        nextFilters.search?.trim();
+
+
+                    if (search) {
 
                         params.set(
                             'search',
-                            nextFilters.search.trim(),
+                            search,
                         );
 
                     }
 
 
-                    if (
-                        nextFilters.status
-                    ) {
+                    if (nextFilters.status) {
 
                         params.set(
                             'status',
@@ -107,9 +122,7 @@ export default function OpportunitiesClient({
                     }
 
 
-                    if (
-                        nextFilters.stage
-                    ) {
+                    if (nextFilters.stage) {
 
                         params.set(
                             'stage',
@@ -119,9 +132,7 @@ export default function OpportunitiesClient({
                     }
 
 
-                    if (
-                        nextFilters.companyId
-                    ) {
+                    if (nextFilters.companyId) {
 
                         params.set(
                             'companyId',
@@ -166,6 +177,16 @@ export default function OpportunitiesClient({
                     }
 
 
+                    if (
+                        requestId !==
+                        requestSequence.current
+                    ) {
+
+                        return;
+
+                    }
+
+
                     setOpportunities(
                         Array.isArray(
                             result.data,
@@ -174,9 +195,17 @@ export default function OpportunitiesClient({
                             : [],
                     );
 
-                } catch (
-                    loadError
-                ) {
+                } catch (loadError) {
+
+                    if (
+                        requestId !==
+                        requestSequence.current
+                    ) {
+
+                        return;
+
+                    }
+
 
                     setError(
                         loadError instanceof Error
@@ -186,13 +215,116 @@ export default function OpportunitiesClient({
 
                 } finally {
 
-                    setLoading(false);
+                    if (
+                        requestId ===
+                        requestSequence.current
+                    ) {
+
+                        setLoading(false);
+
+                    }
 
                 }
 
             },
             [],
         );
+
+
+    const searchTimer =
+        useRef<ReturnType<typeof setTimeout> | null>(
+            null,
+        );
+
+
+    const previousFilters =
+        useRef<string>('');
+
+
+    useEffect(
+        () => {
+
+            const serialized =
+                JSON.stringify(
+                    filters,
+                );
+
+
+            if (
+                previousFilters.current ===
+                serialized
+            ) {
+
+                return;
+
+            }
+
+
+            previousFilters.current =
+                serialized;
+
+
+            if (
+                searchTimer.current
+            ) {
+
+                clearTimeout(
+                    searchTimer.current,
+                );
+
+            }
+
+
+            const hasSearch =
+                Boolean(
+                    filters.search?.trim(),
+                );
+
+
+            if (!hasSearch) {
+
+                void loadOpportunities(
+                    filters,
+                );
+
+                return;
+
+            }
+
+
+            searchTimer.current =
+                setTimeout(
+                    () => {
+
+                        void loadOpportunities(
+                            filters,
+                        );
+
+                    },
+                    300,
+                );
+
+
+            return () => {
+
+                if (
+                    searchTimer.current
+                ) {
+
+                    clearTimeout(
+                        searchTimer.current,
+                    );
+
+                }
+
+            };
+
+        },
+        [
+            filters,
+            loadOpportunities,
+        ],
+    );
 
 
     function handleFiltersChange(
@@ -203,27 +335,12 @@ export default function OpportunitiesClient({
             nextFilters,
         );
 
-        void loadOpportunities(
-            nextFilters,
-        );
-
     }
 
 
     function handleClearFilters() {
 
-        const clearedFilters:
-            OpportunitySearchFilters =
-            {};
-
-
-        setFilters(
-            clearedFilters,
-        );
-
-        void loadOpportunities(
-            clearedFilters,
-        );
+        setFilters({});
 
     }
 
@@ -264,7 +381,10 @@ export default function OpportunitiesClient({
                             opportunity,
                         ) =>
                             sum +
-                            opportunity.value,
+                            Number(
+                                opportunity.value ??
+                                0,
+                            ),
                         0,
                     );
 
@@ -277,8 +397,14 @@ export default function OpportunitiesClient({
                         ) =>
                             sum +
                             (
-                                opportunity.value *
-                                opportunity.probability /
+                                Number(
+                                    opportunity.value ??
+                                    0,
+                                ) *
+                                Number(
+                                    opportunity.probability ??
+                                    0,
+                                ) /
                                 100
                             ),
                         0,
@@ -320,7 +446,10 @@ export default function OpportunitiesClient({
                                         opportunity,
                                     ) =>
                                         sum +
-                                        opportunity.probability,
+                                        Number(
+                                            opportunity.probability ??
+                                            0,
+                                        ),
                                     0,
                                 ) /
                                 total,
@@ -349,15 +478,19 @@ export default function OpportunitiesClient({
         <div className="space-y-6">
 
             <OpportunitiesFilters
+
                 filters={
                     filters
                 }
+
                 onChange={
                     handleFiltersChange
                 }
+
                 onClear={
                     handleClearFilters
                 }
+
             />
 
 
@@ -367,7 +500,9 @@ export default function OpportunitiesClient({
                     role="alert"
                     className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive"
                 >
+
                     {error}
+
                 </div>
 
             )}
@@ -380,23 +515,33 @@ export default function OpportunitiesClient({
                     role="status"
                     aria-live="polite"
                 >
+
                     Loading opportunities...
+
                 </div>
 
             )}
 
 
             <OpportunitiesSummary
+
                 summary={
                     summary
                 }
+
             />
 
 
             <OpportunitiesTable
+
                 opportunities={
                     opportunities
                 }
+
+                locale={
+                    locale
+                }
+
             />
 
         </div>
@@ -404,6 +549,3 @@ export default function OpportunitiesClient({
     );
 
 }
-
-
-

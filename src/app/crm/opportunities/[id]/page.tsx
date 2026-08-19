@@ -2,12 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import {
-    createClient,
-} from '@/lib/supabase/server';
-
-import {
-    createOpportunitiesRepository,
-} from '@/repositories/crm/OpportunitiesRepository';
+    OpportunitiesServiceInstance,
+} from '@/services/crm/OpportunitiesService';
 
 
 interface Props {
@@ -32,26 +28,20 @@ export default async function OpportunityDetailsPage({
         await params;
 
 
-    if (!id?.trim()) {
+    const normalizedId =
+        id?.trim();
+
+
+    if (!normalizedId) {
 
         notFound();
 
     }
 
 
-    const supabase =
-        await createClient();
-
-
-    const repository =
-        createOpportunitiesRepository(
-            supabase,
-        );
-
-
     const opportunity =
-        await repository.details(
-            id,
+        await OpportunitiesServiceInstance.details(
+            normalizedId,
         );
 
 

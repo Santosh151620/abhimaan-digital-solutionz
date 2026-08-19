@@ -1,34 +1,40 @@
 import {
     NextRequest,
     NextResponse,
-} from 'next/server';
+} from "next/server";
+
 
 import {
     OpportunitiesServiceInstance,
-} from '@/services/crm/OpportunitiesService';
+} from "@/services/crm/OpportunitiesService";
+
 
 import type {
     UpdateOpportunityInput,
-} from '@/types/crm/Opportunities';
+} from "@/types/crm/Opportunities";
+
+
+import {
+    withTenantRequest,
+} from "@/lib/tenant/withTenantRequest";
 
 
 interface RouteContext {
 
-    params: Promise<{
-        id: string;
-    }>;
+    params:
+        Promise<{
+            id: string;
+        }>;
 
 }
 
 
 function getId(
-    params: {
-        id: string;
-    },
+    value: string | undefined,
 ): string | null {
 
     const id =
-        params.id?.trim();
+        value?.trim();
 
     return id || null;
 
@@ -36,89 +42,97 @@ function getId(
 
 
 export async function GET(
-    _request: NextRequest,
+    request: NextRequest,
     context: RouteContext,
 ) {
 
-    try {
+    return withTenantRequest(
+        request,
+        async () => {
 
-        const {
-            id,
-        } =
-            await context.params;
+            try {
 
-
-        const opportunityId =
-            getId({
-                id,
-            });
+                const {
+                    id,
+                } =
+                    await context.params;
 
 
-        if (!opportunityId) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity id is required.',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                const opportunityId =
+                    getId(id);
 
 
-        const opportunity =
-            await OpportunitiesServiceInstance.details(
-                opportunityId,
-            );
+                if (!opportunityId) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity id is required.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
 
 
-        if (!opportunity) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity not found.',
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
+                const opportunity =
+                    await OpportunitiesServiceInstance.details(
+                        opportunityId,
+                    );
 
 
-        return NextResponse.json(
-            {
-                success: true,
-                data: opportunity,
-            },
-            {
-                status: 200,
-            },
-        );
+                if (!opportunity) {
 
-    } catch (error) {
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity not found.",
+                        },
+                        {
+                            status: 404,
+                        },
+                    );
 
-        console.error(
-            'OPPORTUNITY_GET_ERROR',
-            error,
-        );
+                }
 
 
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Failed to load opportunity.',
-            },
-            {
-                status: 500,
-            },
-        );
+                return NextResponse.json(
+                    {
+                        success: true,
+                        data: opportunity,
+                    },
+                    {
+                        status: 200,
+                    },
+                );
 
-    }
+            } catch (error) {
+
+                console.error(
+                    "OPPORTUNITY_GET_ERROR",
+                    error,
+                );
+
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error:
+                            "Failed to load opportunity.",
+                    },
+                    {
+                        status: 500,
+                    },
+                );
+
+            }
+
+        },
+    );
 
 }
 
@@ -128,285 +142,312 @@ export async function PUT(
     context: RouteContext,
 ) {
 
-    try {
+    return withTenantRequest(
+        request,
+        async () => {
 
-        const {
-            id,
-        } =
-            await context.params;
+            try {
 
-
-        const opportunityId =
-            getId({
-                id,
-            });
+                const {
+                    id,
+                } =
+                    await context.params;
 
 
-        if (!opportunityId) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity id is required.',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                const opportunityId =
+                    getId(id);
 
 
-        const body =
-            await request.json();
+                if (!opportunityId) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity id is required.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
 
 
-        if (
-            !body ||
-            typeof body !== 'object' ||
-            Array.isArray(body)
-        ) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Invalid request body.',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                const body =
+                    await request.json();
 
 
-        const values =
-            body as UpdateOpportunityInput;
+                if (
+                    !body
+                    ||
+                    typeof body !== "object"
+                    ||
+                    Array.isArray(body)
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Invalid request body.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
 
 
-        if (
-            values.name !== undefined &&
-            typeof values.name !== 'string'
-        ) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity name must be a string.',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                const values =
+                    body as UpdateOpportunityInput;
 
 
-        if (
-            values.title !== undefined &&
-            typeof values.title !== 'string'
-        ) {
+                if (
+                    values.name !== undefined
+                    &&
+                    typeof values.name !== "string"
+                ) {
 
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity title must be a string.',
-                },
-                {
-                    status: 400,
-                },
-            );
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity name must be a string.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
 
-        }
-
-
-        if (
-            values.value !== undefined &&
-            (
-                typeof values.value !== 'number' ||
-                !Number.isFinite(values.value)
-            )
-        ) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity value must be a valid number.',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                }
 
 
-        if (
-            values.probability !== undefined &&
-            (
-                typeof values.probability !== 'number' ||
-                !Number.isFinite(values.probability)
-            )
-        ) {
+                if (
+                    values.title !== undefined
+                    &&
+                    typeof values.title !== "string"
+                ) {
 
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity probability must be a valid number.',
-                },
-                {
-                    status: 400,
-                },
-            );
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity title must be a string.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
 
-        }
-
-
-        const opportunity =
-            await OpportunitiesServiceInstance.update(
-
-                opportunityId,
-
-                values,
-
-            );
+                }
 
 
-        return NextResponse.json(
-            {
-                success: true,
-                data: opportunity,
-            },
-            {
-                status: 200,
-            },
-        );
+                if (
+                    values.value !== undefined
+                    &&
+                    (
+                        typeof values.value !== "number"
+                        ||
+                        !Number.isFinite(
+                            values.value,
+                        )
+                        ||
+                        values.value < 0
+                    )
+                ) {
 
-    } catch (error) {
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity value must be a non-negative number.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
 
-        console.error(
-            'OPPORTUNITY_UPDATE_ERROR',
-            error,
-        );
+                }
 
 
-        const message =
-            error instanceof Error
-                ? error.message
-                : 'Failed to update opportunity.';
+                if (
+                    values.probability !== undefined
+                    &&
+                    (
+                        typeof values.probability !== "number"
+                        ||
+                        !Number.isFinite(
+                            values.probability,
+                        )
+                        ||
+                        values.probability < 0
+                        ||
+                        values.probability > 100
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity probability must be between 0 and 100.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
 
 
-        return NextResponse.json(
-            {
-                success: false,
-                error: message,
-            },
-            {
-                status: 400,
-            },
-        );
+                const opportunity =
+                    await OpportunitiesServiceInstance.update(
 
-    }
+                        opportunityId,
+
+                        values,
+
+                    );
+
+
+                return NextResponse.json(
+                    {
+                        success: true,
+                        data: opportunity,
+                    },
+                    {
+                        status: 200,
+                    },
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "OPPORTUNITY_UPDATE_ERROR",
+                    error,
+                );
+
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error:
+                            "Failed to update opportunity.",
+                    },
+                    {
+                        status: 500,
+                    },
+                );
+
+            }
+
+        },
+    );
 
 }
 
 
 export async function DELETE(
-    _request: NextRequest,
+    request: NextRequest,
     context: RouteContext,
 ) {
 
-    try {
+    return withTenantRequest(
+        request,
+        async () => {
 
-        const {
-            id,
-        } =
-            await context.params;
+            try {
 
-
-        const opportunityId =
-            getId({
-                id,
-            });
+                const {
+                    id,
+                } =
+                    await context.params;
 
 
-        if (!opportunityId) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity id is required.',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                const opportunityId =
+                    getId(id);
 
 
-        const existing =
-            await OpportunitiesServiceInstance.details(
-                opportunityId,
-            );
+                if (!opportunityId) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity id is required.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
 
 
-        if (!existing) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity not found.',
-                },
-                {
-                    status: 404,
-                },
-            );
-
-        }
+                const existing =
+                    await OpportunitiesServiceInstance.details(
+                        opportunityId,
+                    );
 
 
-        await OpportunitiesServiceInstance.delete(
-            opportunityId,
-        );
+                if (!existing) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity not found.",
+                        },
+                        {
+                            status: 404,
+                        },
+                    );
+
+                }
 
 
-        return NextResponse.json(
-            {
-                success: true,
-                data: {
-                    id: opportunityId,
-                },
-            },
-            {
-                status: 200,
-            },
-        );
-
-    } catch (error) {
-
-        console.error(
-            'OPPORTUNITY_DELETE_ERROR',
-            error,
-        );
+                await OpportunitiesServiceInstance.delete(
+                    opportunityId,
+                );
 
 
-        const message =
-            error instanceof Error
-                ? error.message
-                : 'Failed to delete opportunity.';
+                return NextResponse.json(
+                    {
+                        success: true,
+                        data: {
+                            id:
+                                opportunityId,
+                        },
+                    },
+                    {
+                        status: 200,
+                    },
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "OPPORTUNITY_DELETE_ERROR",
+                    error,
+                );
 
 
-        return NextResponse.json(
-            {
-                success: false,
-                error: message,
-            },
-            {
-                status: 400,
-            },
-        );
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error:
+                            "Failed to delete opportunity.",
+                    },
+                    {
+                        status: 500,
+                    },
+                );
 
-    }
+            }
+
+        },
+    );
 
 }

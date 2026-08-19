@@ -55,7 +55,7 @@ export interface Opportunity {
     description?: string;
 
     /**
-     * CRM Relationships
+     * CRM relationships.
      */
     companyId?: string;
 
@@ -64,7 +64,7 @@ export interface Opportunity {
     leadId?: string;
 
     /**
-     * Ownership
+     * Ownership.
      */
     ownerId?: string;
 
@@ -76,7 +76,7 @@ export interface Opportunity {
     assignedTo?: string;
 
     /**
-     * Sales
+     * Sales.
      */
     stage: OpportunityStage;
 
@@ -89,7 +89,7 @@ export interface Opportunity {
     expectedCloseDate?: string;
 
     /**
-     * Forecast
+     * Forecast.
      */
     forecastRevenue?: number;
 
@@ -98,7 +98,7 @@ export interface Opportunity {
     currency?: string;
 
     /**
-     * Competition
+     * Competition and source.
      */
     source?: string;
 
@@ -109,14 +109,14 @@ export interface Opportunity {
     reasonLost?: string;
 
     /**
-     * Extension
+     * Extension.
      */
     notes?: string;
 
     metadata?: Record<string, unknown>;
 
     /**
-     * Lifecycle
+     * Lifecycle.
      */
     archived?: boolean;
 
@@ -127,7 +127,6 @@ export interface Opportunity {
     createdAt: string;
 
     updatedAt: string;
-
 }
 
 export interface CreateOpportunityInput {
@@ -170,10 +169,20 @@ export interface CreateOpportunityInput {
 
     competitor?: string;
 
+    /**
+     * Closure reasons.
+     *
+     * Included here so UpdateOpportunityInput,
+     * which is Partial<CreateOpportunityInput>,
+     * supports mark-won / mark-lost operations.
+     */
+    reasonWon?: string;
+
+    reasonLost?: string;
+
     notes?: string;
 
     metadata?: Record<string, unknown>;
-
 }
 
 export type UpdateOpportunityInput =
@@ -196,7 +205,6 @@ interface OpportunityFilters {
     assignedTo?: string;
 
     includeArchived?: boolean;
-
 }
 
 export interface OpportunitySearchFilters
@@ -209,7 +217,6 @@ export interface OpportunitySearchFilters
     page?: number;
 
     limit?: number;
-
 }
 
 export interface OpportunitySummary {
@@ -236,7 +243,6 @@ export interface OpportunitySummary {
     averageProbability?: number;
 
     winRate?: number;
-
 }
 
 interface PipelineOpportunity {
@@ -252,7 +258,6 @@ interface PipelineOpportunity {
     probability: number;
 
     stage: OpportunityStage;
-
 }
 
 interface PipelineStage {
@@ -262,5 +267,4 @@ interface PipelineStage {
     name: string;
 
     opportunities: PipelineOpportunity[];
-
 }

@@ -6,6 +6,8 @@ import {
 
 import type {
     Opportunity,
+    OpportunityStage,
+    OpportunityStatus,
     CreateOpportunityInput,
 } from '@/types/crm/Opportunities';
 
@@ -25,22 +27,34 @@ interface OpportunitiesFormProps {
 }
 
 
-const stages = [
+const stages: OpportunityStage[] = [
+
     'New',
+
     'Qualified',
+
     'Proposal',
+
     'Negotiation',
-    'Closed Won',
-    'Closed Lost',
-] as const;
 
-
-const statuses = [
-    'Open',
     'Won',
+
     'Lost',
-    'Cancelled',
-] as const;
+
+];
+
+
+const statuses: OpportunityStatus[] = [
+
+    'Open',
+
+    'Won',
+
+    'Lost',
+
+    'On Hold',
+
+];
 
 
 export default function OpportunitiesForm({
@@ -104,7 +118,7 @@ export default function OpportunitiesForm({
     function update<K extends keyof Opportunity>(
         key: K,
         value: Opportunity[K],
-    ) {
+    ): void {
 
         setForm(
             current => ({
@@ -118,16 +132,19 @@ export default function OpportunitiesForm({
 
     async function submit(
         event: React.FormEvent<HTMLFormElement>,
-    ) {
+    ): Promise<void> {
 
         event.preventDefault();
+
+        if (loading) {
+            return;
+        }
 
         setError(null);
 
 
         const name =
-            form.name
-                ?.trim();
+            form.name?.trim();
 
 
         if (!name) {
@@ -143,9 +160,7 @@ export default function OpportunitiesForm({
 
         const value =
             Number(
-                form.value
-                ??
-                0,
+                form.value ?? 0,
             );
 
 
@@ -166,9 +181,7 @@ export default function OpportunitiesForm({
 
         const probability =
             Number(
-                form.probability
-                ??
-                0,
+                form.probability ?? 0,
             );
 
 
@@ -189,100 +202,118 @@ export default function OpportunitiesForm({
         }
 
 
-        await onSubmit({
+        const stage =
+            form.stage ?? 'New';
 
-            name,
 
-            title:
-                form.title?.trim()
-                ||
+        const status =
+            form.status ?? 'Open';
+
+
+        try {
+
+            await onSubmit({
+
                 name,
 
-            description:
-                form.description
-                ??
-                undefined,
+                title:
+                    form.title?.trim()
+                    ||
+                    name,
 
-            companyId:
-                form.companyId
-                ??
-                undefined,
+                description:
+                    form.description?.trim()
+                    ||
+                    undefined,
 
-            contactId:
-                form.contactId
-                ??
-                undefined,
+                companyId:
+                    form.companyId?.trim()
+                    ||
+                    undefined,
 
-            leadId:
-                form.leadId
-                ??
-                undefined,
+                contactId:
+                    form.contactId?.trim()
+                    ||
+                    undefined,
 
-            ownerId:
-                form.ownerId
-                ??
-                undefined,
+                leadId:
+                    form.leadId?.trim()
+                    ||
+                    undefined,
 
-            assignedTo:
-                form.assignedTo
-                ??
-                undefined,
+                ownerId:
+                    form.ownerId?.trim()
+                    ||
+                    undefined,
 
-            stage:
-                form.stage
-                ??
-                'New',
+                assignedTo:
+                    form.assignedTo?.trim()
+                    ||
+                    undefined,
 
-            status:
-                form.status
-                ??
-                'Open',
+                stage,
 
-            value,
+                status,
 
-            probability,
+                value,
 
-            expectedCloseDate:
-                form.expectedCloseDate
-                ??
-                undefined,
+                probability,
 
-            forecastRevenue:
-                form.forecastRevenue
-                ??
-                undefined,
+                expectedCloseDate:
+                    form.expectedCloseDate
+                    ||
+                    undefined,
 
-            recurringRevenue:
-                form.recurringRevenue
-                ??
-                undefined,
+                forecastRevenue:
+                    form.forecastRevenue !== undefined
+                        ? Number(
+                            form.forecastRevenue,
+                        )
+                        : undefined,
 
-            currency:
-                form.currency
-                ??
-                'INR',
+                recurringRevenue:
+                    form.recurringRevenue !== undefined
+                        ? Number(
+                            form.recurringRevenue,
+                        )
+                        : undefined,
 
-            source:
-                form.source
-                ??
-                undefined,
+                currency:
+                    form.currency?.trim()
+                    ||
+                    'INR',
 
-            competitor:
-                form.competitor
-                ??
-                undefined,
+                source:
+                    form.source?.trim()
+                    ||
+                    undefined,
 
-            notes:
-                form.notes
-                ??
-                undefined,
+                competitor:
+                    form.competitor?.trim()
+                    ||
+                    undefined,
 
-            metadata:
-                form.metadata
-                ??
-                undefined,
+                notes:
+                    form.notes?.trim()
+                    ||
+                    undefined,
 
-        });
+                metadata:
+                    form.metadata
+                    ??
+                    undefined,
+
+            });
+
+        } catch (cause) {
+
+            setError(
+                cause instanceof Error
+                    ? cause.message
+                    : 'Failed to save opportunity.',
+            );
+
+        }
 
     }
 
@@ -291,6 +322,7 @@ export default function OpportunitiesForm({
 
         <form
             onSubmit={submit}
+            noValidate
             className="space-y-6 rounded-xl border bg-background p-6"
         >
 
@@ -364,7 +396,7 @@ export default function OpportunitiesForm({
                         onChange={event =>
                             update(
                                 'stage',
-                                event.target.value as Opportunity['stage'],
+                                event.target.value as OpportunityStage,
                             )
                         }
                         disabled={loading}
@@ -402,7 +434,7 @@ export default function OpportunitiesForm({
                         onChange={event =>
                             update(
                                 'status',
-                                event.target.value as Opportunity['status'],
+                                event.target.value as OpportunityStatus,
                             )
                         }
                         disabled={loading}
@@ -520,9 +552,7 @@ export default function OpportunitiesForm({
                         id="opportunity-close-date"
                         type="date"
                         value={
-                            form.expectedCloseDate
-                            ??
-                            ''
+                            form.expectedCloseDate ?? ''
                         }
                         onChange={event =>
                             update(
@@ -592,6 +622,32 @@ export default function OpportunitiesForm({
                 <div className="space-y-2">
 
                     <label
+                        htmlFor="opportunity-lead"
+                        className="text-sm font-medium"
+                    >
+                        Lead ID
+                    </label>
+
+                    <input
+                        id="opportunity-lead"
+                        value={form.leadId ?? ''}
+                        onChange={event =>
+                            update(
+                                'leadId',
+                                event.target.value || undefined,
+                            )
+                        }
+                        disabled={loading}
+                        placeholder="Lead ID"
+                        className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+                    />
+
+                </div>
+
+
+                <div className="space-y-2">
+
+                    <label
                         htmlFor="opportunity-owner"
                         className="text-sm font-medium"
                     >
@@ -609,6 +665,32 @@ export default function OpportunitiesForm({
                         }
                         disabled={loading}
                         placeholder="Owner ID"
+                        className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+                    />
+
+                </div>
+
+
+                <div className="space-y-2 md:col-span-2">
+
+                    <label
+                        htmlFor="opportunity-assigned-to"
+                        className="text-sm font-medium"
+                    >
+                        Assigned To
+                    </label>
+
+                    <input
+                        id="opportunity-assigned-to"
+                        value={form.assignedTo ?? ''}
+                        onChange={event =>
+                            update(
+                                'assignedTo',
+                                event.target.value || undefined,
+                            )
+                        }
+                        disabled={loading}
+                        placeholder="Assigned user ID"
                         className="h-10 w-full rounded-md border bg-background px-3 text-sm"
                     />
 

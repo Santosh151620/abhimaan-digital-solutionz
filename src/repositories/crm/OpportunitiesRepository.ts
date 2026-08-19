@@ -2,9 +2,11 @@
     SupabaseClient,
 } from "@supabase/supabase-js";
 
+
 import {
     BaseRepository,
 } from "@/lib/db/base-repository";
+
 
 import type {
     Opportunity,
@@ -15,6 +17,7 @@ import type {
     CreateOpportunityInput,
     UpdateOpportunityInput,
 } from "@/types/crm/Opportunities";
+
 
 
 /**
@@ -94,6 +97,27 @@ type OpportunityRow = {
 
 
 /**
+ * Repository-compatible update shape.
+ *
+ * reasonWon / reasonLost are database/domain fields used by the
+ * Opportunities service, but they are not part of the current
+ * CreateOpportunityInput contract.
+ *
+ * Keeping this extension local prevents unnecessary changes to the
+ * shared input contract.
+ */
+type OpportunityUpdateInput =
+    UpdateOpportunityInput & {
+
+        reasonWon?: string | null;
+
+        reasonLost?: string | null;
+
+    };
+
+
+
+/**
  * Production Opportunities Repository.
  *
  * Responsibilities:
@@ -107,14 +131,18 @@ type OpportunityRow = {
 export class OpportunitiesRepository
     extends BaseRepository<Opportunity> {
 
+
     constructor(
         supabase: SupabaseClient,
     ) {
+
         super(
             supabase,
             "opportunities",
         );
+
     }
+
 
 
     /**
@@ -140,6 +168,10 @@ export class OpportunitiesRepository
                     "status",
                     "ARCHIVED",
                 )
+                .neq(
+                    "archived",
+                    true,
+                )
                 .order(
                     "created_at",
                     {
@@ -147,9 +179,13 @@ export class OpportunitiesRepository
                     },
                 );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? [])
             .map(
@@ -158,7 +194,9 @@ export class OpportunitiesRepository
                         row as OpportunityRow,
                     ),
             );
+
     }
+
 
 
     /**
@@ -186,9 +224,13 @@ export class OpportunitiesRepository
                     },
                 );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? [])
             .map(
@@ -197,7 +239,9 @@ export class OpportunitiesRepository
                         row as OpportunityRow,
                     ),
             );
+
     }
+
 
 
     /**
@@ -212,6 +256,7 @@ export class OpportunitiesRepository
                 id,
                 "Opportunity id",
             );
+
 
         const {
             data,
@@ -229,16 +274,22 @@ export class OpportunitiesRepository
                 )
                 .maybeSingle();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return data
             ? this.mapOpportunity(
                 data as OpportunityRow,
             )
             : null;
+
     }
+
 
 
     /**
@@ -248,65 +299,87 @@ export class OpportunitiesRepository
         id: string,
     ): Promise<Opportunity | null> {
 
-        return this.findById(id);
+        return this.findById(
+            id,
+        );
+
     }
+
 
 
     /**
      * Create opportunity.
      */
     async create(
-        data: Partial<Opportunity>,
+        data: Partial<CreateOpportunityInput> & {
+            id?: string;
+        },
     ): Promise<Opportunity> {
 
         if (!data) {
+
             throw new Error(
                 "Opportunity data is required.",
             );
+
         }
+
 
         const name =
             data.name?.trim()
             ||
             data.title?.trim();
 
+
         if (!name) {
+
             throw new Error(
                 "Opportunity name is required.",
             );
+
         }
+
 
         const id =
             data.id?.trim()
             ||
             crypto.randomUUID();
 
+
         const now =
             new Date()
                 .toISOString();
 
+
         const input =
-            data as CreateOpportunityInput;
+            data as Partial<CreateOpportunityInput> & {
+                id?: string;
+            };
+
 
         const opportunityNumber =
             input.opportunityNumber?.trim()
             ||
             this.generateOpportunityNumber();
 
+
         const stage =
             input.stage
             ??
             "New";
+
 
         const status =
             input.status
             ??
             "Open";
 
+
         const value =
             typeof input.value === "number"
                 ? input.value
                 : 0;
+
 
         const probability =
             typeof input.probability === "number"
@@ -314,6 +387,7 @@ export class OpportunitiesRepository
                     input.probability,
                 )
                 : 0;
+
 
         const payload = {
 
@@ -381,7 +455,9 @@ export class OpportunitiesRepository
             forecast_revenue:
                 input.forecastRevenue
                 ??
-                value * probability / 100,
+                value *
+                probability /
+                100,
 
             recurring_revenue:
                 input.recurringRevenue
@@ -435,7 +511,9 @@ export class OpportunitiesRepository
 
             updated_at:
                 now,
+
         };
+
 
         const {
             data: created,
@@ -450,14 +528,20 @@ export class OpportunitiesRepository
                 .select("*")
                 .single();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return this.mapOpportunity(
             created as OpportunityRow,
         );
+
     }
+
 
 
     /**
@@ -465,7 +549,7 @@ export class OpportunitiesRepository
      */
     async update(
         id: string,
-        data: UpdateOpportunityInput,
+        data: OpportunityUpdateInput,
     ): Promise<Opportunity> {
 
         const normalizedId =
@@ -474,11 +558,15 @@ export class OpportunitiesRepository
                 "Opportunity id",
             );
 
+
         if (!data) {
+
             throw new Error(
                 "Opportunity update data is required.",
             );
+
         }
+
 
         const payload: Record<
             string,
@@ -491,200 +579,295 @@ export class OpportunitiesRepository
 
         };
 
+
         if (
             data.opportunityNumber !== undefined
         ) {
+
             payload.opportunity_number =
                 this.normalizeOptional(
                     data.opportunityNumber,
                 );
+
         }
+
 
         if (
             data.name !== undefined
         ) {
+
             const value =
                 data.name.trim();
 
+
             if (!value) {
+
                 throw new Error(
                     "Opportunity name cannot be empty.",
                 );
+
             }
+
 
             payload.name =
                 value;
 
+
             if (
                 data.title === undefined
             ) {
+
                 payload.title =
                     value;
+
             }
+
         }
+
 
         if (
             data.title !== undefined
         ) {
+
             payload.title =
                 this.normalizeOptional(
                     data.title,
                 );
+
         }
+
 
         if (
             data.description !== undefined
         ) {
+
             payload.description =
                 this.normalizeOptional(
                     data.description,
                 );
+
         }
+
 
         if (
             data.companyId !== undefined
         ) {
+
             payload.company_id =
                 data.companyId
                 ??
                 null;
+
         }
+
 
         if (
             data.contactId !== undefined
         ) {
+
             payload.contact_id =
                 data.contactId
                 ??
                 null;
+
         }
+
 
         if (
             data.leadId !== undefined
         ) {
+
             payload.lead_id =
                 data.leadId
                 ??
                 null;
+
         }
+
 
         if (
             data.ownerId !== undefined
         ) {
+
             payload.owner_id =
                 data.ownerId
                 ??
                 null;
+
         }
+
 
         if (
             data.assignedTo !== undefined
         ) {
+
             payload.assigned_to =
                 data.assignedTo
                 ??
                 null;
+
         }
+
 
         if (
             data.stage !== undefined
         ) {
+
             payload.stage =
                 data.stage;
+
         }
+
 
         if (
             data.status !== undefined
         ) {
+
             payload.status =
                 data.status;
+
         }
+
 
         if (
             data.value !== undefined
         ) {
+
             payload.value =
                 data.value;
+
         }
+
 
         if (
             data.probability !== undefined
         ) {
+
             payload.probability =
                 this.normalizeProbability(
                     data.probability,
                 );
+
         }
+
 
         if (
             data.expectedCloseDate !== undefined
         ) {
+
             payload.expected_close_date =
                 data.expectedCloseDate
                 ??
                 null;
+
         }
+
 
         if (
             data.forecastRevenue !== undefined
         ) {
+
             payload.forecast_revenue =
                 data.forecastRevenue
                 ??
                 null;
+
         }
+
 
         if (
             data.recurringRevenue !== undefined
         ) {
+
             payload.recurring_revenue =
                 data.recurringRevenue
                 ??
                 null;
+
         }
+
 
         if (
             data.currency !== undefined
         ) {
+
             payload.currency =
                 this.normalizeOptional(
                     data.currency,
                 );
+
         }
+
 
         if (
             data.source !== undefined
         ) {
+
             payload.source =
                 this.normalizeOptional(
                     data.source,
                 );
+
         }
+
 
         if (
             data.competitor !== undefined
         ) {
+
             payload.competitor =
                 this.normalizeOptional(
                     data.competitor,
                 );
+
         }
+
+
+        if (
+            data.reasonWon !== undefined
+        ) {
+
+            payload.reason_won =
+                this.normalizeOptional(
+                    data.reasonWon,
+                );
+
+        }
+
+
+        if (
+            data.reasonLost !== undefined
+        ) {
+
+            payload.reason_lost =
+                this.normalizeOptional(
+                    data.reasonLost,
+                );
+
+        }
+
 
         if (
             data.notes !== undefined
         ) {
+
             payload.notes =
                 this.normalizeOptional(
                     data.notes,
                 );
+
         }
+
 
         if (
             data.metadata !== undefined
         ) {
+
             payload.metadata =
                 data.metadata;
+
         }
+
 
         const {
             data: updated,
@@ -705,14 +888,20 @@ export class OpportunitiesRepository
                 .select("*")
                 .single();
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return this.mapOpportunity(
             updated as OpportunityRow,
         );
+
     }
+
 
 
     /**
@@ -722,19 +911,22 @@ export class OpportunitiesRepository
         id: string,
     ): Promise<void> {
 
-        await this.update(
-            id,
-            {
-                status:
-                    "Lost",
-            },
-        );
+        const normalizedId =
+            this.requireId(
+                id,
+                "Opportunity id",
+            );
+
 
         const {
             error,
         } =
             await this.tableRef()
                 .update({
+
+                    status:
+                        "Lost",
+
                     is_deleted:
                         true,
 
@@ -748,6 +940,7 @@ export class OpportunitiesRepository
                     updated_at:
                         new Date()
                             .toISOString(),
+
                 })
                 .eq(
                     "organization_id",
@@ -755,16 +948,18 @@ export class OpportunitiesRepository
                 )
                 .eq(
                     "id",
-                    this.requireId(
-                        id,
-                        "Opportunity id",
-                    ),
+                    normalizedId,
                 );
 
+
         if (error) {
+
             throw error;
+
         }
+
     }
+
 
 
     /**
@@ -780,20 +975,26 @@ export class OpportunitiesRepository
                 "Opportunity id",
             );
 
+
         const existing =
             await this.findById(
                 normalizedId,
             );
 
+
         if (!existing) {
+
             return false;
+
         }
+
 
         const {
             error,
         } =
             await this.tableRef()
                 .update({
+
                     is_deleted:
                         false,
 
@@ -809,6 +1010,7 @@ export class OpportunitiesRepository
                     updated_at:
                         new Date()
                             .toISOString(),
+
                 })
                 .eq(
                     "organization_id",
@@ -819,12 +1021,18 @@ export class OpportunitiesRepository
                     normalizedId,
                 );
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         return true;
+
     }
+
 
 
     /**
@@ -842,9 +1050,11 @@ export class OpportunitiesRepository
                     this.organizationId,
                 );
 
+
         if (
             !filters?.includeArchived
         ) {
+
             query =
                 query
                     .eq(
@@ -859,77 +1069,100 @@ export class OpportunitiesRepository
                         "archived",
                         true,
                     );
+
         }
+
 
         if (
             filters?.stage
         ) {
+
             query =
                 query.eq(
                     "stage",
                     filters.stage,
                 );
+
         }
+
 
         if (
             filters?.status
         ) {
+
             query =
                 query.eq(
                     "status",
                     filters.status,
                 );
+
         }
+
 
         if (
             filters?.companyId
         ) {
+
             query =
                 query.eq(
                     "company_id",
                     filters.companyId,
                 );
+
         }
+
 
         if (
             filters?.contactId
         ) {
+
             query =
                 query.eq(
                     "contact_id",
                     filters.contactId,
                 );
+
         }
+
 
         if (
             filters?.leadId
         ) {
+
             query =
                 query.eq(
                     "lead_id",
                     filters.leadId,
                 );
+
         }
+
 
         if (
             filters?.ownerId
         ) {
+
             query =
                 query.eq(
                     "owner_id",
                     filters.ownerId,
                 );
+
         }
+
 
         if (
             filters?.assignedTo
         ) {
+
             query =
                 query.eq(
                     "assigned_to",
                     filters.assignedTo,
                 );
+
         }
+
 
         const keyword =
             (
@@ -938,12 +1171,14 @@ export class OpportunitiesRepository
                 filters?.keyword
             )?.trim();
 
+
         if (keyword) {
 
             const escaped =
                 this.escapeIlike(
                     keyword,
                 );
+
 
             query =
                 query.or(
@@ -956,22 +1191,29 @@ export class OpportunitiesRepository
                         `competitor.ilike.%${escaped}%`,
                     ].join(","),
                 );
+
         }
+
 
         const {
             data,
             error,
         } =
-            await query.order(
-                "created_at",
-                {
-                    ascending: false,
-                },
-            );
+            await query
+                .order(
+                    "created_at",
+                    {
+                        ascending: false,
+                    },
+                );
+
 
         if (error) {
+
             throw error;
+
         }
+
 
         let opportunities =
             (data ?? [])
@@ -981,6 +1223,7 @@ export class OpportunitiesRepository
                             row as OpportunityRow,
                         ),
                 );
+
 
         if (
             filters?.page !== undefined
@@ -994,24 +1237,32 @@ export class OpportunitiesRepository
                     1,
                 );
 
+
             const limit =
                 Math.max(
                     filters.limit,
                     1,
                 );
 
+
             const offset =
-                (page - 1) * limit;
+                (page - 1) *
+                limit;
+
 
             opportunities =
                 opportunities.slice(
                     offset,
                     offset + limit,
                 );
+
         }
 
+
         return opportunities;
+
     }
+
 
 
     /**
@@ -1040,9 +1291,13 @@ export class OpportunitiesRepository
                     true,
                 );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         const rows =
             (data ?? []) as Array<{
@@ -1053,6 +1308,7 @@ export class OpportunitiesRepository
                 archived: boolean | null;
             }>;
 
+
         const active =
             rows.filter(
                 row =>
@@ -1061,11 +1317,13 @@ export class OpportunitiesRepository
                     !row.archived,
             );
 
+
         const open =
             active.filter(
                 row =>
                     row.status === "Open",
             );
+
 
         const won =
             active.filter(
@@ -1073,11 +1331,13 @@ export class OpportunitiesRepository
                     row.status === "Won",
             );
 
+
         const lost =
             active.filter(
                 row =>
                     row.status === "Lost",
             );
+
 
         const pipelineValue =
             open.reduce(
@@ -1086,9 +1346,13 @@ export class OpportunitiesRepository
                     row,
                 ) =>
                     total +
-                    (row.value ?? 0),
+                    (
+                        row.value ??
+                        0
+                    ),
                 0,
             );
+
 
         const weightedValue =
             open.reduce(
@@ -1098,14 +1362,21 @@ export class OpportunitiesRepository
                 ) =>
                     total +
                     (
-                        (row.value ?? 0)
+                        (
+                            row.value ??
+                            0
+                        )
                         *
-                        (row.probability ?? 0)
+                        (
+                            row.probability ??
+                            0
+                        )
                         /
                         100
                     ),
                 0,
             );
+
 
         const totalValue =
             active.reduce(
@@ -1114,41 +1385,57 @@ export class OpportunitiesRepository
                     row,
                 ) =>
                     total +
-                    (row.value ?? 0),
+                    (
+                        row.value ??
+                        0
+                    ),
                 0,
             );
+
 
         const averageDealSize =
             active.length === 0
                 ? 0
-                : totalValue /
+                :
+                    totalValue /
                     active.length;
+
 
         const averageProbability =
             active.length === 0
                 ? 0
-                : active.reduce(
-                    (
-                        total,
-                        row,
-                    ) =>
-                        total +
-                        (row.probability ?? 0),
-                    0,
-                ) /
+                :
+                    active.reduce(
+                        (
+                            total,
+                            row,
+                        ) =>
+                            total +
+                            (
+                                row.probability ??
+                                0
+                            ),
+                        0,
+                    )
+                    /
                     active.length;
+
 
         const closed =
             won.length +
             lost.length;
 
+
         const winRate =
             closed === 0
                 ? 0
-                : (
-                    won.length /
-                    closed
-                ) * 100;
+                :
+                    (
+                        won.length /
+                        closed
+                    ) *
+                    100;
+
 
         return {
 
@@ -1175,8 +1462,11 @@ export class OpportunitiesRepository
             averageProbability,
 
             winRate,
+
         };
+
     }
+
 
 
     /**
@@ -1190,17 +1480,22 @@ export class OpportunitiesRepository
         const normalizedEntityType =
             entityType.trim();
 
+
         const normalizedEntityId =
             this.requireId(
                 entityId,
                 "Entity id",
             );
 
+
         if (!normalizedEntityType) {
+
             throw new Error(
                 "Entity type is required.",
             );
+
         }
+
 
         const {
             data,
@@ -1224,6 +1519,10 @@ export class OpportunitiesRepository
                     "is_deleted",
                     false,
                 )
+                .neq(
+                    "archived",
+                    true,
+                )
                 .order(
                     "created_at",
                     {
@@ -1231,9 +1530,13 @@ export class OpportunitiesRepository
                     },
                 );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         return (data ?? [])
             .map(
@@ -1242,7 +1545,9 @@ export class OpportunitiesRepository
                         row as OpportunityRow,
                     ),
             );
+
     }
+
 
 
     /**
@@ -1255,6 +1560,7 @@ export class OpportunitiesRepository
         const id =
             row.id;
 
+
         const name =
             row.name
             ??
@@ -1262,25 +1568,30 @@ export class OpportunitiesRepository
             ??
             "";
 
+
         const title =
             row.title
             ??
             name;
+
 
         const stage =
             this.normalizeStage(
                 row.stage,
             );
 
+
         const status =
             this.normalizeStatus(
                 row.status,
             );
 
+
         const value =
             row.value
             ??
             0;
+
 
         const probability =
             this.normalizeProbability(
@@ -1288,6 +1599,7 @@ export class OpportunitiesRepository
                 ??
                 0,
             );
+
 
         return {
 
@@ -1430,8 +1742,11 @@ export class OpportunitiesRepository
 
             updatedAt:
                 row.updated_at,
+
         };
+
     }
+
 
 
     private normalizeStage(
@@ -1458,8 +1773,11 @@ export class OpportunitiesRepository
             case "New":
             default:
                 return "New";
+
         }
+
     }
+
 
 
     private normalizeStatus(
@@ -1480,8 +1798,11 @@ export class OpportunitiesRepository
             case "Open":
             default:
                 return "Open";
+
         }
+
     }
+
 
 
     private normalizeProbability(
@@ -1489,8 +1810,11 @@ export class OpportunitiesRepository
     ): number {
 
         if (!Number.isFinite(value)) {
+
             return 0;
+
         }
+
 
         return Math.min(
             100,
@@ -1499,7 +1823,9 @@ export class OpportunitiesRepository
                 value,
             ),
         );
+
     }
+
 
 
     private normalizeOptional(
@@ -1509,8 +1835,11 @@ export class OpportunitiesRepository
         const normalized =
             value?.trim();
 
+
         return normalized || null;
+
     }
+
 
 
     private requireId(
@@ -1521,14 +1850,20 @@ export class OpportunitiesRepository
         const normalized =
             value?.trim();
 
+
         if (!normalized) {
+
             throw new Error(
                 `${fieldName} is required.`,
             );
+
         }
 
+
         return normalized;
+
     }
+
 
 
     private escapeIlike(
@@ -1552,7 +1887,9 @@ export class OpportunitiesRepository
                 /,/g,
                 "\\,",
             );
+
     }
+
 
 
     private generateOpportunityNumber(): string {
@@ -1562,9 +1899,13 @@ export class OpportunitiesRepository
                 .toString()
                 .slice(-8);
 
+
         return `OPP-${timestamp}`;
+
     }
+
 }
+
 
 
 /**
@@ -1577,11 +1918,14 @@ export function createOpportunitiesRepository(
     return new OpportunitiesRepository(
         supabase,
     );
+
 }
 
 
 /**
  * Standard repository export.
+ *
+ * Kept for compatibility with existing imports.
  */
-const OpportunitiesRepositoryInstance =
+export const OpportunitiesRepositoryInstance =
     createOpportunitiesRepository;

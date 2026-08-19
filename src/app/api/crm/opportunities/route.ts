@@ -1,116 +1,274 @@
 import {
     NextRequest,
     NextResponse,
-} from 'next/server';
+} from "next/server";
+
 
 import {
     OpportunitiesServiceInstance,
-} from '@/services/crm/OpportunitiesService';
+} from "@/services/crm/OpportunitiesService";
+
 
 import type {
     OpportunitySearchFilters,
     OpportunityStage,
     OpportunityStatus,
-} from '@/types/crm/Opportunities';
+} from "@/types/crm/Opportunities";
+
+
+import {
+    withTenantRequest,
+} from "@/lib/tenant/withTenantRequest";
+
+
+const VALID_STAGES:
+    OpportunityStage[] = [
+        "New",
+        "Qualified",
+        "Proposal",
+        "Negotiation",
+        "Won",
+        "Lost",
+    ];
+
+
+const VALID_STATUSES:
+    OpportunityStatus[] = [
+        "Open",
+        "Won",
+        "Lost",
+        "On Hold",
+    ];
+
+
+function getOptionalQueryValue(
+    value: string | null,
+): string | undefined {
+
+    const normalized =
+        value?.trim();
+
+    return normalized || undefined;
+
+}
+
+
+function isOpportunityStage(
+    value: string,
+): value is OpportunityStage {
+
+    return VALID_STAGES.includes(
+        value as OpportunityStage,
+    );
+
+}
+
+
+function isOpportunityStatus(
+    value: string,
+): value is OpportunityStatus {
+
+    return VALID_STATUSES.includes(
+        value as OpportunityStatus,
+    );
+
+}
 
 
 export async function GET(
     request: NextRequest,
 ) {
 
-    try {
+    return withTenantRequest(
+        request,
+        async () => {
 
-        const searchParams =
-            request.nextUrl.searchParams;
+            try {
 
-
-        const status =
-            searchParams.get('status');
-
-
-        const stage =
-            searchParams.get('stage');
+                const searchParams =
+                    request.nextUrl.searchParams;
 
 
-        const companyId =
-            searchParams.get('companyId');
+                const status =
+                    getOptionalQueryValue(
+                        searchParams.get("status"),
+                    );
 
 
-        const search =
-            searchParams.get('search');
+                const stage =
+                    getOptionalQueryValue(
+                        searchParams.get("stage"),
+                    );
 
 
-        const filters: OpportunitySearchFilters = {
-
-            status:
-                status
-                    ? status as OpportunityStatus
-                    : undefined,
-
-            stage:
-                stage
-                    ? stage as OpportunityStage
-                    : undefined,
-
-            companyId:
-                companyId
-                ??
-                undefined,
-
-            search:
-                search
-                ??
-                undefined,
-
-        };
+                const companyId =
+                    getOptionalQueryValue(
+                        searchParams.get("companyId"),
+                    );
 
 
-        const hasFilters =
-            Object.values(filters)
-                .some(
-                    value =>
-                        value !== undefined &&
-                        value !== '',
+                const contactId =
+                    getOptionalQueryValue(
+                        searchParams.get("contactId"),
+                    );
+
+
+                const leadId =
+                    getOptionalQueryValue(
+                        searchParams.get("leadId"),
+                    );
+
+
+                const ownerId =
+                    getOptionalQueryValue(
+                        searchParams.get("ownerId"),
+                    );
+
+
+                const assignedTo =
+                    getOptionalQueryValue(
+                        searchParams.get("assignedTo"),
+                    );
+
+
+                const search =
+                    getOptionalQueryValue(
+                        searchParams.get("search"),
+                    );
+
+
+                const keyword =
+                    getOptionalQueryValue(
+                        searchParams.get("keyword"),
+                    );
+
+
+                if (
+                    status
+                    &&
+                    !isOpportunityStatus(
+                        status,
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Invalid opportunity status.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                if (
+                    stage
+                    &&
+                    !isOpportunityStage(
+                        stage,
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Invalid opportunity stage.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                const filters:
+                    OpportunitySearchFilters = {
+
+                    status:
+                        status &&
+                            isOpportunityStatus(status)
+                            ? status
+                            : undefined,
+
+                    stage:
+                        stage &&
+                            isOpportunityStage(stage)
+                            ? stage
+                            : undefined,
+
+                    companyId,
+
+                    contactId,
+
+                    leadId,
+
+                    ownerId,
+
+                    assignedTo,
+
+                    search,
+
+                    keyword,
+
+                };
+
+                const hasFilters =
+                    Object.values(filters)
+                        .some(
+                            value =>
+                                value !== undefined
+                                &&
+                                value !== "",
+                        );
+
+
+                const opportunities =
+                    hasFilters
+                        ? await OpportunitiesServiceInstance.search(
+                            filters,
+                        )
+                        : await OpportunitiesServiceInstance.list();
+
+
+                return NextResponse.json(
+                    {
+                        success: true,
+                        data: opportunities,
+                    },
+                    {
+                        status: 200,
+                    },
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "OPPORTUNITIES_LIST_ERROR",
+                    error,
                 );
 
 
-        const opportunities =
-            hasFilters
-                ? await OpportunitiesServiceInstance.search(
-                    filters,
-                )
-                : await OpportunitiesServiceInstance.list();
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error:
+                            "Failed to load opportunities.",
+                    },
+                    {
+                        status: 500,
+                    },
+                );
 
+            }
 
-        return NextResponse.json(
-            {
-                success: true,
-                data: opportunities,
-            },
-            {
-                status: 200,
-            },
-        );
-
-    } catch (error) {
-
-        console.error(
-            'OPPORTUNITIES_LIST_ERROR',
-            error,
-        );
-
-
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Failed to load opportunities',
-            },
-            {
-                status: 500,
-            },
-        );
-
-    }
+        },
+    );
 
 }
 
@@ -119,89 +277,230 @@ export async function POST(
     request: NextRequest,
 ) {
 
-    try {
+    return withTenantRequest(
+        request,
+        async () => {
 
-        const body =
-            await request.json();
+            try {
 
-
-        if (
-            !body ||
-            typeof body !== 'object' ||
-            Array.isArray(body)
-        ) {
-
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Invalid request body',
-                },
-                {
-                    status: 400,
-                },
-            );
-
-        }
+                const body =
+                    await request.json();
 
 
-        if (
-            typeof body.name !== 'string' &&
-            typeof body.title !== 'string'
-        ) {
+                if (
+                    !body
+                    ||
+                    typeof body !== "object"
+                    ||
+                    Array.isArray(body)
+                ) {
 
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Opportunity name is required',
-                },
-                {
-                    status: 400,
-                },
-            );
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Invalid request body.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
 
-        }
-
-
-        const opportunity =
-            await OpportunitiesServiceInstance.create(
-                body,
-            );
+                }
 
 
-        return NextResponse.json(
-            {
-                success: true,
-                data: opportunity,
-            },
-            {
-                status: 201,
-            },
-        );
-
-    } catch (error) {
-
-        console.error(
-            'OPPORTUNITY_CREATE_ERROR',
-            error,
-        );
+                const name =
+                    typeof body.name === "string"
+                        ? body.name.trim()
+                        : "";
 
 
-        const message =
-            error instanceof Error
-                ? error.message
-                : 'Failed to create opportunity';
+                const title =
+                    typeof body.title === "string"
+                        ? body.title.trim()
+                        : "";
 
 
-        return NextResponse.json(
-            {
-                success: false,
-                error: message,
-            },
-            {
-                status: 400,
-            },
-        );
+                if (
+                    !name
+                    &&
+                    !title
+                ) {
 
-    }
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity name is required.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                if (
+                    body.value !== undefined
+                    &&
+                    (
+                        typeof body.value !== "number"
+                        ||
+                        !Number.isFinite(
+                            body.value,
+                        )
+                        ||
+                        body.value < 0
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity value must be a non-negative number.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                if (
+                    body.probability !== undefined
+                    &&
+                    (
+                        typeof body.probability !== "number"
+                        ||
+                        !Number.isFinite(
+                            body.probability,
+                        )
+                        ||
+                        body.probability < 0
+                        ||
+                        body.probability > 100
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Opportunity probability must be between 0 and 100.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                if (
+                    body.stage !== undefined
+                    &&
+                    (
+                        typeof body.stage !== "string"
+                        ||
+                        !isOpportunityStage(
+                            body.stage.trim(),
+                        )
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Invalid opportunity stage.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                if (
+                    body.status !== undefined
+                    &&
+                    (
+                        typeof body.status !== "string"
+                        ||
+                        !isOpportunityStatus(
+                            body.status.trim(),
+                        )
+                    )
+                ) {
+
+                    return NextResponse.json(
+                        {
+                            success: false,
+                            error:
+                                "Invalid opportunity status.",
+                        },
+                        {
+                            status: 400,
+                        },
+                    );
+
+                }
+
+
+                const opportunity =
+                    await OpportunitiesServiceInstance.create(
+                        {
+                            ...body,
+                            ...(name
+                                ? {
+                                    name,
+                                }
+                                : {}),
+                            ...(title
+                                ? {
+                                    title,
+                                }
+                                : {}),
+                        },
+                    );
+
+
+                return NextResponse.json(
+                    {
+                        success: true,
+                        data: opportunity,
+                    },
+                    {
+                        status: 201,
+                    },
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "OPPORTUNITY_CREATE_ERROR",
+                    error,
+                );
+
+
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error:
+                            "Failed to create opportunity.",
+                    },
+                    {
+                        status: 500,
+                    },
+                );
+
+            }
+
+        },
+    );
 
 }
