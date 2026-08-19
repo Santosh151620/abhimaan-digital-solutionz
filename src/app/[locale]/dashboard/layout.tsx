@@ -29,10 +29,8 @@ export default function DashboardLayout({
                     overflow-x-hidden
                 "
             >
-                {/* CRM navigation */}
                 <CRMSidebar />
 
-                {/* CRM workspace */}
                 <div
                     className="
                         flex
@@ -47,10 +45,8 @@ export default function DashboardLayout({
                         to-[#0c0f14]
                     "
                 >
-                    {/* Global CRM header */}
                     <CRMHeader />
 
-                    {/* Main CRM workspace */}
                     <main
                         id="main-content"
                         tabIndex={-1}
@@ -75,7 +71,6 @@ export default function DashboardLayout({
                             className="
                                 mx-auto
                                 w-full
-                                min-w-0
                                 max-w-[1800px]
                             "
                         >
