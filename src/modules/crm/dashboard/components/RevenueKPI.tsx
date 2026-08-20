@@ -1,5 +1,5 @@
 import KPICard from "@/modules/dashboard/components/KPICard";
-import type { RevenueSnapshot } from "../services/revenue-intelligence";
+import type { RevenueSnapshot } from "@/services/crm/revenue-intelligence";
 
 interface Props {
   data: RevenueSnapshot;
@@ -9,7 +9,7 @@ function formatCount(value: unknown): string | number {
   const numericValue = Number(value);
 
   if (!Number.isFinite(numericValue)) {
-    return "—";
+    return "â€”";
   }
 
   return Math.max(0, numericValue);
@@ -19,7 +19,7 @@ function formatCollectionRate(value: unknown): string {
   const numericValue = Number(value);
 
   if (!Number.isFinite(numericValue)) {
-    return "—";
+    return "â€”";
   }
 
   const rate = Math.max(0, Math.min(100, numericValue));

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo } from "react";
 import type { Project, ProjectStatus } from "@/modules/projects/types/project";
@@ -19,8 +19,8 @@ export function useProjectsCRM(
       const matchesSearch =
         keyword.length === 0 ||
         p.name.toLowerCase().includes(keyword) ||
-        p.service_type.toLowerCase().includes(keyword) ||
-        p.client_id.toLowerCase().includes(keyword);
+        (p.projectType ?? "").toLowerCase().includes(keyword) ||
+        (p.companyId ?? "").toLowerCase().includes(keyword);
 
       const matchesStatus =
         query.status === "all"
@@ -35,6 +35,10 @@ export function useProjectsCRM(
     };
   }, [projects, query.search, query.status]);
 }
+
+
+
+
 
 
 

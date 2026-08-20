@@ -1,4 +1,4 @@
-"use server";
+﻿"use server";
 
 import {
     revalidatePath,
@@ -17,6 +17,10 @@ import type {
     ProjectStatus,
 } from "@/types/crm/Projects";
 
+import type {
+    ProjectListQuery,
+} from "@/repositories/crm/ProjectsRepository";
+
 const PROJECTS_PATH =
     "/crm/projects";
 
@@ -31,11 +35,15 @@ async function service() {
 
 }
 
-export async function getProjects() {
+export async function getProjects(
+    filters: ProjectListQuery = {},
+) {
 
     return (
         await service()
-    ).list();
+    ).listPaginated(
+        filters,
+    );
 
 }
 

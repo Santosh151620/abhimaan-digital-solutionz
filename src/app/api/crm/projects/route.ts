@@ -1,4 +1,4 @@
-import {
+﻿import {
     NextRequest,
     NextResponse,
 } from "next/server";
@@ -7,6 +7,10 @@ import {
     ProjectsServiceInstance,
 } from "@/services/crm/ProjectsService";
 
+import type {
+    ProjectListQuery,
+} from "@/repositories/crm/ProjectsRepository";
+
 export async function GET(
     request: NextRequest,
 ) {
@@ -14,45 +18,62 @@ export async function GET(
     try {
 
         const search =
-            request.nextUrl.searchParams.get("search") ?? undefined;
+            request.nextUrl.searchParams.get("search")?.trim() || undefined;
+        const rawStatus =
+            request.nextUrl.searchParams.get("status") ??
+            undefined;
 
-        const status =
-            request.nextUrl.searchParams.get("status") ?? undefined;
+        const status: ProjectListQuery["status"] =
+            rawStatus === "All" ||
+            rawStatus === "Planning" ||
+            rawStatus === "Active" ||
+            rawStatus === "On Hold" ||
+            rawStatus === "Completed" ||
+            rawStatus === "Cancelled"
+                ? rawStatus
+                : undefined;
+
+        const page =
+            Math.max(
+                1,
+                Number(
+                    request.nextUrl.searchParams.get("page") ??
+                    1,
+                ),
+            );
+
+        const pageSize =
+            Math.min(
+                100,
+                Math.max(
+                    1,
+                    Number(
+                        request.nextUrl.searchParams.get("pageSize") ??
+                        20,
+                    ),
+                ),
+            );
+
+        const filters: ProjectListQuery = {
+            search,
+            status,
+            page,
+            pageSize,
+        };
 
         const projects =
-            await ProjectsServiceInstance.list();
-
-        const filtered =
-            projects.filter(project => {
-
-                if (
-                    search &&
-                    !project.name
-                        .toLowerCase()
-                        .includes(search.toLowerCase())
-                ) {
-
-                    return false;
-
-                }
-
-                if (
-                    status &&
-                    project.status !== status
-                ) {
-
-                    return false;
-
-                }
-
-                return true;
-
-            });
+            await ProjectsServiceInstance.listPaginated(
+                filters,
+            );
 
         return NextResponse.json(
             {
                 success: true,
-                data: filtered,
+                data: projects.projects,
+                total: projects.total,
+                page: projects.page,
+                pageSize: projects.pageSize,
+                totalPages: projects.totalPages,
             },
             {
                 status: 200,

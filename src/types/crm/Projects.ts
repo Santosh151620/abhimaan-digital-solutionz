@@ -1,4 +1,4 @@
-export type ProjectStatus =
+﻿export type ProjectStatus =
     | 'Planning'
     | 'Active'
     | 'On Hold'
@@ -28,6 +28,7 @@ export interface Project {
     actualCost?: number;
     currency?: string;
     metadata?: Record<string, unknown>;
+    progressPercent?: number;
     archived?: boolean;
     createdAt: string;
     updatedAt: string;

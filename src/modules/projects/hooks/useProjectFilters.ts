@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useMemo, useState } from "react";
 import type { Project, ProjectStatus } from "@/modules/projects/types/project";
@@ -18,9 +18,9 @@ export function useProjectFilters(projects: Project[]) {
       const matchesSearch =
         keyword.length === 0 ||
         project.name.toLowerCase().includes(keyword) ||
-        project.service_type.toLowerCase().includes(keyword) ||
-        project.notes?.toLowerCase().includes(keyword) ||
-        project.client_id.toLowerCase().includes(keyword);
+        (project.projectType ?? "").toLowerCase().includes(keyword) ||
+        project.description?.toLowerCase().includes(keyword) ||
+        (project.companyId ?? "").toLowerCase().includes(keyword);
 
       const matchesStatus =
         statusFilter === "all" || project.status === statusFilter;
@@ -70,6 +70,11 @@ export function useProjectFilters(projects: Project[]) {
     totalCount: filteredProjects.length,
   };
 }
+
+
+
+
+
 
 
 

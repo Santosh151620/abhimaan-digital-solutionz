@@ -1,8 +1,13 @@
-﻿import type { SupabaseClient } from "@supabase/supabase-js";
+﻿import {
+    createClient,
+} from "@/lib/supabase/server";
+
 
 import {
     ProjectsRepository,
+    type ProjectListQuery,
 } from "@/repositories/crm/ProjectsRepository";
+
 
 import type {
     Project,
@@ -10,122 +15,290 @@ import type {
 } from "@/types/crm/Projects";
 
 
-export class ProjectsService {
 
-    constructor(
-        private readonly repository: ProjectsRepository,
-    ) {}
+class ProjectsService {
 
 
-    list() {
-        return this.repository.findAll();
+    protected async repository() {
+
+        const supabase =
+            await createClient();
+
+
+        return new ProjectsRepository(
+            supabase,
+        );
+
     }
 
 
-    listArchived() {
-        return this.repository.listArchived();
+
+    async list(): Promise<Project[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.findAll();
+
     }
 
 
-    details(
+
+    async listPaginated(
+        filters: ProjectListQuery = {},
+    ) {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.findPaginated(
+            filters,
+        );
+
+    }
+
+
+
+    async listArchived(): Promise<Project[]> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.listArchived();
+
+    }
+
+
+
+    async details(
         id: string,
-    ) {
-        return this.repository.findById(id);
+    ): Promise<Project | null> {
+
+        if (!id) {
+
+            throw new Error(
+                "Project id is required",
+            );
+
+        }
+
+
+        const repository =
+            await this.repository();
+
+
+        return repository.findById(
+            id,
+        );
+
     }
 
 
-    create(
+
+    async create(
         data: Partial<Project>,
-    ) {
-        return this.repository.create(data);
+    ): Promise<Project> {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.create(
+            data,
+        );
+
     }
 
 
-    update(
+
+    async update(
         id: string,
         data: Partial<Project>,
-    ) {
-        return this.repository.update(
+    ): Promise<Project> {
+
+        if (!id) {
+
+            throw new Error(
+                "Project id is required",
+            );
+
+        }
+
+
+        const repository =
+            await this.repository();
+
+
+        return repository.update(
             id,
             data,
         );
+
     }
 
 
-    updateStatus(
+
+    async restore(
+        id: string,
+    ): Promise<Project> {
+
+        if (!id) {
+
+            throw new Error(
+                "Project id is required",
+            );
+
+        }
+
+
+        const repository =
+            await this.repository();
+
+
+        return repository.restore(
+            id,
+        );
+
+    }
+
+
+
+    async updateStatus(
         id: string,
         status: ProjectStatus,
-    ) {
-        return this.repository.update(
+    ): Promise<Project> {
+
+        if (!id) {
+
+            throw new Error(
+                "Project id is required",
+            );
+
+        }
+
+
+        const repository =
+            await this.repository();
+
+
+        return repository.update(
             id,
             {
                 status,
             },
         );
+
     }
 
 
-    delete(
+
+    async delete(
         id: string,
-    ) {
-        return this.repository.delete(id);
-    }
+    ): Promise<void> {
 
+        if (!id) {
 
-    restore(
-        id: string,
-    ) {
-
-        if (
-            typeof this.repository.restore === "function"
-        ) {
-
-            return this.repository.restore(id);
+            throw new Error(
+                "Project id is required",
+            );
 
         }
 
 
-        return Promise.resolve(false);
+        const repository =
+            await this.repository();
+
+
+        return repository.delete(
+            id,
+        );
 
     }
 
 
-    summary() {
-        return this.repository.summary();
+
+    async summary() {
+
+        const repository =
+            await this.repository();
+
+
+        return repository.summary();
+
     }
 
 }
 
 
 
-export function createProjectsService(
-    supabase: SupabaseClient,
-) {
+export const ProjectsServiceInstance =
+    new ProjectsService();
 
-    return new ProjectsService(
-        new ProjectsRepository(
-            supabase,
-        ),
+
+
+/**
+ * Legacy factory compatibility.
+ *
+ * Existing callers that explicitly provide a Supabase client
+ * continue to work without changing the canonical service instance.
+ */
+export function createProjectsService(
+    supabase: Parameters<
+        typeof createProjectsServiceInternal
+    >[0],
+): ProjectsService {
+
+    return createProjectsServiceInternal(
+        supabase,
     );
 
 }
 
 
+function createProjectsServiceInternal(
+    supabase: ConstructorParameters<
+        typeof ProjectsRepository
+    >[0],
+): ProjectsService {
 
-export let ProjectsServiceInstance: ProjectsService;
-
-
-
-function initializeProjectsService(
-    supabase: SupabaseClient,
-) {
-
-    ProjectsServiceInstance =
-        createProjectsService(
+    return new ProjectsServiceWithRepository(
+        new ProjectsRepository(
             supabase,
-        );
-
-
-    return ProjectsServiceInstance;
+        ),
+    ) as unknown as ProjectsService;
 
 }
+
+
+
+/**
+ * Compatibility implementation for callers using the
+ * explicit repository/factory path.
+ */
+class ProjectsServiceWithRepository
+    extends ProjectsService {
+
+    constructor(
+        private readonly injectedRepository:
+            ProjectsRepository,
+    ) {
+
+        super();
+
+    }
+
+
+    protected override async repository() {
+
+        return this.injectedRepository;
+
+    }
+
+}
+
+
+
+

@@ -1,6 +1,6 @@
 import { getCRMAnalytics } from "@/services/analytics";
-import { getPipelineData } from "./pipeline";
-import { getRevenueIntelligence } from "./revenue-intelligence";
+import { getPipelineData } from "@/services/crm/pipeline";
+import { getRevenueIntelligence } from "@/services/crm/revenue-intelligence";
 
 type BusinessMomentum =
   | "growing"

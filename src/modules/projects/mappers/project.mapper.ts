@@ -1,87 +1,218 @@
-import type { Project } from "@/modules/projects/types/project";
+﻿import type {
+    Project,
+} from "@/modules/projects/types/project";
+
+
+type RawProject =
+    Record<string, unknown>;
+
+
+function optionalString(
+    value: unknown,
+): string | undefined {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return undefined;
+
+    }
+
+    return String(value);
+
+}
+
 
 /**
  * Project Mapper
  *
- * Maps raw backend/API objects into the application's
- * canonical Project domain model.
+ * Maps raw backend/API objects into the
+ * canonical CRM Project domain model.
  */
-
-type RawProject = Record<string, unknown>;
-
 export class ProjectMapper {
-  static toDomain(raw: RawProject): Project {
-    return {
-      // -----------------------------------------------------------------
-      // BaseEntity
-      // -----------------------------------------------------------------
 
-      id: String(raw.id ?? ""),
 
-      entityType: "project",
+    static toDomain(
+        raw: RawProject,
+    ): Project {
 
-      organizationId: String(
-        raw.organizationId ??
-          raw.organization_id ??
-          ""
-      ),
+        return {
 
-      createdAt: String(
-        raw.createdAt ??
-          raw.created_at ??
-          ""
-      ),
+            id:
+                String(
+                    raw.id ?? "",
+                ),
 
-      updatedAt: String(
-        raw.updatedAt ??
-          raw.updated_at ??
-          ""
-      ),
+            projectNumber:
+                String(
+                    raw.projectNumber ??
+                    raw.project_number ??
+                    "",
+                ),
 
-      // -----------------------------------------------------------------
-      // Project
-      // -----------------------------------------------------------------
+            companyId:
+                optionalString(
+                    raw.companyId ??
+                    raw.company_id,
+                ),
 
-      client_id: String(raw.client_id ?? ""),
+            contactId:
+                optionalString(
+                    raw.contactId ??
+                    raw.contact_id,
+                ),
 
-      name: String(raw.name ?? ""),
+            opportunityId:
+                optionalString(
+                    raw.opportunityId ??
+                    raw.opportunity_id,
+                ),
 
-      description: String(raw.description ?? ""),
+            contractId:
+                optionalString(
+                    raw.contractId ??
+                    raw.contract_id,
+                ),
 
-      service_type: String(raw.service_type ?? ""),
+            customerName:
+                optionalString(
+                    raw.customerName ??
+                    raw.customer_name,
+                ),
 
-      status: (raw.status as Project["status"]) ?? "planning",
+            name:
+                String(
+                    raw.name ?? "",
+                ),
 
-      priority:
-        (raw.priority as Project["priority"]) ?? "MEDIUM",
+            description:
+                optionalString(
+                    raw.description,
+                ),
 
-      project_cost: Number(raw.project_cost ?? 0),
+            status:
+                (raw.status as Project["status"]) ??
+                "Planning",
 
-      progress_percentage: Number(
-        raw.progress_percentage ?? 0
-      ),
+            projectType:
+                optionalString(
+                    raw.projectType ??
+                    raw.project_type,
+                ),
 
-      start_date:
-        (raw.start_date as string | null) ?? null,
+            priority:
+                optionalString(
+                    raw.priority,
+                ),
 
-      end_date:
-        (raw.end_date as string | null) ?? null,
+            ownerUserId:
+                optionalString(
+                    raw.ownerUserId ??
+                    raw.owner_user_id,
+                ),
 
-      notes:
-        (raw.notes as string | null) ?? null,
+            manager:
+                optionalString(
+                    raw.manager,
+                ),
 
-      milestones:
-        (raw.milestones as Project["milestones"]) ?? [],
-    };
-  }
+            startDate:
+                optionalString(
+                    raw.startDate ??
+                    raw.start_date,
+                ),
 
-  static toDomainList(rawList: RawProject[]): Project[] {
-    return rawList.map((item) => this.toDomain(item));
-  }
+            endDate:
+                optionalString(
+                    raw.endDate ??
+                    raw.end_date,
+                ),
+
+            actualEndDate:
+                optionalString(
+                    raw.actualEndDate ??
+                    raw.actual_end_date,
+                ),
+
+            budget:
+                Number(
+                    raw.budget ?? 0,
+                ),
+
+            actualCost:
+                raw.actualCost !== null &&
+                raw.actualCost !== undefined
+                    ? Number(
+                        raw.actualCost,
+                    )
+                    : undefined,
+
+            currency:
+                optionalString(
+                    raw.currency,
+                ),
+
+            metadata:
+                raw.metadata &&
+                typeof raw.metadata === "object"
+                    ? raw.metadata as Record<
+                        string,
+                        unknown
+                    >
+                    : undefined,
+
+            progressPercent:
+                raw.progressPercent !== null &&
+                raw.progressPercent !== undefined
+                    ? Number(
+                        raw.progressPercent,
+                    )
+                    : raw.progress_percentage !== null &&
+                      raw.progress_percentage !== undefined
+                        ? Number(
+                            raw.progress_percentage,
+                        )
+                        : undefined,
+
+            archived:
+                raw.archived !== null &&
+                raw.archived !== undefined
+                    ? Boolean(
+                        raw.archived,
+                    )
+                    : undefined,
+
+            createdAt:
+                String(
+                    raw.createdAt ??
+                    raw.created_at ??
+                    "",
+                ),
+
+            updatedAt:
+                String(
+                    raw.updatedAt ??
+                    raw.updated_at ??
+                    "",
+                ),
+
+        };
+
+    }
+
+
+    static toDomainList(
+        rawList: RawProject[],
+    ): Project[] {
+
+        return rawList.map(
+            (item) =>
+                this.toDomain(item),
+        );
+
+    }
+
 }
-
-
-
-
-
-

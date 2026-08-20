@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { memo } from "react";
 
@@ -117,12 +117,12 @@ function ProjectTable({
                 </td>
 
                 <td className="px-5 py-4 text-slate-300">
-                  â‚¹
-                  {Number(project.project_cost ?? 0).toLocaleString("en-IN")}
+                  Ã¢â€šÂ¹
+                  {Number(project.budget ?? 0).toLocaleString("en-IN")}
                 </td>
 
                 <td className="px-5 py-4 text-slate-300">
-                  {project.progress_percentage ?? 0}%
+                  {project.progressPercent ?? 0}%
                 </td>
 
                 <td className="px-5 py-4">
@@ -163,11 +163,11 @@ function ProjectTable({
       <div className="border-t border-white/10 px-5 py-4 text-sm text-slate-400">
         Total{" "}
         <span className="font-medium text-white">{totalProjects}</span>
-        {" â€¢ "}Active{" "}
+        {" Ã¢â‚¬Â¢ "}Active{" "}
         <span className="font-medium text-white">{stats.active}</span>
-        {" â€¢ "}Completed{" "}
+        {" Ã¢â‚¬Â¢ "}Completed{" "}
         <span className="font-medium text-white">{stats.completed}</span>
-        {" â€¢ "}Completion Rate{" "}
+        {" Ã¢â‚¬Â¢ "}Completion Rate{" "}
         <span className="font-medium text-white">
           {stats.completionRate}%
         </span>
@@ -177,6 +177,9 @@ function ProjectTable({
 }
 
 export default memo(ProjectTable);
+
+
+
 
 
 

@@ -1,55 +1,86 @@
-import { ProjectsAPI } from "@/modules/projects/api/projects.api";
+import {
+    ProjectsAPI,
+} from "@/modules/projects/api/projects.api";
 
 import type {
-  Project,
-  ProjectStatus,
+    GetProjectsParams,
+} from "@/modules/projects/api/projects.api";
+
+import type {
+    Project,
+    ProjectCreateInput,
+    ProjectUpdateInput,
 } from "@/modules/projects/types/project";
 
-/**
- * Project Repository
- *
- * Single source of truth for Project data access.
- * Hooks should ONLY talk to this repository.
- */
 
-export interface FindProjectsParams {
-  status?: ProjectStatus | "all";
-  search?: string;
-  page?: number;
-  pageSize?: number;
-}
+export type FindProjectsParams =
+    GetProjectsParams;
+
 
 export class ProjectRepository {
-  static async findAll(
-    params: FindProjectsParams = {}
-  ) {
-    return ProjectsAPI.getProjects(params);
-  }
 
-  static async findById(id: string) {
-    return ProjectsAPI.getProject(id);
-  }
 
-  static async create(
-    data: Partial<Project>
-  ) {
-    return ProjectsAPI.createProject(data);
-  }
+    static async findAll(
+        params: FindProjectsParams = {},
+    ): Promise<{
+        data: Project[];
+        total: number;
+        page: number;
+        totalPages: number;
+    }> {
 
-  static async update(
-    id: string,
-    data: Partial<Project>
-  ) {
-    return ProjectsAPI.updateProject(id, data);
-  }
+        return ProjectsAPI.getProjects(
+            params,
+        );
 
-  static async remove(id: string) {
-    return ProjectsAPI.deleteProject(id);
-  }
+    }
+
+
+    static async findById(
+        id: string,
+    ): Promise<Project> {
+
+        return ProjectsAPI.getProject(
+            id,
+        );
+
+    }
+
+
+    static async create(
+        data: ProjectCreateInput,
+    ): Promise<Project> {
+
+        return ProjectsAPI.createProject(
+            data,
+        );
+
+    }
+
+
+    static async update(
+        id: string,
+        data: ProjectUpdateInput,
+    ): Promise<Project> {
+
+        return ProjectsAPI.updateProject(
+            id,
+            data,
+        );
+
+    }
+
+
+    static async remove(
+        id: string,
+    ): Promise<{
+        success: boolean;
+    }> {
+
+        return ProjectsAPI.deleteProject(
+            id,
+        );
+
+    }
+
 }
-
-
-
-
-
-

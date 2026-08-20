@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useCallback, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -30,11 +30,11 @@ interface ProjectTimelineItem {
 }
 
 const STATUS_OPTIONS: ProjectStatus[] = [
-  "planning",
-  "active",
-  "on_hold",
-  "completed",
-  "cancelled",
+  "Planning",
+  "Active",
+  "On Hold",
+  "Completed",
+  "Cancelled",
 ];
 
 const PRIORITY_OPTIONS: ProjectPriority[] = [
@@ -51,7 +51,7 @@ export default function ProjectModal({
   onUpdate,
 }: ProjectModalProps) {
   const [status, setStatus] =
-    useState<ProjectStatus>("planning");
+    useState<ProjectStatus>("Planning");
 
   const [priority, setPriority] =
     useState<ProjectPriority>("LOW");
@@ -92,8 +92,8 @@ export default function ProjectModal({
 
     queueMicrotask(() => {
       setStatus(project.status);
-      setPriority(project.priority);
-      setProgress(project.progress_percentage ?? 0);
+      setPriority(project.priority ?? "");
+      setProgress(project.progressPercent ?? 0);
     });
   }, [project]);
 
@@ -110,7 +110,7 @@ export default function ProjectModal({
       await onUpdate(projectId, {
         status,
         priority,
-        progress_percentage: progress,
+        progressPercent: progress,
       });
 
       await supabase
@@ -170,7 +170,7 @@ export default function ProjectModal({
               </p>
 
               <p className="text-slate-300">
-                {project.service_type}
+                {project.projectType}
               </p>
             </div>
 
@@ -180,7 +180,7 @@ export default function ProjectModal({
               </p>
 
               <p className="break-all text-slate-400">
-                {project.client_id}
+                {project.companyId}
               </p>
             </div>
 
@@ -190,9 +190,9 @@ export default function ProjectModal({
               </p>
 
               <p className="text-white">
-                â‚¹
+                Ã¢â€šÂ¹
                 {Number(
-                  project.project_cost ?? 0
+                  project.budget ?? 0
                 ).toLocaleString("en-IN")}
               </p>
             </div>
@@ -203,8 +203,8 @@ export default function ProjectModal({
               </p>
 
               <p className="text-slate-300">
-                {project.start_date
-                  ? project.start_date.split("T")[0]
+                {project.startDate
+                  ? project.startDate.split("T")[0]
                   : "-"}
               </p>
             </div>
@@ -215,8 +215,8 @@ export default function ProjectModal({
               </p>
 
               <p className="text-slate-300">
-                {project.end_date
-                  ? project.end_date.split("T")[0]
+                {project.endDate
+                  ? project.endDate.split("T")[0]
                   : "-"}
               </p>
             </div>
@@ -388,6 +388,18 @@ export default function ProjectModal({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

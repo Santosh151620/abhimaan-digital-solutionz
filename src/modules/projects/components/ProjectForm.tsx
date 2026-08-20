@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
@@ -19,11 +19,11 @@ interface ProjectFormProps {
 }
 
 const STATUS_OPTIONS: ProjectStatus[] = [
-  "planning",
-  "active",
-  "on_hold",
-  "completed",
-  "cancelled",
+  "Planning",
+  "Active",
+  "On Hold",
+  "Completed",
+  "Cancelled",
 ];
 
 const PRIORITY_OPTIONS: ProjectPriority[] = [
@@ -41,16 +41,16 @@ export default function ProjectForm({
   const isEdit = !!project;
 
   const [form, setForm] = useState<ProjectCreateInput>(() => ({
-    client_id: project?.client_id ?? "",
+    companyId: project?.companyId ?? "",
     name: project?.name ?? "",
-    service_type: project?.service_type ?? "",
-    status: project?.status ?? "planning",
+    projectType: project?.projectType ?? "",
+    status: project?.status ?? "Planning",
     priority: project?.priority ?? "MEDIUM",
-    project_cost: project?.project_cost ?? 0,
-    start_date: project?.start_date ?? null,
-    end_date: project?.end_date ?? null,
-    notes: project?.notes ?? "",
-    progress_percentage: project?.progress_percentage ?? 0,
+    budget: project?.budget ?? 0,
+    startDate: project?.startDate ?? undefined,
+    endDate: project?.endDate ?? undefined,
+    description: project?.description ?? "",
+    progressPercent: project?.progressPercent ?? 0,
   }));
 
   const [loading, setLoading] = useState(false);
@@ -126,16 +126,16 @@ export default function ProjectForm({
             />
 
             <input
-              value={form.client_id}
-              onChange={(e) => updateField("client_id", e.target.value)}
+              value={form.companyId}
+              onChange={(e) => updateField("companyId", e.target.value)}
               placeholder="Client ID"
               className="w-full rounded-lg bg-slate-900 p-2 text-white"
             />
 
             <input
-              value={form.service_type}
+              value={form.projectType}
               onChange={(e) =>
-                updateField("service_type", e.target.value)
+                updateField("projectType", e.target.value)
               }
               placeholder="Service Type"
               className="w-full rounded-lg bg-slate-900 p-2 text-white"
@@ -143,9 +143,9 @@ export default function ProjectForm({
 
             <input
               type="number"
-              value={form.project_cost}
+              value={form.budget}
               onChange={(e) =>
-                updateField("project_cost", Number(e.target.value))
+                updateField("budget", Number(e.target.value))
               }
               className="w-full rounded-lg bg-slate-900 p-2 text-white"
             />
@@ -189,25 +189,25 @@ export default function ProjectForm({
           <div className="space-y-4">
             <input
               type="date"
-              value={form.start_date ?? ""}
+              value={form.startDate ?? ""}
               onChange={(e) =>
-                updateField("start_date", e.target.value || null)
+                updateField("startDate", e.target.value || undefined)
               }
               className="w-full rounded-lg bg-slate-900 p-2 text-white"
             />
 
             <input
               type="date"
-              value={form.end_date ?? ""}
+              value={form.endDate ?? ""}
               onChange={(e) =>
-                updateField("end_date", e.target.value || null)
+                updateField("endDate", e.target.value || undefined)
               }
               className="w-full rounded-lg bg-slate-900 p-2 text-white"
             />
 
             <textarea
-              value={form.notes ?? ""}
-              onChange={(e) => updateField("notes", e.target.value)}
+              value={form.description ?? ""}
+              onChange={(e) => updateField("description", e.target.value)}
               rows={6}
               className="w-full rounded-lg bg-slate-900 p-2 text-white"
             />
@@ -216,10 +216,10 @@ export default function ProjectForm({
               type="range"
               min={0}
               max={100}
-              value={form.progress_percentage}
+              value={form.progressPercent}
               onChange={(e) =>
                 updateField(
-                  "progress_percentage",
+                  "progressPercent",
                   Number(e.target.value)
                 )
               }
@@ -243,6 +243,22 @@ export default function ProjectForm({
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

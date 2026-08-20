@@ -1,80 +1,230 @@
-import { createClient as createSupabaseClient } from "@/lib/supabase/server";
-import type { Project} from "@/modules/projects/types/project";
-import type { ProjectFilters } from "../types/project";
-import type { PaginatedProjects } from "../types/project";
+﻿import {
+    createClient as createSupabaseClient,
+} from "@/lib/supabase/server";
+
+import type {
+    Project,
+    ProjectFilters,
+    PaginatedProjects,
+    ProjectStatus,
+} from "@/modules/projects/types/project";
+import {
+    ProjectsRepository,
+} from "@/repositories/crm/ProjectsRepository";
+
 
 const TABLE = "projects";
 
-export async function getProjects(filters: ProjectFilters = {}): Promise<PaginatedProjects> {
-  const supabase = await createSupabaseClient();
 
-  const page = filters.page ?? 1;
-  const pageSize = filters.pageSize ?? 20;
+type ProjectRow = {
+    id: string;
+    organization_id: string;
+    project_number: string;
+    company_id: string | null;
+    contract_id: string | null;
+    project_name: string;
+    project_code: string | null;
+    project_type: string | null;
+    project_status: string | null;
+    priority: string | null;
+    start_date: string | null;
+    planned_end_date: string | null;
+    actual_end_date: string | null;
+    budget_amount: number | null;
+    estimated_cost: number | null;
+    actual_cost: number | null;
+    progress_percent: number | null;
+    project_manager: string | null;
+    description: string | null;
+    created_at: string;
+    updated_at: string;
+    created_by: string | null;
+    updated_by: string | null;
+    metadata: Record<string, unknown> | null;
+};
 
-  const from = (page - 1) * pageSize;
-  const to = from + pageSize - 1;
 
-  let query = supabase.from(TABLE).select("*", { count: "exact" });
+const PROJECT_STATUSES:
+    ProjectStatus[] = [
+        "Planning",
+        "Active",
+        "On Hold",
+        "Completed",
+        "Cancelled",
+    ];
 
-  if (filters.status && filters.status !== "All") {
-    query = query.eq("status", filters.status);
-  }
 
-  if (filters.clientId) {
-    query = query.eq("client_id", filters.clientId);
-  }
+function toProjectStatus(
+    value: string | null,
+): ProjectStatus {
 
-  if (filters.search?.trim()) {
-    const search = filters.search.trim();
-    query = query.or(
-      `name.ilike.%${search}%,service_type.ilike.%${search}%`
+    if (
+        value &&
+        PROJECT_STATUSES.includes(
+            value as ProjectStatus,
+        )
+    ) {
+        return value as ProjectStatus;
+    }
+
+
+    return "Planning";
+}
+
+
+function toProject(
+    row: ProjectRow,
+): Project {
+
+    return {
+
+        id:
+            row.id,
+
+        projectNumber:
+            row.project_number,
+
+        companyId:
+            row.company_id ??
+            undefined,
+
+        contractId:
+            row.contract_id ??
+            undefined,
+
+        name:
+            row.project_name,
+
+        description:
+            row.description ??
+            undefined,
+
+        status:
+            toProjectStatus(
+                row.project_status,
+            ),
+
+        projectType:
+            row.project_type ??
+            undefined,
+
+        priority:
+            row.priority ??
+            undefined,
+
+        ownerUserId:
+            row.project_manager ??
+            undefined,
+
+        manager:
+            row.project_manager ??
+            undefined,
+
+        startDate:
+            row.start_date ??
+            undefined,
+
+        endDate:
+            row.planned_end_date ??
+            undefined,
+
+        actualEndDate:
+            row.actual_end_date ??
+            undefined,
+
+        budget:
+            Number(
+                row.budget_amount ??
+                0,
+            ),
+
+        actualCost:
+            row.actual_cost ??
+            undefined,
+
+        metadata:
+            row.metadata ??
+            undefined,
+
+        archived:
+            false,
+
+        createdAt:
+            row.created_at,
+
+        updatedAt:
+            row.updated_at,
+
+    };
+}
+
+
+export async function getProjects(
+    filters: ProjectFilters = {},
+): Promise<PaginatedProjects> {
+
+    const supabase =
+        await createSupabaseClient();
+
+
+    const repository =
+        new ProjectsRepository(
+            supabase,
+        );
+
+
+    return repository.findPaginated(
+        filters,
     );
-  }
 
-  const { data, count, error } = await query
-    .order("created_at", { ascending: false })
-    .range(from, to);
-
-  if (error) throw new Error(error.message);
-
-  return {
-    projects: (data ?? []) as Project[],
-    total: count ?? 0,
-    page,
-    pageSize,
-    totalPages: Math.ceil((count ?? 0) / pageSize),
-  };
-}
-export async function getActiveProjectsCount(): Promise<number> {
-  const supabase = await createSupabaseClient();
-
-  const { count, error } = await supabase
-    .from(TABLE)
-    .select("*", { count: "exact", head: true })
-    .neq("status", "Completed");
-
-  if (error) throw new Error(error.message);
-
-  return count ?? 0;
 }
 
-export async function getProjectRevenue(): Promise<number> {
-  const supabase = await createSupabaseClient();
+export async function getActiveProjectsCount():
+    Promise<number> {
 
-  const { data, error } = await supabase
-    .from(TABLE)
-    .select("project_cost");
+    const supabase =
+        await createSupabaseClient();
 
-  if (error) throw new Error(error.message);
 
-  return (data ?? []).reduce(
-    (total, project) => total + (Number(project.project_cost) || 0),
-    0
-  );
+    const repository =
+        new ProjectsRepository(
+            supabase,
+        );
+
+
+    return repository.countActive();
+
 }
 
+export async function getProjectRevenue():
+    Promise<number> {
+
+    const supabase =
+        await createSupabaseClient();
 
 
+    const repository =
+        new ProjectsRepository(
+            supabase,
+        );
 
 
+    return repository.getBudgetTotal();
+
+}
+
+export async function getClientProjects(
+    companyId: string,
+): Promise<Project[]> {
+
+    const result =
+        await getProjects({
+            companyId,
+            page: 1,
+            pageSize: 1000,
+        });
+
+
+    return result.projects;
+}
 

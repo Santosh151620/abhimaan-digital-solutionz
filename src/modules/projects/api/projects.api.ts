@@ -1,89 +1,202 @@
-import { apiRequest } from "@/api/client";
+﻿import { apiRequest } from "@/api/client";
 
-import type { Project } from "@/modules/projects/types/project";
-import type { ProjectStatus } from "@/modules/projects/types/project";
+import type {
+    Project,
+    ProjectCreateInput,
+    ProjectFilters,
+    ProjectUpdateInput,
+    PaginatedProjects,
+} from "@/modules/projects/types/project";
 
-/**
- * v6 PROJECT API LAYER
- * - CRUD abstraction
- * - Future backend-ready
- * - Tenant-aware
- */
 
-export interface GetProjectsParams {
-  status?: ProjectStatus | "all";
-  search?: string;
-  page?: number;
-  pageSize?: number;
-}
-
+export type GetProjectsParams = ProjectFilters;
 export interface ProjectsResponse {
-  data: Project[];
-  total: number;
-  page: number;
-  totalPages: number;
+
+    data: Project[];
+
+    total: number;
+
+    page: number;
+
+    totalPages: number;
+
 }
+
+
+function buildQuery(
+    params: ProjectFilters = {},
+): string {
+
+    const query =
+        new URLSearchParams();
+
+
+    if (
+        params.status &&
+        params.status !== "All"
+    ) {
+        query.set(
+            "status",
+            params.status,
+        );
+    }
+
+
+    if (
+        params.search?.trim()
+    ) {
+        query.set(
+            "search",
+            params.search.trim(),
+        );
+    }
+
+
+    if (
+        params.companyId
+    ) {
+        query.set(
+            "companyId",
+            params.companyId,
+        );
+    }
+
+
+    if (
+        params.contractId
+    ) {
+        query.set(
+            "contractId",
+            params.contractId,
+        );
+    }
+
+
+    if (
+        params.projectType
+    ) {
+        query.set(
+            "projectType",
+            params.projectType,
+        );
+    }
+
+
+    if (
+        params.priority
+    ) {
+        query.set(
+            "priority",
+            params.priority,
+        );
+    }
+
+
+    if (
+        params.page !== undefined
+    ) {
+        query.set(
+            "page",
+            String(params.page),
+        );
+    }
+
+
+    if (
+        params.pageSize !== undefined
+    ) {
+        query.set(
+            "pageSize",
+            String(params.pageSize),
+        );
+    }
+
+
+    const queryString =
+        query.toString();
+
+
+    return queryString
+        ? `?${queryString}`
+        : "";
+}
+
 
 export const ProjectsAPI = {
-  /**
-   * GET PROJECTS
-   */
-  async getProjects(params: GetProjectsParams = {}) {
-    const query = new URLSearchParams();
 
-    if (params.status) query.append("status", params.status);
-    if (params.search) query.append("search", params.search);
-    if (params.page) query.append("page", String(params.page));
-    if (params.pageSize)
-      query.append("pageSize", String(params.pageSize));
 
-    return apiRequest<ProjectsResponse>(
-      `/projects?${query.toString()}`
-    );
-  },
+    async getProjects(
+        params: ProjectFilters = {},
+    ): Promise<ProjectsResponse> {
 
-  /**
-   * GET SINGLE PROJECT
-   */
-  async getProject(id: string) {
-    return apiRequest<Project>(`/projects/${id}`);
-  },
+        return apiRequest<ProjectsResponse>(
+            `/projects${buildQuery(params)}`,
+        );
 
-  /**
-   * CREATE PROJECT
-   */
-  async createProject(data: Partial<Project>) {
-    return apiRequest<Project>(`/projects`, {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-  },
+    },
 
-  /**
-   * UPDATE PROJECT
-   */
-  async updateProject(id: string, data: Partial<Project>) {
-    return apiRequest<Project>(`/projects/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-  },
 
-  /**
-   * DELETE PROJECT
-   */
-  async deleteProject(id: string) {
-    return apiRequest<{ success: boolean }>(
-      `/projects/${id}`,
-      {
-        method: "DELETE",
-      }
-    );
-  },
+    async getProject(
+        id: string,
+    ): Promise<Project> {
+
+        return apiRequest<Project>(
+            `/projects/${id}`,
+        );
+
+    },
+
+
+    async createProject(
+        data: ProjectCreateInput,
+    ): Promise<Project> {
+
+        return apiRequest<Project>(
+            "/projects",
+            {
+                method: "POST",
+
+                body:
+                    JSON.stringify(data),
+            },
+        );
+
+    },
+
+
+    async updateProject(
+        id: string,
+        data: ProjectUpdateInput,
+    ): Promise<Project> {
+
+        return apiRequest<Project>(
+            `/projects/${id}`,
+            {
+                method: "PUT",
+
+                body:
+                    JSON.stringify(data),
+            },
+        );
+
+    },
+
+
+    async deleteProject(
+        id: string,
+    ): Promise<{
+        success: boolean;
+    }> {
+
+        return apiRequest<{
+            success: boolean;
+        }>(
+            `/projects/${id}`,
+            {
+                method: "DELETE",
+            },
+        );
+
+    },
+
 };
-
-
-
-
-
-

@@ -1,193 +1,464 @@
-//import type { Project } from "@/modules/projects/types/project";
-/**
- * This layer extends core project service WITHOUT modifying existing production logic.
- * Safe for incremental CRM expansion.
- */
 import type {
-  Project,
-  ProjectStatus,
+    Project,
+    ProjectStatus,
 } from "@/modules/projects/types/project";
-/**
- * Normalizes status values coming from legacy DB (string-based)
- */
-export function normalizeProjectStatus(status: string): ProjectStatus {
-  const s = status?.toLowerCase();
 
-  switch (s) {
-    case "active":
-    case "in_progress":
-      return "active";
-    case "planning":
-      return "planning";
-    case "on_hold":
-    case "hold":
-      return "on_hold";
-    case "completed":
-      return "completed";
-    case "cancelled":
-    case "canceled":
-      return "cancelled";
-    default:
-      return "planning";
-  }
-}
 
-/**
- * Converts raw DB project into safe enriched project object
- */
-export function enrichProject(project: Project) {
-  return {
-    ...project,
+export interface EnrichedProject
+    extends Project {
 
-    normalizedStatus: normalizeProjectStatus(project.status),
+    normalizedStatus:
+        ProjectStatus;
 
     isActive:
-      normalizeProjectStatus(project.status) === "active",
+        boolean;
 
     isCompleted:
-      normalizeProjectStatus(project.status) === "completed",
+        boolean;
 
     isDelayed:
-      project.end_date
-        ? new Date(project.end_date).getTime() < Date.now() &&
-          normalizeProjectStatus(project.status) !== "completed"
-        : false,
+        boolean;
 
-    durationDays: calculateProjectDuration(
-      project.start_date,
-      project.end_date
-    ),
+    durationDays:
+        number;
 
-    progress: calculateProgressFromDates(
-      project.start_date,
-      project.end_date
-    ),
-  };
+    progress:
+        number;
 }
 
-/**
- * Calculates project duration in days
- */
+
+export function normalizeProjectStatus(
+    status: ProjectStatus | string,
+): ProjectStatus {
+
+    switch (
+        status
+            ?.trim()
+            .toLowerCase()
+    ) {
+
+        case "active":
+        case "in_progress":
+            return "Active";
+
+        case "planning":
+            return "Planning";
+
+        case "on_hold":
+        case "hold":
+            return "On Hold";
+
+        case "completed":
+            return "Completed";
+
+        case "cancelled":
+        case "canceled":
+            return "Cancelled";
+
+        default:
+            return "Planning";
+    }
+}
+
+
 export function calculateProjectDuration(
-  start?: string | null,
-  end?: string | null
+    start?: string | null,
+    end?: string | null,
 ): number {
-  if (!start || !end) return 0;
 
-  const startDate = new Date(start).getTime();
-  const endDate = new Date(end).getTime();
-
-  if (isNaN(startDate) || isNaN(endDate)) return 0;
-
-  return Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
-}
-
-/**
- * Auto progress estimation based on timeline (fallback logic)
- */
-export function calculateProgressFromDates(
-  start?: string | null,
-  end?: string | null
-): number {
-  if (!start || !end) return 0;
-
-  const startTime = new Date(start).getTime();
-  const endTime = new Date(end).getTime();
-  const now = Date.now();
-
-  if (now <= startTime) return 0;
-  if (now >= endTime) return 100;
-
-  const total = endTime - startTime;
-  const elapsed = now - startTime;
-
-  return Math.round((elapsed / total) * 100);
-}
-
-/**
- * Project health scoring (for dashboard analytics)
- */
-export function getProjectHealthScore(project: Project): {
-  score: number;
-  label: "GOOD" | "AT_RISK" | "CRITICAL";
-} {
-  let score = 100;
-
-  const enriched = enrichProject(project);
-
-  // Penalize delay
-  if (enriched.isDelayed) score -= 40;
-
-  // Penalize long inactive projects
-  if (enriched.normalizedStatus === "on_hold") score -= 20;
-
-  // Penalize missing timeline
-  if (!project.start_date || !project.end_date) score -= 15;
-
-  // Reward completion
-  if (enriched.isCompleted) score = 100;
-
-  // Clamp
-  score = Math.max(0, Math.min(100, score));
-
-  let label: "GOOD" | "AT_RISK" | "CRITICAL" = "GOOD";
-
-  if (score < 40) label = "CRITICAL";
-  else if (score < 70) label = "AT_RISK";
-
-  return { score, label };
-}
-
-/**
- * Group projects by client (for CRM UI)
- */
-export function groupProjectsByClient(projects: Project[]) {
-  return projects.reduce((acc: Record<string, Project[]>, project) => {
-    if (!acc[project.client_id]) {
-      acc[project.client_id] = [];
+    if (!start || !end) {
+        return 0;
     }
 
-    acc[project.client_id].push(project);
-    return acc;
-  }, {});
+
+    const startTime =
+        new Date(start).getTime();
+
+
+    const endTime =
+        new Date(end).getTime();
+
+
+    if (
+        !Number.isFinite(startTime) ||
+        !Number.isFinite(endTime)
+    ) {
+        return 0;
+    }
+
+
+    if (endTime <= startTime) {
+        return 0;
+    }
+
+
+    return Math.ceil(
+        (
+            endTime -
+            startTime
+        ) /
+        (
+            1000 *
+            60 *
+            60 *
+            24
+        ),
+    );
 }
+
+
+export function calculateProgressFromDates(
+    start?: string | null,
+    end?: string | null,
+): number {
+
+    if (!start || !end) {
+        return 0;
+    }
+
+
+    const startTime =
+        new Date(start).getTime();
+
+
+    const endTime =
+        new Date(end).getTime();
+
+
+    if (
+        !Number.isFinite(startTime) ||
+        !Number.isFinite(endTime) ||
+        endTime <= startTime
+    ) {
+        return 0;
+    }
+
+
+    const now =
+        Date.now();
+
+
+    if (
+        now <= startTime
+    ) {
+        return 0;
+    }
+
+
+    if (
+        now >= endTime
+    ) {
+        return 100;
+    }
+
+
+    return Math.round(
+        (
+            (
+                now -
+                startTime
+            ) /
+            (
+                endTime -
+                startTime
+            )
+        ) *
+        100,
+    );
+}
+
+
+export function enrichProject(
+    project: Project,
+): EnrichedProject {
+
+    const normalizedStatus =
+        normalizeProjectStatus(
+            project.status,
+        );
+
+
+    const isActive =
+        normalizedStatus ===
+        "Active";
+
+
+    const isCompleted =
+        normalizedStatus ===
+        "Completed";
+
+
+    const isDelayed =
+        Boolean(
+            project.endDate &&
+            new Date(
+                project.endDate,
+            ).getTime() <
+                Date.now() &&
+            !isCompleted,
+        );
+
+
+    const durationDays =
+        calculateProjectDuration(
+            project.startDate,
+            project.endDate,
+        );
+
+
+    const progress =
+        isCompleted
+            ? 100
+            : calculateProgressFromDates(
+                project.startDate,
+                project.endDate,
+            );
+
+
+    return {
+
+        ...project,
+
+        normalizedStatus,
+
+        isActive,
+
+        isCompleted,
+
+        isDelayed,
+
+        durationDays,
+
+        progress,
+
+    };
+}
+
+
+export function getProjectHealthScore(
+    project: Project,
+): {
+    score: number;
+    label:
+        | "GOOD"
+        | "AT_RISK"
+        | "CRITICAL";
+} {
+
+    let score = 100;
+
+
+    const enriched =
+        enrichProject(project);
+
+
+    if (
+        enriched.isDelayed
+    ) {
+        score -= 40;
+    }
+
+
+    if (
+        enriched.normalizedStatus ===
+        "On Hold"
+    ) {
+        score -= 20;
+    }
+
+
+    if (
+        !project.startDate ||
+        !project.endDate
+    ) {
+        score -= 15;
+    }
+
+
+    if (
+        enriched.isCompleted
+    ) {
+        score = 100;
+    }
+
+
+    score =
+        Math.max(
+            0,
+            Math.min(
+                100,
+                score,
+            ),
+        );
+
+
+    let label:
+        | "GOOD"
+        | "AT_RISK"
+        | "CRITICAL" =
+        "GOOD";
+
+
+    if (score < 40) {
+        label = "CRITICAL";
+    } else if (score < 70) {
+        label = "AT_RISK";
+    }
+
+
+    return {
+        score,
+        label,
+    };
+}
+
+
+export function groupProjectsByCompany(
+    projects: Project[],
+): Record<string, Project[]> {
+
+    return projects.reduce(
+        (
+            grouped,
+            project,
+        ) => {
+
+            const key =
+                project.companyId ??
+                "unassigned";
+
+
+            if (
+                !grouped[key]
+            ) {
+                grouped[key] = [];
+            }
+
+
+            grouped[key].push(
+                project,
+            );
+
+
+            return grouped;
+
+        },
+        {} as Record<
+            string,
+            Project[]
+        >,
+    );
+}
+
 
 /**
- * KPI helper for dashboard integration
+ * Backward-compatible alias for existing
+ * consumers that still use the old helper name.
  */
-export function calculateProjectKPIs(projects: Project[]) {
-  const total = projects.length;
+export function groupProjectsByClient(
+    projects: Project[],
+): Record<string, Project[]> {
 
-  const active = projects.filter(
-    (p) => normalizeProjectStatus(p.status) === "active"
-  ).length;
-
-  const completed = projects.filter(
-    (p) => normalizeProjectStatus(p.status) === "completed"
-  ).length;
-
-  const delayed = projects.filter((p) => {
-    const enriched = enrichProject(p);
-    return enriched.isDelayed;
-  }).length;
-
-  const avgDuration =
-    projects.reduce((sum, p) => {
-      return sum + calculateProjectDuration(p.start_date, p.end_date);
-    }, 0) / (total || 1);
-
-  return {
-    total,
-    active,
-    completed,
-    delayed,
-    avgDuration: Math.round(avgDuration),
-    completionRate: total ? Math.round((completed / total) * 100) : 0,
-  };
+    return groupProjectsByCompany(
+        projects,
+    );
 }
 
 
+export function calculateProjectKPIs(
+    projects: Project[],
+) {
+
+    const total =
+        projects.length;
 
 
+    const active =
+        projects.filter(
+            project =>
+                normalizeProjectStatus(
+                    project.status,
+                ) === "Active",
+        ).length;
 
 
+    const completed =
+        projects.filter(
+            project =>
+                normalizeProjectStatus(
+                    project.status,
+                ) === "Completed",
+        ).length;
+
+
+    const delayed =
+        projects.filter(
+            project =>
+                enrichProject(
+                    project,
+                ).isDelayed,
+        ).length;
+
+
+    const totalDuration =
+        projects.reduce(
+            (
+                sum,
+                project,
+            ) =>
+                sum +
+                calculateProjectDuration(
+                    project.startDate,
+                    project.endDate,
+                ),
+            0,
+        );
+
+
+    const totalBudget =
+        projects.reduce(
+            (
+                sum,
+                project,
+            ) =>
+                sum +
+                Number(
+                    project.budget ?? 0,
+                ),
+            0,
+        );
+
+
+    return {
+
+        total,
+
+        active,
+
+        completed,
+
+        delayed,
+
+        totalBudget,
+
+        avgDuration:
+            total === 0
+                ? 0
+                : Math.round(
+                    totalDuration /
+                    total,
+                ),
+
+        completionRate:
+            total === 0
+                ? 0
+                : Math.round(
+                    (
+                        completed /
+                        total
+                    ) *
+                    100,
+                ),
+
+    };
+}

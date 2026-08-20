@@ -1,4 +1,4 @@
-import type { ProjectStatus } from "@/modules/projects/types/project";
+﻿import type { ProjectStatus } from "@/modules/projects/types/project";
 
 export const PROJECT_STATUS_PIPELINE: {
   key: ProjectStatus;
@@ -7,31 +7,31 @@ export const PROJECT_STATUS_PIPELINE: {
   order: number;
 }[] = [
   {
-    key: "planning",
+    key: "Planning",
     label: "Planning",
     color: "gray",
     order: 1,
   },
   {
-    key: "active",
+    key: "Active",
     label: "Active",
     color: "blue",
     order: 2,
   },
   {
-    key: "on_hold",
+    key: "On Hold",
     label: "On Hold",
     color: "yellow",
     order: 3,
   },
   {
-    key: "completed",
+    key: "Completed",
     label: "Completed",
     color: "green",
     order: 4,
   },
   {
-    key: "cancelled",
+    key: "Cancelled",
     label: "Cancelled",
     color: "red",
     order: 5,
@@ -51,6 +51,11 @@ export const getPreviousStatus = (current: ProjectStatus): ProjectStatus | null 
   if (index <= 0) return null;
   return sorted[index - 1].key;
 };
+
+
+
+
+
 
 
 

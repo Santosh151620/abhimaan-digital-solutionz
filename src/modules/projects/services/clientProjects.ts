@@ -1,146 +1,189 @@
 import { getProjects } from "@/modules/projects/services/projects";
 
-import type { Project } from "@/modules/projects/types/project";
+import type {
+    Project,
+} from "@/modules/projects/types/project";
 
 import {
-  enrichProject,
-  calculateProjectKPIs,
+    enrichProject,
+    calculateProjectKPIs,
 } from "@/modules/projects/services/projectExtensions";
 
+
 export interface ClientProjectSummary {
-  clientId: string;
 
-  totalProjects: number;
+    companyId: string;
 
-  activeProjects: number;
+    totalProjects: number;
 
-  completedProjects: number;
+    activeProjects: number;
 
-  delayedProjects: number;
+    completedProjects: number;
 
-  totalRevenue: number;
+    delayedProjects: number;
 
-  averageProjectCost: number;
+    totalRevenue: number;
 
-  latestProject?: Project;
+    averageProjectCost: number;
 
-  projects: ReturnType<typeof enrichProject>[];
+    latestProject?: Project;
+
+    projects: ReturnType<typeof enrichProject>[];
+
 }
+
 
 export async function getClientProjects(
-  clientId: string
+    companyId: string,
 ): Promise<Project[]> {
-  const result = await getProjects({
-    clientId,
-    page: 1,
-    pageSize: 1000,
-  });
 
-  return result.projects;
+    const result =
+        await getProjects({
+            companyId,
+            page: 1,
+            pageSize: 1000,
+        });
+
+    return result.projects;
 }
+
 
 export async function getClientProjectSummary(
-  clientId: string
+    companyId: string,
 ): Promise<ClientProjectSummary> {
-  const projects = await getClientProjects(clientId);
 
-  const enriched = projects.map(enrichProject);
+    const projects =
+        await getClientProjects(companyId);
 
-  const kpis = calculateProjectKPIs(projects);
+    const enriched =
+        projects.map(enrichProject);
 
-  const totalRevenue = projects.reduce(
-    (sum, project) =>
-      sum + Number(project.project_cost ?? 0),
-    0
-  );
+    const kpis =
+        calculateProjectKPIs(projects);
 
-  const latestProject =
-    [...projects].sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() -
-        new Date(a.createdAt).getTime()
-    )[0];
+    const totalRevenue =
+        projects.reduce(
+            (sum, project) =>
+                sum +
+                Number(project.budget ?? 0),
+            0,
+        );
 
-  return {
-    clientId,
+    const latestProject =
+        [...projects]
+            .sort(
+                (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+            )[0];
 
-    totalProjects: kpis.total,
+    return {
 
-    activeProjects: kpis.active,
+        companyId,
 
-    completedProjects: kpis.completed,
+        totalProjects:
+            kpis.total,
 
-    delayedProjects: kpis.delayed,
+        activeProjects:
+            kpis.active,
 
-    totalRevenue,
+        completedProjects:
+            kpis.completed,
 
-    averageProjectCost:
-      projects.length === 0
-        ? 0
-        : Math.round(totalRevenue / projects.length),
+        delayedProjects:
+            kpis.delayed,
 
-    latestProject,
+        totalRevenue,
 
-    projects: enriched,
-  };
+        averageProjectCost:
+            projects.length === 0
+                ? 0
+                : Math.round(
+                    totalRevenue /
+                    projects.length,
+                ),
+
+        latestProject,
+
+        projects: enriched,
+
+    };
 }
+
 
 export async function getClientsProjectSummaries(
-  clientIds: string[]
+    companyIds: string[],
 ): Promise<ClientProjectSummary[]> {
-  const summaries: ClientProjectSummary[] = [];
 
-  for (const clientId of clientIds) {
-    summaries.push(
-      await getClientProjectSummary(clientId)
+    return Promise.all(
+        companyIds.map(
+            (companyId) =>
+                getClientProjectSummary(
+                    companyId,
+                ),
+        ),
     );
-  }
-
-  return summaries;
 }
+
 
 export async function getClientRevenue(
-  clientId: string
+    companyId: string,
 ): Promise<number> {
-  const projects = await getClientProjects(clientId);
 
-  return projects.reduce(
-    (sum, project) =>
-      sum + Number(project.project_cost ?? 0),
-    0
-  );
+    const projects =
+        await getClientProjects(
+            companyId,
+        );
+
+    return projects.reduce(
+        (sum, project) =>
+            sum +
+            Number(project.budget ?? 0),
+        0,
+    );
 }
+
 
 export async function getClientActiveProjects(
-  clientId: string
+    companyId: string,
 ): Promise<Project[]> {
-  const projects = await getClientProjects(clientId);
 
-  return projects.filter(
-    (project) => enrichProject(project).isActive
-  );
+    const projects =
+        await getClientProjects(
+            companyId,
+        );
+
+    return projects.filter(
+        (project) =>
+            enrichProject(project).isActive,
+    );
 }
+
 
 export async function getClientCompletedProjects(
-  clientId: string
+    companyId: string,
 ): Promise<Project[]> {
-  const projects = await getClientProjects(clientId);
 
-  return projects.filter(
-    (project) => enrichProject(project).isCompleted
-  );
+    const projects =
+        await getClientProjects(
+            companyId,
+        );
+
+    return projects.filter(
+        (project) =>
+            enrichProject(project).isCompleted,
+    );
 }
+
 
 export async function hasActiveProjects(
-  clientId: string
+    companyId: string,
 ): Promise<boolean> {
-  const active = await getClientActiveProjects(clientId);
 
-  return active.length > 0;
+    const active =
+        await getClientActiveProjects(
+            companyId,
+        );
+
+    return active.length > 0;
 }
-
-
-
-
-
-

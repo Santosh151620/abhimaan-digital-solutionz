@@ -1,4 +1,4 @@
-import type { PipelineSnapshot } from "../services/pipeline";
+import type { PipelineSnapshot } from "@/services/crm/pipeline";
 
 interface Props {
   data: PipelineSnapshot["stages"];

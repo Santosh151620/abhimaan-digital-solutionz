@@ -1,73 +1,88 @@
 "use client";
 
 import {
-  useMutation,
-  useQueryClient,
+    useMutation,
+    useQueryClient,
 } from "@tanstack/react-query";
 
-import { ProjectRepository } from "@/modules/projects/repositories/project.repository";
+import {
+    ProjectRepository,
+} from "@/modules/projects/repositories/project.repository";
 
-import type { Project } from "@/modules/projects/types/project";
+import type {
+    Project,
+    ProjectCreateInput,
+    ProjectUpdateInput,
+} from "@/modules/projects/types/project";
 
-const QUERY_KEY = ["crm-projects"];
+const PROJECTS_QUERY_KEY = ["crm-projects"] as const;
+
+const projectQueryKey = (id: string) =>
+    ["crm-project", id] as const;
 
 export function useCreateProject() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (data: Partial<Project>) =>
-      ProjectRepository.create(data),
+    return useMutation({
+        mutationFn: (
+            data: ProjectCreateInput,
+        ): Promise<Project> =>
+            ProjectRepository.create(data),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEY,
-      });
-    },
-  });
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({
+                queryKey: PROJECTS_QUERY_KEY,
+            });
+        },
+    });
 }
 
 export function useUpdateProject() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Partial<Project>;
-    }) =>
-      ProjectRepository.update(id, data),
+    return useMutation({
+        mutationFn: ({
+            id,
+            data,
+        }: {
+            id: string;
+            data: ProjectUpdateInput;
+        }): Promise<Project> =>
+            ProjectRepository.update(id, data),
 
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEY,
-      });
+        onSuccess: async (
+            updatedProject,
+            variables,
+        ) => {
+            queryClient.setQueryData<Project>(
+                projectQueryKey(variables.id),
+                updatedProject,
+            );
 
-      queryClient.invalidateQueries({
-        queryKey: ["crm-project", variables.id],
-      });
-    },
-  });
+            await queryClient.invalidateQueries({
+                queryKey: PROJECTS_QUERY_KEY,
+            });
+        },
+    });
 }
 
 export function useDeleteProject() {
-  const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (id: string) =>
-      ProjectRepository.remove(id),
+    return useMutation({
+        mutationFn: (
+            id: string,
+        ): Promise<{ success: boolean }> =>
+            ProjectRepository.remove(id),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEY,
-      });
-    },
-  });
+        onSuccess: async (_, id) => {
+            queryClient.removeQueries({
+                queryKey: projectQueryKey(id),
+            });
+
+            await queryClient.invalidateQueries({
+                queryKey: PROJECTS_QUERY_KEY,
+            });
+        },
+    });
 }
-
-
-
-
-
-

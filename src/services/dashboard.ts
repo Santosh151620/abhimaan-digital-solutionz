@@ -4,7 +4,7 @@ import { getCRMAnalytics } from "./analytics";
 
 import {
     getExecutiveIntelligence,
-} from "@/modules/crm/dashboard/services/executive-intelligence";
+} from "./crm/executive-intelligence";
 
 import {
     getRevenueForecast,

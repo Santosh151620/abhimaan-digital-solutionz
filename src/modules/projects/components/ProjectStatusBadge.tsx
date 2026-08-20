@@ -1,4 +1,4 @@
-import type { ProjectStatus } from "@/modules/projects/types/project";
+﻿import type { ProjectStatus } from "@/modules/projects/types/project";
 
 interface ProjectStatusBadgeProps {
   status: ProjectStatus;
@@ -11,31 +11,31 @@ const statusStyles: Record<
     className: string;
   }
 > = {
-  planning: {
+  'Planning': {
     label: "Planning",
     className:
       "bg-slate-500/20 text-slate-300 border border-slate-500/30",
   },
 
-  active: {
+  'Active': {
     label: "Active",
     className:
       "bg-sky-500/20 text-sky-300 border border-sky-500/30",
   },
 
-  on_hold: {
+  'On Hold': {
     label: "On Hold",
     className:
       "bg-amber-500/20 text-amber-300 border border-amber-500/30",
   },
 
-  completed: {
+  'Completed': {
     label: "Completed",
     className:
       "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
   },
 
-  cancelled: {
+  'Cancelled': {
     label: "Cancelled",
     className:
       "bg-rose-500/20 text-rose-300 border border-rose-500/30",
@@ -55,6 +55,11 @@ export default function ProjectStatusBadge({
     </span>
   );
 }
+
+
+
+
+
 
 
 
